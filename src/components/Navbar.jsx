@@ -19,7 +19,11 @@ export const Navbar = () => {
         onClick={() => handleItemClick("ورود")}
       >
         <div className="signUp-text">ورود</div>
-        <img src="" alt="" />
+        <img 
+          className="signUp-icon"
+          alt=""
+          src=""
+        />
       </div>
 
       <div className="new-ad-button">
