@@ -1,4 +1,4 @@
-import Navbar from "../components/Navbar";
+import { Navbar } from "../components/Navbar";
 import Hero from "../components/Hero";
 import Stats from "../components/Stats";
 import SuccessStories from "../components/SuccessStories";
@@ -9,13 +9,6 @@ export default function Home() {
     <div className="bg-gray-100 min-h-screen pb-20">
 
       <Navbar />
-
-      <div>
-        <Hero />
-        <Stats />
-        <SuccessStories />
-        <NewPosts />
-      </div>
 
     </div>
   );
