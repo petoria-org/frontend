@@ -90,13 +90,13 @@
 }
 
 .search-button:hover {
-  background-color: #1C7CD2;
+  background-color: #09589e;
 }
 
 .search-icon {
   width: 18px;
   height: 18px;
-  filter: invert(1);
+  color: white;
 }
 
 .search-gray-container {

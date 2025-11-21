@@ -46,8 +46,8 @@
   cursor: pointer;
   font-weight: 600;
   transition: background-color 0.3s ease;
-  margin-left: 20px; /* حالا از margin-left استفاده می‌کنیم */
-  direction: rtl; /* متن دکمه رو راست‌چین نگه می‌داریم */
+  margin-left: 20px;
+  direction: rtl;
 }
 
 .view-more-btn:hover {
@@ -57,7 +57,7 @@
 .arrow-icon {
   width: 16px;
   height: 16px;
-  transform: rotate(0deg); /* حالا نیاز به چرخش نداره */
+  transform: rotate(0deg);
 }
 
 .header-spacer {
@@ -203,7 +203,7 @@
   .view-more-container {
     justify-content: center;
     text-align: center;
-    direction: rtl; /* در موبایل دوباره rtl */
+    direction: rtl;
   }
 
   .view-more-btn {

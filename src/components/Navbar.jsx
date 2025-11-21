@@ -21,8 +21,8 @@ export const Navbar = () => {
         <div className="signUp-text">ورود</div>
         <img 
           className="signUp-icon"
-          alt=""
-          src=""
+          alt="login"
+          src="src/icons/login.svg"
         />
       </div>
 

@@ -14,7 +14,7 @@ export default function Hero() {
       <div className="search-white-container">
         <button className="search-button">
           <span className="search-text">جستجو</span>
-          <img src="/src/icons/search.svg" alt="Search" className="search-icon" />
+          <img src="src/icons/search-normal.svg" alt="Search" className="search-icon" />
         </button>
         
         <div className="search-gray-container">
