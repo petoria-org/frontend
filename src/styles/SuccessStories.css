@@ -1,0 +1,245 @@
+.success-stories {
+  width: 98%;
+  margin: 40px auto;
+  padding: 0 10px;
+  direction: rtl;
+  background-color: #F3F4F5;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+}
+
+.stories-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-top: 10px;
+  width: 100%;
+}
+
+.stories-title {
+  color: #0968BD;
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 0;
+  text-align: center;
+  flex: 1;
+}
+
+.view-more-container {
+  padding-bottom: 10px;
+  text-align: left;
+  display: flex;
+  justify-content: flex-start;
+  direction: ltr;
+}
+
+.view-more-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #1c7bd1;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  margin-left: 20px; /* حالا از margin-left استفاده می‌کنیم */
+  direction: rtl; /* متن دکمه رو راست‌چین نگه می‌داریم */
+}
+
+.view-more-btn:hover {
+  background: #0056b3;
+}
+
+.arrow-icon {
+  width: 16px;
+  height: 16px;
+  transform: rotate(0deg); /* حالا نیاز به چرخش نداره */
+}
+
+.header-spacer {
+  width: 140px;
+  order: 3;
+}
+
+.stories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 10px;
+}
+
+.story-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.story-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+.story-image-container {
+  position: relative;
+  overflow: hidden;
+  height: 200px;
+}
+
+.story-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.story-card:hover .story-image {
+  transform: scale(1.05);
+}
+
+.story-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.story-card:hover .story-overlay {
+  opacity: 1;
+}
+
+.story-view-more {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #1c7bd1;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  direction: rtl;
+}
+
+.story-view-more:hover {
+  background: white;
+  transform: scale(1.05);
+}
+
+.story-arrow {
+  width: 14px;
+  height: 14px;
+  transform: rotate(180deg);
+}
+
+.story-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.story-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #1e293b;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+}
+
+.story-description {
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0 0 12px 0;
+  font-size: 0.95rem;
+  flex-grow: 1;
+}
+
+.story-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.story-date {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .success-stories {
+    padding: 0 15px;
+  }
+
+  .stories-header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  .stories-title {
+    font-size: 1.5rem;
+    order: 1;
+  }
+
+  .view-more-container {
+    justify-content: center;
+    text-align: center;
+    direction: rtl; /* در موبایل دوباره rtl */
+  }
+
+  .view-more-btn {
+    margin-left: 0;
+    direction: rtl;
+  }
+
+  .header-spacer {
+    display: none;
+  }
+
+  .stories-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .story-image-container {
+    height: 180px;
+  }
+
+  .story-content {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .success-stories {
+    margin: 30px auto;
+  }
+
+  .stories-title {
+    font-size: 1.3rem;
+  }
+
+  .view-more-btn {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+  }
+}
