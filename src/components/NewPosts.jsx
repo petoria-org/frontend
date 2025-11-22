@@ -79,16 +79,13 @@ export default function NewPosts() {
   });
 
   const handleViewDetails = (adId) => {
-    // برای آینده اضافه خواهد شد
+    //اضافه خواهد شد
     console.log("View details for ad:", adId);
   };
 
   return (
-    <div className="user-profile-container">
-      <h2 className="section-title">All Posts</h2>
-      <p className="section-subtitle">Find lost pets or help return them.</p>
-
-      {/* Filter Tabs - بالا سرچ باکس */}
+    <div className="new-post-container">
+      <h2 className="section-title">مرور آگهی ها</h2>
       <div className="filter-tabs">
         <div
           className={`filter-button ${activeFilter === "all" ? "active" : ""}`}
@@ -125,7 +122,9 @@ export default function NewPosts() {
         </div>
       </div>
 
-      {/* Search Box با فیلتر دسته بندی */}
+
+
+
       <div className="search-container">
         <div className="category-filter">
           <select 
@@ -141,7 +140,6 @@ export default function NewPosts() {
             <option value="همستر">همستر</option>
           </select>
         </div>
-        
         <div className="search-box">
           <input
             type="text"
@@ -151,6 +149,8 @@ export default function NewPosts() {
           />
         </div>
       </div>
+
+
 
       {/* Cards Grid */}
       <div className="ads-grid">
