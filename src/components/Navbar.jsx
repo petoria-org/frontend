@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../styles/Navbar.css";
 
-export const Navbar = () => {
+const Navbar = () => {
   const [activeItem, setActiveItem] = useState("پروفایل");
 
   const handleItemClick = (itemName) => {
@@ -79,3 +79,5 @@ export const Navbar = () => {
     </div>
   );
 };
+
+export default Navbar;
