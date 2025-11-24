@@ -19,7 +19,7 @@ export const Navbar_SignIn = () => {
         <img
           className="add-icon"
           alt="Add"
-          src="src/assets/icons/add.svg"
+          src="src/icons/add.svg"
         />
       </div>
 
@@ -31,7 +31,7 @@ export const Navbar_SignIn = () => {
         <img
           className="nav-icon"
           alt="User"
-          src="/src/assets/icons/user.svg"
+          src="/src/icons/user.svg"
         />
       </div>
 
@@ -43,7 +43,7 @@ export const Navbar_SignIn = () => {
         <img
           className="nav-icon"
           alt="Message"
-          src="/src/assets/icons/message.svg"
+          src="/src/icons/message.svg"
         />
       </div>
 
@@ -55,7 +55,7 @@ export const Navbar_SignIn = () => {
         <img
           className="advertisements-icon"
           alt="Advertisements"
-          src="/src/assets/icons/Advertisements.svg"
+          src="/src/icons/Advertisements.svg"
         />
       </div>
 
@@ -67,7 +67,7 @@ export const Navbar_SignIn = () => {
         <img
           className="heart-icon"
           alt="Heart"
-          src="/src/assets/icons/heart.svg"
+          src="/src/icons/heart.svg"
         />
       </div>
 
@@ -79,14 +79,14 @@ export const Navbar_SignIn = () => {
         <img
           className="home-icon"
           alt="Home"
-          src="/src/assets/icons/house.svg"
+          src="/src/icons/house.svg"
         />
       </div>
 
       <img
         className="logo"
         alt="Logo"
-        src="/src/assets/images/logo.jpg"
+        src="/src/images/logo.jpg"
       />
     </div>
   );

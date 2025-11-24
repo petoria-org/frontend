@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import ViewDetails from "./pages/viewDetails.jsx";
+import ViewDetails from "./pages/ViewDetails.jsx";
 
 function App() {
   return (
