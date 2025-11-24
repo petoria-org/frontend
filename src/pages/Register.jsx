@@ -108,7 +108,7 @@ const Register = () => {
 
         {/* Already have account */}
         <p className="register-footer">
-          قبلاً ثبت نام کرده‌اید؟
+           قبلاً ثبت نام کرده‌اید؟
           <button
             className="register-footer-link"
             onClick={() => navigate("/login")}
