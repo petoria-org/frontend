@@ -1,0 +1,1131 @@
+.user-profile-container {
+  display: flex;
+  flex-direction: row-reverse; 
+  position: absolute;
+  top: 168px;
+  left: 200px;
+  width: calc(100% - 400px); 
+  height: 1029px;
+  justify-content: space-between; 
+}
+
+.user-profile-container .ads-section {
+  height: 1029px;
+  position: relative;
+  width: 777px;
+}
+
+.user-profile-container .section-background  {
+  background-color: #fbfbfb;
+  border-radius: 24px;
+  height: 1029px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 773px;
+}
+
+.user-profile-container .section-subtitle {
+  color: #00000080;
+  direction: rtl;
+  font-family: "Inter", Helvetica;
+  font-size: 20px;
+  font-weight: 400;
+  left: 512px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  top: 79px;
+  white-space: nowrap;
+}
+
+.user-profile-container .section-title {
+  color: #1c7bd1;
+  direction: rtl;
+  font-family: "Inter", Helvetica;
+  font-size: 28px;
+  font-weight: 700;
+  left: 559px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  top: 37px;
+}
+
+.user-profile-container .ad-card {
+  height: 400px;
+  left: 405px;
+  position: absolute;
+  top: 194px;
+  width: 344px;
+}
+
+.user-profile-container .ad-content {
+  height: 222px;
+  left: 0;
+  position: absolute;
+  top: 178px;
+  width: 354px;
+}
+
+.user-profile-container .ad-background {
+  background-color: #efefef;
+  border-color: #000000;
+  border-radius: 0px 0px 20px 20px;
+  border-top-style: solid;
+  border-top-width: 3px;
+  height: 222px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 344px;
+}
+
+.user-profile-container .pet-name {
+  color: #000000;
+  direction: rtl;
+  font-family: "Inter", Helvetica;
+  font-size: 18px;
+  font-weight: 400;
+  left: 275px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  top: 30px;
+  white-space: nowrap;
+  width: 50px;
+}
+
+.user-profile-container .pet-breed{
+  color: #525252;
+  direction: rtl;
+  font-family: "Inter", Helvetica;
+  font-size: 16px;
+  font-weight: 400;
+  left: 275px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  top: 58px;
+  white-space: nowrap;
+  width: 50px;
+}
+
+.user-profile-container .pet-type-badge {
+  height: 18px;
+  left: 19px;
+  position: absolute;
+  top: 30px;
+  width: 66px;
+}
+
+.user-profile-container .badge-background {
+  background-color: #c1c6cc;
+  border: 1px solid;
+  border-color: #a6a6a6;
+  border-radius: 10px;
+  height: 18px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 64px;
+}
+
+.user-profile-container .type-text {
+  color: #000000;
+  direction: rtl;
+  font-family: "Inter", Helvetica;
+  font-size: 12px;
+  font-weight: 400;
+  left: 21px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  text-align: left;
+  top: 1px;
+  width: 22px;
+}
+
+.user-profile-container .pet-description {
+  color: #525252;
+  direction: rtl;
+  font-family: "Inter", Helvetica;
+  font-size: 18px;
+  font-weight: 400;
+  left: 10px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  top: 90px;
+  white-space: nowrap;
+  width: 315px;
+}
+
+.user-profile-container .time-posted {
+  color: #525252;
+  direction: rtl;
+  font-family: "Inter", Helvetica;
+  font-size: 17px;
+  font-weight: 400;
+  left: 49px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  top: 150px;
+  white-space: nowrap;
+  width: 244px;
+}
+
+.user-profile-container .location-text {
+  color: #525252;
+  direction: rtl;
+  font-family: "Inter", Helvetica;
+  font-size: 17px;
+  font-weight: 400;
+  left: 103px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  top: 122px;
+  white-space: nowrap;
+  width: 190px;
+}
+
+.user-profile-container .location-icon {
+  height: 19px;
+  left: 306px;
+  position: absolute;
+  top: 122px;
+  width: 19px;
+}
+
+.user-profile-container .clock-icon {
+  height: 16px;
+  left: 306px;
+  position: absolute;
+  top: 157px;
+  width: 19px;
+}
+
+.user-profile-container .action-buttons{
+  display: flex;
+  gap: 8px;
+  height: 30px;
+  left: 13px;
+  position: absolute;
+  top: 362px;
+  width: 318px;
+}
+
+
+.user-profile-container .edit-button,
+.user-profile-container .delete-button {
+  height: 30px;
+  position: relative;
+  width: 157px;
+  cursor: pointer;
+}
+
+.user-profile-container .delete-bg  {
+  background-color: #ffffff;
+  border: 0.5px solid;
+  border-color: #dc2626;
+  border-radius: 24px;
+  height: 31px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 158px;
+  transition: all 0.3s ease;
+}
+
+.user-profile-container .delete-content,
+.user-profile-container .edit-content {
+  display: flex;
+  gap: 8px;
+  height: 29px;
+  position: absolute;
+  top: 1px;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-profile-container .delete-content {
+  left: 45px;
+  width: 68px;
+}
+
+
+.user-profile-container .delete-text {
+  align-items: center;
+  color: #dc2626;
+  direction: rtl;
+  display: flex;
+  font-family: "Inter", Helvetica;
+  font-size: 14px;
+  font-weight: 500;
+  height: 29px;
+  justify-content: center;
+  letter-spacing: 0;
+  line-height: normal;
+  width: 34px;
+  transition: all 0.3s ease;
+}
+
+.user-profile-container .delete-icon {
+  height: 18.56px !important;
+  left: unset !important;
+  margin-top: 3.8px !important;
+  top: unset !important;
+}
+
+.user-profile-container .edit-bg  {
+  background-color: #d3dee7;
+  border: 0.5px solid;
+  border-color: #1d7dd2;
+  border-radius: 24px;
+  height: 31px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 158px;
+  transition: all 0.3s ease;
+}
+
+.user-profile-container .edit-content {
+  left: 40px;
+  width: 83px;
+}
+
+.user-profile-container .edit-text {
+  align-items: center;
+  color: #1d7dd2;
+  direction: rtl;
+  display: flex;
+  font-family: "Inter", Helvetica;
+  font-size: 14px;
+  font-weight: 500;
+  height: 29px;
+  justify-content: center;
+  letter-spacing: 0;
+  line-height: normal;
+  width: 47px;
+  transition: all 0.3s ease;
+}
+
+.user-profile-container .edit-icon {
+  height: 20px;
+  margin-top: 5px;
+  width: 20px;
+}
+
+.user-profile-container .pet-image {
+  border-radius: 24px 24px 0px 0px;
+  height: 178px;
+  left: 0;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  width: 344px;
+}
+
+.user-profile-container .status-badge {
+  height: 27px;
+  left: 13px;
+  position: absolute;
+  top: 13px;
+  width: 94px;
+}
+
+.user-profile-container .status-background {
+  background-color: #ea9799;
+  border-radius: 20px;
+  height: 27px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 92px;
+}
+
+.user-profile-container .status-text {
+  align-items: center;
+  color: #c3080b;
+  direction: rtl;
+  display: flex;
+  font-family: "Inter", Helvetica;
+  font-size: 15px;
+  font-weight: 400;
+  height: 18px;
+  justify-content: center;
+  left: 22px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  text-align: left;
+  top: 4px;
+  white-space: nowrap;
+  width: 48px;
+}
+
+.user-profile-container .filter-tabs {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: absolute;
+  top: 120px;
+  left: 16px;
+  width: 741px;
+  height: 40px;
+  background-color: #e7e7e7;
+  border-radius: 24px;
+
+  padding: 1px; 
+  box-sizing: border-box;
+}
+
+.filter-button {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 0 2px;
+  gap: 8px; 
+}
+
+.filter-button.active {
+  background-color: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 0 4px rgba(0,0,0,0.15);
+}
+
+.filter-text {
+  font-size: 15px;
+  font-weight: 500;
+  color: #000;
+}
+
+.count-badge {
+  background-color: #d9d9d9;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #000;
+  margin-right: 12px; 
+}
+
+.user-profile-container .active-filter-tab {
+  background-color: #ffffff;
+  border-radius: 24px;
+  height: 39px;
+  left: 2px;
+  position: absolute;
+  top: 2px;
+  width: 185px;
+}
+
+.user-profile-container .all-filter-wrapper {
+  display: flex;
+  gap: 10px;
+  height: 25px;
+  left: 60px;
+  position: absolute;
+  top: 9px;
+  width: 71px;
+}
+
+.user-profile-container .all-filter-badge {
+  height: 25px;
+  position: relative;
+  width: 26px;
+}
+
+.user-profile-container .all-filter-count-bg {
+  background-color: #d9d9d9;
+  border: 0.3px solid;
+  border-color: #00000059;
+  border-radius: 12px / 12.5px;
+  height: 25px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 24px;
+}
+
+.user-profile-container .all-filter-count {
+  color: #000000b2;
+  font-family: "Inter", Helvetica;
+  font-size: 16px;
+  font-weight: 400;
+  left: 6px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  text-align: right;
+  top: 3px;
+  width: 11px;
+}
+
+.user-profile-container .all-filter-label {
+  color: #000000;
+  direction: rtl;
+  font-family: "Inter", Helvetica;
+  font-size: 20px;
+  font-weight: 400;
+  height: 25px;
+  letter-spacing: 0;
+  line-height: normal;
+  width: 33px;
+}
+
+.user-profile-container .found-filter-wrapper {
+  display: flex;
+  gap: 10px;
+  height: 25px;
+  left: 213px;
+  position: absolute;
+  top: 9px;
+  width: 98px;
+}
+
+.user-profile-container .found-filter-badge {
+  height: 24px;
+  margin-top: 1px;
+  position: relative;
+  width: 26px;
+}
+
+.user-profile-container .found-filter-count-bg {
+  background-color: #d9d9d9;
+  border: 0.3px solid;
+  border-color: #00000059;
+  border-radius: 12px;
+  height: 24px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 24px;
+}
+
+.user-profile-container .found-filter-count {
+  color: #000000b2;
+  font-family: "Inter", Helvetica;
+  font-size: 16px;
+  font-weight: 400;
+  left: 7px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  text-align: right;
+  top: 3px;
+  white-space: nowrap;
+}
+
+.user-profile-container .found-filter-label {
+  color: #000000;
+  direction: rtl;
+  font-family: "Inter", Helvetica;
+  font-size: 20px;
+  font-weight: 400;
+  height: 24px;
+  letter-spacing: 0;
+  line-height: normal;
+  white-space: nowrap;
+  width: 60px;
+}
+
+.user-profile-container .adoption-filter-wrapper {
+  display: flex;
+  gap: 9px;
+  height: 25px;
+  left: 593px;
+  position: absolute;
+  top: 9px;
+  width: 114px;
+}
+
+.user-profile-container .filter-count-badge {
+  height: 25px;
+  position: relative;
+  width: 27px;
+}
+
+.user-profile-container .filter-count-background {
+  background-color: #d9d9d9;
+  border: 0.3px solid;
+  border-color: #00000059;
+  border-radius: 12.5px;
+  height: 25px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 25px;
+}
+
+.user-profile-container .filter-count-text {
+  color: #000000b2;
+  font-family: "Inter", Helvetica;
+  font-size: 16px;
+  font-weight: 400;
+  left: 8px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  text-align: right;
+  top: 3px;
+  width: 8px;
+}
+
+.user-profile-container .filter-label {
+  color: #000000;
+  direction: rtl;
+  font-family: "Inter", Helvetica;
+  font-size: 20px;
+  font-weight: 400;
+  height: 25px;
+  letter-spacing: 0;
+  line-height: normal;
+  width: 76px;
+}
+
+.user-profile-container .filter-item-wrapper {
+  display: flex;
+  gap: 9px;
+  height: 25px;
+  left: 398px;
+  position: absolute;
+  top: 9px;
+  width: 107px;
+}
+
+.user-profile-container .filter-category-text {
+  color: #000000;
+  direction: rtl;
+  font-family: "Inter", Helvetica;
+  font-size: 20px;
+  font-weight: 400;
+  height: 25px;
+  letter-spacing: 0;
+  line-height: normal;
+  width: 69px;
+}
+
+.user-profile-container .ad-card-2 {
+  height: 400px;
+  left: 24px;
+  position: absolute;
+  top: 194px;
+  width: 344px;
+}
+
+.user-profile-container .pet-type-badge {
+  height: 18px;
+  left: 19px;
+  position: absolute;
+  top: 29px;
+  width: 66px;
+}
+
+.user-profile-container .pet-type-text {
+  align-items: center;
+  color: #000000;
+  direction: rtl;
+  display: flex;
+  font-family: "Inter", Helvetica;
+  font-size: 12px;
+  font-weight: 400;
+  height: 10px;
+  justify-content: center;
+  left: 20px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  text-align: left;
+  top: 4px;
+  white-space: nowrap;
+  width: 24px;
+}
+
+.user-profile-container .pet-description  {
+  color: #525252;
+  direction: rtl;
+  font-family: "Inter", Helvetica;
+  font-size: 16px;
+  font-weight: 400;
+  left: 10px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  top: 90px;
+  white-space: nowrap;
+  width: 315px;
+}
+
+.user-profile-container .clock-icon {
+  height: 19px;
+  left: 306px;
+  position: absolute;
+  top: 153px;
+  width: 19px;
+}
+
+.user-profile-container .ad-actions-container {
+  display: flex;
+  gap: 4px;
+  height: 30px;
+  left: 13px;
+  position: absolute;
+  top: 184px;
+  width: 318px;
+}
+
+.user-profile-container .status-found {
+  background-color: #9fc7eb;
+  border-radius: 20px;
+  height: 27px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 92px;
+}
+
+.user-profile-container .status-found-text {
+  color: #0867bd;
+  direction: rtl;
+  font-family: "Inter", Helvetica;
+  font-size: 15px;
+  font-weight: 400;
+  left: 20px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  text-align: left;
+  top: 4px;
+  white-space: nowrap;
+}
+
+.user-profile-container .ad-card-3 {
+  height: 400px;
+  left: 401px;
+  position: absolute;
+  top: 614px;
+  width: 344px;
+}
+
+.user-profile-container .ad-card-4  {
+  height: 400px;
+  left: 25px;
+  position: absolute;
+  top: 614px;
+  width: 344px;
+}
+
+.user-profile-container .status-adoption {
+  background-color: #7aee97;
+  border-radius: 20px;
+  height: 27px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 92px;
+}
+
+.user-profile-container .status-adoption-text {
+  color: #0f7228;
+  direction: rtl;
+  font-family: "Inter", Helvetica;
+  font-size: 15px;
+  font-weight: 400;
+  left: 17px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  text-align: left;
+  top: 4px;
+  white-space: nowrap;
+}
+
+.user-profile-container .profile-sidebar {
+  height: 566px;
+  position: relative;
+  width: 409px;
+  margin-right: 0px;
+}
+
+.user-profile-container .sidebar-background {
+  background-color: #fbfbfb;
+  border-radius: 24px;
+  height: 566px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 407px;
+}
+
+.user-profile-container .sidebar-header {
+  background-color: #55a4ec;
+  border-radius: 24px 24px 0px 0px;
+  height: 102px;
+  left: 1px;
+  position: absolute;
+  top: 1px;
+  width: 405px;
+}
+
+.user-profile-container .username {
+  color: #000000bf;
+  font-family: "Inter", Helvetica;
+  font-size: 18px;
+  font-weight: 400;
+  left: calc(50.00% - 60px);
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  top: 163px;
+  white-space: nowrap;
+  width: 117px;
+}
+
+.user-profile-container .avatar-container {
+  height: 114px;
+  left: 146px;
+  position: absolute;
+  top: 43px;
+  width: 114px;
+}
+
+.user-profile-container .avatar-border {
+  background-color: #d9d9d9;
+  border: 2px solid;
+  border-color: #ffffff;
+  border-radius: 51px;
+  box-shadow: 0px 0px 45px #1c7cd266;
+  height: 102px;
+  left: 6px;
+  position: absolute;
+  top: 5px;
+  width: 102px;
+}
+
+.user-profile-container .avatar-image {
+  height: 114px;
+  left: 0;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  width: 114px;
+}
+
+.user-profile-container .phone-contact-container {
+  height: 76px;
+  left: 21px;
+  position: absolute;
+  top: 299px;
+  width: 369px;
+}
+
+.user-profile-container .phone-contact-background {
+  background-color: #e8f4ff;
+  border: 0.5px solid;
+  border-color: #1c7cd1;
+  border-radius: 16px;
+  height: 77px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 366px;
+}
+
+.user-profile-container .phone-label {
+  color: #00000080;
+  direction: rtl;
+  font-family: "Inter", Helvetica;
+  font-size: 16px;
+  font-weight: 400;
+  right: 20px; 
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  top: 7px;
+  white-space: nowrap;
+}
+
+.user-profile-container .phone-number {
+  color: #000000;
+  font-family: "Inter", Helvetica;
+  font-size: 16px;
+  font-weight: 400;
+  right: 20px; 
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  text-align: right;
+  top: 39px;
+  white-space: nowrap;
+}
+
+.user-profile-container .phone-icon-background{
+  background-color: #ffffff;
+  border-radius: 16px;
+  height: 43px;
+  left: 16px;
+  position: absolute;
+  top: 15px;
+  width: 50px;
+}
+
+.user-profile-container .call {
+  background-image: url("src/icons/call.svg");
+  background-size: 100% 100%;
+  height: 33px;
+  left: 24px;
+  position: absolute;
+  top: 20px;
+  width: 34px;
+}
+
+.user-profile-container .contact-info {
+  height: 76px;
+  left: 21px;
+  position: absolute;
+  top: 203px;
+  width: 369px;
+}
+
+.user-profile-container .contact-background {
+  background-color: #e8f4ff;
+  border: 0.5px solid;
+  border-color: #1c7bd1;
+  border-radius: 16px;
+  height: 77px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 366px;
+}
+
+.user-profile-container .contact-label {
+  color: #00000080;
+  direction: rtl;
+  font-family: "Inter", Helvetica;
+  font-size: 16px;
+  font-weight: 400;
+  right: 20px; 
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  text-align: left;
+  top: 7px;
+  white-space: nowrap;
+}
+
+.user-profile-container .contact-value {
+  color: #000000;
+  font-family: "Inter", Helvetica;
+  font-size: 16px;
+  font-weight: 400;
+  right: 20px; 
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  top: 39px;
+  white-space: nowrap;
+}
+
+.user-profile-container .contact-icon-bg {
+  background-color: #ffffff;
+  border-radius: 16px;
+  height: 43px;
+  left: 16px;
+  position: absolute;
+  top: 14px;
+  width: 50px;
+}
+
+.user-profile-container .email-icon {
+  background-image: url("src/icons/email.svg");
+  background-size: 100% 100%;
+  height: 33px;
+  left: 24px;
+  position: absolute;
+  top: 19px;
+  width: 34px;
+}
+
+.user-profile-container .sidebar-menu-item {
+  height: 40px;
+  left: 21px;
+  position: absolute;
+  top: 418px;
+  width: 367px;
+}
+
+.user-profile-container .menu-background  {
+  background-color: #ffffff;
+  border: 1px solid;
+  border-color: #0000004c;
+  border-radius: 12px;
+  height: 40px;
+  left: calc(50.00% - 184px);
+  position: absolute;
+  top: 0;
+  width: 365px;
+}
+
+.user-profile-container .menu-icon-bg {
+  background-color: #0000004c;
+  border-radius: 8px;
+  height: 29px;
+  left: 317px;
+  position: absolute;
+  top: 5px;
+  width: 31px;
+}
+
+.user-profile-container .menu-text {
+  align-items: center;
+  color: #000000;
+  direction: rtl;
+  display: flex;
+  font-family: "Inter", Helvetica;
+  font-size: 16px; 
+  font-weight: 400;
+  height: 40px;
+  justify-content: center;
+  left: 226px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  top: 0;
+  width: 76px;
+}
+
+.user-profile-container .settings-icon  {
+  height: 21px;
+  left: 322px;
+  position: absolute;
+  top: 9px;
+  width: 21px;
+}
+
+.user-profile-container .logout-menu-item {
+  height: 40px;
+  left: 21px;
+  position: absolute;
+  top: 478px;
+  width: 367px;
+}
+
+.user-profile-container .logout-icon {
+  height: 21px;
+  width: 21px;
+  position: absolute;
+  left: 322px;   /* دقیقاً مثل settings-icon */
+  top: 9px;
+}
+
+
+.user-profile-container .logout-text {
+  align-items: center;
+  color: #000000;
+  direction: rtl;
+  display: flex;
+  font-family: "Inter", Helvetica;
+  font-size: 16px;
+  font-weight: 400;
+  height: 40px;
+  justify-content: center;
+  left: 181px;
+  letter-spacing: 0;
+  line-height: normal;
+  position: absolute;
+  top: 0;
+  width: 121px;
+}
+
+
+.edit-button {
+  transition: all 0.3s ease;
+}
+
+.edit-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(29, 125, 210, 0.2);
+}
+
+.edit-button:hover .edit-bg {
+  background-color: #1c7bd1;
+  border-color: #1c7bd1;
+}
+
+.edit-button:hover .edit-text {
+  color: #ffffff;
+}
+
+.edit-button:hover .edit-icon {
+  filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
+}
+
+.delete-button {
+  transition: all 0.3s ease;
+}
+
+.delete-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(220, 38, 38, 0.2);
+}
+
+.delete-button:hover .delete-bg {
+  background-color: #dc2626;
+  border-color: #dc2626;
+}
+
+.delete-button:hover .delete-text {
+  color: #ffffff;
+}
+
+.delete-button:hover .delete-icon {
+  filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
+}
+
+.delete-icon {
+  height: 18px;
+  width: 18px;
+  transition: all 0.3s ease;
+}
+
+.edit-icon {
+  height: 18px;
+  width: 18px;
+  transition: all 0.3s ease;
+}
+
+.user-profile-container .call-icon,
+.user-profile-container .email-icon {
+  background-image: none !important;
+  background-size: auto !important;
+}
+
+.user-profile-container .call-icon {
+  height: 33px;
+  left: 24px;
+  position: absolute;
+  top: 20px;
+  width: 34px;
+}
+
+.user-profile-container .email-icon {
+  height: 33px;
+  left: 24px;
+  position: absolute;
+  top: 19px;
+  width: 34px;
+}

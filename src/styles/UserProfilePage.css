@@ -1,0 +1,59 @@
+.user-profile-screen {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  position: relative;
+}
+
+.screen-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #f5f5f5;
+  z-index: -1;
+}
+
+.profile-content {
+  margin-top: 80px; 
+  padding: 20px;
+}
+
+.modal-open {
+  overflow: hidden;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 90%;
+  max-height: 90%;
+  overflow: auto;
+}
+
+@media (max-width: 768px) {
+  .profile-content {
+    margin-top: 70px;
+    padding: 15px;
+  }
+  
+  .modal-content {
+    max-width: 95%;
+    max-height: 95%;
+    padding: 15px;
+  }
+}
