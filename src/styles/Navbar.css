@@ -1,0 +1,257 @@
+.navbar {
+  background-color: #ffffff;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  height: 64px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 12px;
+  justify-content: space-between;
+  direction: ltr;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  overflow-x: auto;
+  width: 100%;
+}
+
+.navbar::-webkit-scrollbar {
+  display: none;
+}
+
+.navbar .new-ad-button,
+.navbar .profile-nav,
+.navbar .messages-nav,
+.navbar .ads-nav,
+.navbar .signUp-nav,
+.navbar .stories-nav,
+.navbar .home-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  height: 40px; 
+  margin: 0;
+  flex-shrink: 0;
+  direction: rtl; 
+}
+
+.navbar .new-ad-button {
+  background-color: #1c7bd1;
+  color: #ffffff;
+  font-size: 14px;
+  width: 120px;
+}
+
+.navbar .add-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  background-image: url("src/icons/add.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  order: -1;
+}
+
+.navbar .profile-nav,
+.navbar .messages-nav,
+.navbar .ads-nav,
+.navbar .stories-nav,
+.navbar .signUp-nav,
+.navbar .home-nav {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.navbar .profile-nav.active,
+.navbar .messages-nav.active,
+.navbar .ads-nav.active,
+.navbar .stories-nav.active,
+.navbar .signUp-nav.active,
+.navbar .home-nav.active {
+  background-color: #e8f4ff;
+}
+
+.navbar .profile-text,
+.navbar .messages-text,
+.navbar .ads-text,
+.navbar .stories-text,
+.navbar .signUp-text,
+.navbar .home-text {
+  color: #000000;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+.navbar .profile-nav.active .profile-text,
+.navbar .messages-nav.active .messages-text,
+.navbar .ads-nav.active .ads-text,
+.navbar .stories-nav.active .stories-text,
+.navbar .signUp-nav.active .signUp-text,
+.navbar .home-nav.active .home-text {
+  color: #006aca;
+}
+
+.navbar .signUp-nav {
+  width: 80px;
+}
+
+.navbar .messages-nav {
+  width: 100px;
+}
+
+.navbar .ads-nav {
+  width: 110px;
+}
+
+.navbar .stories-nav {
+  width: 140px;
+}
+
+.navbar .home-nav {
+  width: 80px;
+}
+
+.navbar .new-ad-text,
+.navbar .profile-text,
+.navbar .messages-text,
+.navbar .ads-text,
+.navbar .stories-text,
+.navbar .signUp-text,
+.navbar .home-text {
+  direction: rtl;
+  text-align: right;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.navbar .new-ad-text {
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.navbar .user-icon,
+.navbar .message-icon,
+.navbar .ads-icon,
+.navbar .heart-icon,
+.navbar .home-icon,
+.navbar .signUp-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  transition: filter 0.3s ease;
+  filter: invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(100%);
+  order: -1;
+}
+
+.navbar .profile-nav.active .user-icon,
+.navbar .messages-nav.active .message-icon,
+.navbar .ads-nav.active .ads-icon,
+.navbar .stories-nav.active .heart-icon,
+.navbar .signUp-nav.active .signUp-icon,
+.navbar .home-nav.active .home-icon {
+  filter: invert(33%) sepia(91%) saturate(1436%) hue-rotate(188deg) brightness(93%) contrast(101%);
+}
+
+.navbar .ads-icon,
+.navbar .logo {
+  object-fit: cover;
+}
+
+.navbar .logo {
+  width: 120px;
+  height: 40px;
+  margin-left: auto;
+}
+
+.div-wrapper .view-13 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: absolute;
+  top: 120px;
+  left: 16px;
+  width: 741px;
+  height: 40px; 
+  background-color: #e7e7e7;
+  border-radius: 20px;
+  padding: 1px;
+  box-sizing: border-box;
+}
+
+.filter-button {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+  border-radius: 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 0 2px;
+  gap: 12px;
+}
+
+.filter-button.active {
+  background-color: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 0 4px rgba(0,0,0,0.15);
+}
+
+.filter-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: #000;
+}
+
+.count-badge {
+  background-color: #d9d9d9;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #000;
+  margin-right: 6px;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 12px;
+    gap: 8px;
+    height: 56px;
+  }
+
+  .navbar .new-ad-button,
+  .navbar .profile-nav,
+  .navbar .messages-nav,
+  .navbar .ads-nav,
+  .navbar .stories-nav,
+  .navbar .signUp-nav,
+  .navbar .home-nav {
+    padding: 6px 12px;
+    font-size: 13px;
+    height: 36px;
+    gap: 6px;
+  }
+  
+  .navbar .signUp-nav {
+    width: 70px;
+  }
+}
