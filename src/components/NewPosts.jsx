@@ -4,61 +4,61 @@ import "../styles/NewPosts.css";
 const adsData = [
   {
     id: 1,
-    name: "Bella",
-    desc: "A calm and friendly dog found near City Park. Looking for the owner.",
+    name: "بلا",
+    desc: "یک سگ آرام و دوستانه که نزدیک پارک شهر پیدا شده است. به دنبال صاحبش هستیم.",
     image: "/images/dog1.jpg",
-    location: "City Park",
-    time: "2 hours ago",
+    location: "پارک شهر",
+    time: "۲ ساعت پیش",
     status: "پیدا شده",
     category: "سگ"
   },
   {
     id: 2,
-    name: "Milo",
-    desc: "Lost golden retriever last seen in East Road.",
+    name: "مایلو",
+    desc: "گلدن رتریور گمشده که آخرین بار در خیابان شرق دیده شده است.",
     image: "/images/dog2.jpg",
-    location: "East Road",
-    time: "5 hours ago",
+    location: "خیابان شرق",
+    time: "۵ ساعت پیش",
     status: "گم شده",
     category: "سگ"
   },
   {
     id: 3,
-    name: "Luna",
-    desc: "A cute kitten ready for adoption.",
+    name: "لونا",
+    desc: "یک بچه‌گربه بامزه که آماده واگذاری است.",
     image: "/images/cat1.jpg",
-    location: "North Avenue",
-    time: "1 day ago",
+    location: "خیابان شمالی",
+    time: "۱ روز پیش",
     status: "سرپرستی",
     category: "گربه"
   },
   {
     id: 4,
-    name: "Max",
-    desc: "Friendly black lab found near the river.",
+    name: "مکس",
+    desc: "لبرادور سیاه و مهربان که نزدیک رودخانه پیدا شده است.",
     image: "/images/dog3.jpg",
-    location: "River Side",
-    time: "3 hours ago",
+    location: "کنار رودخانه",
+    time: "۳ ساعت پیش",
     status: "پیدا شده",
     category: "سگ"
   },
   {
     id: 5,
-    name: "Charlie",
-    desc: "Small white cat missing since yesterday.",
+    name: "چارلی",
+    desc: "گربه سفید کوچک که از دیروز گم شده است.",
     image: "/images/cat2.jpg",
-    location: "West Street",
-    time: "1 day ago",
+    location: "خیابان غربی",
+    time: "۱ روز پیش",
     status: "گم شده",
     category: "گربه"
   },
   {
     id: 6,
-    name: "Lucy",
-    desc: "Young puppy looking for a loving home.",
+    name: "لوسی",
+    desc: "توله‌سگ جوانی که به دنبال یک خانه مهربان است.",
     image: "/images/dog4.jpg",
-    location: "South Park",
-    time: "2 days ago",
+    location: "پارک جنوبی",
+    time: "۲ روز پیش",
     status: "سرپرستی",
     category: "سگ"
   },
@@ -122,9 +122,6 @@ export default function NewPosts() {
         </div>
       </div>
 
-
-
-
       <div className="search-container">
         <div className="category-filter">
           <select 
@@ -150,15 +147,11 @@ export default function NewPosts() {
         </div>
       </div>
 
-
-
-      {/* Cards Grid */}
       <div className="ads-grid">
         {filteredAds.length > 0 ? (
           filteredAds.map((ad) => (
             <div className="ad-card" key={ad.id}>
               <img className="pet-image" src={ad.image} alt={ad.name} />
-
               <div className="status-badge">
                 <div
                   className={`status-background ${
@@ -173,17 +166,27 @@ export default function NewPosts() {
                 </div>
               </div>
 
-              <div className="category-badge">
-                {ad.category}
-              </div>
-
               <div className="ad-content">
-                <div className="pet-name">{ad.name}</div>
+                <div className="top-row">
+                  <div className="pet-name">{ad.name}</div>
+                  <div className="category-badge">{ad.category}</div>
+                </div>
                 <p className="pet-description">{ad.desc}</p>
-
-                <div className="info-row">
-                  <span>{ad.location}</span>
-                  <span>{ad.time}</span>
+                <div className="location-container">
+                  <div>{ad.location}</div>
+                  <img
+                    className="location-icon"
+                    alt="location"
+                    src="/src/icons/location.svg"
+                  />
+                </div>
+                <div className="calender-container">
+                  <div>{ad.time}</div>
+                  <img
+                    className="calendar-icon"
+                    alt="calendar"
+                    src="/src/icons/calendar-2.svg"
+                  />
                 </div>
               </div>
 
@@ -203,13 +206,13 @@ export default function NewPosts() {
           </div>
         )}
       </div>
-      <div className="show-more-container">
-          <button 
-            className="show-more-btn"
-            onClick={() => setShowAll(true)}
-          >
-            مشاهده بیشتر
-          </button>
+      <div class="show-more-container">
+        <button class="show-more-btn">
+        <svg class="arrow-icon" viewBox="0 0 24 24" fill="none">
+        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2"/>
+        </svg>
+         مشاهده بیشتر
+        </button>
       </div>
     </div>
   );

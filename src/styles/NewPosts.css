@@ -121,7 +121,6 @@
   box-shadow: 0 2px 10px rgba(0,0,0,0.08);
 }
 
-/* --- Card Styling --- */
 .ad-card {
   background: white;
   border-radius: 16px;
@@ -161,36 +160,26 @@
 }
 
 .status-found {
-  background: #d1f8dd;
-  color: #0a8f36;
+  background: #A0C7EB;
+  color: #0968BD;
 }
 
 .status-missing {
-  background: #ffe1df;
-  color: #c24432;
+  background: #EA9899;
+  color: #C4090C;
 }
 
 .status-adoption {
-  background: #dff4ff;
-  color: #0673b5;
+  background: #7AEE97;
+  color: #107328;
 }
 
-.category-badge {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 4px 10px;
-  border-radius: 10px;
-  font-size: 12px;
-  font-weight: 500;
-}
 
-/* --- Card Content --- */
-.ad-content {
-  padding: 15px 18px;
-  flex-grow: 1;
+.top-row {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .pet-name {
@@ -200,26 +189,42 @@
   color: #333;
 }
 
+.category-badge {
+  background: #A7A7A7;
+  color: black;
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.ad-content {
+  padding: 15px 18px;
+  flex-grow: 1;
+}
+
 .pet-description {
-  color: #666;
+  color: #525252;
   font-size: 14px;
-  margin: 8px 0;
+  margin-top: 10px;
+  margin-bottom: 8px;
+  margin-left: 0px;
+  margin-right: 0px;
   line-height: 1.4;
   min-height: 40px;
+  text-align: right;
 }
 
-/* --- Info Line (location/time) --- */
-.info-row {
+.location-container,
+.calender-container {
+  color: #525252;
   display: flex;
-  justify-content: space-between;
-  color: #888;
-  font-size: 13px;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid #f0f0f0;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
 }
 
-/* --- Action Buttons --- */
 .action-buttons {
   width: 100%;
   padding: 0 18px;
@@ -246,26 +251,32 @@
 }
 
 .show-more-container {
+  margin-top: 15px;
+  margin-bottom: 0px;
   display: flex;
-  justify-content: left;
-  margin-top: 10px;
+  justify-content: flex-start;
 }
 
 .show-more-btn {
-  background: #1C7CD2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #1C7CD2;
   color: white;
   border: none;
-  padding: 12px 30px;
-  border-radius: 8px;
-  font-size: 16px;
+  border-radius: 10px;
+  padding: 10px 16px;
   cursor: pointer;
-  transition: 0.2s ease;
-  font-weight: 600;
+  transition: background-color 0.3s ease;
 }
 
 .show-more-btn:hover {
-  background: #3b5ba4;
-  transform: translateY(-2px);
+  background-color: #1560a8;
+}
+
+.arrow-icon {
+  width: 16px;
+  height: 16px;
 }
 
 @media (max-width: 1024px) {
