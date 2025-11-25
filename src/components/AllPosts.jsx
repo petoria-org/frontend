@@ -6,7 +6,7 @@ const adsData = [
     id: 1,
     name: "بلا",
     desc: "یک سگ آرام و دوستانه که نزدیک پارک شهر پیدا شده است. به دنبال صاحبش هستیم.",
-    image: "/images/dog1.jpg",
+    image: "src/picture_test/a.jpg",
     location: "پارک شهر",
     time: "۲ ساعت پیش",
     status: "پیدا شده",
@@ -85,7 +85,7 @@ export default function NewPosts() {
 
   return (
     <div className="new-post-container">
-      <h2 className="section-title">مرور آگهی ها</h2>
+      <h2 className="section-title">آگهی ها</h2>
       <div className="filter-tabs">
         <div
           className={`filter-button ${activeFilter === "all" ? "active" : ""}`}
@@ -192,7 +192,7 @@ export default function NewPosts() {
 
               <div className="action-buttons">
                 <div 
-                  className="btn view-details-btn"
+                  className="view-details-btn"
                   onClick={() => handleViewDetails(ad.id)}
                 >
                   مشاهده جزییات
@@ -205,14 +205,6 @@ export default function NewPosts() {
             هیچ پستی یافت نشد
           </div>
         )}
-      </div>
-      <div class="show-more-container">
-        <button class="show-more-btn">
-        <svg class="arrow-icon" viewBox="0 0 24 24" fill="none">
-        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2"/>
-        </svg>
-         مشاهده بیشتر
-        </button>
       </div>
     </div>
   );

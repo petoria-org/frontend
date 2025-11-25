@@ -1,6 +1,7 @@
 .new-post-container {
-  width: 98%;
-  margin-left: 17px;
+  margin-top: 50px;
+  margin-left: 0px;
+  width: 100%;
   padding: 30px 40px;
   box-sizing: border-box;
   background: #FCFCFC;
@@ -249,35 +250,11 @@
   transition: 0.2s;
   text-align: center;
   font-weight: 600;
-  width: 100%;
+  width: 98%;
 }
 
 .view-details-btn:hover {
   background: #3b5ba4;
-}
-
-.show-more-container {
-  margin-top: 15px;
-  margin-bottom: 0px;
-  display: flex;
-  justify-content: flex-start;
-}
-
-.show-more-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background-color: #1C7CD2;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.show-more-btn:hover {
-  background-color: #1560a8;
 }
 
 .arrow-icon {
