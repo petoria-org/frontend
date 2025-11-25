@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../styles/Navbar_SignIn.css";
+import "../../styles/Navbar_SignIn.css";
 
 export const Navbar_SignIn = () => {
   const [activeItem, setActiveItem] = useState("پروفایل");
@@ -19,7 +19,7 @@ export const Navbar_SignIn = () => {
         <img
           className="add-icon"
           alt="Add"
-          src="src/icons/add.svg"
+          src="/src/assets/icons/add.svg"
         />
       </div>
 
@@ -31,7 +31,7 @@ export const Navbar_SignIn = () => {
         <img
           className="nav-icon"
           alt="User"
-          src="/src/icons/user.svg"
+          src="/src/assets/icons/user.svg"
         />
       </div>
 
@@ -43,7 +43,7 @@ export const Navbar_SignIn = () => {
         <img
           className="nav-icon"
           alt="Message"
-          src="/src/icons/message.svg"
+          src="/src/assets/icons/message.svg"
         />
       </div>
 
@@ -55,7 +55,7 @@ export const Navbar_SignIn = () => {
         <img
           className="advertisements-icon"
           alt="Advertisements"
-          src="/src/icons/Advertisements.svg"
+          src="/src/assets/icons/Advertisements.svg"
         />
       </div>
 
@@ -67,7 +67,7 @@ export const Navbar_SignIn = () => {
         <img
           className="heart-icon"
           alt="Heart"
-          src="/src/icons/heart.svg"
+          src="/src/assets/icons/heart.svg"
         />
       </div>
 
@@ -79,14 +79,14 @@ export const Navbar_SignIn = () => {
         <img
           className="home-icon"
           alt="Home"
-          src="/src/icons/house.svg"
+          src="/src/assets/icons/house.svg"
         />
       </div>
 
       <img
         className="logo"
         alt="Logo"
-        src="/src/images/logo.jpg"
+        src="/src/assets/images/logo.jpg"
       />
     </div>
   );
