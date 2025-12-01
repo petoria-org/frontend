@@ -41,6 +41,8 @@
   direction: rtl;
   width: fit-content;
   min-width: fit-content;
+  position: relative;
+  overflow: hidden;
 }
 
 .navbar .new-ad-button {
@@ -48,7 +50,56 @@
   color: #ffffff;
   font-size: 14px;
   width: fit-content;
-  min-width: 120px; 
+  min-width: 120px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.navbar .new-ad-button:hover {
+  background-color: #1568b5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(28, 123, 209, 0.3);
+}
+
+.navbar .new-ad-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(28, 123, 209, 0.4);
+}
+
+.navbar .nav-item {
+  background-color: #ffffff;
+  color: #000000;
+  padding: 8px 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.navbar .nav-item:not(.active):hover {
+  background-color: #f8fafc;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.navbar .nav-item.active:hover {
+  background-color: #d4e8ff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 106, 202, 0.2);
+}
+
+.navbar .nav-item::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(0, 106, 202, 0.1);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+}
+
+.navbar .nav-item:active::after {
+  width: 100px;
+  height: 100px;
 }
 
 .navbar .add-icon {
@@ -59,26 +110,25 @@
   background-repeat: no-repeat;
   background-position: center;
   order: -1;
+  transition: transform 0.3s ease;
 }
 
-.navbar .nav-item {
-  background-color: #ffffff;
-  color: #000000;
-  padding: 8px 12px;
-}
-
-.navbar .nav-item.active {
-  background-color: #e8f4ff;
+.navbar .new-ad-button:hover .add-icon {
+  transform: scale(1.1) rotate(90deg);
 }
 
 .navbar .nav-text {
   color: #000000;
   font-size: 14px;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .navbar .nav-item.active .nav-text {
   color: #006aca;
+}
+
+.navbar .nav-item:not(.active):hover .nav-text {
+  color: #1c7bd1;
 }
 
 .navbar .new-ad-text,
@@ -95,6 +145,11 @@
 .navbar .new-ad-text {
   color: #ffffff;
   font-size: 14px;
+  transition: transform 0.3s ease;
+}
+
+.navbar .new-ad-button:hover .new-ad-text {
+  transform: translateX(-2px);
 }
 
 .navbar .nav-icon,
@@ -104,7 +159,7 @@
   width: 18px;
   height: 18px;
   flex-shrink: 0;
-  transition: filter 0.3s ease;
+  transition: all 0.3s ease;
   filter: invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(100%);
   order: -1;
 }
@@ -116,6 +171,14 @@
   filter: invert(33%) sepia(91%) saturate(1436%) hue-rotate(188deg) brightness(93%) contrast(101%);
 }
 
+.navbar .nav-item:not(.active):hover .nav-icon,
+.navbar .nav-item:not(.active):hover .advertisements-icon,
+.navbar .nav-item:not(.active):hover .heart-icon,
+.navbar .nav-item:not(.active):hover .home-icon {
+  filter: invert(33%) sepia(91%) saturate(1436%) hue-rotate(188deg) brightness(93%) contrast(101%);
+  transform: scale(1.1);
+}
+
 .navbar .advertisements-icon,
 .navbar .logo {
   object-fit: cover;
@@ -125,6 +188,11 @@
   width: 120px;
   height: 40px;
   margin-left: auto;
+  transition: transform 0.3s ease;
+}
+
+.navbar .logo:hover {
+  transform: scale(1.05);
 }
 
 .filter-tabs {
@@ -194,5 +262,15 @@
     font-size: 13px;
     height: 36px;
     gap: 6px;
+  }
+
+  .navbar .new-ad-button:hover,
+  .navbar .nav-item:hover {
+    transform: none;
+  }
+  
+  .navbar .new-ad-button:active,
+  .navbar .nav-item:active {
+    transform: scale(0.98);
   }
 }
