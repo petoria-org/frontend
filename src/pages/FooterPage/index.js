@@ -1,0 +1,1 @@
+export { FooterPage } from "./FooterPage";
