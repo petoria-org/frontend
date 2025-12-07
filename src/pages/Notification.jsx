@@ -279,7 +279,7 @@ const Notification = ({ onClose }) => {
                 </div>
 
                 <div className="form-field">
-                <label className="form-label">زمان گم شدن</label>
+                <label className="form-label">زمان</label>
                 <div className="input-container">
                     <input
                     type="text"
