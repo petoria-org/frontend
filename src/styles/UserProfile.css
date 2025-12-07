@@ -8,20 +8,20 @@
 .user-profile-container {
   display: flex;
   flex-direction: row-reverse;
-  position: absolute;
-  top: 168px;
-  left: 200px;
   width: calc(100% - 400px);
-  height: auto; 
-  min-height: 1029px; 
+  height: auto;
+  min-height: 1029px;
   justify-content: space-between;
+  margin: 0 auto;
+  padding: 20px 0;
 }
 
 .user-profile-container .ads-section {
-  height: auto; 
+  height: auto;
   position: relative;
   width: 777px;
-  padding-bottom: 40px; 
+  padding-bottom: 40px;
+  margin: 0;
 }
 
 .user-profile-container .section-background {
@@ -579,11 +579,9 @@
 
 .user-profile-container .profile-sidebar {
   height: 566px;
-  position: fixed; 
-  top: 188px; 
-  right: 200px;
+  position: relative; 
   width: 409px;
-  margin-right: 0px;
+  margin-left: 20px;
   z-index: 10;
 }
 

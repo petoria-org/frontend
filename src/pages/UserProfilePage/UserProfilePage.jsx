@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import { UserProfile } from "../../components/UserProfile";
 import { Navbar_SignIn } from "../../components/Navbar_SignIn";
 import { NotificationOptionsSection } from "../../components/NotificationOptionsSection";
-import "../../styles/Screen.css";
+import { Footer } from "../../components/Footer"
+import "../../styles/UserProfilePage.css";
 
-export const Screen = () => {
+export const UserProfilePage = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedAd, setSelectedAd] = useState(null);
 
@@ -40,23 +41,19 @@ export const Screen = () => {
     <div className={`screen ${showEditModal ? "modal-open" : ""}`}>
       <div className="screen-background" />
       
-      <div style={{
-        position: 'relative',
-        width: '100%',
-        height: '100vh',
-        direction: 'ltr',
-        overflowY: 'auto', 
-        overflowX: 'hidden',
-      }}>
-
-        <div style={{
-          direction: 'rtl',
-          position: 'relative',
-          minHeight: '100vh',
-          paddingBottom: '50px', 
-        }}>
-          <UserProfile onEditClick={handleEditClick} />
+      <div className="page-layout">
+        <div className="navbar-container">
           <Navbar_SignIn />
+        </div>
+        
+        <div className="main-content-area">
+          <div className="content-wrapper">
+            <UserProfile onEditClick={handleEditClick} />
+          </div>
+        </div>
+        
+        <div className="footer-container">
+          <Footer />
         </div>
       </div>
       
