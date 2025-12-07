@@ -8,7 +8,8 @@ export const UserProfile = ({ onEditClick }) => {
       name: "ماکس",
       desc: "سگ نژاد ژرمن شپرد نر 3 ساله",
       location: "تهران، پارک ملت",
-      time: "سه روز پیش",
+      time: "۱۴۰۲/۰۸/۱۵",
+      postTime: "سه روز پیش",
       type: "سگ",
       image: "/src/assets/images/max.svg",
       status: "گم شده",
@@ -18,7 +19,8 @@ export const UserProfile = ({ onEditClick }) => {
       name: "ابیگل",
       desc: "گربه پرشین سفید با چشمان سبز",
       location: "تهران، خیابان ولیعصر",
-      time: "یک هفته پیش",
+      time: "۱۴۰۴/۰۸/۱۸",
+      postTime: "یک هفته پیش",
       type: "گربه",
       image: "/src/assets/images/abigail.svg",
       status: "پیدا شده",
@@ -28,7 +30,8 @@ export const UserProfile = ({ onEditClick }) => {
       name: "جوکر",
       desc: "گربه پرشین ماده خاکستری با چشمان طلایی",
       location: "تهران، سعادت‌آباد",
-      time: "پنج روز پیش",
+      time: "۱۴۰۴/۰۸/۰۴",
+      postTime: "پنج روز پیش",
       type: "گربه",
       image: "/src/assets/images/joker.svg",
       status: "گم شده",
@@ -38,10 +41,12 @@ export const UserProfile = ({ onEditClick }) => {
       name: "لونا",
       desc: "سگ ماده قهوه‌ای رنگ 3 ماهه بازیگوش",
       location: "تهران، شهرک غرب",
-      time: "دو هفته پیش",
+      time: "۱۴۰۴/۰۵/۱۸",
+      postTime: "دو هفته پیش",
       type: "سگ",
       image: "/src/assets/images/luna.svg",
       status: "سرپرستی",
+      
     },
   ]);
 
@@ -88,8 +93,8 @@ export const UserProfile = ({ onEditClick }) => {
 
         <p className="pet-description">{ad.desc}</p>
 
-        <div className="time-posted">{ad.time}</div>
         <div className="location-text">{ad.location}</div>
+        <div className="time-text">{ad.time}</div>
 
         <img
           className="location-icon"
@@ -98,10 +103,21 @@ export const UserProfile = ({ onEditClick }) => {
         />
 
         <img
-          className="clock-icon"
-          alt="Clock"
-          src="/src/assets/icons/clock.svg"
+          className="calendar-icon"
+          alt="Calendar"
+          src="/src/assets/icons/calendar-2.svg"
         />
+
+        <div className="post-time-card">
+          <div className="post-time-card-inner">
+            <img 
+              className="post-time-clock-icon"
+              alt="Clock"
+              src="/src/assets/icons/clock.svg"
+            />
+            <span className="post-time-text">{ad.postTime}</span>
+          </div>
+        </div>
       </div>
 
       <div className="action-buttons-container">

@@ -28,7 +28,9 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
     diseases: "",
     hasCertificate: false,
     isVaccinated: false,
-    isSterilized: false
+    isSterilized: false,
+    email: "", 
+    phone: "" 
   });
 
   const [selectedAdType, setSelectedAdType] = useState("lost");
@@ -53,7 +55,9 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
         diseases: adData.diseases || "",
         hasCertificate: adData.hasCertificate || false,
         isVaccinated: adData.isVaccinated || false,
-        isSterilized: adData.isSterilized || false
+        isSterilized: adData.isSterilized || false,
+        email: adData.email || "saranasher8@gmail.com", 
+        phone: adData.phone || "09123456789" 
       });
 
       if (adData.status === "پیدا شده") setSelectedAdType("found");
@@ -159,7 +163,9 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
       diseases: formData.diseases,
       hasCertificate: formData.hasCertificate,
       isVaccinated: formData.isVaccinated,
-      isSterilized: formData.isSterilized
+      isSterilized: formData.isSterilized,
+      email: formData.email || "saranasher8@gmail.com", 
+      phone: formData.phone || "09123456789"
     };
 
     onSave(updatedAd);
@@ -182,7 +188,6 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
             </div>
 
             <form onSubmit={handleSubmit}>
-              {/* بخش نوع آگهی */}
               <div className="form-section">
                 <div className="form-vertical-fields">
                   <div className="form-field">
@@ -240,15 +245,12 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                 </div>
               </div>
 
-              {/* گالری عکس‌ها */}
               <div className="form-section">
                 <div className="form-vertical-fields">
                   <div className="form-field">
                     <h3 className="form-section-title">تصاویر حیوان</h3>
-                    
-                    {/* کادر اصلی نقطه‌چین با هدر داخلی */}
+
                     <div className="image-upload-main-container">
-                      {/* هدر داخلی کادر */}
                       <div className="upload-container-header">
                         <div className="upload-header-info">
                           <span className="upload-header-title">گالری عکس‌ها</span>
@@ -256,8 +258,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                             {formData.images.length} از 7 عکس
                           </span>
                         </div>
-                        
-                        {/* دکمه حذف همه - داخل کادر */}
+
                         {formData.images.length > 0 && (
                           <button 
                             type="button"
@@ -269,10 +270,8 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                           </button>
                         )}
                       </div>
-                      
-                      {/* محتوای اصلی کادر */}
+
                       <div className="upload-container-content">
-                        {/* نمایش عکس‌های آپلود شده */}
                         <div className="uploaded-images-grid">
                           {formData.images.map((image, index) => (
                             <div key={image.id} className="image-gallery-item">
@@ -296,8 +295,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                             </div>
                           ))}
                         </div>
-                        
-                        {/* دکمه افزودن عکس - همیشه نمایش داده می‌شود */}
+
                         {formData.images.length < 7 && (
                           <label className="image-upload-button">
                             <input
@@ -322,7 +320,6 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                         )}
                       </div>
                       
-                      {/* فوتر کادر */}
                       <div className="upload-container-footer">
                         <div className="upload-footer-info">
                           <span className="upload-footer-icon">💡</span>
@@ -336,7 +333,6 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                 </div>
               </div>
 
-              {/* اطلاعات اصلی */}
               <div className="form-section">
                 <div className="form-vertical-fields">
                   <div className="form-field">
@@ -460,10 +456,8 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                 </div>
               </div>
 
-              {/* فیلدهای خاص بر اساس نوع آگهی */}
               {selectedAdType === "lost" && (
                 <>
-                  {/* زمان گم شدن */}
                   <div className="form-section">
                     <div className="form-vertical-fields">
                       <div className="form-field">
@@ -488,7 +482,6 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                     </div>
                   </div>
 
-                  {/* علائم خاص */}
                   <div className="form-section">
                     <div className="form-vertical-fields">
                       <div className="form-field">
@@ -512,7 +505,6 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
 
               {selectedAdType === "found" && (
                 <>
-                  {/* زمان پیدا شدن */}
                   <div className="form-section">
                     <div className="form-vertical-fields">
                       <div className="form-field">
@@ -537,7 +529,6 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                     </div>
                   </div>
 
-                  {/* علائم خاص */}
                   <div className="form-section">
                     <div className="form-vertical-fields">
                       <div className="form-field">
@@ -561,7 +552,6 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
 
               {selectedAdType === "adoption" && (
                 <>
-                  {/* بیماری‌ها */}
                   <div className="form-section">
                     <div className="form-vertical-fields">
                       <div className="form-field">
@@ -580,7 +570,6 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                     </div>
                   </div>
 
-                  {/* وضعیت سلامت */}
                   <div className="form-section">
                     <div className="form-vertical-fields">
                       <div className="form-field">
@@ -628,7 +617,6 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                 </>
               )}
 
-              {/* توضیحات */}
               <div className="form-section">
                 <div className="form-vertical-fields">
                   <div className="form-field">
@@ -654,7 +642,6 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                 </div>
               </div>
 
-              {/* اطلاعات تماس */}
               <div className="form-section">
                 <div className="form-vertical-fields">
                   <div className="form-field">
@@ -672,10 +659,12 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                           <label className="form-label form-label-small">ایمیل</label>
                           <div className="input-container">
                             <input
-                              type="text"
+                              type="email"
+                              name="email"
+                              value={formData.email}
+                              onChange={handleInputChange}
                               className="form-input"
-                              value="saranasher8@gmail.com"
-                              disabled
+                              placeholder="saranasher8@gmail.com"
                             />
                           </div>
                         </div>
@@ -683,10 +672,12 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                           <label className="form-label form-label-small">شماره موبایل</label>
                           <div className="input-container">
                             <input
-                              type="text"
+                              type="tel"
+                              name="phone"
+                              value={formData.phone}
+                              onChange={handleInputChange}
                               className="form-input"
-                              value="09123456789"
-                              disabled
+                              placeholder="09123456789"
                             />
                           </div>
                         </div>
@@ -699,7 +690,6 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                 </div>
               </div>
 
-              {/* دکمه‌های action */}
               <div className="form-actions">
                 <button 
                   type="button" 
