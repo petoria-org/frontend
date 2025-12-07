@@ -104,6 +104,7 @@ export const ShowDetailsAdopt = () => {
 
       <div className="main-card">
         <div className="card-content-wrapper">
+          <div className="card-content-scrollable">
             <div className="card-image-container">
               <img
                 className="card-image"
@@ -112,6 +113,7 @@ export const ShowDetailsAdopt = () => {
               />
               <div className="card-badge">
                 <span className="badge-text">سرپرستی</span>
+              </div>
             </div>
 
             <div className="content-section">
