@@ -79,11 +79,11 @@ export const UserProfile = ({ onEditClick }) => {
       ? allAds
       : allAds.filter((ad) => ad.status === activeFilter);
 
-  const renderAd = (ad, className = "ad-card") => (
+  const renderAd = (ad, className = "ad-card-user-profile") => (
     <div key={ad.id} className={className}>
-      <div className="ad-content">
+      <div className="ad-content-user-profile">
         <div className="ad-background" />
-        <div className="pet-name">{ad.name}</div>
+        <div className="pet-name-user-profile">{ad.name}</div>
         <div className="pet-breed">{ad.name}</div>
 
         <div className="pet-type-badge">
@@ -91,19 +91,19 @@ export const UserProfile = ({ onEditClick }) => {
           <div className="type-text">{ad.type}</div>
         </div>
 
-        <p className="pet-description">{ad.desc}</p>
+        <p className="pet-description-user-profile">{ad.desc}</p>
 
         <div className="location-text">{ad.location}</div>
         <div className="time-text">{ad.time}</div>
 
         <img
-          className="location-icon"
+          className="location-icon-user-profile"
           alt="Location"
           src="/src/assets/icons/location.svg"
         />
 
         <img
-          className="calendar-icon"
+          className="calendar-icon-user-profile"
           alt="Calendar"
           src="/src/assets/icons/calendar-2.svg"
         />
@@ -143,12 +143,12 @@ export const UserProfile = ({ onEditClick }) => {
         </div>
       </div>
 
-      <img className="pet-image" alt="Pet" src={ad.image} />
+      <img className="pet-image-user-profile" alt="Pet" src={ad.image} />
 
-      <div className="status-badge">
-        <div className={`status-background ${
-          ad.status === "پیدا شده" ? "status-found" : 
-          ad.status === "سرپرستی" ? "status-adoption" : "status-missing"
+      <div className="status-badge-user-profile">
+        <div className={`status-background-user-profile ${
+          ad.status === "پیدا شده" ? "status-found-user-profile" : 
+          ad.status === "سرپرستی" ? "status-adoption-user-profile" : "status-missing-user-profile"
         }`} />
         <div className={`status-text ${
           ad.status === "پیدا شده" ? "status-found-text" : 
@@ -165,13 +165,13 @@ export const UserProfile = ({ onEditClick }) => {
       <div className="ads-section">
         <div className="section-background" />
         <p className="section-subtitle">مدیریت و ویرایش آگهی ها</p>
-        <div className="section-title">آگهی های من</div>
+        <div className="section-title-user-profile">آگهی های من</div>
 
-        <div className="filter-tabs">
+        <div className="filter-tabs-user-profile">
           {filters.map((f) => (
             <div
               key={f.label}
-              className={`filter-button ${activeFilter === f.label ? "active" : ""}`}
+              className={`filter-button-user-profile ${activeFilter === f.label ? "active" : ""}`}
               onClick={() => setActiveFilter(f.label)}
             >
               <div className="count-badge">{f.count}</div>
@@ -181,10 +181,10 @@ export const UserProfile = ({ onEditClick }) => {
         </div>
 
         {filteredAds.map((ad, index) => {
-          let className = "ad-card";
-          if (index === 1) className = "ad-card-2";
-          if (index === 2) className = "ad-card-3";
-          if (index === 3) className = "ad-card-4";
+          let className = "ad-card-user-profile";
+          if (index === 1) className = "ad-card-user-profile-2";
+          if (index === 2) className = "ad-card-user-profile-3";
+          if (index === 3) className = "ad-card-user-profile-4";
           
           return renderAd(ad, className);
         })}

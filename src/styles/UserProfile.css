@@ -49,7 +49,7 @@
   white-space: nowrap;
 }
 
-.user-profile-container .section-title {
+.user-profile-container .section-title-user-profile {
   color: #1c7bd1;
   direction: rtl;
   font-family: "Inter", Helvetica;
@@ -64,7 +64,7 @@
 
 
 
-.user-profile-container .ad-content {
+.user-profile-container .ad-content-user-profile {
   height: 222px;
   left: 0;
   position: absolute;
@@ -85,7 +85,7 @@
   width: 344px;
 }
 
-.user-profile-container .pet-name {
+.user-profile-container .pet-name-user-profile {
   color: #000000;
   direction: rtl;
   font-family: "Inter", Helvetica;
@@ -150,7 +150,7 @@
   width: 22px;
 }
 
-.user-profile-container .pet-description {
+.user-profile-container .pet-description-user-profile {
   color: #525252;
   direction: rtl;
   font-family: "Inter", Helvetica;
@@ -232,7 +232,7 @@
   width: 190px;
 }
 
-.user-profile-container .location-icon {
+.user-profile-container .location-icon-user-profile {
   height: 19px;
   left: 306px;
   position: absolute;
@@ -339,14 +339,14 @@
   transition: all 0.3s ease;
 }
 
-.user-profile-container .ad-card,
-.user-profile-container .ad-card-2,
-.user-profile-container .ad-card-3,
-.user-profile-container .ad-card-4 {
+.user-profile-container .ad-card-user-profile,
+.user-profile-container .ad-card-user-profile-2,
+.user-profile-container .ad-card-user-profile-3,
+.user-profile-container .ad-card-user-profile-4 {
   position: relative;
 }
 
-.user-profile-container .pet-image {
+.user-profile-container .pet-image-user-profile {
   border-radius: 24px 24px 0px 0px;
   height: 178px;
   left: 0;
@@ -356,7 +356,7 @@
   width: 344px;
 }
 
-.user-profile-container .status-badge {
+.user-profile-container .status-badge-user-profile {
   height: 27px;
   left: 13px;
   position: absolute;
@@ -364,7 +364,7 @@
   width: 94px;
 }
 
-.user-profile-container .status-background {
+.user-profile-container .status-background-user-profile {
   background-color: #ea9799;
   border-radius: 20px;
   height: 27px;
@@ -394,7 +394,8 @@
   width: 48px;
 }
 
-.user-profile-container .filter-tabs {
+
+.user-profile-container .filter-tabs-user-profile {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -410,7 +411,7 @@
   box-sizing: border-box;
 }
 
-.filter-button {
+.filter-button-user-profile {
   flex: 1;
   height: 100%;
   display: flex;
@@ -424,7 +425,7 @@
   gap: 8px; 
 }
 
-.filter-button.active {
+.filter-button-user-profile.active {
   background-color: #ffffff;
   border-radius: 24px;
   box-shadow: 0 0 4px rgba(0,0,0,0.15);
@@ -449,7 +450,7 @@
   margin-right: 12px; 
 }
 
-.user-profile-container .ad-card-2 {
+.user-profile-container .ad-card-user-profile-2 {
   height: 400px;
   left: 25px;
   position: absolute;
@@ -465,7 +466,7 @@
   width: 66px;
 }
 
-.user-profile-container .pet-description  {
+.user-profile-container .pet-description-user-profile  {
   color: #525252;
   direction: rtl;
   font-family: "Inter", Helvetica;
@@ -480,7 +481,7 @@
   width: 315px;
 }
 
-.user-profile-container .calendar-icon {
+.user-profile-container .calendar-icon-user-profile {
   height: 19px;
   left: 306px;
   position: absolute;
@@ -504,7 +505,7 @@
   width: 190px;
 }
 
-.user-profile-container .status-found {
+.user-profile-container .status-found-user-profile {
   background-color: #9fc7eb;
   border-radius: 20px;
   height: 27px;
@@ -529,7 +530,7 @@
   white-space: nowrap;
 }
 
-.user-profile-container .ad-card {
+.user-profile-container .ad-card-user-profile {
   height: 400px;
   left: 405px;
   position: absolute;
@@ -537,7 +538,7 @@
   width: 344px;
 }
 
-.user-profile-container .ad-card-3 {
+.user-profile-container .ad-card-user-profile-3 {
   height: 400px;
   left: 401px;
   position: absolute;
@@ -545,14 +546,14 @@
   width: 344px;
 }
 
-.user-profile-container .ad-card-4 {
+.user-profile-container .ad-card-user-profile-4 {
   height: 400px;
   left: 25px;
   position: absolute;
   top: 614px;
   width: 344px;
 }
-.user-profile-container .status-adoption {
+.user-profile-container .status-adoption-user-profile {
   background-color: #7aee97;
   border-radius: 20px;
   height: 27px;

@@ -195,20 +195,6 @@
   transform: scale(1.05);
 }
 
-.filter-tabs {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: absolute;
-  top: 120px;
-  left: 16px;
-  width: 741px;
-  height: 40px;
-  background-color: #e7e7e7;
-  border-radius: 20px;
-  padding: 1px;
-  box-sizing: border-box;
-}
 
 .filter-button {
   flex: 1;
