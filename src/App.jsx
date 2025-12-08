@@ -5,7 +5,6 @@ import { UserProfilePage } from "./pages/UserProfilePage";
 import { PostDetails } from "./pages/PostDetails";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import  Navbar from './components/Navbar.jsx'
 import Home from './pages/Home.jsx'
 import Posts from './pages/Posts.jsx'
 import Login from './pages/Login.jsx'
