@@ -9,6 +9,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles/global.css";
 import { UserProfilePage } from "./pages/UserProfilePage";
+import { PostDetails } from "./pages/PostDetails";
 
 function App() {
 
@@ -18,6 +19,7 @@ function App() {
       <Route path='/' element={<Home />} />
       <Route path='/posts' element={<Posts />} />
       <Route path='/user-profile' element={<UserProfilePage />} />
+      <Route path='/post-details' element={<PostDetails />} />
     </Routes>
     </>
   )
