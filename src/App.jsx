@@ -5,7 +5,10 @@ import './App.css'
 import { Route , Routes } from 'react-router-dom'
 import Home from './pages/Home.jsx'
 import Posts from './pages/Posts.jsx'
-
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./styles/global.css";
+import { UserProfilePage } from "./pages/UserProfilePage";
 
 function App() {
 
@@ -14,6 +17,7 @@ function App() {
     <Routes>
       <Route path='/' element={<Home />} />
       <Route path='/posts' element={<Posts />} />
+      <Route path='/user-profile' element={<UserProfilePage />} />
     </Routes>
     </>
   )
