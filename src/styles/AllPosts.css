@@ -1,16 +1,17 @@
-.new-post-container {
+.new-post-container-all-posts {
   margin-top: 50px;
-  margin-left: 0px;
-  width: 100%;
-  padding: 30px;
+  width: 90%;
+  margin: 100px auto 0 auto;
+  padding: 0 10px;
   box-sizing: border-box;
   background: #FCFCFC;
   min-height: 80vh;
-  border-radius: 12px;
+  border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
 }
 
-.section-title {
+.section-title-all-posts {
+  padding: 20px;
   font-size: 24px;
   font-weight: 700;
   text-align: center;
@@ -18,7 +19,7 @@
   color: #0968BD;
 }
 
-.filter-tabs {
+.filter-tabs-all-posts {
   display: flex;
   justify-content: center;
   background-color: #E7E7E7;
@@ -129,7 +130,7 @@
 }
 
 
-.ad-card {
+.ad-card-all-posts {
   background: white;
   border-radius: 16px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.08);
@@ -142,12 +143,12 @@
   height: fit-content;
 }
 
-.ad-card:hover {
+.ad-card-all-posts:hover {
   transform: translateY(-4px);
   box-shadow: 0 4px 20px rgba(0,0,0,0.12);
 }
 
-.pet-image {
+.pet-image-all-posts {
   width: 100%;
   height: 200px;
   object-fit: cover;
@@ -155,7 +156,7 @@
   box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
 }
 
-.status-badge {
+.status-badge-all-posts {
   position: absolute;
   top: 12px;
   left: 12px;
@@ -184,21 +185,21 @@
 }
 
 
-.top-row {
+.top-row-all-posts {
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: row;
   align-items: center;
   justify-content: space-between;
 }
 
-.pet-name {
+.pet-name-all-posts {
   font-size: 16px;
   font-weight: 700;
   margin-bottom: 4px;
   color: #333;
 }
 
-.category-badge {
+.category-badge-all-posts {
   background: #A7A7A7;
   color: black;
   padding: 4px 10px;
@@ -207,12 +208,12 @@
   font-weight: 500;
 }
 
-.ad-content {
+.ad-content-all-posts {
   padding: 15px 18px;
   flex-grow: 1;
 }
 
-.pet-description {
+.pet-description-all-posts {
   color: #525252;
   font-size: 14px;
   margin-top: 10px;
@@ -229,16 +230,17 @@
   overflow: hidden;
 }
 
-.location-container {
+.location-container-all-posts {
   color: #525252;
   display: flex;
   justify-content: flex-end;
   align-items: center;
   gap: 8px;
   margin-left: auto;  
+  direction: ltr;
 }
 
-.calender-container {
+.calender-container-all-posts {
   padding-top: 6px;
   color: #525252;
   display: flex;
@@ -246,9 +248,10 @@
   align-items: center;
   gap: 8px;
   margin-left: auto;
+  direction: ltr;
 }
 
-.action-buttons {
+.action-buttons-all-posts {
   width: 94%;
   padding-left: 10px;
   padding-right: 10px;
@@ -257,7 +260,7 @@
   justify-content: center;
 }
 
-.view-details-btn {
+.view-details-btn-all-posts {
   background: #4d8ac5;
   color: white;
   padding: 10px 20px;
@@ -270,7 +273,7 @@
   width: 100%;
 }
 
-.view-details-btn:hover {
+.view-details-btn-all-posts:hover {
   background: #3b5ba4;
 }
 
@@ -347,34 +350,34 @@
     padding: 10px 14px;
   }
   
-  .pet-image {
+  .pet-image-all-posts {
     height: 180px;
   }
   
-  .ad-content {
+  .ad-content-all-posts {
     padding: 12px 15px;
   }
   
-  .action-buttons {
+  .action-buttons-all-posts {
     padding: 0 15px;
   }
   
-  .view-details-btn {
+  .view-details-btn-all-posts {
     padding: 8px 16px;
     font-size: 13px;
   }
 }
 
-.ad-card,
+.ad-card-all-posts,
 .filter-button,
-.view-details-btn,
+.view-details-btn-all-posts,
 .search-box input,
 .category-select {
   transition: all 0.2s ease-in-out;
 }
 
 .filter-button:focus,
-.view-details-btn:focus {
+.view-details-btn-all-posts:focus {
   outline: 2px solid #4d8ac5;
   outline-offset: 2px;
 }

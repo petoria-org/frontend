@@ -43,7 +43,7 @@ export const Navbar = () => {
         <img
           className="ads-icon"
           alt="Advertisements"
-          src="/src/icons/Advertisements.svg"
+          src="/src/assets/icons/Advertisements.svg"
         />
       </div>
 
@@ -55,7 +55,7 @@ export const Navbar = () => {
         <img
           className="heart-icon"
           alt="Heart"
-          src="/src/icons/heart.svg"
+          src="/src/assets/icons/heart.svg"
         />
       </div>
 
@@ -67,7 +67,7 @@ export const Navbar = () => {
         <img
           className="home-icon"
           alt="House"
-          src="/src/icons/house.svg"
+          src="/src/assets/icons/house.svg"
         />
       </div>
 

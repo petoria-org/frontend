@@ -84,9 +84,9 @@ export default function NewPosts() {
   };
 
   return (
-    <div className="new-post-container">
-      <h2 className="section-title">مرور آگهی ها</h2>
-      <div className="filter-tabs">
+    <div className="new-post-container-new-posts">
+      <h2 className="section-title-new-posts">مرور آگهی ها</h2>
+      <div className="filter-tabs-new-posts">
         <div
           className={`filter-button ${activeFilter === "all" ? "active" : ""}`}
           onClick={() => setActiveFilter("all")}
@@ -122,12 +122,12 @@ export default function NewPosts() {
         </div>
       </div>
 
-      <div className="search-container">
-        <div className="category-filter">
+      <div className="search-container-new-posts">
+        <div className="category-filter-new-posts">
           <select 
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="category-select"
+            className="category-select-new-posts"
           >
             <option value="همه حیوانات">همه حیوانات</option>
             <option value="سگ">سگ</option>
@@ -137,7 +137,7 @@ export default function NewPosts() {
             <option value="همستر">همستر</option>
           </select>
         </div>
-        <div className="search-box">
+        <div className="search-box-new-posts">
           <input
             type="text"
             placeholder="جستجو در پست ها..."
@@ -147,32 +147,32 @@ export default function NewPosts() {
         </div>
       </div>
 
-      <div className="ads-grid">
+      <div className="ads-grid-new-posts">
         {filteredAds.length > 0 ? (
           filteredAds.map((ad) => (
-            <div className="ad-card" key={ad.id}>
-              <img className="pet-image" src={ad.image} alt={ad.name} />
-              <div className="status-badge">
+            <div className="ad-card-new-posts" key={ad.id}>
+              <img className="pet-image-new-posts" src={ad.image} alt={ad.name} />
+              <div className="status-badge-new-posts">
                 <div
-                  className={`status-background ${
+                  className={`status-background-new-posts ${
                     ad.status === "پیدا شده"
-                      ? "status-found"
+                      ? "status-found-new-posts"
                       : ad.status === "سرپرستی"
-                      ? "status-adoption"
-                      : "status-missing"
+                      ? "status-adoption-new-posts"
+                      : "status-missing-new-posts"
                   }`}
                 >
                   {ad.status}
                 </div>
               </div>
 
-              <div className="ad-content">
-                <div className="top-row">
-                  <div className="pet-name">{ad.name}</div>
-                  <div className="category-badge">{ad.category}</div>
+              <div className="ad-content-new-posts">
+                <div className="top-row-new-posts">
+                  <div className="pet-name-new-posts">{ad.name}</div>
+                  <div className="category-badge-new-posts">{ad.category}</div>
                 </div>
-                <p className="pet-description">{ad.desc}</p>
-                <div className="location-container">
+                <p className="pet-description-new-posts">{ad.desc}</p>
+                <div className="location-container-new-posts">
                   <div>{ad.location}</div>
                   <img
                     className="location-icon"
@@ -180,7 +180,7 @@ export default function NewPosts() {
                     src="/src/icons/location.svg"
                   />
                 </div>
-                <div className="calender-container">
+                <div className="calender-container-new-posts">
                   <div>{ad.time}</div>
                   <img
                     className="calendar-icon"
@@ -190,9 +190,9 @@ export default function NewPosts() {
                 </div>
               </div>
 
-              <div className="action-buttons">
+              <div className="action-buttons-new-posts">
                 <div 
-                  className="btn view-details-btn"
+                  className="btn view-details-btn-new-posts"
                   onClick={() => handleViewDetails(ad.id)}
                 >
                   مشاهده جزییات
@@ -201,13 +201,13 @@ export default function NewPosts() {
             </div>
           ))
         ) : (
-          <div className="no-posts-message">
+          <div className="no-posts-message-new-posts">
             هیچ پستی یافت نشد
           </div>
         )}
       </div>
-      <div class="show-more-container">
-        <button class="show-more-btn">
+      <div class="show-more-container-new-posts">
+        <button class="show-more-btn-new-posts">
         <svg class="arrow-icon" viewBox="0 0 24 24" fill="none">
         <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2"/>
         </svg>

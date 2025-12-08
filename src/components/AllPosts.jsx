@@ -84,9 +84,9 @@ export default function NewPosts() {
   };
 
   return (
-    <div className="new-post-container">
-      <h2 className="section-title">آگهی ها</h2>
-      <div className="filter-tabs">
+    <div className="new-post-container-all-posts">
+      <h2 className="section-title-all-posts">آگهی ها</h2>
+      <div className="filter-tabs-all-posts">
         <div
           className={`filter-button ${activeFilter === "all" ? "active" : ""}`}
           onClick={() => setActiveFilter("all")}
@@ -150,9 +150,9 @@ export default function NewPosts() {
       <div className="ads-grid">
         {filteredAds.length > 0 ? (
           filteredAds.map((ad) => (
-            <div className="ad-card" key={ad.id}>
-              <img className="pet-image" src={ad.image} alt={ad.name} />
-              <div className="status-badge">
+            <div className="ad-card-all-posts" key={ad.id}>
+              <img className="pet-image-all-posts" src={ad.image} alt={ad.name} />
+              <div className="status-badge-all-posts">
                 <div
                   className={`status-background ${
                     ad.status === "پیدا شده"
@@ -166,13 +166,13 @@ export default function NewPosts() {
                 </div>
               </div>
 
-              <div className="ad-content">
-                <div className="top-row">
-                  <div className="pet-name">{ad.name}</div>
-                  <div className="category-badge">{ad.category}</div>
+              <div className="ad-content-all-posts">
+                <div className="top-row-all-posts">
+                  <div className="pet-name-all-posts">{ad.name}</div>
+                  <div className="category-badge-all-posts">{ad.category}</div>
                 </div>
-                <p className="pet-description">{ad.desc}</p>
-                <div className="location-container">
+                <p className="pet-description-all-posts">{ad.desc}</p>
+                <div className="location-container-all-posts">
                   <div>{ad.location}</div>
                   <img
                     className="location-icon"
@@ -180,7 +180,7 @@ export default function NewPosts() {
                     src="/src/icons/location.svg"
                   />
                 </div>
-                <div className="calender-container">
+                <div className="calender-container-all-posts">
                   <div>{ad.time}</div>
                   <img
                     className="calendar-icon"
@@ -190,9 +190,9 @@ export default function NewPosts() {
                 </div>
               </div>
 
-              <div className="action-buttons">
+              <div className="action-buttons-all-posts">
                 <div 
-                  className="view-details-btn"
+                  className="view-details-btn-all-posts"
                   onClick={() => handleViewDetails(ad.id)}
                 >
                   مشاهده جزییات

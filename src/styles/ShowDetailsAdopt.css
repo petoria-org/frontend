@@ -129,7 +129,7 @@
   direction: rtl;
 }
 
-.pet-name {
+.pet-name-show-details {
   font-weight: 600;
   color: #000;
   font-size: 1.5rem; 
@@ -199,7 +199,7 @@
   margin-bottom: 2rem;
 }
 
-.section-title {
+.section-title-show-details {
   font-weight: 600;
   color: #000;
   font-size: 1.25rem; 
@@ -340,7 +340,7 @@
   direction: rtl;
 }
 
-.contact-icon {
+.contact-icon-show-details {
   width: 1.75rem; 
   height: 1.75rem; 
 }
@@ -493,7 +493,7 @@
     padding: 1.25rem;
   }
 
-  .pet-name {
+  .pet-name-show-details {
     font-size: 1.75rem;
     margin: 1.875rem 0; 
   }
@@ -521,7 +521,7 @@
     font-size: 1rem; 
   }
   
-  .section-title {
+  .section-title-show-details {
     font-size: 1.375rem; 
   }
   
@@ -555,7 +555,7 @@
     height: 14rem; 
   }
   
-  .pet-name {
+  .pet-name-show-details {
     font-size: 1.5rem; 
     margin: 1.25rem 0; 
   }
@@ -568,7 +568,7 @@
     font-size: 0.875rem; 
   }
   
-  .section-title {
+  .section-title-show-details {
     font-size: 1.25rem; 
   }
   

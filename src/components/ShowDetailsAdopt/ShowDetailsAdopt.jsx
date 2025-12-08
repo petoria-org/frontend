@@ -115,7 +115,7 @@ export const ShowDetailsAdopt = () => {
             </div>
 
             <div className="content-section">
-              <h1 className="pet-name">
+              <h1 className="pet-name-show-details">
                 مکس
               </h1>
 
@@ -155,7 +155,7 @@ export const ShowDetailsAdopt = () => {
               </div>
 
               <section className="section">
-                <h2 className="section-title">
+                <h2 className="section-title-show-details">
                   بیماری ها
                 </h2>
                 <div className="diseases-content">
@@ -183,7 +183,7 @@ export const ShowDetailsAdopt = () => {
               </section>
 
               <section className="section">
-                <h2 className="section-title">
+                <h2 className="section-title-show-details">
                   توضیحات
                 </h2>
                 <div className="description-content">
@@ -196,7 +196,7 @@ export const ShowDetailsAdopt = () => {
               <section className="contact-section">
                 <div className="contact-container">
                   <div className="contact-header">
-                    <img src={ContactInfoIcon} alt="اطلاعات تماس" className="contact-icon" />
+                    <img src={ContactInfoIcon} alt="اطلاعات تماس" className="contact-icon-show-details" />
                     <h2 className="contact-title">
                       اطلاعات تماس
                     </h2>
