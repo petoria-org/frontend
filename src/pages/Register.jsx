@@ -1,0 +1,181 @@
+import "../styles/Register.css";
+import "../styles/AuthCommon.css";
+import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+const Register = () => {
+  const schema = yup.object().shape({
+  fullName: yup.string()
+  .required('نام و نام خانوادگی را وارد کنید')
+  .min(3, 'نام و نام خانوادگی باید حداقل ۳ کاراکتر باشد')
+  .max(100, 'نام و نام خانوادگی باید حداکثر ۱۰۰ کاراکتر باشد')
+  .matches(/^[\u0600-\u06FF\s]+$/, 
+  'نام و نام خانوادگی باید فقط حروف فارسی باشد')
+  .trim(),
+  username: yup.string()
+  .required('نام کاربری را وارد کنید')
+  .min(3, 'نام کاربری باید حداقل ۳ کاراکتر باشد')
+  .max(30, 'نام کاربری باید حداکثر ۳۰ کاراکتر باشد')
+  .matches(/^[a-zA-Z0-9._]+$/, 'نام کاربری فقط باید شامل حروف انگلیسی، اعداد، نقطه و زیرخط باشد')
+  .trim(),
+  phoneNumber: yup.string()
+  .required('شماره موبایل را وارد کنید')
+  .matches(/^09\d{9}$/, 'شماره موبایل معتبر نیست'),
+  email: yup.string()
+  .required('ایمیل را وارد کنید')
+  .email('ایمیل وارد شده معتبر نیست')
+  .trim(),
+  password: yup.string()
+  .required('رمز عبور را وارد کنید')
+  .min(8, 'رمز عبور باید حداقل ۸ کاراکتر باشد')
+  .matches(/[A-Z]/, 'رمز عبور باید حداقل یک حرف بزرگ داشته باشد')
+  .matches(/[a-z]/, 'رمز عبور باید حداقل یک حرف کوچک داشته باشد')
+  .matches(/[0-9]/, 'رمز عبور باید حداقل یک عدد داشته باشد')
+  .matches(/[@$!%*?&#]/, 'رمز عبور باید حداقل یک کاراکتر خاص داشته باشد'),
+  confirmPassword: yup.string()
+  .required('تکرار رمز عبور را وارد کنید')
+  .oneOf([yup.ref('password'), null], 'رمز عبور و تکرار آن یکسان نیست'),
+  });
+
+  const {register, handleSubmit, formState: {errors}} = useForm({
+    resolver: yupResolver(schema)
+  });
+
+  const onSubmit = (data) => {
+    console.log(data);
+  }
+
+  return (
+    <div className="register-page">
+      <div className="register-container">
+        <div className="register-main">
+          <div className="register-card">
+            <h2 className="register-title">ثبت نام</h2>
+            <p className="register-subtitle">حساب کاربری جدید بسازید</p>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              {/* Full name */}
+              <label className="field-label">
+                  نام و نام خانوادگی*
+              </label>
+              <div className="input-wrapper">
+                <img className="input-icon" src="/src/icons/user.svg" alt="user" />
+                <input
+                  type="text"
+                  className="text-input"
+                  placeholder="نام کامل خود را وارد کنید"
+                  {...register("fullName")}
+                />
+              </div>
+              <p className="error">{errors.fullName?.message}</p>
+
+              {/* Username */}
+              <label className="field-label">
+                  نام کاربری*
+              </label>
+              <div className="input-wrapper">
+                <img className="input-icon" src="/src/icons/profile-circle.svg" alt="profile-circle" />
+                <input
+                  type="text"
+                  className="text-input"
+                  placeholder="نام کاربری خود را وارد کنید"
+                  {...register("username")}
+                />
+              </div>
+              <p className="error">{errors.username?.message}</p>
+
+              {/* Phone */}
+              <label className="field-label">
+                  شماره موبایل*
+              </label>
+              <div className="input-wrapper">
+                  <img className="input-icon" src="/src/icons/call.svg" alt="call" />
+                <input
+                  className="text-input"
+                  placeholder="09123456789"
+                  {...register("phoneNumber")}
+                />
+              </div>
+              <p className="error">{errors.phoneNumber?.message}</p>
+
+              {/* Email */}
+              <label className="field-label">
+                  ایمیل*
+              </label>
+              <div className="input-wrapper">
+                <img className="input-icon" src="/src/icons/sms.svg" alt="sms" />
+                <input
+                  className="text-input"
+                  placeholder="example@gmail.com"
+                  {...register("email")}
+                />
+              </div>
+              <p className="error">{errors.email?.message}</p>
+
+              {/* Password */}
+              <label className="field-label">
+                  رمز عبور*
+              </label>
+              <div className="input-wrapper">
+                <img className="input-icon" src="/src/icons/lock.svg" alt="lock" />
+                <input
+                  type="password"
+                  className="text-input"
+                  placeholder="حداقل 8 کاراکتر"
+                  {...register("password")}
+                />
+              </div>
+              <p className="error">{errors.password?.message}</p>
+
+              {/* Confirm password */}
+              <label className="field-label">
+                  تأیید رمز عبور*
+              </label>
+              <div className="input-wrapper">
+                <img className="input-icon" src="/src/icons/lock.svg" alt="lock" />
+                <input
+                  type="password"
+                  className="text-input"
+                  placeholder="رمز عبور را دوباره وارد کنید"
+                  {...register("confirmPassword")}
+                />
+              </div>
+              <p className="error">{errors.confirmPassword?.message}</p>
+
+              {/* Register button */}
+              <button className="register-btn">
+                <span>ثبت نام</span>
+                <img className="arrow" src="/src/icons/arrow-right.svg" alt="arrow-right" />
+              </button>
+            </form>
+
+            {/* divider */}
+              <div className="divider">
+                <span className="divider-line" />
+                <span className="divider-text">یا</span>
+                <span className="divider-line" />
+              </div>
+
+            {/* Google */}
+            <button className="google-btn">
+              <span>ثبت نام با حساب گوگل</span>
+              <img src="/src/icons/chrome.svg" alt="chrome-icon" />
+            </button>
+
+            {/* Already have account */}
+            <p className="register-footer">
+              قبلاً ثبت نام کرده‌اید؟{" "}
+              <Link className="register-footer-link" to={"/login"}>وارد شوید</Link>
+            </p>
+          </div>
+          <div className="register-img">
+            <img src="/src/images/cat.svg" alt="cat" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Register;

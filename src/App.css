@@ -1,0 +1,9 @@
+@import url("https://fonts.googleapis.com/css?family=Inter:700,400");
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    direction: rtl;
+    font-family: 'Inter', Helvetica, sans-serif;
+}
