@@ -1,246 +1,416 @@
-:root {
-  --edit-color: #1c7bd1;    
-  --delete-color: #dc2626; 
-  --icon-white: #ffffff;    
-  --hover-bg-light: rgba(255, 255, 255, 0.15);
-}
-
-.user-profile-container {
+.user-profile-page {
+  background-color: #d3dee7;
+  min-height: 100vh;
+  width: 100%;
   display: flex;
-  flex-direction: row-reverse;
-  width: calc(100% - 400px);
-  height: auto;
-  min-height: 1029px;
-  justify-content: space-between;
-  margin: 0 auto;
-  padding: 20px 0;
+  flex-direction: column;
 }
 
-.user-profile-container .ads-section {
-  height: auto;
-  position: relative;
-  width: 777px;
-  padding-bottom: 40px;
-  margin: 0;
-}
-
-.user-profile-container .section-background {
-  background-color: #fbfbfb;
-  border-radius: 24px;
-  height: auto; 
-  min-height: 1029px; 
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 773px;
-}
-
-.user-profile-container .section-subtitle {
-  color: #00000080;
-  direction: rtl;
-  font-family: "Inter", Helvetica;
-  font-size: 20px;
-  font-weight: 400;
-  left: 512px;
-  letter-spacing: 0;
-  line-height: normal;
-  position: absolute;
-  top: 79px;
-  white-space: nowrap;
-}
-
-.user-profile-container .section-title-user-profile {
-  color: #1c7bd1;
-  direction: rtl;
-  font-family: "Inter", Helvetica;
-  font-size: 28px;
-  font-weight: 700;
-  left: 559px;
-  letter-spacing: 0;
-  line-height: normal;
-  position: absolute;
-  top: 37px;
-}
-
-
-
-.user-profile-container .ad-content-user-profile {
-  height: 222px;
-  left: 0;
-  position: absolute;
-  top: 178px;
-  width: 354px;
-}
-
-.user-profile-container .ad-background {
-  background-color: #efefef;
-  border-color: #000000;
-  border-radius: 0px 0px 20px 20px;
-  border-top-style: solid;
-  border-top-width: 3px;
-  height: 222px;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 344px;
-}
-
-.user-profile-container .pet-name-user-profile {
-  color: #000000;
-  direction: rtl;
-  font-family: "Inter", Helvetica;
-  font-size: 18px;
-  font-weight: 400;
-  left: 275px;
-  letter-spacing: 0;
-  line-height: normal;
-  position: absolute;
-  top: 30px;
-  white-space: nowrap;
-  width: 50px;
-}
-
-.user-profile-container .pet-breed{
-  color: #525252;
-  direction: rtl;
-  font-family: "Inter", Helvetica;
-  font-size: 16px;
-  font-weight: 400;
-  left: 275px;
-  letter-spacing: 0;
-  line-height: normal;
-  position: absolute;
-  top: 58px;
-  white-space: nowrap;
-  width: 50px;
-}
-
-.user-profile-container .pet-type-badge {
-  height: 18px;
-  left: 19px;
-  position: absolute;
-  top: 30px;
-  width: 66px;
-}
-
-.user-profile-container .badge-background {
-  background-color: #c1c6cc;
-  border: 1px solid;
-  border-color: #a6a6a6;
-  border-radius: 10px;
-  height: 18px;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 64px;
-}
-
-.user-profile-container .type-text {
-  color: #000000;
-  direction: rtl;
-  font-family: "Inter", Helvetica;
-  font-size: 12px;
-  font-weight: 400;
-  left: 21px;
-  letter-spacing: 0;
-  line-height: normal;
-  position: absolute;
-  text-align: left;
-  top: 1px;
-  width: 22px;
-}
-
-.user-profile-container .pet-description-user-profile {
-  color: #525252;
-  direction: rtl;
-  font-family: "Inter", Helvetica;
-  font-size: 18px;
-  font-weight: 400;
-  left: 10px;
-  letter-spacing: 0;
-  line-height: normal;
-  position: absolute;
-  top: 90px;
-  white-space: nowrap;
-  width: 315px;
-}
-
-.user-profile-container .time-posted {
-  display: none;
-}
-
-.post-time-card {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  width: 109px;
-  height: 25px;
-  background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 999px;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  padding: 0;
-  box-shadow: 
-    0px -5px 10px rgba(255, 255, 255, 0.2),
-    inset 0px 2px 10px rgba(254, 254, 254, 0.15),
-    0px 10px 25px rgba(0, 0, 0, 0.15);
+.user-profile-page main {
+  flex: 1;
+  padding: 26px 26px 32px;
   display: flex;
+  flex-direction: column;
+  gap: 32px;
   align-items: center;
-  justify-content: center;
-  z-index: 5;
-  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.post-time-card-inner {
+.profile-section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 0;
+  box-shadow: none;
+  width: 1168px;
+  height: 181px;
+}
+
+.profile-card-header {
+  height: 33px;
+  background-color: #239AE6;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+}
+
+.profile-card-content {
+  position: relative;
+  background-color: #fbfbfb;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  padding: 40px;
+  height: calc(181px - 33px);
+  box-sizing: border-box;
+}
+
+.profile-content-wrapper {
+  display: block;
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+.avatar-container {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 120px;
+  width: 120px;
+}
+
+.avatar-border {
+  background-color: #d9d9d9;
+  border: 2px solid;
+  border-color: #ffffff;
+  border-radius: 51px;
+  box-shadow: 0px 0px 45px #1c7cd266;
+  height: 106px;
+  width: 106px;
+  left: calc((120px - 106px) / 2);
+  top: calc((120px - 106px) / 2);
+  position: absolute;
+}
+
+.avatar-image {
+  height: 120px;
+  width: 120px;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+}
+
+.profile-pet-icon {
+  position: absolute;
+  top: -25px; 
+  left: -10px; 
+  width: 95px;
+  height: 95px;
+}
+
+.profile-pet-icon img {
   width: 100%;
   height: 100%;
+  object-fit: contain;
+  transform: rotate(42.15deg);
+  filter: 
+    brightness(0)     
+    saturate(100%)   
+    invert(74%)       
+    sepia(24%)        
+    saturate(898%)    
+    hue-rotate(182deg) 
+    brightness(108%)   
+    contrast(95%);
+}
+
+.logout-button {
+  position: absolute;
+  bottom: -20px;
+  left: -10px;
+  display: flex;
+  align-items: center;
+  height: auto;
+  padding: 6px 12px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 18px;
+  box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.15), 
+              0px -5px 10px rgba(255, 255, 255, 0.2), 
+              0px 2px 10px rgba(254, 254, 254, 0.15);
+  backdrop-filter: blur(20px) brightness(100%);
+  -webkit-backdrop-filter: blur(20px) brightness(100%);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+.logout-button:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.logout-icon {
+  width: 17px;
+  height: 18px;
+  margin-left: 8px;
+}
+
+.logout-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #000000;
+  font-family: 'Inter', Helvetica;
+}
+
+.edit-profile-button {
+  position: absolute;
+  bottom: 5px;
+  right: 80%;
+  transform: translateX(50%);
+  height: 28px;
+  width: 28px;
+  background-color: white;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 0 12px;
+  z-index: 10;
 }
 
-.post-time-clock-icon {
-  width: 12px;
-  height: 12px;
-  filter: brightness(0) saturate(100%) invert(54%) sepia(0%) saturate(0%) hue-rotate(180deg) brightness(90%) contrast(86%);
+.edit-profile-button:hover {
+  background-color: #f0f8ff;
+  transform: translateX(50%) scale(1.1);
 }
 
-.post-time-text {
-  font-size: 11px;
-  color: #898989;
-  font-weight: 600;
-  direction: rtl;
-  font-family: "Inter", Helvetica;
-  line-height: 1;
-  white-space: nowrap;
+.edit-profile-icon {
+  width: 18px;
+  height: 18px;
+  color: #1c7bd1;
 }
 
-.user-profile-container .location-text {
-  color: #525252;
-  direction: rtl;
-  font-family: "Inter", Helvetica;
-  font-size: 17px;
+.profile-info {
+  position: absolute;
+  right: 146px;
+  top: 60%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-username {
+  font-family: 'Inter', Helvetica;
   font-weight: 400;
-  left: 103px;
+  color: #3F3F3F;
+  font-size: 24px;
+  letter-spacing: 0;
+  line-height: 1.2;
+  margin: 0;
+  text-align: right;
+  direction: rtl;
+}
+
+.profile-email-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  top: 8px;
+  direction: rtl;
+  justify-content: flex-end;
+  width: 250px;
+  height: 33px;
+  background-color: #E8F4FF;
+  border: 1px solid #1C7CD2;
+  border-radius: 16px;
+  padding: 6px 12px;
+  position: relative;
+}
+
+.email-icon-wrapper {
+  width: 28px;
+  height: 24px;
+  background-color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.profile-email {
+  font-family: 'Inter', Helvetica;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.75);
+  font-size: 16px;
+  text-align: right;
+  margin: 0;
+  direction: rtl;
+  margin-right: 30px;
+}
+
+.email-icon {
+  width: 20px;
+  height: 20px;
+  color: #666;
+}
+
+.pet-listings-section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.pet-listings-container {
+  width: 1168px;
+  background-color: #fbfbfb;
+  border-radius: 20px;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+.pet-listings-header {
+  margin-bottom: 32px;
+}
+
+.pet-listings-title {
+  font-family: 'Inter', Helvetica;
+  font-weight: 700;
+  color: #1c7bd1;
+  font-size: 26px;
   letter-spacing: 0;
   line-height: normal;
-  position: absolute;
-  top: 122px;
-  white-space: nowrap;
-  width: 190px;
+  direction: rtl;
+  margin-bottom: 8px;
 }
 
-.user-profile-container .location-icon-user-profile {
-  height: 19px;
-  left: 306px;
-  position: absolute;
-  top: 122px;
-  width: 19px;
+.pet-listings-subtitle {
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 20px;
+  font-family: 'Inter', Helvetica;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: normal;
+  direction: rtl;
 }
 
+.pet-categories-tabs {
+  width: 100%;
+  margin-bottom: 32px;
+}
 
+.pet-categories-list {
+  width: 100%;
+  height: 45px;
+  background-color: #e7e7e7;
+  border-radius: 24px;
+  padding: 2px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+
+.pet-category-tab {
+  height: 41px;
+  border-radius: 24px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pet-category-tab.active {
+  background-color: white;
+}
+
+.pet-category-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  direction: ltr;
+}
+
+.pet-category-label {
+  font-weight: 400;
+  color: black;
+  font-size: 20px;
+  font-family: 'Inter', Helvetica;
+  letter-spacing: 0;
+  line-height: normal;
+}
+
+.pet-category-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background-color: #d9d9d9;
+  border-radius: 12px;
+}
+
+.pet-category-count span {
+  font-family: 'Inter', Helvetica;
+  font-weight: 300;
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 14px;
+}
+
+.pet-listings-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 34px;
+  margin-bottom: 40px;
+}
+
+.pet-listing-card {
+  width: 340px;
+  height: 400px;
+  overflow: hidden;
+  border: 0;
+  box-shadow: none;
+  background-color: transparent;
+  border-radius: 20px; 
+}
+
+.pet-listing-image-container {
+  position: relative;
+}
+
+.pet-listing-image {
+  width: 100%;
+  height: 178px;
+  object-fit: cover;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+
+.pet-listing-status {
+  position: absolute;
+  top: 13px;
+  left: 13px;
+  height: 27px;
+  padding: 0 16px;
+  border-radius: 20px;
+  font-weight: 400;
+  font-size: 15px;
+  font-family: 'Inter', Helvetica;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pet-listing-status.found {
+  background-color: #9fc7eb;
+  color: #0867bd;
+}
+
+.pet-listing-status.lost {
+  background-color: #ea9799;
+  color: #c3080b;
+}
+
+.pet-listing-status.adoption {
+  background-color: #7aee97;
+  color: #0f7228;
+}
 
 .action-buttons-container {
   position: absolute;
@@ -298,26 +468,14 @@
 }
 
 .action-icon {
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   transition: all 0.3s ease;
   filter: 
     brightness(0) saturate(100%) invert(100%)
     drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
   position: relative;
   z-index: 1;
-}
-
-.edit-action-btn .action-icon,
-.delete-action-btn .action-icon {
-  width: 20px;
-  height: 20px;
-  transition: all 0.3s ease;
-  
-  filter: 
-    brightness(0) saturate(100%) invert(100%)  
-    drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3))  
-
 }
 
 .edit-action-btn:hover .action-icon {
@@ -333,604 +491,287 @@
   transform: scale(0.95);
 }
 
-.action-icon {
-  width: 20px;
-  height: 20px;
-  transition: all 0.3s ease;
+.pet-listing-content {
+  background-color: #efefef;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  border-top: 3px solid black;
+  padding: 20px;
+  margin-top: -4px; 
 }
 
-.user-profile-container .ad-card-user-profile,
-.user-profile-container .ad-card-user-profile-2,
-.user-profile-container .ad-card-user-profile-3,
-.user-profile-container .ad-card-user-profile-4 {
-  position: relative;
-}
-
-.user-profile-container .pet-image-user-profile {
-  border-radius: 24px 24px 0px 0px;
-  height: 178px;
-  left: 0;
-  object-fit: cover;
-  position: absolute;
-  top: 0;
-  width: 344px;
-}
-
-.user-profile-container .status-badge-user-profile {
-  height: 27px;
-  left: 13px;
-  position: absolute;
-  top: 13px;
-  width: 94px;
-}
-
-.user-profile-container .status-background-user-profile {
-  background-color: #ea9799;
-  border-radius: 20px;
-  height: 27px;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 92px;
-}
-
-.user-profile-container .status-text {
-  align-items: center;
-  color: #c3080b;
-  direction: rtl;
+.pet-listing-header {
   display: flex;
-  font-family: "Inter", Helvetica;
-  font-size: 15px;
-  font-weight: 400;
-  height: 18px;
-  justify-content: center;
-  left: 22px;
-  letter-spacing: 0;
-  line-height: normal;
-  position: absolute;
-  text-align: left;
-  top: 4px;
-  white-space: nowrap;
-  width: 48px;
-}
-
-
-.user-profile-container .filter-tabs-user-profile {
-  display: flex;
+  align-items: flex-start;
   justify-content: space-between;
-  align-items: center;
-  position: absolute;
-  top: 120px;
-  left: 16px;
-  width: 741px;
-  height: 40px;
-  background-color: #e7e7e7;
-  border-radius: 24px;
-
-  padding: 1px; 
-  box-sizing: border-box;
+  margin-bottom: 16px;
+  direction: rtl;
 }
 
-.filter-button-user-profile {
-  flex: 1;
-  height: 100%;
+.pet-listing-info {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: transparent;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin: 0 2px;
-  gap: 8px; 
+  flex-direction: column;
+  gap: 8px;
 }
 
-.filter-button-user-profile.active {
-  background-color: #ffffff;
-  border-radius: 24px;
-  box-shadow: 0 0 4px rgba(0,0,0,0.15);
-}
-
-.filter-text {
-  font-size: 15px;
-  font-weight: 500;
-  color: #000;
-}
-
-.count-badge {
-  background-color: #d9d9d9;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  color: #000;
-  margin-right: 12px; 
-}
-
-.user-profile-container .ad-card-user-profile-2 {
-  height: 400px;
-  left: 25px;
-  position: absolute;
-  top: 194px;
-  width: 344px;
-}
-
-.user-profile-container .pet-type-badge {
-  height: 18px;
-  left: 19px;
-  position: absolute;
-  top: 29px;
-  width: 66px;
-}
-
-.user-profile-container .pet-description-user-profile  {
-  color: #525252;
-  direction: rtl;
-  font-family: "Inter", Helvetica;
-  font-size: 16px;
+.pet-listing-name {
+  font-family: 'Inter', Helvetica;
   font-weight: 400;
-  left: 10px;
-  letter-spacing: 0;
-  line-height: normal;
-  position: absolute;
-  top: 90px;
-  white-space: nowrap;
-  width: 315px;
-}
-
-.user-profile-container .calendar-icon-user-profile {
-  height: 19px;
-  left: 306px;
-  position: absolute;
-  top: 153px;
-  width: 19px;
-  filter: brightness(0) saturate(100%) invert(31%) sepia(0%) saturate(0%) hue-rotate(180deg) brightness(95%) contrast(86%);
-}
-
-.user-profile-container .time-text {
-  color: #525252;
-  direction: rtl;
-  font-family: "Inter", Helvetica;
-  font-size: 17px;
-  font-weight: 400;
-  left: 103px;
-  letter-spacing: 0;
-  line-height: normal;
-  position: absolute;
-  top: 151px;
-  white-space: nowrap;
-  width: 190px;
-}
-
-.user-profile-container .status-found-user-profile {
-  background-color: #9fc7eb;
-  border-radius: 20px;
-  height: 27px;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 92px;
-}
-
-.user-profile-container .status-found-text {
-  color: #0867bd;
-  direction: rtl;
-  font-family: "Inter", Helvetica;
-  font-size: 15px;
-  font-weight: 400;
-  left: 20px;
-  letter-spacing: 0;
-  line-height: normal;
-  position: absolute;
-  text-align: left;
-  top: 4px;
-  white-space: nowrap;
-}
-
-.user-profile-container .ad-card-user-profile {
-  height: 400px;
-  left: 405px;
-  position: absolute;
-  top: 194px;
-  width: 344px;
-}
-
-.user-profile-container .ad-card-user-profile-3 {
-  height: 400px;
-  left: 401px;
-  position: absolute;
-  top: 614px;
-  width: 344px;
-}
-
-.user-profile-container .ad-card-user-profile-4 {
-  height: 400px;
-  left: 25px;
-  position: absolute;
-  top: 614px;
-  width: 344px;
-}
-.user-profile-container .status-adoption-user-profile {
-  background-color: #7aee97;
-  border-radius: 20px;
-  height: 27px;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 92px;
-}
-
-.user-profile-container .status-adoption-text {
-  color: #0f7228;
-  direction: rtl;
-  font-family: "Inter", Helvetica;
-  font-size: 15px;
-  font-weight: 400;
-  left: 17px;
-  letter-spacing: 0;
-  line-height: normal;
-  position: absolute;
-  text-align: left;
-  top: 4px;
-  white-space: nowrap;
-}
-
-.user-profile-container .profile-sidebar {
-  height: 566px;
-  position: relative; 
-  width: 409px;
-  margin-left: 20px;
-  z-index: 10;
-}
-
-.user-profile-container .sidebar-background {
-  background-color: #fbfbfb;
-  border-radius: 24px;
-  height: 566px;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 407px;
-}
-
-.user-profile-container .sidebar-header {
-  background-color: #55a4ec;
-  border-radius: 24px 24px 0px 0px;
-  height: 102px;
-  left: 1px;
-  position: absolute;
-  top: 1px;
-  width: 405px;
-}
-
-.user-profile-container .username {
-  color: #000000bf;
-  font-family: "Inter", Helvetica;
+  color: black;
   font-size: 18px;
-  font-weight: 400;
-  left: calc(50.00% - 60px);
   letter-spacing: 0;
   line-height: normal;
-  position: absolute;
-  top: 163px;
-  white-space: nowrap;
-  width: 117px;
 }
 
-.user-profile-container .avatar-container {
-  height: 114px;
-  left: 146px;
-  position: absolute;
-  top: 43px;
-  width: 114px;
-}
-
-.user-profile-container .avatar-border {
-  background-color: #d9d9d9;
-  border: 2px solid;
-  border-color: #ffffff;
-  border-radius: 51px;
-  box-shadow: 0px 0px 45px #1c7cd266;
-  height: 102px;
-  left: 6px;
-  position: absolute;
-  top: 5px;
-  width: 102px;
-}
-
-.user-profile-container .avatar-image {
-  height: 114px;
-  left: 0;
-  object-fit: cover;
-  position: absolute;
-  top: 0;
-  width: 114px;
-}
-
-.user-profile-container .phone-contact-container {
-  height: 76px;
-  left: 21px;
-  position: absolute;
-  top: 299px;
-  width: 369px;
-}
-
-.user-profile-container .phone-contact-background {
-  background-color: #e8f4ff;
-  border: 0.5px solid;
-  border-color: #1c7cd1;
-  border-radius: 16px;
-  height: 77px;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 366px;
-}
-
-.user-profile-container .phone-label {
-  color: #00000080;
-  direction: rtl;
-  font-family: "Inter", Helvetica;
+.pet-listing-subtitle {
+  font-weight: 400;
+  color: #666666;
   font-size: 16px;
-  font-weight: 400;
-  right: 20px; 
+  font-family: 'Inter', Helvetica;
   letter-spacing: 0;
   line-height: normal;
-  position: absolute;
-  top: 7px;
-  white-space: nowrap;
 }
 
-.user-profile-container .phone-number {
-  color: #000000;
-  font-family: "Inter", Helvetica;
-  font-size: 16px;
+.pet-listing-type {
+  background-color: #c1c6cc;
+  color: black;
+  border: 1px solid #a6a6a6;
+  border-radius: 10px;
+  height: 18px;
+  padding: 0 12px;
   font-weight: 400;
-  right: 20px; 
-  letter-spacing: 0;
-  line-height: normal;
-  position: absolute;
-  text-align: right;
-  top: 39px;
-  white-space: nowrap;
-}
-
-.user-profile-container .phone-icon-background{
-  background-color: #ffffff;
-  border-radius: 16px;
-  height: 43px;
-  left: 16px;
-  position: absolute;
-  top: 15px;
-  width: 50px;
-}
-
-.user-profile-container .call {
-  background-image: url("src/icons/call.svg");
-  background-size: 100% 100%;
-  height: 33px;
-  left: 24px;
-  position: absolute;
-  top: 20px;
-  width: 34px;
-}
-
-.user-profile-container .contact-info {
-  height: 76px;
-  left: 21px;
-  position: absolute;
-  top: 203px;
-  width: 369px;
-}
-
-.user-profile-container .contact-background {
-  background-color: #e8f4ff;
-  border: 0.5px solid;
-  border-color: #1c7bd1;
-  border-radius: 16px;
-  height: 77px;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 366px;
-}
-
-.user-profile-container .contact-label {
-  color: #00000080;
-  direction: rtl;
-  font-family: "Inter", Helvetica;
-  font-size: 16px;
-  font-weight: 400;
-  right: 20px; 
-  letter-spacing: 0;
-  line-height: normal;
-  position: absolute;
-  text-align: left;
-  top: 7px;
-  white-space: nowrap;
-}
-
-.user-profile-container .contact-value {
-  color: #000000;
-  font-family: "Inter", Helvetica;
-  font-size: 16px;
-  font-weight: 400;
-  right: 20px; 
-  letter-spacing: 0;
-  line-height: normal;
-  position: absolute;
-  top: 39px;
-  white-space: nowrap;
-}
-
-.user-profile-container .contact-icon-bg {
-  background-color: #ffffff;
-  border-radius: 16px;
-  height: 43px;
-  left: 16px;
-  position: absolute;
-  top: 14px;
-  width: 50px;
-}
-
-.user-profile-container .email-icon {
-  background-image: url("src/icons/email.svg");
-  background-size: 100% 100%;
-  height: 33px;
-  left: 24px;
-  position: absolute;
-  top: 19px;
-  width: 34px;
-}
-
-.user-profile-container .sidebar-menu-item {
-  height: 40px;
-  left: 21px;
-  position: absolute;
-  top: 418px;
-  width: 367px;
-}
-
-.user-profile-container .menu-background  {
-  background-color: #ffffff;
-  border: 1px solid;
-  border-color: #0000004c;
-  border-radius: 12px;
-  height: 40px;
-  left: calc(50.00% - 184px);
-  position: absolute;
-  top: 0;
-  width: 365px;
-}
-
-.user-profile-container .menu-icon-bg {
-  background-color: #0000004c;
-  border-radius: 8px;
-  height: 29px;
-  left: 317px;
-  position: absolute;
-  top: 5px;
-  width: 31px;
-}
-
-.user-profile-container .menu-text {
-  align-items: center;
-  color: #000000;
-  direction: rtl;
+  font-size: 12px;
+  font-family: 'Inter', Helvetica;
   display: flex;
-  font-family: "Inter", Helvetica;
-  font-size: 16px; 
-  font-weight: 400;
-  height: 40px;
-  justify-content: center;
-  left: 226px;
-  letter-spacing: 0;
-  line-height: normal;
-  position: absolute;
-  top: 0;
-  width: 76px;
-}
-
-.user-profile-container .settings-icon  {
-  height: 21px;
-  left: 322px;
-  position: absolute;
-  top: 9px;
-  width: 21px;
-}
-
-.user-profile-container .logout-menu-item {
-  height: 40px;
-  left: 21px;
-  position: absolute;
-  top: 478px;
-  width: 367px;
-}
-
-.user-profile-container .logout-icon {
-  height: 21px;
-  width: 21px;
-  position: absolute;
-  left: 322px; 
-  top: 9px;
-}
-
-
-.user-profile-container .logout-text {
   align-items: center;
-  color: #000000;
-  direction: rtl;
-  display: flex;
-  font-family: "Inter", Helvetica;
-  font-size: 16px;
-  font-weight: 400;
-  height: 40px;
   justify-content: center;
-  left: 181px;
+}
+
+.pet-listing-type:hover {
+  background-color: #c1c6cc;
+}
+
+.pet-listing-description {
+  color: #666666;
+  font-size: 16px;
+  font-family: 'Inter', Helvetica;
+  font-weight: 400;
   letter-spacing: 0;
   line-height: normal;
-  position: absolute;
-  top: 0;
-  width: 121px;
+  direction: rtl;
+  margin-bottom: 16px;
 }
 
-.user-profile-container .call-icon,
-.user-profile-container .email-icon {
-  background-image: none !important;
-  background-size: auto !important;
+.pet-listing-detail {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  direction: rtl;
 }
 
-.user-profile-container .call-icon {
-  height: 33px;
-  left: 24px;
-  position: absolute;
-  top: 20px;
-  width: 34px;
+.pet-listing-detail-icon {
+  width: 19px;
+  height: 19px;
+  color: #666666;
 }
 
-.user-profile-container .email-icon {
-  height: 33px;
-  left: 24px;
-  position: absolute;
-  top: 19px;
-  width: 34px;
+.pet-listing-detail-text {
+  color: #666666;
+  font-size: 17px;
+  font-family: 'Inter', Helvetica;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: normal;
+}
+
+.pet-listing-time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  box-shadow: 0px -5px 10px rgba(255, 255, 255, 0.2),
+              inset 0px 2px 10px rgba(254, 254, 254, 0.15),
+              0px 10px 25px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(20px) brightness(100%);
+  -webkit-backdrop-filter: blur(20px) brightness(100%);
+  padding: 6px 12px;
+  width: fit-content;
+  margin-right: auto;
+  margin-left: 0; 
+  margin-top: -10px;
+}
+
+.pet-listing-time-icon {
+  width: 12px;
+  height: 12px;
+  color: #898989;
+}
+
+.pet-listing-time-text {
+  color: #898989;
+  font-size: 12px;
+  font-family: 'Inter', Helvetica;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: normal;
+  direction: rtl;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.pagination-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pagination-button:hover:not(:disabled) {
+  background-color: #f3f4f6;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.pagination-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f5f5f5;
+}
+
+.pagination-button:disabled:hover {
+  background-color: #f5f5f5;
+  transform: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pagination-page-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-family: 'Inter', Helvetica;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pagination-page-button:hover {
+  background-color: #f3f4f6;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.pagination-page-button.active {
+  background-color: #1c7bd1;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(28, 123, 209, 0.2);
+}
+
+.pagination-page-button.active:hover {
+  background-color: #1a6fbd;
 }
 
 @media (max-width: 1200px) {
-  .post-time-card {
-    bottom: 8px;
-    left: 8px;
-    width: 100px;
-    height: 23px;
+  .pet-listings-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
   
-  .post-time-text {
-    font-size: 10px;
+  .pagination-pages {
+    gap: 4px;
   }
   
-  .post-time-clock-icon {
-    width: 11px;
-    height: 11px;
+  .pagination-page-button {
+    width: 36px;
+    height: 36px;
+    font-size: 13px;
+  }
+  
+  .pagination-button {
+    width: 36px;
+    height: 36px;
   }
 }
 
 @media (max-width: 768px) {
-  .post-time-card {
-    bottom: 6px;
-    left: 6px;
-    width: 95px;
-    height: 22px;
+  .profile-content-wrapper {
+    flex-direction: column;
+    gap: 24px;
   }
   
-  .post-time-text {
-    font-size: 9px;
+  .profile-info {
+    align-items: center;
   }
   
-  .post-time-clock-icon {
-    width: 10px;
-    height: 10px;
+  .profile-username,
+  .profile-email {
+    text-align: center;
+  }
+  
+  .pet-listings-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .pet-categories-list {
+    grid-template-columns: repeat(2, 1fr);
+    height: auto;
+    padding: 8px;
+  }
+  
+  .pet-category-tab {
+    height: 50px;
+    margin-bottom: 8px;
+  }
+  
+  .pagination {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .pagination-pages {
+    order: 2;
+  }
+  
+  .pagination-button {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .pagination-button:first-child {
+    order: 1;
+  }
+  
+  .pagination-button:last-child {
+    order: 3;
   }
 }
