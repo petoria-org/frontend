@@ -13,6 +13,7 @@ import ForgotPassword from './pages/ForgotPassword.jsx'
 import ResetPassword from './pages/ResetPassword.jsx'
 import Notification from './pages/Notification.jsx'
 import Verify from './pages/verify.jsx'
+import LocationPicker from "./pages/LocationPicker";
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
   return (
     <>
     <Routes>
+      <Route path='/pick-location' element={<LocationPicker />} />
       <Route path='/' element={<Home />} />
       <Route path='/posts' element={<Posts />} />
       <Route path='/user-profile' element={<UserProfilePage />} />
