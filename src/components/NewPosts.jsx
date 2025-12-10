@@ -5,6 +5,7 @@ const API_ENDPOINTS = {
   all: "/posts/all/",
   lost: "/posts/api/lost-posts/",
   found: "/posts/api/found-posts/",
+  adoption: "/posts/api/surrender-posts/",
 };
 
 const placeholderImage = "/images/placeholder.jpg";
@@ -64,6 +65,8 @@ export default function NewPosts() {
       url = API_ENDPOINTS.lost;
     } else if (activeFilter === "found") {
       url = API_ENDPOINTS.found;
+    } else if (activeFilter === "adoption") {
+      url = API_ENDPOINTS.adoption;
     } else {
       url = API_ENDPOINTS.all;
     }
@@ -80,10 +83,20 @@ export default function NewPosts() {
           status = "lost";
         } else if (activeFilter === "found") {
           status = "found";
+        } else if (activeFilter === "adoption") {
+          status = "adoption";
         } else {
-          if (p.found_time) status = "found";
-          else if (p.lost_time) status = "lost";
-          else status = p.status || "active";
+          // 🔹 تب "همه" — اینجا مشکل داشتی
+          // هم بر اساس type و هم بر اساس زمان‌ها تشخیص می‌دهیم
+          if (p.type === "found" || p.found_time) {
+            status = "found";
+          } else if (p.type === "lost" || p.lost_time) {
+            status = "lost";
+          } else if (p.type === "surrender") {
+            status = "adoption";
+          } else {
+            status = p.status || "active";
+          }
         }
 
         return {
@@ -101,19 +114,25 @@ export default function NewPosts() {
     [posts, activeFilter]
   );
 
-  const filteredAds = normalizedPosts.filter((ad) => {
-    const matchCategory =
-      categoryFilter === "all" || ad.category === categoryFilter;
+  const filteredAds = useMemo(() => {
+    const base = normalizedPosts.filter((ad) => {
+      const matchCategory =
+        categoryFilter === "all" || ad.category === categoryFilter;
 
-    const term = search.trim().toLowerCase();
-    const matchSearch =
-      !term ||
-      ad.name.toLowerCase().includes(term) ||
-      ad.desc.toLowerCase().includes(term) ||
-      ad.location.toLowerCase().includes(term);
+      const term = search.trim().toLowerCase();
+      const matchSearch =
+        !term ||
+        ad.name.toLowerCase().includes(term) ||
+        ad.desc.toLowerCase().includes(term) ||
+        ad.location.toLowerCase().includes(term);
 
-    return matchCategory && matchSearch;
-  });
+      return matchCategory && matchSearch;
+    });
+
+    // 🔹 الان همه‌ی فیلترها (همه / گم‌شده / پیدا شده / سرپرستی)
+    // حداکثر ۶ تا آگهی نشان می‌دهند
+    return base.slice(0, 6);
+  }, [normalizedPosts, categoryFilter, search]);
 
   const handleViewDetails = (adId) => {
     console.log("View details for ad:", adId);
@@ -125,28 +144,37 @@ export default function NewPosts() {
     return isNaN(d) ? "" : d.toLocaleDateString();
   };
 
+  const showMoreEnabled =
+    activeFilter !== "all" && !!pagination.next && !loading;
+
   return (
     <div className="new-post-container-new-posts">
-      <h2 className="section-title-new-posts">New Posts</h2>
+      <h2 className="section-title-new-posts">مرور آگهی ها</h2>
 
       <div className="filter-tabs-new-posts">
         <div
           className={`filter-button ${activeFilter === "all" ? "active" : ""}`}
           onClick={() => setActiveFilter("all")}
         >
-          All
+          همه
         </div>
         <div
           className={`filter-button ${activeFilter === "lost" ? "active" : ""}`}
           onClick={() => setActiveFilter("lost")}
         >
-          Lost
+          گم شده
         </div>
         <div
           className={`filter-button ${activeFilter === "found" ? "active" : ""}`}
           onClick={() => setActiveFilter("found")}
         >
-          Found
+          پیدا شده
+        </div>
+        <div
+          className={`filter-button ${activeFilter === "adoption" ? "active" : ""}`}
+          onClick={() => setActiveFilter("adoption")}
+        >
+          سرپرستی
         </div>
       </div>
 
@@ -157,16 +185,16 @@ export default function NewPosts() {
             onChange={(e) => setCategoryFilter(e.target.value)}
             className="category-select-new-posts"
           >
-            <option value="all">All Categories</option>
-            <option value="dog">Dog</option>
-            <option value="cat">Cat</option>
-            <option value="other">Other</option>
+            <option value="all">همه حیوانات</option>
+            <option value="dog">سگ</option>
+            <option value="cat">گربه</option>
+            <option value="other">سایر</option>
           </select>
         </div>
         <div className="search-box-new-posts">
           <input
             type="text"
-            placeholder="Search title, description, or location..."
+            placeholder="جستجو بر اساس نام،نژاد یا مکان... "
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -178,7 +206,7 @@ export default function NewPosts() {
 
       <div className="ads-grid-new-posts">
         {!loading && filteredAds.length === 0 && (
-          <div className="no-posts-message-new-posts">No posts found</div>
+          <div className="no-posts-message-new-posts">هیچ پستی یافت نشد</div>
         )}
 
         {filteredAds.map((ad) => (
@@ -231,7 +259,7 @@ export default function NewPosts() {
                 className="btn view-details-btn-new-posts"
                 onClick={() => handleViewDetails(ad.rawId)}
               >
-                View Details
+                مشاهده جزییات
               </div>
             </div>
           </div>
@@ -239,15 +267,11 @@ export default function NewPosts() {
       </div>
 
       <div className="show-more-container-new-posts">
-        <button
-          className="show-more-btn-new-posts"
-          disabled={!pagination.next || loading}
-          onClick={() => pagination.next && fetchPosts(pagination.next, true)}
-        >
+        <button className="show-more-btn-new-posts">
+          مشاهده بیشتر
           <svg className="arrow-icon" viewBox="0 0 24 24" fill="none">
             <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" />
           </svg>
-          Show More
         </button>
       </div>
     </div>

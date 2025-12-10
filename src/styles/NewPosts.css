@@ -260,10 +260,10 @@
 }
 
 .show-more-container-new-posts {
-  margin-top: 15px;
-  margin-bottom: 0px;
+  text-align: left;
   display: flex;
   justify-content: flex-start;
+  direction: ltr;
 }
 
 .show-more-btn-new-posts {
@@ -273,6 +273,7 @@
   background-color: #1C7CD2;
   color: white;
   border: none;
+  margin-top: 20px;
   border-radius: 10px;
   padding: 10px 16px;
   cursor: pointer;
