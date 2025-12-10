@@ -1,6 +1,9 @@
 import "../styles/SuccessStories.css";
+import { useNavigate } from "react-router-dom";
 
 export default function SuccessStories() {
+  const navigate = useNavigate();
+
   const stories = [
     {
       id: 1,
@@ -42,7 +45,7 @@ export default function SuccessStories() {
               />
               <div className="story-overlay">
                 <button className="story-view-more">
-                  مشاهده بیشتر
+                  مشاهده جزئیات
                   <svg className="story-arrow" viewBox="0 0 24 24" fill="none">
                     <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2"/>
                   </svg>
@@ -60,12 +63,16 @@ export default function SuccessStories() {
           </div>
         ))}
       </div>
+
       <div className="view-more-container">
-        <button className="view-more-btn">
+        <button 
+          className="view-more-btn"
+          onClick={() => navigate("/success-stories")}
+        >
           مشاهده بیشتر
-        <svg className="arrow-icon" viewBox="0 0 24 24" fill="none">
-        <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2"/>
-        </svg>
+          <svg className="arrow-icon" viewBox="0 0 24 24" fill="none">
+            <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2"/>
+          </svg>
         </button>
       </div>
     </div>
