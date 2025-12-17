@@ -12,6 +12,7 @@ import ResetPassword from './pages/ResetPassword.jsx'
 import Notification from './pages/Notification.jsx'
 import Verify from './pages/verify.jsx'
 import SuccessStoriesAllPage from './pages/SuccessStoriesAllPage/SuccessStoriesAllPage';
+import Chats from './pages/Chats.jsx';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path='/notification' element={<Notification />} />
         <Route path='/verify' element={<Verify />} />
         <Route path='/success-stories' element={<SuccessStoriesAllPage />} />
+        <Route path='/chats' element={<Chats />} />
       </Routes>
     </>
   )

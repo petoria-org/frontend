@@ -1,0 +1,32 @@
+.chats-page {
+  height: 100vh;
+  background-color: #e9edf2;
+}
+
+.chats-content {
+  height: 720px;
+  padding: 24px;
+  padding-top: 88px;
+  display: flex;
+  box-sizing: border-box;
+}
+
+.conversations-panel {
+  width: 360px;
+  background-color: #ffffff;
+  border-top-right-radius: 12px;
+  border-bottom-left-radius: 12px;
+  overflow-y: auto;
+}
+
+/* Main chat area */
+.open-conversation-panel {
+  flex: 1;
+  background-color: #F9FCFE;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+  border-right: 2px solid #A2A4A6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
