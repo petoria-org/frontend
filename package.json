@@ -10,9 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "axios": "^1.13.2",
-    "lucide-react": "^0.556.0",
     "@hookform/resolvers": "^5.2.2",
+    "axios": "^1.13.2",
+    "iran-cities": "^0.0.5",
+    "lucide-react": "^0.556.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-hook-form": "^7.68.0",

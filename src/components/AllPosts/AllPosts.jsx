@@ -59,8 +59,6 @@ export default function AllPosts() {
   const [filterIsSterilized, setFilterIsSterilized] = useState("all");
   
   const [sortOrder, setSortOrder] = useState("");
-  
-  const [showFilters, setShowFilters] = useState(false);
 
   const activeFiltersCount = [
     filterAnimal !== "all",
@@ -110,17 +108,11 @@ export default function AllPosts() {
     let url;
     if (activeFilter === "گم شده") {
       url = API_ENDPOINTS.lost;
-    } 
-    
-    else if (activeFilter === "پیدا شده") {
+    } else if (activeFilter === "پیدا شده") {
       url = API_ENDPOINTS.found;
-    } 
-    
-    else if (activeFilter === "سرپرستی") {
+    } else if (activeFilter === "سرپرستی") {
       url = API_ENDPOINTS.adoption;
-    } 
-    
-    else {
+    } else {
       url = API_ENDPOINTS.all;
     }
 
@@ -139,35 +131,23 @@ export default function AllPosts() {
       if (activeFilter === "گم شده") {
         status = "گم شده";
         statusLabel = "گم شده";
-      } 
-      
-      else if (activeFilter === "پیدا شده") {
+      } else if (activeFilter === "پیدا شده") {
         status = "پیدا شده";
         statusLabel = "پیدا شده";
-      } 
-      
-      else if (activeFilter === "سرپرستی") {
+      } else if (activeFilter === "سرپرستی") {
         status = "سرپرستی";
         statusLabel = "سرپرستی";
-      } 
-      
-      else {
+      } else {
         if (p.type === "found" || p.found_time) {
           status = "پیدا شده";
           statusLabel = "پیدا شده";
-        } 
-        
-        else if (p.type === "lost" || p.lost_time) {
+        } else if (p.type === "lost" || p.lost_time) {
           status = "گم شده";
           statusLabel = "گم شده";
-        } 
-        
-        else if (p.type === "surrender") {
+        } else if (p.type === "surrender") {
           status = "سرپرستی";
           statusLabel = "سرپرستی";
-        } 
-        
-        else {
+        } else {
           status = p.status || "active";
           statusLabel = "فعال";
         }
@@ -410,33 +390,27 @@ export default function AllPosts() {
           همه
         </div>
         <div
-          className={`filter-button ${
-            activeFilter === "پیدا شده" ? "active" : ""
-          }`}
+          className={`filter-button ${activeFilter === "پیدا شده" ? "active" : ""}`}
           onClick={() => setActiveFilter("پیدا شده")}
         >
           پیدا شده
         </div>
         <div
-          className={`filter-button ${
-            activeFilter === "گم شده" ? "active" : ""
-          }`}
+          className={`filter-button ${activeFilter === "گم شده" ? "active" : ""}`}
           onClick={() => setActiveFilter("گم شده")}
         >
           گم شده
         </div>
         <div
-          className={`filter-button ${
-            activeFilter === "سرپرستی" ? "active" : ""
-          }`}
+          className={`filter-button ${activeFilter === "سرپرستی" ? "active" : ""}`}
           onClick={() => setActiveFilter("سرپرستی")}
         >
           سرپرستی
         </div>
       </div>
 
-      <div className="search-container">
-        <div className="search-box">
+      <div className="search-container-all-posts">
+        <div className="search-box-all-posts">
           <input
             type="text"
             placeholder="جستجو بر اساس نام، نژاد یا مکان..."
@@ -446,88 +420,49 @@ export default function AllPosts() {
         </div>
       </div>
 
-      <div className="filters-toggle-container-all-posts">
-        <div 
-          className={`filters-toggle-box-all-posts ${showFilters ? 'filters-open' : ''}`}
-          onClick={(e) => {
-            const target = e.target;
-            const isTitle = target.closest('.filters-toggle-title');
-            const isArrow = target.closest('.filters-toggle-arrow');
-            
-            if (isTitle || isArrow) {
-              setShowFilters(!showFilters);
-            }
-          }}
-        >
-          <div className="filters-toggle-content">
-            <div className="filters-toggle-title">
-              <img src="/src/assets/icons/filter-search.svg" alt="filter" className="filters-toggle-icon" />
-              <span className="filters-toggle-text">فیلترهای پیشرفته</span>
-              {activeFiltersCount > 0 && (
-                <span className="active-filters-count-toggle">
-                  {activeFiltersCount} فیلتر فعال
-                </span>
-              )}
-            </div>
-            <div className={`filters-toggle-arrow ${showFilters ? "open" : ""}`}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M19 9L12 16L5 9" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-          </div>
-        
-          {showFilters && (
-            <div 
-              className="filters-content-wrapper"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <AdvancedFilters
-                activeFilter={activeFilter}
-                filterAnimal={filterAnimal}
-                setFilterAnimal={setFilterAnimal}
-                filterSex={filterSex}
-                setFilterSex={setFilterSex}
-                filterCity={filterCity}
-                setFilterCity={setFilterCity}
-                filterAge={filterAge}
-                setFilterAge={setFilterAge}
-                filterHasCertificate={filterHasCertificate}
-                setFilterHasCertificate={setFilterHasCertificate}
-                filterIsVaccinated={filterIsVaccinated}
-                setFilterIsVaccinated={setFilterIsVaccinated}
-                filterIsSterilized={filterIsSterilized}
-                setFilterIsSterilized={setFilterIsSterilized}
-                clearAllFilters={clearAllFilters}
-                activeFiltersCount={activeFiltersCount}
-              />
-            </div>
-          )}
-        </div>
-      </div>
+      <AdvancedFilters
+        activeFilter={activeFilter}
+        filterAnimal={filterAnimal}
+        setFilterAnimal={setFilterAnimal}
+        filterSex={filterSex}
+        setFilterSex={setFilterSex}
+        filterCity={filterCity}
+        setFilterCity={setFilterCity}
+        filterAge={filterAge}
+        setFilterAge={setFilterAge}
+        filterHasCertificate={filterHasCertificate}
+        setFilterHasCertificate={setFilterHasCertificate}
+        filterIsVaccinated={filterIsVaccinated}
+        setFilterIsVaccinated={setFilterIsVaccinated}
+        filterIsSterilized={filterIsSterilized}
+        setFilterIsSterilized={setFilterIsSterilized}
+        clearAllFilters={clearAllFilters}
+        activeFiltersCount={activeFiltersCount}
+      />
 
       <SortFilters
         sortOrder={sortOrder}
         setSortOrder={setSortOrder}
       />
 
-      {error && <div className="error-message">{error}</div>}
-      {loading && <div className="loading-message">در حال بارگذاری...</div>}
+      {error && <div className="error-message-all-posts">{error}</div>}
+      {loading && <div className="loading-message-all-posts">در حال بارگذاری...</div>}
 
-      <div className="ads-grid">
+      <div className="ads-grid-all-posts">
         {!loading && filteredAds.length === 0 && (
-          <div className="no-results-container">
-            <div className="no-results-icon">
+          <div className="no-results-container-all-posts">
+            <div className="no-results-icon-all-posts">
               <img src="/src/assets/icons/search.svg" alt="no results" />
             </div>
             <h3>هیچ آگهی‌ای یافت نشد</h3>
-            <p className="no-results-text">
+            <p className="no-results-text-all-posts">
               با فیلترهای انتخاب شده، آگهی مناسبی پیدا نشد. لطفا فیلترهای دیگری را امتحان کنید.
             </p>
             <button
               onClick={clearAllFilters}
-              className="clear-filters-btn-no-results"
+              className="clear-filters-btn-no-results-all-posts"
             >
-              <img src="/src/assets/icons/close.svg" alt="clear" className="clear-icon" />
+              <img src="/src/assets/icons/close.svg" alt="clear" className="clear-icon-all-posts" />
               پاک کردن همه فیلترها
             </button>
           </div>
@@ -542,12 +477,12 @@ export default function AllPosts() {
             />
             <div className="status-badge-all-posts">
               <div
-                className={`status-background ${
+                className={`status-background-all-posts ${
                   ad.status === "پیدا شده"
-                    ? "status-found"
+                    ? "status-found-all-posts"
                     : ad.status === "سرپرستی"
-                    ? "status-adoption"
-                    : "status-missing"
+                    ? "status-adoption-all-posts"
+                    : "status-missing-all-posts"
                 }`}
               >
                 {ad.statusLabel}
@@ -563,7 +498,7 @@ export default function AllPosts() {
               <div className="location-container-all-posts">
                 <div>{ad.location}</div>
                 <img
-                  className="location-icon"
+                  className="location-icon-all-posts"
                   alt="location"
                   src="/src/icons/location.svg"
                 />
@@ -571,7 +506,7 @@ export default function AllPosts() {
               <div className="calender-container-all-posts">
                 <div>{ad.time}</div>
                 <img
-                  className="calendar-icon"
+                  className="calendar-icon-all-posts"
                   alt="calendar"
                   src="/src/icons/calendar-2.svg"
                 />
@@ -591,20 +526,20 @@ export default function AllPosts() {
       </div>
 
       {!loading && filteredAds.length > 0 && totalPages > 1 && (
-        <div className="pagination">
+        <div className="pagination-all-posts">
           <button
-            className="pagination-button"
+            className="pagination-button-all-posts"
             onClick={handlePreviousPage}
             disabled={currentPage === 1 || loading}
           >
             <ChevronRightIcon />
           </button>
 
-          <div className="pagination-pages">
+          <div className="pagination-pages-all-posts">
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <button
                 key={page}
-                className={`pagination-page-button ${currentPage === page ? 'active' : ''}`}
+                className={`pagination-page-button-all-posts ${currentPage === page ? 'active' : ''}`}
                 onClick={() => handlePageClick(page)}
                 disabled={loading}
               >
@@ -614,7 +549,7 @@ export default function AllPosts() {
           </div>
 
           <button
-            className="pagination-button"
+            className="pagination-button-all-posts"
             onClick={handleNextPage}
             disabled={currentPage === totalPages || loading}
           >

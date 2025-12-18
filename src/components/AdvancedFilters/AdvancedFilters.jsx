@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../../styles/AdvancedFilters.css";
 
-export default function AdvancedFilters({
+const AdvancedFilters = ({
   activeFilter,
   filterAnimal,
   setFilterAnimal,
@@ -19,7 +19,8 @@ export default function AdvancedFilters({
   setFilterIsSterilized,
   clearAllFilters,
   activeFiltersCount,
-}) {
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
   const [showCityDropdown, setShowCityDropdown] = useState(false);
   const [showAnimalDropdown, setShowAnimalDropdown] = useState(false);
   const [showSexDropdown, setShowSexDropdown] = useState(false);
@@ -27,10 +28,36 @@ export default function AdvancedFilters({
   const [showCertificateDropdown, setShowCertificateDropdown] = useState(false);
   const [showVaccineDropdown, setShowVaccineDropdown] = useState(false);
   const [showSterilizeDropdown, setShowSterilizeDropdown] = useState(false);
-  
   const [citySearchTerm, setCitySearchTerm] = useState("");
 
-  // لیست شهرها (مثال)
+  // استفاده از useRef برای مدیریت کلیک خارج از کامپوننت
+  const dropdownRef = useRef(null);
+  const filterSelectRef = useRef(null);
+
+  // تغییر: تبدیل state‌ها به آرایه برای پشتیبانی از انتخاب چندگانه
+  const [selectedAnimals, setSelectedAnimals] = useState(
+    filterAnimal === "all" ? [] : filterAnimal.split(",").filter(item => item.trim())
+  );
+  const [selectedSexes, setSelectedSexes] = useState(
+    filterSex === "all" ? [] : filterSex.split(",").filter(item => item.trim())
+  );
+  const [selectedCities, setSelectedCities] = useState(
+    filterCity === "all" ? [] : filterCity.split(",").filter(item => item.trim())
+  );
+  const [selectedAges, setSelectedAges] = useState(
+    filterAge === "all" ? [] : filterAge.split(",").filter(item => item.trim())
+  );
+  const [selectedCertificates, setSelectedCertificates] = useState(
+    filterHasCertificate === "all" ? [] : filterHasCertificate.split(",").filter(item => item.trim())
+  );
+  const [selectedVaccinations, setSelectedVaccinations] = useState(
+    filterIsVaccinated === "all" ? [] : filterIsVaccinated.split(",").filter(item => item.trim())
+  );
+  const [selectedSterilizations, setSelectedSterilizations] = useState(
+    filterIsSterilized === "all" ? [] : filterIsSterilized.split(",").filter(item => item.trim())
+  );
+
+  // لیست شهرها
   const cities = [
     "تهران", "مشهد", "اصفهان", "شیراز", "تبریز", "کرج", "اهواز", 
     "قم", "کرمانشاه", "ارومیه", "رشت", "زاهدان", "همدان", 
@@ -41,220 +68,594 @@ export default function AdvancedFilters({
     "سبزوار", "نجف‌آباد", "خوی", "ملارد", "آباده", "نوشهر"
   ].sort();
 
+  // لیست حیوانات
+  const animals = ["سگ", "گربه", "خرگوش", "همستر", "پرنده", "سایر"];
+
+  // لیست جنسیت‌ها
+  const sexes = ["نر", "ماده"];
+
+  // لیست سن‌ها
+  const ageOptions = [
+    { value: "under-1", label: "زیر 1 سال" },
+    { value: "1-2", label: "1 تا 2 سال" },
+    { value: "2-3", label: "2 تا 3 سال" },
+    { value: "3-5", label: "3 تا 5 سال" },
+    { value: "5-7", label: "5 تا 7 سال" },
+    { value: "over-7", label: "بالای 7 سال" }
+  ];
+
+  // لیست وضعیت‌ها
+  const statusOptions = [
+    { value: "yes", label: "دارد" },
+    { value: "no", label: "ندارد" }
+  ];
+
+  const statusYesNoOptions = [
+    { value: "yes", label: "انجام شده" },
+    { value: "no", label: "انجام نشده" }
+  ];
+
   const filteredCities = cities.filter(city =>
     city.includes(citySearchTerm)
   );
 
-  const handleCitySelect = (city) => {
-    setFilterCity(city);
+  // تابع برای بستن همه dropdownها
+  const closeAllDropdowns = () => {
+    setShowAnimalDropdown(false);
+    setShowSexDropdown(false);
     setShowCityDropdown(false);
+    setShowAgeDropdown(false);
+    setShowCertificateDropdown(false);
+    setShowVaccineDropdown(false);
+    setShowSterilizeDropdown(false);
     setCitySearchTerm("");
   };
 
-  const handleAnimalSelect = (value) => {
-    setFilterAnimal(value);
-    setShowAnimalDropdown(false);
+  // تابع toggle برای باز و بسته کردن کل فیلترها
+  const handleToggleClick = () => {
+    closeAllDropdowns();
+    setIsOpen(!isOpen);
   };
 
-  const handleSexSelect = (value) => {
-    setFilterSex(value);
-    setShowSexDropdown(false);
+  // تابع کلیک روی فیلتر
+  const handleFilterClick = (e, filterType) => {
+    e.stopPropagation();
+    closeAllDropdowns();
+    
+    switch(filterType) {
+      case 'animal':
+        setShowAnimalDropdown(!showAnimalDropdown);
+        break;
+      case 'sex':
+        setShowSexDropdown(!showSexDropdown);
+        break;
+      case 'city':
+        setShowCityDropdown(!showCityDropdown);
+        break;
+      case 'age':
+        setShowAgeDropdown(!showAgeDropdown);
+        break;
+      case 'certificate':
+        setShowCertificateDropdown(!showCertificateDropdown);
+        break;
+      case 'vaccine':
+        setShowVaccineDropdown(!showVaccineDropdown);
+        break;
+      case 'sterilize':
+        setShowSterilizeDropdown(!showSterilizeDropdown);
+        break;
+      default:
+        break;
+    }
   };
 
-  const handleAgeSelect = (value) => {
-    setFilterAge(value);
-    setShowAgeDropdown(false);
+  // تابع‌های انتخاب چندگانه
+  const handleAnimalSelect = (animal) => {
+    let newSelected;
+    
+    if (animal === "all") {
+      // اگر همه موارد انتخاب شده باشند، آنها را حذف کن
+      if (selectedAnimals.length === animals.length) {
+        newSelected = [];
+      } else {
+        // در غیر این صورت همه را انتخاب کن
+        newSelected = [...animals];
+      }
+    } else {
+      newSelected = selectedAnimals.includes(animal)
+        ? selectedAnimals.filter(item => item !== animal)
+        : [...selectedAnimals, animal];
+    }
+    
+    setSelectedAnimals(newSelected);
+    setFilterAnimal(newSelected.length > 0 ? newSelected.join(",") : "all");
   };
 
-  const handleCertificateSelect = (value) => {
-    setFilterHasCertificate(value);
-    setShowCertificateDropdown(false);
+  const handleSexSelect = (sex) => {
+    let newSelected;
+    
+    if (sex === "all") {
+      // اگر همه موارد انتخاب شده باشند، آنها را حذف کن
+      if (selectedSexes.length === sexes.length) {
+        newSelected = [];
+      } else {
+        // در غیر این صورت همه را انتخاب کن
+        newSelected = [...sexes];
+      }
+    } else {
+      newSelected = selectedSexes.includes(sex)
+        ? selectedSexes.filter(item => item !== sex)
+        : [...selectedSexes, sex];
+    }
+    
+    setSelectedSexes(newSelected);
+    setFilterSex(newSelected.length > 0 ? newSelected.join(",") : "all");
   };
 
-  const handleVaccineSelect = (value) => {
-    setFilterIsVaccinated(value);
-    setShowVaccineDropdown(false);
+  const handleCitySelect = (city) => {
+    let newSelected;
+    
+    if (city === "all") {
+      const citiesToToggle = citySearchTerm ? filteredCities : cities;
+      // اگر همه موارد انتخاب شده باشند، آنها را حذف کن
+      if (selectedCities.length === citiesToToggle.length) {
+        newSelected = [];
+      } else {
+        // در غیر این صورت همه را انتخاب کن
+        newSelected = [...citiesToToggle];
+      }
+    } else {
+      newSelected = selectedCities.includes(city)
+        ? selectedCities.filter(item => item !== city)
+        : [...selectedCities, city];
+    }
+    
+    setSelectedCities(newSelected);
+    setFilterCity(newSelected.length > 0 ? newSelected.join(",") : "all");
   };
 
-  const handleSterilizeSelect = (value) => {
-    setFilterIsSterilized(value);
-    setShowSterilizeDropdown(false);
+  const handleAgeSelect = (ageValue) => {
+    let newSelected;
+    
+    if (ageValue === "all") {
+      const allAgeValues = ageOptions.map(age => age.value);
+      // اگر همه موارد انتخاب شده باشند، آنها را حذف کن
+      if (selectedAges.length === allAgeValues.length) {
+        newSelected = [];
+      } else {
+        // در غیر این صورت همه را انتخاب کن
+        newSelected = [...allAgeValues];
+      }
+    } else {
+      newSelected = selectedAges.includes(ageValue)
+        ? selectedAges.filter(item => item !== ageValue)
+        : [...selectedAges, ageValue];
+    }
+    
+    setSelectedAges(newSelected);
+    setFilterAge(newSelected.length > 0 ? newSelected.join(",") : "all");
+  };
+
+  const handleCertificateSelect = (certificate) => {
+    let newSelected;
+    
+    if (certificate === "all") {
+      const allStatusValues = statusOptions.map(status => status.value);
+      // اگر همه موارد انتخاب شده باشند، آنها را حذف کن
+      if (selectedCertificates.length === allStatusValues.length) {
+        newSelected = [];
+      } else {
+        // در غیر این صورت همه را انتخاب کن
+        newSelected = [...allStatusValues];
+      }
+    } else {
+      newSelected = selectedCertificates.includes(certificate)
+        ? selectedCertificates.filter(item => item !== certificate)
+        : [...selectedCertificates, certificate];
+    }
+    
+    setSelectedCertificates(newSelected);
+    setFilterHasCertificate(newSelected.length > 0 ? newSelected.join(",") : "all");
+  };
+
+  const handleVaccineSelect = (vaccine) => {
+    let newSelected;
+    
+    if (vaccine === "all") {
+      const allStatusValues = statusYesNoOptions.map(status => status.value);
+      // اگر همه موارد انتخاب شده باشند، آنها را حذف کن
+      if (selectedVaccinations.length === allStatusValues.length) {
+        newSelected = [];
+      } else {
+        // در غیر این صورت همه را انتخاب کن
+        newSelected = [...allStatusValues];
+      }
+    } else {
+      newSelected = selectedVaccinations.includes(vaccine)
+        ? selectedVaccinations.filter(item => item !== vaccine)
+        : [...selectedVaccinations, vaccine];
+    }
+    
+    setSelectedVaccinations(newSelected);
+    setFilterIsVaccinated(newSelected.length > 0 ? newSelected.join(",") : "all");
+  };
+
+  const handleSterilizeSelect = (sterilize) => {
+    let newSelected;
+    
+    if (sterilize === "all") {
+      const allStatusValues = statusYesNoOptions.map(status => status.value);
+      // اگر همه موارد انتخاب شده باشند، آنها را حذف کن
+      if (selectedSterilizations.length === allStatusValues.length) {
+        newSelected = [];
+      } else {
+        // در غیر این صورت همه را انتخاب کن
+        newSelected = [...allStatusValues];
+      }
+    } else {
+      newSelected = selectedSterilizations.includes(sterilize)
+        ? selectedSterilizations.filter(item => item !== sterilize)
+        : [...selectedSterilizations, sterilize];
+    }
+    
+    setSelectedSterilizations(newSelected);
+    setFilterIsSterilized(newSelected.length > 0 ? newSelected.join(",") : "all");
   };
 
   // تابع‌های حذف فیلتر
-  const removeAnimalFilter = () => setFilterAnimal("all");
-  const removeSexFilter = () => setFilterSex("all");
-  const removeCityFilter = () => setFilterCity("all");
-  const removeAgeFilter = () => setFilterAge("all");
-  const removeCertificateFilter = () => setFilterHasCertificate("all");
-  const removeVaccinationFilter = () => setFilterIsVaccinated("all");
-  const removeSterilizationFilter = () => setFilterIsSterilized("all");
+  const removeAnimalFilter = () => {
+    setSelectedAnimals([]);
+    setFilterAnimal("all");
+  };
 
-  // رندر فیلترهای اصلی (همیشه نمایش داده می‌شوند)
+  const removeSexFilter = () => {
+    setSelectedSexes([]);
+    setFilterSex("all");
+  };
+
+  const removeCityFilter = () => {
+    setSelectedCities([]);
+    setFilterCity("all");
+  };
+
+  const removeAgeFilter = () => {
+    setSelectedAges([]);
+    setFilterAge("all");
+  };
+
+  const removeCertificateFilter = () => {
+    setSelectedCertificates([]);
+    setFilterHasCertificate("all");
+  };
+
+  const removeVaccinationFilter = () => {
+    setSelectedVaccinations([]);
+    setFilterIsVaccinated("all");
+  };
+
+  const removeSterilizationFilter = () => {
+    setSelectedSterilizations([]);
+    setFilterIsSterilized("all");
+  };
+
+  // تابع پاک کردن همه فیلترها
+  const handleClearAllFilters = () => {
+    setSelectedAnimals([]);
+    setSelectedSexes([]);
+    setSelectedCities([]);
+    setSelectedAges([]);
+    setSelectedCertificates([]);
+    setSelectedVaccinations([]);
+    setSelectedSterilizations([]);
+    closeAllDropdowns();
+    clearAllFilters();
+  };
+
+  // محاسبه تعداد فیلترهای فعال
+  const getActiveFiltersCount = () => {
+    return [
+      selectedAnimals.length > 0,
+      selectedSexes.length > 0,
+      selectedCities.length > 0,
+      selectedAges.length > 0,
+      selectedCertificates.length > 0,
+      selectedVaccinations.length > 0,
+      selectedSterilizations.length > 0,
+    ].filter(Boolean).length;
+  };
+
+  // گرفتن توضیحات وضعیت فیلترها
+  const getFiltersDescription = () => {
+    const count = getActiveFiltersCount();
+    if (count === 0) return "هیچ فیلتری اعمال نشده است";
+    
+    const filters = [];
+    
+    if (selectedAnimals.length > 0) {
+      if (selectedAnimals.length === 1) {
+        filters.push(`نوع: ${selectedAnimals[0]}`);
+      } else if (selectedAnimals.length === animals.length) {
+        filters.push(`نوع: همه`);
+      } else {
+        filters.push(`نوع: ${selectedAnimals.length} مورد`);
+      }
+    }
+    
+    if (selectedSexes.length > 0) {
+      if (selectedSexes.length === 1) {
+        filters.push(`جنسیت: ${selectedSexes[0]}`);
+      } else if (selectedSexes.length === sexes.length) {
+        filters.push(`جنسیت: همه`);
+      } else {
+        filters.push(`جنسیت: ${selectedSexes.length} مورد`);
+      }
+    }
+    
+    if (selectedCities.length > 0) {
+      if (selectedCities.length === 1) {
+        filters.push(`شهر: ${selectedCities[0]}`);
+      } else if (selectedCities.length === (citySearchTerm ? filteredCities.length : cities.length)) {
+        filters.push(`شهر: همه`);
+      } else {
+        filters.push(`شهر: ${selectedCities.length} شهر`);
+      }
+    }
+    
+    if (selectedAges.length > 0) {
+      const ageLabels = {
+        "under-1": "زیر 1 سال",
+        "1-2": "1 تا 2 سال",
+        "2-3": "2 تا 3 سال",
+        "3-5": "3 تا 5 سال",
+        "5-7": "5 تا 7 سال",
+        "over-7": "بالای 7 سال"
+      };
+      
+      if (selectedAges.length === 1) {
+        filters.push(`سن: ${ageLabels[selectedAges[0]]}`);
+      } else if (selectedAges.length === ageOptions.length) {
+        filters.push(`سن: همه`);
+      } else {
+        filters.push(`سن: ${selectedAges.length} بازه`);
+      }
+    }
+    
+    if (activeFilter === "سرپرستی") {
+      if (selectedCertificates.length > 0) {
+        if (selectedCertificates.length === 1) {
+          filters.push(`شناسنامه: ${selectedCertificates[0] === "yes" ? "دارد" : "ندارد"}`);
+        } else if (selectedCertificates.length === statusOptions.length) {
+          filters.push(`شناسنامه: همه وضعیت‌ها`);
+        } else {
+          filters.push(`شناسنامه: ${selectedCertificates.length} وضعیت`);
+        }
+      }
+      
+      if (selectedVaccinations.length > 0) {
+        if (selectedVaccinations.length === 1) {
+          filters.push(`واکسیناسیون: ${selectedVaccinations[0] === "yes" ? "انجام شده" : "انجام نشده"}`);
+        } else if (selectedVaccinations.length === statusYesNoOptions.length) {
+          filters.push(`واکسیناسیون: همه وضعیت‌ها`);
+        } else {
+          filters.push(`واکسیناسیون: ${selectedVaccinations.length} وضعیت`);
+        }
+      }
+      
+      if (selectedSterilizations.length > 0) {
+        if (selectedSterilizations.length === 1) {
+          filters.push(`عقیم‌سازی: ${selectedSterilizations[0] === "yes" ? "انجام شده" : "انجام نشده"}`);
+        } else if (selectedSterilizations.length === statusYesNoOptions.length) {
+          filters.push(`عقیم‌سازی: همه وضعیت‌ها`);
+        } else {
+          filters.push(`عقیم‌سازی: ${selectedSterilizations.length} وضعیت`);
+        }
+      }
+    }
+    
+    return `${count} فیلتر فعال: ${filters.join("، ")}`;
+  };
+
+  // نمایش متن placeholder با حالت چندگانه
+  const getMultiSelectPlaceholder = (selectedItems, defaultPlaceholder, singleText, multipleText, totalItems) => {
+    if (selectedItems.length === 0) return defaultPlaceholder;
+    if (selectedItems.length === 1) return `${singleText}: ${selectedItems[0]}`;
+    if (selectedItems.length === totalItems) return `${singleText}: همه`;
+    return `${multipleText} (${selectedItems.length})`;
+  };
+
+  // رندر فیلترهای اصلی با قابلیت چندگانه
   const renderMainFilters = () => (
-    <div className="main-filters-grid-new-posts">
-      {/* نوع حیوان */}
-{/* نوع حیوان */}
-      <div className="filter-select-wrapper-new-posts">
+    <div className="advanced-main-filters-grid">
+      {/* نوع حیوان - چندگانه */}
+      <div className="advanced-filter-select-wrapper">
         <div 
-          className="custom-select filter-select-with-label" 
-          onClick={() => {
-            setShowAnimalDropdown(!showAnimalDropdown);
-            setShowSexDropdown(false);
-            setShowCityDropdown(false);
-            setShowAgeDropdown(false);
-          }}
+          className="advanced-custom-select" 
+          onClick={(e) => handleFilterClick(e, 'animal')}
+          ref={filterSelectRef}
         >
-          <span className="select-placeholder-text">
-            {filterAnimal === "all" ? "نوع حیوان" : filterAnimal}
+          <span className="advanced-select-placeholder-text">
+            {getMultiSelectPlaceholder(selectedAnimals, "نوع حیوان", "نوع", "انواع حیوان", animals.length)}
           </span>
         </div>
 
         {showAnimalDropdown && (
-          <div className="dropdown-menu">
-            <div className="dropdown-options-list">
+          <div className="advanced-dropdown-menu advanced-multi-select">
+            <div className="advanced-dropdown-header">
+              <span className="advanced-multi-select-title">انتخاب نوع حیوان</span>
+            </div>
+            <div className="advanced-dropdown-options-list">
+              {/* گزینه "همه" */}
               <div 
-                className={`dropdown-option ${filterAnimal === "all" ? "selected" : ""}`}
+                className={`advanced-dropdown-option ${selectedAnimals.length === animals.length ? "selected" : ""}`}
                 onClick={() => handleAnimalSelect("all")}
               >
-                نوع حیوان
+                <div className="advanced-checkbox-wrapper">
+                  <div className={`advanced-checkbox ${selectedAnimals.length === animals.length ? "checked" : ""}`}>
+                    {selectedAnimals.length === animals.length && (
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                        <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    )}
+                  </div>
+                  <span>همه حیوانات</span>
+                </div>
               </div>
-              <div 
-                className={`dropdown-option ${filterAnimal === "سگ" ? "selected" : ""}`}
-                onClick={() => handleAnimalSelect("سگ")}
-              >
-                سگ
-              </div>
-              <div 
-                className={`dropdown-option ${filterAnimal === "گربه" ? "selected" : ""}`}
-                onClick={() => handleAnimalSelect("گربه")}
-              >
-                گربه
-              </div>
-              {/* اضافه کردن حیوانات جدید */}
-              <div 
-                className={`dropdown-option ${filterAnimal === "خرگوش" ? "selected" : ""}`}
-                onClick={() => handleAnimalSelect("خرگوش")}
-              >
-                خرگوش
-              </div>
-              <div 
-                className={`dropdown-option ${filterAnimal === "همستر" ? "selected" : ""}`}
-                onClick={() => handleAnimalSelect("همستر")}
-              >
-                همستر
-              </div>
-              <div 
-                className={`dropdown-option ${filterAnimal === "پرنده" ? "selected" : ""}`}
-                onClick={() => handleAnimalSelect("پرنده")}
-              >
-                پرنده
-              </div>
-              <div 
-                className={`dropdown-option ${filterAnimal === "سایر" ? "selected" : ""}`}
-                onClick={() => handleAnimalSelect("سایر")}
-              >
-                سایر
-              </div>
+              
+              {animals.map((animal) => (
+                <div 
+                  key={animal}
+                  className={`advanced-dropdown-option ${selectedAnimals.includes(animal) ? "selected" : ""}`}
+                  onClick={() => handleAnimalSelect(animal)}
+                >
+                  <div className="advanced-checkbox-wrapper">
+                    <div className={`advanced-checkbox ${selectedAnimals.includes(animal) ? "checked" : ""}`}>
+                      {selectedAnimals.includes(animal) && (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                          <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      )}
+                    </div>
+                    <span>{animal}</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
       </div>
 
-      {/* جنسیت */}
-      <div className="filter-select-wrapper-new-posts">
+      {/* جنسیت - چندگانه */}
+      <div className="advanced-filter-select-wrapper">
         <div 
-          className="custom-select filter-select-with-label" 
-          onClick={() => {
-            setShowSexDropdown(!showSexDropdown);
-            setShowAnimalDropdown(false);
-            setShowCityDropdown(false);
-            setShowAgeDropdown(false);
-          }}
+          className="advanced-custom-select" 
+          onClick={(e) => handleFilterClick(e, 'sex')}
         >
-          <span className="select-placeholder-text">
-            {filterSex === "all" ? "جنسیت" : filterSex}
+          <span className="advanced-select-placeholder-text">
+            {getMultiSelectPlaceholder(selectedSexes, "جنسیت", "جنسیت", "جنسیت‌ها", sexes.length)}
           </span>
         </div>
 
         {showSexDropdown && (
-          <div className="dropdown-menu">
-            <div className="dropdown-options-list">
+          <div className="advanced-dropdown-menu advanced-multi-select">
+            <div className="advanced-dropdown-header">
+              <span className="advanced-multi-select-title">انتخاب جنسیت</span>
+            </div>
+            <div className="advanced-dropdown-options-list">
+              {/* گزینه "همه" */}
               <div 
-                className={`dropdown-option ${filterSex === "all" ? "selected" : ""}`}
+                className={`advanced-dropdown-option ${selectedSexes.length === sexes.length ? "selected" : ""}`}
                 onClick={() => handleSexSelect("all")}
               >
-                جنسیت
+                <div className="advanced-checkbox-wrapper">
+                  <div className={`advanced-checkbox ${selectedSexes.length === sexes.length ? "checked" : ""}`}>
+                    {selectedSexes.length === sexes.length && (
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                        <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    )}
+                  </div>
+                  <span>همه جنسیت‌ها</span>
+                </div>
               </div>
-              <div 
-                className={`dropdown-option ${filterSex === "نر" ? "selected" : ""}`}
-                onClick={() => handleSexSelect("نر")}
-              >
-                نر
-              </div>
-              <div 
-                className={`dropdown-option ${filterSex === "ماده" ? "selected" : ""}`}
-                onClick={() => handleSexSelect("ماده")}
-              >
-                ماده
-              </div>
+              
+              {sexes.map((sex) => (
+                <div 
+                  key={sex}
+                  className={`advanced-dropdown-option ${selectedSexes.includes(sex) ? "selected" : ""}`}
+                  onClick={() => handleSexSelect(sex)}
+                >
+                  <div className="advanced-checkbox-wrapper">
+                    <div className={`advanced-checkbox ${selectedSexes.includes(sex) ? "checked" : ""}`}>
+                      {selectedSexes.includes(sex) && (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                          <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      )}
+                    </div>
+                    <span>{sex}</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
       </div>
 
-      {/* شهر */}
-      <div className="filter-select-wrapper-new-posts">
+      {/* شهر - چندگانه */}
+      <div className="advanced-filter-select-wrapper">
         <div 
-          className="custom-select filter-select-with-label" 
-          onClick={() => {
-            setShowCityDropdown(!showCityDropdown);
-            setShowAnimalDropdown(false);
-            setShowSexDropdown(false);
-            setShowAgeDropdown(false);
-          }}
+          className="advanced-custom-select" 
+          onClick={(e) => handleFilterClick(e, 'city')}
         >
-          <span className="select-placeholder-text">
-            {filterCity === "all" ? "شهر" : filterCity}
+          <span className="advanced-select-placeholder-text">
+            {getMultiSelectPlaceholder(
+              selectedCities, 
+              "شهر", 
+              "شهر", 
+              "شهرها", 
+              citySearchTerm ? filteredCities.length : cities.length
+            )}
           </span>
         </div>
 
         {showCityDropdown && (
-          <div className="dropdown-menu city-dropdown">
-            <div className="dropdown-search-container">
-              <div className="dropdown-search-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#777" strokeWidth="2">
-                  <circle cx="11" cy="11" r="8" />
-                  <path d="M21 21l-4.35-4.35" />
-                </svg>
+          <div className="advanced-dropdown-menu advanced-multi-select advanced-city-dropdown">
+            <div className="advanced-dropdown-header">
+              <div className="advanced-dropdown-search-container">
+                <div className="advanced-dropdown-search-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#777" strokeWidth="2">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="M21 21l-4.35-4.35" />
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  placeholder="جستجوی شهر..."
+                  className="advanced-dropdown-search-input"
+                  value={citySearchTerm}
+                  onChange={(e) => setCitySearchTerm(e.target.value)}
+                  autoFocus
+                />
               </div>
-              <input
-                type="text"
-                placeholder="جستجوی شهر..."
-                className="dropdown-search-input"
-                value={citySearchTerm}
-                onChange={(e) => setCitySearchTerm(e.target.value)}
-                autoFocus
-              />
             </div>
-            <div className="dropdown-options-list">
+            <div className="advanced-dropdown-options-list">
+              {/* گزینه "همه" */}
               <div 
-                className={`dropdown-option ${filterCity === "all" ? "selected" : ""}`}
+                className={`advanced-dropdown-option ${selectedCities.length === (citySearchTerm ? filteredCities.length : cities.length) ? "selected" : ""}`}
                 onClick={() => handleCitySelect("all")}
               >
-                همه شهرها
+                <div className="advanced-checkbox-wrapper">
+                  <div className={`advanced-checkbox ${selectedCities.length === (citySearchTerm ? filteredCities.length : cities.length) ? "checked" : ""}`}>
+                    {selectedCities.length === (citySearchTerm ? filteredCities.length : cities.length) && (
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                        <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    )}
+                  </div>
+                  <span>همه شهرها</span>
+                </div>
               </div>
-              {filteredCities.map((city) => (
+              
+              {(citySearchTerm ? filteredCities : cities).map((city) => (
                 <div
                   key={city}
-                  className={`dropdown-option ${filterCity === city ? "selected" : ""}`}
+                  className={`advanced-dropdown-option ${selectedCities.includes(city) ? "selected" : ""}`}
                   onClick={() => handleCitySelect(city)}
                 >
-                  {city}
+                  <div className="advanced-checkbox-wrapper">
+                    <div className={`advanced-checkbox ${selectedCities.includes(city) ? "checked" : ""}`}>
+                      {selectedCities.includes(city) && (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                          <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      )}
+                    </div>
+                    <span>{city}</span>
+                  </div>
                 </div>
               ))}
               {filteredCities.length === 0 && (
-                <div className="no-option-found">
+                <div className="advanced-no-option-found">
                   شهری یافت نشد
                 </div>
               )}
@@ -263,74 +664,63 @@ export default function AdvancedFilters({
         )}
       </div>
 
-      {/* سن */}
-      <div className="filter-select-wrapper-new-posts">
+      {/* سن - چندگانه */}
+      <div className="advanced-filter-select-wrapper">
         <div 
-          className="custom-select filter-select-with-label" 
-          onClick={() => {
-            setShowAgeDropdown(!showAgeDropdown);
-            setShowAnimalDropdown(false);
-            setShowSexDropdown(false);
-            setShowCityDropdown(false);
-          }}
+          className="advanced-custom-select" 
+          onClick={(e) => handleFilterClick(e, 'age')}
         >
-          <span className="select-placeholder-text">
-            {filterAge === "all" ? "سن" : 
-              filterAge === "under-1" ? "زیر 1 سال" :
-              filterAge === "1-2" ? "1 تا 2 سال" :
-              filterAge === "2-3" ? "2 تا 3 سال" :
-              filterAge === "3-5" ? "3 تا 5 سال" :
-              filterAge === "5-7" ? "5 تا 7 سال" :
-              "بالای 7 سال"
+          <span className="advanced-select-placeholder-text">
+            {selectedAges.length === 0 ? "سن" : 
+              selectedAges.length === 1 ? 
+                `سن: ${ageOptions.find(a => a.value === selectedAges[0])?.label}` :
+                selectedAges.length === ageOptions.length ? "سن: همه" :
+                `سن (${selectedAges.length} بازه)`
             }
           </span>
         </div>
 
         {showAgeDropdown && (
-          <div className="dropdown-menu">
-            <div className="dropdown-options-list">
+          <div className="advanced-dropdown-menu advanced-multi-select">
+            <div className="advanced-dropdown-header">
+              <span className="advanced-multi-select-title">انتخاب بازه سنی</span>
+            </div>
+            <div className="advanced-dropdown-options-list">
+              {/* گزینه "همه" */}
               <div 
-                className={`dropdown-option ${filterAge === "all" ? "selected" : ""}`}
+                className={`advanced-dropdown-option ${selectedAges.length === ageOptions.length ? "selected" : ""}`}
                 onClick={() => handleAgeSelect("all")}
               >
-                سن
+                <div className="advanced-checkbox-wrapper">
+                  <div className={`advanced-checkbox ${selectedAges.length === ageOptions.length ? "checked" : ""}`}>
+                    {selectedAges.length === ageOptions.length && (
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                        <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    )}
+                  </div>
+                  <span>همه بازه‌های سنی</span>
+                </div>
               </div>
-              <div 
-                className={`dropdown-option ${filterAge === "under-1" ? "selected" : ""}`}
-                onClick={() => handleAgeSelect("under-1")}
-              >
-                زیر 1 سال
-              </div>
-              <div 
-                className={`dropdown-option ${filterAge === "1-2" ? "selected" : ""}`}
-                onClick={() => handleAgeSelect("1-2")}
-              >
-                1 تا 2 سال
-              </div>
-              <div 
-                className={`dropdown-option ${filterAge === "2-3" ? "selected" : ""}`}
-                onClick={() => handleAgeSelect("2-3")}
-              >
-                2 تا 3 سال
-              </div>
-              <div 
-                className={`dropdown-option ${filterAge === "3-5" ? "selected" : ""}`}
-                onClick={() => handleAgeSelect("3-5")}
-              >
-                3 تا 5 سال
-              </div>
-              <div 
-                className={`dropdown-option ${filterAge === "5-7" ? "selected" : ""}`}
-                onClick={() => handleAgeSelect("5-7")}
-              >
-                5 تا 7 سال
-              </div>
-              <div 
-                className={`dropdown-option ${filterAge === "over-7" ? "selected" : ""}`}
-                onClick={() => handleAgeSelect("over-7")}
-              >
-                بالای 7 سال
-              </div>
+              
+              {ageOptions.map((age) => (
+                <div 
+                  key={age.value}
+                  className={`advanced-dropdown-option ${selectedAges.includes(age.value) ? "selected" : ""}`}
+                  onClick={() => handleAgeSelect(age.value)}
+                >
+                  <div className="advanced-checkbox-wrapper">
+                    <div className={`advanced-checkbox ${selectedAges.includes(age.value) ? "checked" : ""}`}>
+                      {selectedAges.includes(age.value) && (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                          <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      )}
+                    </div>
+                    <span>{age.label}</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -338,140 +728,200 @@ export default function AdvancedFilters({
     </div>
   );
 
-  // رندر فیلترهای مخصوص سرپرستی (فقط در تب سرپرستی)
+  // رندر فیلترهای مخصوص سرپرستی با قابلیت چندگانه
   const renderAdoptionFilters = () => {
     if (activeFilter !== "سرپرستی") return null;
 
     return (
-      <div className="adoption-specific-filters">
-        <div className="filters-subtitle-new-posts">
+      <div className="advanced-adoption-specific-filters">
+        <div className="advanced-filters-subtitle">
           <h4>فیلترهای مخصوص سرپرستی</h4>
         </div>
-        <div className="adoption-filters-grid-new-posts">
-          {/* گواهی تولد */}
-          <div className="filter-select-wrapper-new-posts">
+        <div className="advanced-adoption-filters-grid">
+          {/* شناسنامه - چندگانه */}
+          <div className="advanced-filter-select-wrapper">
             <div 
-              className="custom-select filter-select-with-label" 
-              onClick={() => {
-                setShowCertificateDropdown(!showCertificateDropdown);
-                setShowVaccineDropdown(false);
-                setShowSterilizeDropdown(false);
-              }}
+              className="advanced-custom-select" 
+              onClick={(e) => handleFilterClick(e, 'certificate')}
             >
-              <span className="select-placeholder-text">
-                {filterHasCertificate === "all" ? "شناسنامه" : 
-                  filterHasCertificate === "yes" ? "دارد" : "ندارد"
-                }
+              <span className="advanced-select-placeholder-text">
+                {getMultiSelectPlaceholder(
+                  selectedCertificates, 
+                  "شناسنامه", 
+                  "شناسنامه", 
+                  "وضعیت‌ها",
+                  statusOptions.length
+                )}
               </span>
             </div>
 
             {showCertificateDropdown && (
-              <div className="dropdown-menu">
-                <div className="dropdown-options-list">
+              <div className="advanced-dropdown-menu advanced-multi-select">
+                <div className="advanced-dropdown-header">
+                  <span className="advanced-multi-select-title">وضعیت شناسنامه</span>
+                </div>
+                <div className="advanced-dropdown-options-list">
+                  {/* گزینه "همه" */}
                   <div 
-                    className={`dropdown-option ${filterHasCertificate === "all" ? "selected" : ""}`}
+                    className={`advanced-dropdown-option ${selectedCertificates.length === statusOptions.length ? "selected" : ""}`}
                     onClick={() => handleCertificateSelect("all")}
                   >
-                    شناسنامه
+                    <div className="advanced-checkbox-wrapper">
+                      <div className={`advanced-checkbox ${selectedCertificates.length === statusOptions.length ? "checked" : ""}`}>
+                        {selectedCertificates.length === statusOptions.length && (
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                            <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        )}
+                      </div>
+                      <span>همه وضعیت‌ها</span>
+                    </div>
                   </div>
-                  <div 
-                    className={`dropdown-option ${filterHasCertificate === "yes" ? "selected" : ""}`}
-                    onClick={() => handleCertificateSelect("yes")}
-                  >
-                    دارد
-                  </div>
-                  <div 
-                    className={`dropdown-option ${filterHasCertificate === "no" ? "selected" : ""}`}
-                    onClick={() => handleCertificateSelect("no")}
-                  >
-                    ندارد
-                  </div>
+                  
+                  {statusOptions.map((status) => (
+                    <div 
+                      key={status.value}
+                      className={`advanced-dropdown-option ${selectedCertificates.includes(status.value) ? "selected" : ""}`}
+                      onClick={() => handleCertificateSelect(status.value)}
+                    >
+                      <div className="advanced-checkbox-wrapper">
+                        <div className={`advanced-checkbox ${selectedCertificates.includes(status.value) ? "checked" : ""}`}>
+                          {selectedCertificates.includes(status.value) && (
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                              <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          )}
+                        </div>
+                        <span>{status.label}</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
           </div>
 
-          {/* واکسیناسیون */}
-          <div className="filter-select-wrapper-new-posts">
+          {/* واکسیناسیون - چندگانه */}
+          <div className="advanced-filter-select-wrapper">
             <div 
-              className="custom-select filter-select-with-label" 
-              onClick={() => {
-                setShowVaccineDropdown(!showVaccineDropdown);
-                setShowCertificateDropdown(false);
-                setShowSterilizeDropdown(false);
-              }}
+              className="advanced-custom-select" 
+              onClick={(e) => handleFilterClick(e, 'vaccine')}
             >
-              <span className="select-placeholder-text">
-                {filterIsVaccinated === "all" ? "واکسیناسیون" : 
-                  filterIsVaccinated === "yes" ? "انجام شده" : "انجام نشده"
-                }
+              <span className="advanced-select-placeholder-text">
+                {getMultiSelectPlaceholder(
+                  selectedVaccinations, 
+                  "واکسیناسیون", 
+                  "واکسیناسیون", 
+                  "وضعیت‌ها",
+                  statusYesNoOptions.length
+                )}
               </span>
             </div>
 
             {showVaccineDropdown && (
-              <div className="dropdown-menu">
-                <div className="dropdown-options-list">
+              <div className="advanced-dropdown-menu advanced-multi-select">
+                <div className="advanced-dropdown-header">
+                  <span className="advanced-multi-select-title">وضعیت واکسیناسیون</span>
+                </div>
+                <div className="advanced-dropdown-options-list">
+                  {/* گزینه "همه" */}
                   <div 
-                    className={`dropdown-option ${filterIsVaccinated === "all" ? "selected" : ""}`}
+                    className={`advanced-dropdown-option ${selectedVaccinations.length === statusYesNoOptions.length ? "selected" : ""}`}
                     onClick={() => handleVaccineSelect("all")}
                   >
-                    واکسیناسیون
+                    <div className="advanced-checkbox-wrapper">
+                      <div className={`advanced-checkbox ${selectedVaccinations.length === statusYesNoOptions.length ? "checked" : ""}`}>
+                        {selectedVaccinations.length === statusYesNoOptions.length && (
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                            <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        )}
+                      </div>
+                      <span>همه وضعیت‌ها</span>
+                    </div>
                   </div>
-                  <div 
-                    className={`dropdown-option ${filterIsVaccinated === "yes" ? "selected" : ""}`}
-                    onClick={() => handleVaccineSelect("yes")}
-                  >
-                    انجام شده
-                  </div>
-                  <div 
-                    className={`dropdown-option ${filterIsVaccinated === "no" ? "selected" : ""}`}
-                    onClick={() => handleVaccineSelect("no")}
-                  >
-                    انجام نشده
-                  </div>
+                  
+                  {statusYesNoOptions.map((status) => (
+                    <div 
+                      key={status.value}
+                      className={`advanced-dropdown-option ${selectedVaccinations.includes(status.value) ? "selected" : ""}`}
+                      onClick={() => handleVaccineSelect(status.value)}
+                    >
+                      <div className="advanced-checkbox-wrapper">
+                        <div className={`advanced-checkbox ${selectedVaccinations.includes(status.value) ? "checked" : ""}`}>
+                          {selectedVaccinations.includes(status.value) && (
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                              <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          )}
+                        </div>
+                        <span>{status.label}</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
           </div>
 
-          {/* استریل‌سازی */}
-          <div className="filter-select-wrapper-new-posts">
+          {/* عقیم‌سازی - چندگانه */}
+          <div className="advanced-filter-select-wrapper">
             <div 
-              className="custom-select filter-select-with-label" 
-              onClick={() => {
-                setShowSterilizeDropdown(!showSterilizeDropdown);
-                setShowCertificateDropdown(false);
-                setShowVaccineDropdown(false);
-              }}
+              className="advanced-custom-select" 
+              onClick={(e) => handleFilterClick(e, 'sterilize')}
             >
-              <span className="select-placeholder-text">
-                {filterIsSterilized === "all" ? "عقیم سازی" : 
-                  filterIsSterilized === "yes" ? "انجام شده" : "انجام نشده"
-                }
+              <span className="advanced-select-placeholder-text">
+                {getMultiSelectPlaceholder(
+                  selectedSterilizations, 
+                  "عقیم سازی", 
+                  "عقیم سازی", 
+                  "وضعیت‌ها",
+                  statusYesNoOptions.length
+                )}
               </span>
             </div>
 
             {showSterilizeDropdown && (
-              <div className="dropdown-menu">
-                <div className="dropdown-options-list">
+              <div className="advanced-dropdown-menu advanced-multi-select">
+                <div className="advanced-dropdown-header">
+                  <span className="advanced-multi-select-title">وضعیت عقیم‌سازی</span>
+                </div>
+                <div className="advanced-dropdown-options-list">
+                  {/* گزینه "همه" */}
                   <div 
-                    className={`dropdown-option ${filterIsSterilized === "all" ? "selected" : ""}`}
+                    className={`advanced-dropdown-option ${selectedSterilizations.length === statusYesNoOptions.length ? "selected" : ""}`}
                     onClick={() => handleSterilizeSelect("all")}
                   >
-                    عقیم سازی
+                    <div className="advanced-checkbox-wrapper">
+                      <div className={`advanced-checkbox ${selectedSterilizations.length === statusYesNoOptions.length ? "checked" : ""}`}>
+                        {selectedSterilizations.length === statusYesNoOptions.length && (
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                            <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        )}
+                      </div>
+                      <span>همه وضعیت‌ها</span>
+                    </div>
                   </div>
-                  <div 
-                    className={`dropdown-option ${filterIsSterilized === "yes" ? "selected" : ""}`}
-                    onClick={() => handleSterilizeSelect("yes")}
-                  >
-                    انجام شده
-                  </div>
-                  <div 
-                    className={`dropdown-option ${filterIsSterilized === "no" ? "selected" : ""}`}
-                    onClick={() => handleSterilizeSelect("no")}
-                  >
-                    انجام نشده
-                  </div>
+                  
+                  {statusYesNoOptions.map((status) => (
+                    <div 
+                      key={status.value}
+                      className={`advanced-dropdown-option ${selectedSterilizations.includes(status.value) ? "selected" : ""}`}
+                      onClick={() => handleSterilizeSelect(status.value)}
+                    >
+                      <div className="advanced-checkbox-wrapper">
+                        <div className={`advanced-checkbox ${selectedSterilizations.includes(status.value) ? "checked" : ""}`}>
+                          {selectedSterilizations.includes(status.value) && (
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                              <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          )}
+                        </div>
+                        <span>{status.label}</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -485,34 +935,50 @@ export default function AdvancedFilters({
   const renderActiveFilters = () => {
     const badges = [];
 
-    if (filterAnimal !== "all") {
+    // بج‌های نوع حیوان
+    selectedAnimals.forEach((animal, index) => {
       badges.push({
-        key: "animal",
-        label: `نوع: ${filterAnimal}`,
-        className: "animal-badge",
-        onRemove: removeAnimalFilter
+        key: `animal-${index}`,
+        label: `نوع: ${animal}`,
+        className: "advanced-animal-badge",
+        onRemove: () => {
+          const newSelected = selectedAnimals.filter(item => item !== animal);
+          setSelectedAnimals(newSelected);
+          setFilterAnimal(newSelected.length > 0 ? newSelected.join(",") : "all");
+        }
       });
-    }
+    });
 
-    if (filterSex !== "all") {
+    // بج‌های جنسیت
+    selectedSexes.forEach((sex, index) => {
       badges.push({
-        key: "sex",
-        label: `جنسیت: ${filterSex}`,
-        className: "sex-badge",
-        onRemove: removeSexFilter
+        key: `sex-${index}`,
+        label: `جنسیت: ${sex}`,
+        className: "advanced-sex-badge",
+        onRemove: () => {
+          const newSelected = selectedSexes.filter(item => item !== sex);
+          setSelectedSexes(newSelected);
+          setFilterSex(newSelected.length > 0 ? newSelected.join(",") : "all");
+        }
       });
-    }
+    });
 
-    if (filterCity !== "all") {
+    // بج‌های شهر
+    selectedCities.forEach((city, index) => {
       badges.push({
-        key: "city",
-        label: `شهر: ${filterCity}`,
-        className: "city-badge",
-        onRemove: removeCityFilter
+        key: `city-${index}`,
+        label: `شهر: ${city}`,
+        className: "advanced-city-badge",
+        onRemove: () => {
+          const newSelected = selectedCities.filter(item => item !== city);
+          setSelectedCities(newSelected);
+          setFilterCity(newSelected.length > 0 ? newSelected.join(",") : "all");
+        }
       });
-    }
+    });
 
-    if (filterAge !== "all") {
+    // بج‌های سن
+    selectedAges.forEach((age, index) => {
       const ageLabels = {
         "under-1": "زیر 1 سال",
         "1-2": "1 تا 2 سال",
@@ -522,57 +988,85 @@ export default function AdvancedFilters({
         "over-7": "بالای 7 سال"
       };
       badges.push({
-        key: "age",
-        label: `سن: ${ageLabels[filterAge]}`,
-        className: "age-badge",
-        onRemove: removeAgeFilter
+        key: `age-${index}`,
+        label: `سن: ${ageLabels[age]}`,
+        className: "advanced-age-badge",
+        onRemove: () => {
+          const newSelected = selectedAges.filter(item => item !== age);
+          setSelectedAges(newSelected);
+          setFilterAge(newSelected.length > 0 ? newSelected.join(",") : "all");
+        }
       });
-    }
+    });
 
     // فقط فیلترهای سرپرستی را در تب سرپرستی نشان بده
     if (activeFilter === "سرپرستی") {
-      if (filterHasCertificate !== "all") {
+      // بج‌های شناسنامه
+      selectedCertificates.forEach((cert, index) => {
         badges.push({
-          key: "certificate",
-          label: `گواهی تولد: ${filterHasCertificate === "yes" ? "دارد" : "ندارد"}`,
-          className: "certificate-badge",
-          onRemove: removeCertificateFilter
+          key: `certificate-${index}`,
+          label: `شناسنامه: ${cert === "yes" ? "دارد" : "ندارد"}`,
+          className: "advanced-certificate-badge",
+          onRemove: () => {
+            const newSelected = selectedCertificates.filter(item => item !== cert);
+            setSelectedCertificates(newSelected);
+            setFilterHasCertificate(newSelected.length > 0 ? newSelected.join(",") : "all");
+          }
         });
-      }
+      });
 
-      if (filterIsVaccinated !== "all") {
+      selectedVaccinations.forEach((vaccine, index) => {
         badges.push({
-          key: "vaccine",
-          label: `واکسیناسیون: ${filterIsVaccinated === "yes" ? "انجام شده" : "انجام نشده"}`,
-          className: "vaccine-badge",
-          onRemove: removeVaccinationFilter
+          key: `vaccine-${index}`,
+          label: `واکسیناسیون: ${vaccine === "yes" ? "انجام شده" : "انجام نشده"}`,
+          className: "advanced-vaccine-badge",
+          onRemove: () => {
+            const newSelected = selectedVaccinations.filter(item => item !== vaccine);
+            setSelectedVaccinations(newSelected);
+            setFilterIsVaccinated(newSelected.length > 0 ? newSelected.join(",") : "all");
+          }
         });
-      }
+      });
 
-      if (filterIsSterilized !== "all") {
+      selectedSterilizations.forEach((sterilize, index) => {
         badges.push({
-          key: "sterilize",
-          label: `استریل‌سازی: ${filterIsSterilized === "yes" ? "انجام شده" : "انجام نشده"}`,
-          className: "sterilize-badge",
-          onRemove: removeSterilizationFilter
+          key: `sterilize-${index}`,
+          label: `عقیم‌سازی: ${sterilize === "yes" ? "انجام شده" : "انجام نشده"}`,
+          className: "advanced-sterilize-badge",
+          onRemove: () => {
+            const newSelected = selectedSterilizations.filter(item => item !== sterilize);
+            setSelectedSterilizations(newSelected);
+            setFilterIsSterilized(newSelected.length > 0 ? newSelected.join(",") : "all");
+          }
         });
-      }
+      });
     }
 
     if (badges.length === 0) return null;
 
     return (
-      <div className="active-filters-display-new-posts">
-        <span className="active-filters-label-new-posts">فیلترهای فعال:</span>
-        <div className="active-filters-badges-new-posts">
+      <div className="advanced-active-filters-display">
+        <div className="advanced-active-filters-header">
+          <span className="advanced-active-filters-label">
+            {badges.length} فیلتر فعال:
+          </span>
+          <button 
+            className="advanced-clear-filters-btn"
+            onClick={handleClearAllFilters}
+          >
+            <img src="/src/assets/icons/close.svg" alt="پاک کردن" className="advanced-clear-icon" />
+            پاک کردن همه فیلترها
+          </button>
+        </div>
+        <div className="advanced-active-filters-badges">
           {badges.map((badge) => (
             <div 
               key={badge.key} 
-              className={`active-filter-badge-new-posts ${badge.className}`}
+              className={`advanced-active-filter-badge ${badge.className}`}
             >
               <span>{badge.label}</span>
               <button 
-                className="remove-filter-btn"
+                className="advanced-remove-filter-btn"
                 onClick={badge.onRemove}
               >
                 <img src="/src/assets/icons/close.svg" alt="حذف" />
@@ -580,24 +1074,46 @@ export default function AdvancedFilters({
             </div>
           ))}
         </div>
-        {badges.length > 0 && (
-          <button 
-            className="clear-filters-btn-new-posts"
-            onClick={clearAllFilters}
-          >
-            <img src="/src/assets/icons/close.svg" alt="پاک کردن" className="clear-icon" />
-            پاک کردن همه فیلترها
-          </button>
-        )}
       </div>
     );
   };
 
   return (
-    <div className="filters-section-new-posts">
-      {renderMainFilters()}
-      {renderAdoptionFilters()}
-      {renderActiveFilters()}
+    <div className="advanced-filters-container" ref={dropdownRef}>
+      <div className={`advanced-toggle-box ${isOpen ? 'advanced-open' : ''} ${getActiveFiltersCount() > 0 ? 'advanced-active' : 'advanced-inactive'}`}>
+        <div 
+          className="advanced-toggle-content"
+          onClick={handleToggleClick}
+        >
+          <div className="advanced-toggle-title">
+            <div className="advanced-toggle-icon-wrapper">
+              <img src="/src/assets/icons/filter-search.svg" alt="filter" className="advanced-toggle-icon" />
+            </div>
+            <div className="advanced-toggle-texts">
+              <span className="advanced-toggle-text">فیلترهای پیشرفته</span>
+              <span className="advanced-toggle-description">
+                {getFiltersDescription()}
+              </span>
+            </div>
+          </div>
+          
+          <div className={`advanced-toggle-arrow ${isOpen ? "open" : ""}`}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M19 9L12 16L5 9" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+        </div>
+        
+        {isOpen && (
+          <div className="advanced-options-wrapper">
+            {renderMainFilters()}
+            {renderAdoptionFilters()}
+            {renderActiveFilters()}
+          </div>
+        )}
+      </div>
     </div>
   );
-}
+};
+
+export default AdvancedFilters;

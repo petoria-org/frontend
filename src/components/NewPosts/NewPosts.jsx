@@ -50,9 +50,7 @@ export default function NewPosts() {
   const [filterIsSterilized, setFilterIsSterilized] = useState("all");
   
   const [sortOrder, setSortOrder] = useState("");
-  const [isSortEnabled, setIsSortEnabled] = useState(true); 
-  
-  const [showFilters, setShowFilters] = useState(false);
+  const [isSortEnabled, setIsSortEnabled] = useState(true);
 
   const activeFiltersCount = [
     filterAnimal !== "all",
@@ -416,64 +414,25 @@ export default function NewPosts() {
         </div>
       </div>
 
-      <div className="filters-toggle-container-new-posts">
-        <div 
-          className={`filters-toggle-box-new-posts ${showFilters ? 'filters-open' : ''}`}
-          onClick={(e) => {
-            const target = e.target;
-            const isTitle = target.closest('.filters-toggle-title');
-            const isArrow = target.closest('.filters-toggle-arrow');
-            
-            if (isTitle || isArrow) {
-              setShowFilters(!showFilters);
-            }
-          }}
-        >
-          <div className="filters-toggle-content">
-            <div className="filters-toggle-title">
-              <img src="/src/assets/icons/filter-search.svg" alt="filter" className="filters-toggle-icon" />
-              <span className="filters-toggle-text">فیلترهای پیشرفته</span>
-              {activeFiltersCount > 0 && (
-                <span className="active-filters-count-toggle">
-                  {activeFiltersCount} فیلتر فعال
-                </span>
-              )}
-            </div>
-            <div className={`filters-toggle-arrow ${showFilters ? "open" : ""}`}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M19 9L12 16L5 9" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-          </div>
-        
-          {showFilters && (
-            <div 
-              className="filters-content-wrapper"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <AdvancedFilters
-                activeFilter={activeFilter}
-                filterAnimal={filterAnimal}
-                setFilterAnimal={setFilterAnimal}
-                filterSex={filterSex}
-                setFilterSex={setFilterSex}
-                filterCity={filterCity}
-                setFilterCity={setFilterCity}
-                filterAge={filterAge}
-                setFilterAge={setFilterAge}
-                filterHasCertificate={filterHasCertificate}
-                setFilterHasCertificate={setFilterHasCertificate}
-                filterIsVaccinated={filterIsVaccinated}
-                setFilterIsVaccinated={setFilterIsVaccinated}
-                filterIsSterilized={filterIsSterilized}
-                setFilterIsSterilized={setFilterIsSterilized}
-                clearAllFilters={clearAllFilters}
-                activeFiltersCount={activeFiltersCount}
-              />
-            </div>
-          )}
-        </div>
-      </div>
+      <AdvancedFilters
+        activeFilter={activeFilter}
+        filterAnimal={filterAnimal}
+        setFilterAnimal={setFilterAnimal}
+        filterSex={filterSex}
+        setFilterSex={setFilterSex}
+        filterCity={filterCity}
+        setFilterCity={setFilterCity}
+        filterAge={filterAge}
+        setFilterAge={setFilterAge}
+        filterHasCertificate={filterHasCertificate}
+        setFilterHasCertificate={setFilterHasCertificate}
+        filterIsVaccinated={filterIsVaccinated}
+        setFilterIsVaccinated={setFilterIsVaccinated}
+        filterIsSterilized={filterIsSterilized}
+        setFilterIsSterilized={setFilterIsSterilized}
+        clearAllFilters={clearAllFilters}
+        activeFiltersCount={activeFiltersCount}
+      />
 
       <SortFilters
         sortOrder={sortOrder}

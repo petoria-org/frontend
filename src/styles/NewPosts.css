@@ -310,106 +310,31 @@
   box-shadow: 0 4px 12px rgba(9, 104, 189, 0.2);
 }
 
-.filters-toggle-container-new-posts {
-  margin: 20px 0;
-  position: relative;
+.ad-card-new-posts,
+.filter-button,
+.search-box-new-posts input,
+.view-details-btn-new-posts {
+  transition: all 0.2s ease-in-out;
 }
 
-.filters-toggle-box-new-posts {
-  background: #F0F0F0;
-  border-radius: 14px;
-  padding: 16px 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 2px solid #E5E5E5;
-  position: relative;
-  overflow: visible !important;
+.filter-button:focus,
+.view-details-btn-new-posts:focus {
+  outline: 2px solid #4d8ac5;
+  outline-offset: 2px;
 }
 
-.filters-toggle-box-new-posts:hover {
-  background-color: #e8e8e8;
-}
-
-.filters-toggle-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: relative;
-  z-index: 1;
-}
-
-.filters-toggle-title {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  direction: rtl;
-}
-
-.filters-toggle-icon {
-  width: 18px;
-  height: 18px;
-  filter: brightness(0) saturate(100%) invert(30%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(50%) contrast(80%);
-}
-
-.filters-toggle-text {
-  font-size: 15px;
-  font-weight: 600;
+.error-message-new-posts,
+.loading-message-new-posts {
+  text-align: center;
+  padding: 20px;
   color: #555;
+  background: #f8f8f8;
+  border-radius: 10px;
+  margin: 20px 0;
 }
 
-.active-filters-count-toggle {
-  background: #555;
-  color: white;
-  padding: 4px 10px;
-  border-radius: 16px;
-  font-size: 11px;
-  font-weight: 500;
-}
-
-.filters-toggle-arrow {
-  transition: transform 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-}
-
-.filters-toggle-arrow.open {
-  transform: rotate(180deg);
-}
-
-.filters-toggle-arrow svg {
-  width: 14px;
-  height: 14px;
-}
-
-.filters-toggle-arrow svg path {
-  stroke: #666;
-  stroke-width: 2;
-}
-
-.filters-content-wrapper {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid #D5D5D5;
-  animation: slideDown 0.3s ease-out;
-  position: relative;
-  z-index: 2;
-  overflow: visible !important;
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    max-height: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    max-height: 1000px;
-    transform: translateY(0);
-  }
+.loading-message-new-posts {
+  color: #0968BD;
 }
 
 @media (max-width: 1024px) {
@@ -435,39 +360,6 @@
   .search-container-new-posts {
     flex-direction: column;
     gap: 10px;
-  }
-
-  .filters-toggle-box-new-posts {
-    padding: 14px 18px;
-  }
-  
-  .filters-toggle-text {
-    font-size: 14px;
-  }
-  
-  .filters-toggle-icon {
-    width: 16px;
-    height: 16px;
-  }
-  
-  .filters-toggle-arrow {
-    width: 22px;
-    height: 22px;
-  }
-  
-  .filters-toggle-arrow svg {
-    width: 12px;
-    height: 12px;
-  }
-  
-  .filters-content-wrapper {
-    margin-top: 12px;
-    padding-top: 12px;
-  }
-  
-  .active-filters-count-toggle {
-    font-size: 10px;
-    padding: 1px 6px;
   }
 }
 
@@ -505,63 +397,4 @@
   .search-box-new-posts input {
     padding: 10px 14px;
   }
-
-  .filters-toggle-box-new-posts {
-    padding: 12px 16px;
-  }
-  
-  .filters-toggle-text {
-    font-size: 13px;
-  }
-  
-  .filters-toggle-title {
-    gap: 10px;
-  }
-  
-  .filters-toggle-icon {
-    width: 14px;
-    height: 14px;
-  }
-  
-  .filters-toggle-arrow {
-    width: 20px;
-    height: 20px;
-  }
-  
-  .filters-toggle-arrow svg {
-    width: 10px;
-    height: 10px;
-  }
-  
-  .active-filters-count-toggle {
-    font-size: 9px;
-    padding: 1px 5px;
-  }
-}
-
-.ad-card-new-posts,
-.filter-button,
-.search-box-new-posts input,
-.view-details-btn-new-posts {
-  transition: all 0.2s ease-in-out;
-}
-
-.filter-button:focus,
-.view-details-btn-new-posts:focus {
-  outline: 2px solid #4d8ac5;
-  outline-offset: 2px;
-}
-
-.error-message-new-posts,
-.loading-message-new-posts {
-  text-align: center;
-  padding: 20px;
-  color: #555;
-  background: #f8f8f8;
-  border-radius: 10px;
-  margin: 20px 0;
-}
-
-.loading-message-new-posts {
-  color: #0968BD;
 }
