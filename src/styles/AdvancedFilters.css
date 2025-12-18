@@ -1,0 +1,438 @@
+.filters-section-new-posts {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  border: none;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  overflow: visible !important;
+  font-family: Vazirmatn, Tahoma, sans-serif;
+}
+
+.main-filters-grid-new-posts {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.filter-select-wrapper-new-posts {
+  position: relative;
+  width: 100%;
+}
+
+.custom-select {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 16px;
+  border: 1px solid #D5D5D5;
+  border-radius: 8px;
+  background: white;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 16px center;
+  background-size: 14px;
+  padding-left: 36px;
+  direction: rtl;
+  text-align: right;
+  justify-content: flex-end;
+  font-family: Vazirmatn, Tahoma, sans-serif;
+}
+
+.filter-select-with-label {
+  padding-top: 8px; 
+}
+
+.custom-select:hover {
+  border-color: #888;
+}
+
+.custom-select:focus {
+  outline: none;
+  border-color: #888;
+  box-shadow: 0 0 0 2px rgba(136, 136, 136, 0.1);
+}
+
+.custom-select::before {
+  content: attr(data-label);
+  position: absolute;
+  top: -6px;
+  right: 10px;
+  font-size: 10px;
+  color: #777;
+  background: white;
+  padding: 0 4px;
+  z-index: 2;
+  font-weight: 500;
+  font-family: Vazirmatn, Tahoma, sans-serif;
+}
+
+.select-placeholder-text {
+  display: block;
+  width: 100%;
+  text-align: right;
+  color: #444;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.custom-select .select-placeholder-text[data-content]:empty::before,
+.custom-select:has(.select-placeholder-text:contains("انتخاب کنید")) .select-placeholder-text {
+  color: #777 !important;
+}
+
+.dropdown-menu {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  right: 0 !important;
+  background: white;
+  border: 1px solid #D5D5D5;
+  border-radius: 8px;
+  margin-top: 4px !important;
+  z-index: 99999 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  max-height: 300px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  width: 100% !important;
+  box-sizing: border-box;
+  animation: slideDown 0.2s ease-out;
+}
+
+.city-dropdown {
+  max-height: 350px; 
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-search-container {
+  padding: 12px;
+  border-bottom: 1px solid #E5E5E5;
+  background: #F8F8F8;
+  position: relative;
+}
+
+.dropdown-search-icon {
+  position: absolute;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  color: #777;
+}
+
+.dropdown-search-input {
+  width: 100%;
+  padding: 10px 40px 10px 12px;
+  border: 1px solid #D5D5D5;
+  border-radius: 6px;
+  font-size: 13px;
+  direction: rtl;
+  background: white;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  border: none;
+  font-family: Vazirmatn, Tahoma, sans-serif;
+}
+
+.dropdown-search-input:focus {
+  outline: none;
+  border-color: #888;
+  box-shadow: 0 0 0 2px rgba(136, 136, 136, 0.1);
+}
+
+.dropdown-options-list {
+  overflow-y: auto;
+  max-height: 250px;
+  padding: 4px;
+}
+
+.city-dropdown .dropdown-options-list {
+  max-height: 280px;
+}
+
+.dropdown-option {
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  direction: rtl;
+  text-align: right;
+  border-radius: 6px;
+  margin: 2px;
+  color: #444;
+  font-size: 13px;
+  font-family: Vazirmatn, Tahoma, sans-serif;
+}
+
+.dropdown-option:hover {
+  background: #F0F0F0;
+}
+
+.dropdown-option.selected {
+  background: #E5E5E5;
+  color: #333;
+  font-weight: 500;
+}
+
+.no-option-found {
+  padding: 20px;
+  text-align: center;
+  color: #777;
+  font-style: italic;
+  font-size: 13px;
+  font-family: Vazirmatn, Tahoma, sans-serif;
+}
+
+.active-filters-display-new-posts {
+  padding-top: 16px;
+  border-top: 1px solid #E0E0E0;
+  margin-top: 20px;
+}
+
+.active-filters-label-new-posts {
+  color: #555;
+  font-weight: 500;
+  font-size: 14px;
+  margin-bottom: 8px;
+  display: block;
+  font-family: Vazirmatn, Tahoma, sans-serif;
+}
+
+.active-filters-badges-new-posts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.active-filter-badge-new-posts {
+  padding: 6px 10px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #D5D5D5;
+  background: #EDEDED;
+  color: #444;
+  font-family: Vazirmatn, Tahoma, sans-serif;
+}
+
+.remove-filter-btn {
+  background: #E5E5E5;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  transition: all 0.2s;
+  font-size: 10px;
+}
+
+.remove-filter-btn:hover {
+  background: #D0D0D0;
+}
+
+.remove-filter-btn img {
+  width: 8px;
+  height: 8px;
+  filter: brightness(0) saturate(100%) invert(30%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(30%) contrast(100%);
+}
+
+.animal-badge {
+  background: #EDEDED;
+  color: #444;
+}
+
+.sex-badge {
+  background: #E8E8E8;
+  color: #444;
+}
+
+.city-badge {
+  background: #F0F0F0;
+  color: #444;
+}
+
+.age-badge {
+  background: #F5F5F5;
+  color: #444;
+}
+
+.certificate-badge {
+  background: #EAEAEA;
+  color: #444;
+}
+
+.vaccine-badge {
+  background: #EFEFEF;
+  color: #444;
+}
+
+.sterilize-badge {
+  background: #F3F3F3;
+  color: #444;
+}
+
+.clear-filters-btn-new-posts {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #E7E7E7;
+  color: #333;
+  border: 1px solid #D0D0D0;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 10px;
+  border: none;
+  font-family: Vazirmatn, Tahoma, sans-serif;
+}
+
+.clear-filters-btn-new-posts:hover {
+  background: #DDDDDD;
+  border-color: #B0B0B0;
+}
+
+.clear-icon {
+  width: 14px;
+  height: 14px;
+  filter: brightness(0) saturate(100%) invert(30%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(30%) contrast(100%);
+}
+
+.adoption-specific-filters {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #E0E0E0;
+}
+
+.filters-subtitle-new-posts {
+  margin: 0 0 12px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #E0E0E0;
+}
+
+.filters-subtitle-new-posts h4 {
+  color: #555;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+  font-family: Vazirmatn, Tahoma, sans-serif;
+}
+
+.adoption-filters-grid-new-posts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 1200px) {
+  .main-filters-grid-new-posts,
+  .adoption-filters-grid-new-posts {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .main-filters-grid-new-posts,
+  .adoption-filters-grid-new-posts {
+    grid-template-columns: 1fr;
+  }
+  
+  .active-filter-badge-new-posts {
+    font-size: 11px;
+    padding: 5px 8px;
+  }
+  
+  .custom-select {
+    padding: 10px 14px;
+    padding-left: 32px;
+    font-size: 12px;
+    background-position: left 14px center;
+  }
+  
+  .dropdown-menu {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 90% !important;
+    max-width: 400px !important;
+    max-height: 70vh !important;
+    z-index: 100000 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .custom-select {
+    font-size: 11px;
+    padding: 8px 12px;
+    padding-left: 28px;
+    background-position: left 12px center;
+    background-size: 12px;
+  }
+  
+  .custom-select::before {
+    font-size: 9px;
+    top: -5px;
+    right: 8px;
+  }
+  
+  .active-filter-badge-new-posts {
+    font-size: 10px;
+    padding: 4px 6px;
+  }
+  
+  .remove-filter-btn {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .remove-filter-btn img {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .dropdown-search-input {
+    font-size: 11px;
+    padding: 8px 36px 8px 8px;
+  }
+  
+  .dropdown-option {
+    font-size: 11px;
+    padding: 8px 10px;
+  }
+}

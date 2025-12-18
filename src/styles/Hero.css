@@ -1,5 +1,5 @@
 .hero-container {
-  height:430px ;
+  height: 430px;
   width: 98%;
   margin: 80px auto 0 auto;
   background-color: #55A5EC;
@@ -37,7 +37,6 @@
   z-index: -1;
 }
 
-
 .hero-title {
   font-size: 1.875rem;
   font-weight: bold;
@@ -64,6 +63,7 @@
   width: 60%;
   height: 60px;
   gap: 12px;
+  flex-direction: row-reverse; /* تغییر جهت برای چینش فارسی */
 }
 
 .search-button {
@@ -81,7 +81,8 @@
   font-size: 1rem;
   transition: background-color 0.3s ease;
   white-space: nowrap;
-  order: 1;
+  order: 2;
+  flex-direction: row-reverse; /* آیکون سمت راست متن */
 }
 
 .search-text {
@@ -107,7 +108,7 @@
   height: 40px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   align-items: center;
-  order: 2;
+  order: 1;
 }
 
 .hero-search-input {
@@ -143,13 +144,14 @@
   }
   
   .search-button {
-    order: 2;
+    order: 1;
     width: 100%;
     justify-content: center;
+    flex-direction: row-reverse;
   }
   
   .search-gray-container {
-    order: 1;
+    order: 2;
   }
   
   .hero-search-input {

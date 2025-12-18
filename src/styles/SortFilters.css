@@ -1,0 +1,257 @@
+.sort-filters-container {
+  margin: 15px 0;
+}
+
+.sort-toggle-box {
+  background: #F0F0F0;
+  border-radius: 14px;
+  padding: 16px 20px;
+  border: 2px solid #E5E5E5;
+  transition: all 0.3s ease;
+}
+
+.sort-toggle-box:hover {
+  background-color: #e8e8e8;
+  border-color: #D0D0D0;
+}
+
+
+.sort-toggle-box.inactive {
+  border-color: #E5E5E5;
+  background: #F0F0F0;
+}
+
+.sort-toggle-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.sort-toggle-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  direction: rtl;
+  flex: 1;
+}
+
+.sort-toggle-icon {
+  width: 20px;
+  height: 20px;
+  filter: brightness(0) saturate(100%) invert(30%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(50%) contrast(80%);
+}
+
+.sort-toggle-box.active .sort-toggle-icon {
+  filter: brightness(0) saturate(100%) invert(20%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(30%) contrast(100%);
+}
+
+.sort-toggle-texts {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.sort-toggle-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: #555;
+}
+
+.sort-toggle-box.active .sort-toggle-text {
+  color: #333;
+  font-weight: 700;
+}
+
+.sort-toggle-description {
+  font-size: 13px;
+  color: #777;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.sort-toggle-box.active .sort-toggle-description {
+  color: #555;
+  font-weight: 500;
+}
+
+.sort-toggle-arrow {
+  transition: transform 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.sort-toggle-arrow.open {
+  transform: rotate(180deg);
+}
+
+.sort-toggle-arrow svg {
+  width: 16px;
+  height: 16px;
+}
+
+.sort-toggle-arrow svg path {
+  stroke: #666;
+  stroke-width: 2;
+}
+
+.sort-toggle-box.active .sort-toggle-arrow svg path {
+  stroke: #444;
+}
+
+.sort-options-wrapper {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #D5D5D5;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    max-height: 500px;
+    transform: translateY(0);
+  }
+}
+
+.sort-options-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.sort-option-btn {
+  display: flex;
+  padding: 14px;
+  background: white;
+  border: 2px solid #E0E0E0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: right;
+  direction: rtl;
+  color: #555;
+  width: 100%;
+}
+
+.sort-option-btn:hover {
+  background: #F8F8F8;
+  border-color: #C0C0C0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.sort-option-btn.active {
+  background: #E8E8E8;
+  border-color: #888;
+  color: #333;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.sort-option-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.sort-option-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #444;
+}
+
+.sort-option-btn.active .sort-option-label {
+  color: #222;
+  font-weight: 700;
+}
+
+.sort-option-desc {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+  font-weight: 400;
+}
+
+.sort-option-btn.active .sort-option-desc {
+  color: #555;
+  font-weight: 500;
+}
+
+@media (max-width: 1200px) {
+  .sort-options-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .sort-toggle-box {
+    padding: 14px 18px;
+  }
+  
+  .sort-toggle-text {
+    font-size: 15px;
+  }
+  
+  .sort-toggle-description {
+    font-size: 12px;
+  }
+  
+  .sort-toggle-icon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .sort-options-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .sort-option-btn {
+    padding: 12px;
+  }
+  
+  .sort-option-label {
+    font-size: 13px;
+  }
+  
+  .sort-option-desc {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sort-toggle-box {
+    padding: 12px 16px;
+  }
+  
+  .sort-toggle-text {
+    font-size: 14px;
+  }
+  
+  .sort-toggle-title {
+    gap: 10px;
+  }
+  
+  .sort-toggle-icon {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .sort-options-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .sort-option-btn {
+    padding: 10px 14px;
+  }
+}
