@@ -8,6 +8,7 @@
   padding: 16px 20px;
   border: 2px solid #E5E5E5;
   transition: all 0.3s ease;
+  margin-bottom: 24px;
 }
 
 .sort-toggle-box:hover {
