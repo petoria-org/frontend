@@ -872,12 +872,6 @@
   }
 }
 
-.advanced-filters-subtitle {
-  margin: 0 0 16px 0;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #e1e8f0;
-  animation: advancedSubtitleSlide 0.4s ease-out 0.4s both;
-}
 
 @keyframes advancedSubtitleSlide {
   from {
@@ -890,16 +884,6 @@
   }
 }
 
-.advanced-filters-subtitle h4 {
-  color: #2c3e50;
-  font-size: 15px;
-  font-weight: 600;
-  margin: 0;
-  font-family: Vazirmatn, Tahoma, sans-serif;
-  position: relative;
-  display: inline-block;
-  animation: advancedSubtitleUnderline 3s ease-in-out infinite;
-}
 
 @keyframes advancedSubtitleUnderline {
   0%, 100% {
@@ -910,16 +894,6 @@
   }
 }
 
-.advanced-filters-subtitle h4::after {
-  content: '';
-  position: absolute;
-  bottom: -8px;
-  right: 0;
-  width: 40px;
-  height: 2px;
-  background: linear-gradient(90deg, #7ab3e0, #94c5e3);
-  animation: advancedSubtitleLine 3s ease-in-out infinite;
-}
 
 @keyframes advancedSubtitleLine {
   0%, 100% {
@@ -1370,7 +1344,7 @@
 
 .advanced-multi-select-title {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 400;
   color: #2c3e50;
   font-family: Vazirmatn, Tahoma, sans-serif;
   display: block;

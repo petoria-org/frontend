@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import "../../styles/AdvancedFilters.css";
 
@@ -31,6 +32,7 @@ const AdvancedFilters = ({
   const [citySearchTerm, setCitySearchTerm] = useState("");
 
   const dropdownRef = useRef(null);
+  const lastToggleTime = useRef(0);
 
   const [selectedAnimals, setSelectedAnimals] = useState(
     filterAnimal === "all" ? [] : filterAnimal.split(",").filter(item => item.trim())
@@ -91,6 +93,19 @@ const AdvancedFilters = ({
     city.includes(citySearchTerm)
   );
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        closeAllDropdowns();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const closeAllDropdowns = () => {
     setShowAnimalDropdown(false);
     setShowSexDropdown(false);
@@ -102,42 +117,71 @@ const AdvancedFilters = ({
     setCitySearchTerm("");
   };
 
-  const handleToggleClick = () => {
-    if (isOpen) {
-      closeAllDropdowns();
-    }
-    setIsOpen(!isOpen);
+  const closeFilterDashboard = () => {
+    closeAllDropdowns();
+    setIsOpen(false);
   };
 
-  const handleAnimalSelect = (animal) => {
-    let newSelected;
-    
-    if (animal === "all") {
-      if (selectedAnimals.length === animals.length) {
-        newSelected = [];
-      } else {
-        newSelected = [...animals];
-      }
-    } else {
-      newSelected = selectedAnimals.includes(animal)
-        ? selectedAnimals.filter(item => item !== animal)
-        : [...selectedAnimals, animal];
+  const handleToggleClick = () => {
+    const now = Date.now();
+
+    if (isOpen) {
+      closeFilterDashboard();
+      return;
     }
-    
-    setSelectedAnimals(newSelected);
-    setFilterAnimal(newSelected.length > 0 ? newSelected.join(",") : "all");
+ 
+    setIsOpen(true);
+    lastToggleTime.current = now;
   };
+
+
+const handleAnimalSelect = (animal) => {
+  let newSelected;
+  
+  if (animal === "all") {
+    const allSelected = selectedAnimals.length === animals.length;
+
+    if (allSelected) {
+      newSelected = [];
+      setShowAnimalDropdown(false);
+    } 
+    
+    else {
+      newSelected = [...animals];
+    }
+  } 
+  
+  else {
+    newSelected = selectedAnimals.includes(animal)
+      ? selectedAnimals.filter(item => item !== animal)
+      : [...selectedAnimals, animal];
+  }
+  
+  setSelectedAnimals(newSelected);
+  setFilterAnimal(newSelected.length > 0 ? newSelected.join(",") : "all");
+  lastToggleTime.current = Date.now();
+
+  setShowAnimalDropdown(false);
+};
+
 
   const handleSexSelect = (sex) => {
     let newSelected;
     
     if (sex === "all") {
-      if (selectedSexes.length === sexes.length) {
+      const allSelected = selectedSexes.length === sexes.length;
+      
+      if (allSelected && Date.now() - lastToggleTime.current < 1000) {
         newSelected = [];
-      } else {
+        closeFilterDashboard();
+      } 
+      
+      else {
         newSelected = [...sexes];
       }
-    } else {
+    } 
+    
+    else {
       newSelected = selectedSexes.includes(sex)
         ? selectedSexes.filter(item => item !== sex)
         : [...selectedSexes, sex];
@@ -145,6 +189,7 @@ const AdvancedFilters = ({
     
     setSelectedSexes(newSelected);
     setFilterSex(newSelected.length > 0 ? newSelected.join(",") : "all");
+    lastToggleTime.current = Date.now();
   };
 
   const handleCitySelect = (city) => {
@@ -152,12 +197,19 @@ const AdvancedFilters = ({
     
     if (city === "all") {
       const citiesToToggle = citySearchTerm ? filteredCities : cities;
-      if (selectedCities.length === citiesToToggle.length) {
+      const allSelected = selectedCities.length === citiesToToggle.length;
+      
+      if (allSelected && Date.now() - lastToggleTime.current < 1000) {
         newSelected = [];
-      } else {
+        closeFilterDashboard();
+      } 
+      
+      else {
         newSelected = [...citiesToToggle];
       }
-    } else {
+    } 
+    
+    else {
       newSelected = selectedCities.includes(city)
         ? selectedCities.filter(item => item !== city)
         : [...selectedCities, city];
@@ -165,6 +217,7 @@ const AdvancedFilters = ({
     
     setSelectedCities(newSelected);
     setFilterCity(newSelected.length > 0 ? newSelected.join(",") : "all");
+    lastToggleTime.current = Date.now();
   };
 
   const handleAgeSelect = (ageValue) => {
@@ -172,12 +225,19 @@ const AdvancedFilters = ({
     
     if (ageValue === "all") {
       const allAgeValues = ageOptions.map(age => age.value);
-      if (selectedAges.length === allAgeValues.length) {
+      const allSelected = selectedAges.length === allAgeValues.length;
+      
+      if (allSelected && Date.now() - lastToggleTime.current < 1000) {
         newSelected = [];
-      } else {
+        closeFilterDashboard();
+      } 
+      
+      else {
         newSelected = [...allAgeValues];
       }
-    } else {
+    } 
+    
+    else {
       newSelected = selectedAges.includes(ageValue)
         ? selectedAges.filter(item => item !== ageValue)
         : [...selectedAges, ageValue];
@@ -185,6 +245,7 @@ const AdvancedFilters = ({
     
     setSelectedAges(newSelected);
     setFilterAge(newSelected.length > 0 ? newSelected.join(",") : "all");
+    lastToggleTime.current = Date.now();
   };
 
   const handleCertificateSelect = (certificate) => {
@@ -192,12 +253,19 @@ const AdvancedFilters = ({
     
     if (certificate === "all") {
       const allStatusValues = statusOptions.map(status => status.value);
-      if (selectedCertificates.length === allStatusValues.length) {
+      const allSelected = selectedCertificates.length === allStatusValues.length;
+
+      if (allSelected && Date.now() - lastToggleTime.current < 1000) {
         newSelected = [];
-      } else {
+        closeFilterDashboard();
+      } 
+      
+      else {
         newSelected = [...allStatusValues];
       }
-    } else {
+    } 
+    
+    else {
       newSelected = selectedCertificates.includes(certificate)
         ? selectedCertificates.filter(item => item !== certificate)
         : [...selectedCertificates, certificate];
@@ -205,6 +273,7 @@ const AdvancedFilters = ({
     
     setSelectedCertificates(newSelected);
     setFilterHasCertificate(newSelected.length > 0 ? newSelected.join(",") : "all");
+    lastToggleTime.current = Date.now();
   };
 
   const handleVaccineSelect = (vaccine) => {
@@ -212,12 +281,19 @@ const AdvancedFilters = ({
     
     if (vaccine === "all") {
       const allStatusValues = statusYesNoOptions.map(status => status.value);
-      if (selectedVaccinations.length === allStatusValues.length) {
+      const allSelected = selectedVaccinations.length === allStatusValues.length;
+
+      if (allSelected && Date.now() - lastToggleTime.current < 1000) {
         newSelected = [];
-      } else {
+        closeFilterDashboard();
+      } 
+      
+      else {
         newSelected = [...allStatusValues];
       }
-    } else {
+    } 
+    
+    else {
       newSelected = selectedVaccinations.includes(vaccine)
         ? selectedVaccinations.filter(item => item !== vaccine)
         : [...selectedVaccinations, vaccine];
@@ -225,6 +301,7 @@ const AdvancedFilters = ({
     
     setSelectedVaccinations(newSelected);
     setFilterIsVaccinated(newSelected.length > 0 ? newSelected.join(",") : "all");
+    lastToggleTime.current = Date.now();
   };
 
   const handleSterilizeSelect = (sterilize) => {
@@ -232,12 +309,19 @@ const AdvancedFilters = ({
     
     if (sterilize === "all") {
       const allStatusValues = statusYesNoOptions.map(status => status.value);
-      if (selectedSterilizations.length === allStatusValues.length) {
+      const allSelected = selectedSterilizations.length === allStatusValues.length;
+
+      if (allSelected && Date.now() - lastToggleTime.current < 1000) {
         newSelected = [];
-      } else {
+        closeFilterDashboard();
+      } 
+      
+      else {
         newSelected = [...allStatusValues];
       }
-    } else {
+    } 
+    
+    else {
       newSelected = selectedSterilizations.includes(sterilize)
         ? selectedSterilizations.filter(item => item !== sterilize)
         : [...selectedSterilizations, sterilize];
@@ -245,6 +329,7 @@ const AdvancedFilters = ({
     
     setSelectedSterilizations(newSelected);
     setFilterIsSterilized(newSelected.length > 0 ? newSelected.join(",") : "all");
+    lastToggleTime.current = Date.now();
   };
 
   const removeAnimalFilter = () => {
@@ -315,9 +400,13 @@ const AdvancedFilters = ({
     if (selectedAnimals.length > 0) {
       if (selectedAnimals.length === 1) {
         filters.push(`نوع: ${selectedAnimals[0]}`);
-      } else if (selectedAnimals.length === animals.length) {
+      } 
+      
+      else if (selectedAnimals.length === animals.length) {
         filters.push(`نوع: همه`);
-      } else {
+      } 
+      
+      else {
         filters.push(`نوع: ${selectedAnimals.length} مورد`);
       }
     }
@@ -325,9 +414,13 @@ const AdvancedFilters = ({
     if (selectedSexes.length > 0) {
       if (selectedSexes.length === 1) {
         filters.push(`جنسیت: ${selectedSexes[0]}`);
-      } else if (selectedSexes.length === sexes.length) {
+      } 
+      
+      else if (selectedSexes.length === sexes.length) {
         filters.push(`جنسیت: همه`);
-      } else {
+      } 
+      
+      else {
         filters.push(`جنسیت: ${selectedSexes.length} مورد`);
       }
     }
@@ -335,9 +428,13 @@ const AdvancedFilters = ({
     if (selectedCities.length > 0) {
       if (selectedCities.length === 1) {
         filters.push(`شهر: ${selectedCities[0]}`);
-      } else if (selectedCities.length === (citySearchTerm ? filteredCities.length : cities.length)) {
+      } 
+      
+      else if (selectedCities.length === (citySearchTerm ? filteredCities.length : cities.length)) {
         filters.push(`شهر: همه`);
-      } else {
+      } 
+      
+      else {
         filters.push(`شهر: ${selectedCities.length} شهر`);
       }
     }
@@ -354,9 +451,13 @@ const AdvancedFilters = ({
       
       if (selectedAges.length === 1) {
         filters.push(`سن: ${ageLabels[selectedAges[0]]}`);
-      } else if (selectedAges.length === ageOptions.length) {
+      } 
+      
+      else if (selectedAges.length === ageOptions.length) {
         filters.push(`سن: همه`);
-      } else {
+      } 
+      
+      else {
         filters.push(`سن: ${selectedAges.length} بازه`);
       }
     }
@@ -365,9 +466,13 @@ const AdvancedFilters = ({
       if (selectedCertificates.length > 0) {
         if (selectedCertificates.length === 1) {
           filters.push(`شناسنامه: ${selectedCertificates[0] === "yes" ? "دارد" : "ندارد"}`);
-        } else if (selectedCertificates.length === statusOptions.length) {
+        } 
+        
+        else if (selectedCertificates.length === statusOptions.length) {
           filters.push(`شناسنامه: همه وضعیت‌ها`);
-        } else {
+        } 
+        
+        else {
           filters.push(`شناسنامه: ${selectedCertificates.length} وضعیت`);
         }
       }
@@ -375,9 +480,13 @@ const AdvancedFilters = ({
       if (selectedVaccinations.length > 0) {
         if (selectedVaccinations.length === 1) {
           filters.push(`واکسیناسیون: ${selectedVaccinations[0] === "yes" ? "انجام شده" : "انجام نشده"}`);
-        } else if (selectedVaccinations.length === statusYesNoOptions.length) {
+        } 
+        
+        else if (selectedVaccinations.length === statusYesNoOptions.length) {
           filters.push(`واکسیناسیون: همه وضعیت‌ها`);
-        } else {
+        } 
+        
+        else {
           filters.push(`واکسیناسیون: ${selectedVaccinations.length} وضعیت`);
         }
       }
@@ -385,9 +494,13 @@ const AdvancedFilters = ({
       if (selectedSterilizations.length > 0) {
         if (selectedSterilizations.length === 1) {
           filters.push(`عقیم‌سازی: ${selectedSterilizations[0] === "yes" ? "انجام شده" : "انجام نشده"}`);
-        } else if (selectedSterilizations.length === statusYesNoOptions.length) {
+        } 
+        
+        else if (selectedSterilizations.length === statusYesNoOptions.length) {
           filters.push(`عقیم‌سازی: همه وضعیت‌ها`);
-        } else {
+        } 
+        
+        else {
           filters.push(`عقیم‌سازی: ${selectedSterilizations.length} وضعیت`);
         }
       }
@@ -407,7 +520,7 @@ const AdvancedFilters = ({
     <div className="advanced-main-filters-grid">
       <div className="advanced-filter-select-wrapper">
         <div 
-          className="advanced-custom-select" 
+          className={`advanced-custom-select ${showAnimalDropdown ? 'active' : ''}`} 
           onClick={() => {
             closeAllDropdowns();
             setShowAnimalDropdown(!showAnimalDropdown);
@@ -465,7 +578,7 @@ const AdvancedFilters = ({
 
       <div className="advanced-filter-select-wrapper">
         <div 
-          className="advanced-custom-select" 
+          className={`advanced-custom-select ${showSexDropdown ? 'active' : ''}`} 
           onClick={() => {
             closeAllDropdowns();
             setShowSexDropdown(!showSexDropdown);
@@ -523,7 +636,7 @@ const AdvancedFilters = ({
 
       <div className="advanced-filter-select-wrapper">
         <div 
-          className="advanced-custom-select" 
+          className={`advanced-custom-select ${showCityDropdown ? 'active' : ''}`} 
           onClick={() => {
             closeAllDropdowns();
             setShowCityDropdown(!showCityDropdown);
@@ -607,7 +720,7 @@ const AdvancedFilters = ({
 
       <div className="advanced-filter-select-wrapper">
         <div 
-          className="advanced-custom-select" 
+          className={`advanced-custom-select ${showAgeDropdown ? 'active' : ''}`} 
           onClick={() => {
             closeAllDropdowns();
             setShowAgeDropdown(!showAgeDropdown);
@@ -675,13 +788,10 @@ const AdvancedFilters = ({
 
     return (
       <div className="advanced-adoption-specific-filters">
-        <div className="advanced-filters-subtitle">
-          <h4>فیلترهای مخصوص سرپرستی</h4>
-        </div>
         <div className="advanced-adoption-filters-grid">
           <div className="advanced-filter-select-wrapper">
             <div 
-              className="advanced-custom-select" 
+              className={`advanced-custom-select ${showCertificateDropdown ? 'active' : ''}`} 
               onClick={() => {
                 closeAllDropdowns();
                 setShowCertificateDropdown(!showCertificateDropdown);
@@ -745,7 +855,7 @@ const AdvancedFilters = ({
 
           <div className="advanced-filter-select-wrapper">
             <div 
-              className="advanced-custom-select" 
+              className={`advanced-custom-select ${showVaccineDropdown ? 'active' : ''}`} 
               onClick={() => {
                 closeAllDropdowns();
                 setShowVaccineDropdown(!showVaccineDropdown);
@@ -809,7 +919,7 @@ const AdvancedFilters = ({
 
           <div className="advanced-filter-select-wrapper">
             <div 
-              className="advanced-custom-select" 
+              className={`advanced-custom-select ${showSterilizeDropdown ? 'active' : ''}`} 
               onClick={() => {
                 closeAllDropdowns();
                 setShowSterilizeDropdown(!showSterilizeDropdown);
@@ -965,7 +1075,6 @@ const AdvancedFilters = ({
         });
       });
 
-      // بج‌های عقیم‌سازی
       selectedSterilizations.forEach((sterilize, index) => {
         badges.push({
           key: `sterilize-${index}`,
