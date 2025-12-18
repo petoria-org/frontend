@@ -30,11 +30,8 @@ const AdvancedFilters = ({
   const [showSterilizeDropdown, setShowSterilizeDropdown] = useState(false);
   const [citySearchTerm, setCitySearchTerm] = useState("");
 
-  // استفاده از useRef برای مدیریت کلیک خارج از کامپوننت
   const dropdownRef = useRef(null);
-  const filterSelectRef = useRef(null);
 
-  // تغییر: تبدیل state‌ها به آرایه برای پشتیبانی از انتخاب چندگانه
   const [selectedAnimals, setSelectedAnimals] = useState(
     filterAnimal === "all" ? [] : filterAnimal.split(",").filter(item => item.trim())
   );
@@ -57,7 +54,6 @@ const AdvancedFilters = ({
     filterIsSterilized === "all" ? [] : filterIsSterilized.split(",").filter(item => item.trim())
   );
 
-  // لیست شهرها
   const cities = [
     "تهران", "مشهد", "اصفهان", "شیراز", "تبریز", "کرج", "اهواز", 
     "قم", "کرمانشاه", "ارومیه", "رشت", "زاهدان", "همدان", 
@@ -68,13 +64,10 @@ const AdvancedFilters = ({
     "سبزوار", "نجف‌آباد", "خوی", "ملارد", "آباده", "نوشهر"
   ].sort();
 
-  // لیست حیوانات
   const animals = ["سگ", "گربه", "خرگوش", "همستر", "پرنده", "سایر"];
 
-  // لیست جنسیت‌ها
   const sexes = ["نر", "ماده"];
 
-  // لیست سن‌ها
   const ageOptions = [
     { value: "under-1", label: "زیر 1 سال" },
     { value: "1-2", label: "1 تا 2 سال" },
@@ -84,7 +77,6 @@ const AdvancedFilters = ({
     { value: "over-7", label: "بالای 7 سال" }
   ];
 
-  // لیست وضعیت‌ها
   const statusOptions = [
     { value: "yes", label: "دارد" },
     { value: "no", label: "ندارد" }
@@ -99,7 +91,6 @@ const AdvancedFilters = ({
     city.includes(citySearchTerm)
   );
 
-  // تابع برای بستن همه dropdownها
   const closeAllDropdowns = () => {
     setShowAnimalDropdown(false);
     setShowSexDropdown(false);
@@ -111,54 +102,20 @@ const AdvancedFilters = ({
     setCitySearchTerm("");
   };
 
-  // تابع toggle برای باز و بسته کردن کل فیلترها
   const handleToggleClick = () => {
-    closeAllDropdowns();
+    if (isOpen) {
+      closeAllDropdowns();
+    }
     setIsOpen(!isOpen);
   };
 
-  // تابع کلیک روی فیلتر
-  const handleFilterClick = (e, filterType) => {
-    e.stopPropagation();
-    closeAllDropdowns();
-    
-    switch(filterType) {
-      case 'animal':
-        setShowAnimalDropdown(!showAnimalDropdown);
-        break;
-      case 'sex':
-        setShowSexDropdown(!showSexDropdown);
-        break;
-      case 'city':
-        setShowCityDropdown(!showCityDropdown);
-        break;
-      case 'age':
-        setShowAgeDropdown(!showAgeDropdown);
-        break;
-      case 'certificate':
-        setShowCertificateDropdown(!showCertificateDropdown);
-        break;
-      case 'vaccine':
-        setShowVaccineDropdown(!showVaccineDropdown);
-        break;
-      case 'sterilize':
-        setShowSterilizeDropdown(!showSterilizeDropdown);
-        break;
-      default:
-        break;
-    }
-  };
-
-  // تابع‌های انتخاب چندگانه
   const handleAnimalSelect = (animal) => {
     let newSelected;
     
     if (animal === "all") {
-      // اگر همه موارد انتخاب شده باشند، آنها را حذف کن
       if (selectedAnimals.length === animals.length) {
         newSelected = [];
       } else {
-        // در غیر این صورت همه را انتخاب کن
         newSelected = [...animals];
       }
     } else {
@@ -175,11 +132,9 @@ const AdvancedFilters = ({
     let newSelected;
     
     if (sex === "all") {
-      // اگر همه موارد انتخاب شده باشند، آنها را حذف کن
       if (selectedSexes.length === sexes.length) {
         newSelected = [];
       } else {
-        // در غیر این صورت همه را انتخاب کن
         newSelected = [...sexes];
       }
     } else {
@@ -197,11 +152,9 @@ const AdvancedFilters = ({
     
     if (city === "all") {
       const citiesToToggle = citySearchTerm ? filteredCities : cities;
-      // اگر همه موارد انتخاب شده باشند، آنها را حذف کن
       if (selectedCities.length === citiesToToggle.length) {
         newSelected = [];
       } else {
-        // در غیر این صورت همه را انتخاب کن
         newSelected = [...citiesToToggle];
       }
     } else {
@@ -219,11 +172,9 @@ const AdvancedFilters = ({
     
     if (ageValue === "all") {
       const allAgeValues = ageOptions.map(age => age.value);
-      // اگر همه موارد انتخاب شده باشند، آنها را حذف کن
       if (selectedAges.length === allAgeValues.length) {
         newSelected = [];
       } else {
-        // در غیر این صورت همه را انتخاب کن
         newSelected = [...allAgeValues];
       }
     } else {
@@ -241,11 +192,9 @@ const AdvancedFilters = ({
     
     if (certificate === "all") {
       const allStatusValues = statusOptions.map(status => status.value);
-      // اگر همه موارد انتخاب شده باشند، آنها را حذف کن
       if (selectedCertificates.length === allStatusValues.length) {
         newSelected = [];
       } else {
-        // در غیر این صورت همه را انتخاب کن
         newSelected = [...allStatusValues];
       }
     } else {
@@ -263,11 +212,9 @@ const AdvancedFilters = ({
     
     if (vaccine === "all") {
       const allStatusValues = statusYesNoOptions.map(status => status.value);
-      // اگر همه موارد انتخاب شده باشند، آنها را حذف کن
       if (selectedVaccinations.length === allStatusValues.length) {
         newSelected = [];
       } else {
-        // در غیر این صورت همه را انتخاب کن
         newSelected = [...allStatusValues];
       }
     } else {
@@ -285,11 +232,9 @@ const AdvancedFilters = ({
     
     if (sterilize === "all") {
       const allStatusValues = statusYesNoOptions.map(status => status.value);
-      // اگر همه موارد انتخاب شده باشند، آنها را حذف کن
       if (selectedSterilizations.length === allStatusValues.length) {
         newSelected = [];
       } else {
-        // در غیر این صورت همه را انتخاب کن
         newSelected = [...allStatusValues];
       }
     } else {
@@ -302,7 +247,6 @@ const AdvancedFilters = ({
     setFilterIsSterilized(newSelected.length > 0 ? newSelected.join(",") : "all");
   };
 
-  // تابع‌های حذف فیلتر
   const removeAnimalFilter = () => {
     setSelectedAnimals([]);
     setFilterAnimal("all");
@@ -338,7 +282,6 @@ const AdvancedFilters = ({
     setFilterIsSterilized("all");
   };
 
-  // تابع پاک کردن همه فیلترها
   const handleClearAllFilters = () => {
     setSelectedAnimals([]);
     setSelectedSexes([]);
@@ -351,7 +294,6 @@ const AdvancedFilters = ({
     clearAllFilters();
   };
 
-  // محاسبه تعداد فیلترهای فعال
   const getActiveFiltersCount = () => {
     return [
       selectedAnimals.length > 0,
@@ -364,7 +306,6 @@ const AdvancedFilters = ({
     ].filter(Boolean).length;
   };
 
-  // گرفتن توضیحات وضعیت فیلترها
   const getFiltersDescription = () => {
     const count = getActiveFiltersCount();
     if (count === 0) return "هیچ فیلتری اعمال نشده است";
@@ -455,7 +396,6 @@ const AdvancedFilters = ({
     return `${count} فیلتر فعال: ${filters.join("، ")}`;
   };
 
-  // نمایش متن placeholder با حالت چندگانه
   const getMultiSelectPlaceholder = (selectedItems, defaultPlaceholder, singleText, multipleText, totalItems) => {
     if (selectedItems.length === 0) return defaultPlaceholder;
     if (selectedItems.length === 1) return `${singleText}: ${selectedItems[0]}`;
@@ -463,15 +403,15 @@ const AdvancedFilters = ({
     return `${multipleText} (${selectedItems.length})`;
   };
 
-  // رندر فیلترهای اصلی با قابلیت چندگانه
   const renderMainFilters = () => (
     <div className="advanced-main-filters-grid">
-      {/* نوع حیوان - چندگانه */}
       <div className="advanced-filter-select-wrapper">
         <div 
           className="advanced-custom-select" 
-          onClick={(e) => handleFilterClick(e, 'animal')}
-          ref={filterSelectRef}
+          onClick={() => {
+            closeAllDropdowns();
+            setShowAnimalDropdown(!showAnimalDropdown);
+          }}
         >
           <span className="advanced-select-placeholder-text">
             {getMultiSelectPlaceholder(selectedAnimals, "نوع حیوان", "نوع", "انواع حیوان", animals.length)}
@@ -484,7 +424,6 @@ const AdvancedFilters = ({
               <span className="advanced-multi-select-title">انتخاب نوع حیوان</span>
             </div>
             <div className="advanced-dropdown-options-list">
-              {/* گزینه "همه" */}
               <div 
                 className={`advanced-dropdown-option ${selectedAnimals.length === animals.length ? "selected" : ""}`}
                 onClick={() => handleAnimalSelect("all")}
@@ -524,11 +463,13 @@ const AdvancedFilters = ({
         )}
       </div>
 
-      {/* جنسیت - چندگانه */}
       <div className="advanced-filter-select-wrapper">
         <div 
           className="advanced-custom-select" 
-          onClick={(e) => handleFilterClick(e, 'sex')}
+          onClick={() => {
+            closeAllDropdowns();
+            setShowSexDropdown(!showSexDropdown);
+          }}
         >
           <span className="advanced-select-placeholder-text">
             {getMultiSelectPlaceholder(selectedSexes, "جنسیت", "جنسیت", "جنسیت‌ها", sexes.length)}
@@ -541,7 +482,6 @@ const AdvancedFilters = ({
               <span className="advanced-multi-select-title">انتخاب جنسیت</span>
             </div>
             <div className="advanced-dropdown-options-list">
-              {/* گزینه "همه" */}
               <div 
                 className={`advanced-dropdown-option ${selectedSexes.length === sexes.length ? "selected" : ""}`}
                 onClick={() => handleSexSelect("all")}
@@ -581,11 +521,13 @@ const AdvancedFilters = ({
         )}
       </div>
 
-      {/* شهر - چندگانه */}
       <div className="advanced-filter-select-wrapper">
         <div 
           className="advanced-custom-select" 
-          onClick={(e) => handleFilterClick(e, 'city')}
+          onClick={() => {
+            closeAllDropdowns();
+            setShowCityDropdown(!showCityDropdown);
+          }}
         >
           <span className="advanced-select-placeholder-text">
             {getMultiSelectPlaceholder(
@@ -619,7 +561,6 @@ const AdvancedFilters = ({
               </div>
             </div>
             <div className="advanced-dropdown-options-list">
-              {/* گزینه "همه" */}
               <div 
                 className={`advanced-dropdown-option ${selectedCities.length === (citySearchTerm ? filteredCities.length : cities.length) ? "selected" : ""}`}
                 onClick={() => handleCitySelect("all")}
@@ -664,11 +605,13 @@ const AdvancedFilters = ({
         )}
       </div>
 
-      {/* سن - چندگانه */}
       <div className="advanced-filter-select-wrapper">
         <div 
           className="advanced-custom-select" 
-          onClick={(e) => handleFilterClick(e, 'age')}
+          onClick={() => {
+            closeAllDropdowns();
+            setShowAgeDropdown(!showAgeDropdown);
+          }}
         >
           <span className="advanced-select-placeholder-text">
             {selectedAges.length === 0 ? "سن" : 
@@ -686,7 +629,6 @@ const AdvancedFilters = ({
               <span className="advanced-multi-select-title">انتخاب بازه سنی</span>
             </div>
             <div className="advanced-dropdown-options-list">
-              {/* گزینه "همه" */}
               <div 
                 className={`advanced-dropdown-option ${selectedAges.length === ageOptions.length ? "selected" : ""}`}
                 onClick={() => handleAgeSelect("all")}
@@ -728,7 +670,6 @@ const AdvancedFilters = ({
     </div>
   );
 
-  // رندر فیلترهای مخصوص سرپرستی با قابلیت چندگانه
   const renderAdoptionFilters = () => {
     if (activeFilter !== "سرپرستی") return null;
 
@@ -738,11 +679,13 @@ const AdvancedFilters = ({
           <h4>فیلترهای مخصوص سرپرستی</h4>
         </div>
         <div className="advanced-adoption-filters-grid">
-          {/* شناسنامه - چندگانه */}
           <div className="advanced-filter-select-wrapper">
             <div 
               className="advanced-custom-select" 
-              onClick={(e) => handleFilterClick(e, 'certificate')}
+              onClick={() => {
+                closeAllDropdowns();
+                setShowCertificateDropdown(!showCertificateDropdown);
+              }}
             >
               <span className="advanced-select-placeholder-text">
                 {getMultiSelectPlaceholder(
@@ -761,7 +704,6 @@ const AdvancedFilters = ({
                   <span className="advanced-multi-select-title">وضعیت شناسنامه</span>
                 </div>
                 <div className="advanced-dropdown-options-list">
-                  {/* گزینه "همه" */}
                   <div 
                     className={`advanced-dropdown-option ${selectedCertificates.length === statusOptions.length ? "selected" : ""}`}
                     onClick={() => handleCertificateSelect("all")}
@@ -801,11 +743,13 @@ const AdvancedFilters = ({
             )}
           </div>
 
-          {/* واکسیناسیون - چندگانه */}
           <div className="advanced-filter-select-wrapper">
             <div 
               className="advanced-custom-select" 
-              onClick={(e) => handleFilterClick(e, 'vaccine')}
+              onClick={() => {
+                closeAllDropdowns();
+                setShowVaccineDropdown(!showVaccineDropdown);
+              }}
             >
               <span className="advanced-select-placeholder-text">
                 {getMultiSelectPlaceholder(
@@ -824,7 +768,6 @@ const AdvancedFilters = ({
                   <span className="advanced-multi-select-title">وضعیت واکسیناسیون</span>
                 </div>
                 <div className="advanced-dropdown-options-list">
-                  {/* گزینه "همه" */}
                   <div 
                     className={`advanced-dropdown-option ${selectedVaccinations.length === statusYesNoOptions.length ? "selected" : ""}`}
                     onClick={() => handleVaccineSelect("all")}
@@ -864,11 +807,13 @@ const AdvancedFilters = ({
             )}
           </div>
 
-          {/* عقیم‌سازی - چندگانه */}
           <div className="advanced-filter-select-wrapper">
             <div 
               className="advanced-custom-select" 
-              onClick={(e) => handleFilterClick(e, 'sterilize')}
+              onClick={() => {
+                closeAllDropdowns();
+                setShowSterilizeDropdown(!showSterilizeDropdown);
+              }}
             >
               <span className="advanced-select-placeholder-text">
                 {getMultiSelectPlaceholder(
@@ -887,7 +832,6 @@ const AdvancedFilters = ({
                   <span className="advanced-multi-select-title">وضعیت عقیم‌سازی</span>
                 </div>
                 <div className="advanced-dropdown-options-list">
-                  {/* گزینه "همه" */}
                   <div 
                     className={`advanced-dropdown-option ${selectedSterilizations.length === statusYesNoOptions.length ? "selected" : ""}`}
                     onClick={() => handleSterilizeSelect("all")}
@@ -931,11 +875,9 @@ const AdvancedFilters = ({
     );
   };
 
-  // رندر بج‌های فیلترهای فعال
   const renderActiveFilters = () => {
     const badges = [];
 
-    // بج‌های نوع حیوان
     selectedAnimals.forEach((animal, index) => {
       badges.push({
         key: `animal-${index}`,
@@ -949,7 +891,6 @@ const AdvancedFilters = ({
       });
     });
 
-    // بج‌های جنسیت
     selectedSexes.forEach((sex, index) => {
       badges.push({
         key: `sex-${index}`,
@@ -963,7 +904,6 @@ const AdvancedFilters = ({
       });
     });
 
-    // بج‌های شهر
     selectedCities.forEach((city, index) => {
       badges.push({
         key: `city-${index}`,
@@ -977,7 +917,6 @@ const AdvancedFilters = ({
       });
     });
 
-    // بج‌های سن
     selectedAges.forEach((age, index) => {
       const ageLabels = {
         "under-1": "زیر 1 سال",
@@ -999,9 +938,7 @@ const AdvancedFilters = ({
       });
     });
 
-    // فقط فیلترهای سرپرستی را در تب سرپرستی نشان بده
     if (activeFilter === "سرپرستی") {
-      // بج‌های شناسنامه
       selectedCertificates.forEach((cert, index) => {
         badges.push({
           key: `certificate-${index}`,
@@ -1028,6 +965,7 @@ const AdvancedFilters = ({
         });
       });
 
+      // بج‌های عقیم‌سازی
       selectedSterilizations.forEach((sterilize, index) => {
         badges.push({
           key: `sterilize-${index}`,
