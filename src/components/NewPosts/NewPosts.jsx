@@ -446,7 +446,7 @@ export default function NewPosts() {
         {!loading && filteredAds.length === 0 && (
           <div className="no-results-container-new-posts">
             <div className="no-results-icon">
-              <img src="/src/assets/icons/search.svg" alt="no results" />
+              <img src="/src/assets/icons/search-n.svg" alt="no results" />
             </div>
             <h3>هیچ آگهی‌ای یافت نشد</h3>
             <p className="no-results-text">
