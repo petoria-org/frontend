@@ -14,7 +14,7 @@ export default function SuccessStories() {
     },
     {
       id: 2,
-      image: "/src/images/stories/max.jpg", 
+      image: "/src/images/stories/max.jpg",
       title: "ماکس پس از سه روز پیدا شد",
       description: "سگ گمشده با کمک شما پیدا شد",
       date: "۱ هفته پیش"
@@ -38,8 +38,8 @@ export default function SuccessStories() {
         {stories.map((story) => (
           <div key={story.id} className="story-card">
             <div className="story-image-container">
-              <img 
-                src={story.image} 
+              <img
+                src={story.image}
                 alt={story.title}
                 className="story-image"
               />
@@ -52,7 +52,7 @@ export default function SuccessStories() {
                 </button>
               </div>
             </div>
-            
+
             <div className="story-content">
               <h3 className="story-title">{story.title}</h3>
               <p className="story-description">{story.description}</p>
@@ -65,7 +65,7 @@ export default function SuccessStories() {
       </div>
 
       <div className="view-more-container">
-        <button 
+        <button
           className="view-more-btn"
           onClick={() => navigate("/success-stories")}
         >
