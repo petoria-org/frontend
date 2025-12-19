@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/SuccessStories.css";
+import "../../styles/SuccessStoriesAll.css";
 
 export default function SuccessStories() {
   const navigate = useNavigate();
