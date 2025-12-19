@@ -1406,6 +1406,23 @@
   white-space: nowrap;
 }
 
+.advanced-main-filters-section {
+  position: relative;
+  z-index: 3;
+}
+
+.advanced-adoption-filters-section {
+  position: relative;
+  z-index: 2;
+}
+
+.advanced-active-filters-section {
+  position: relative;
+  z-index: 1;
+}
+
+
+
 @media (max-width: 1200px) {
   .advanced-main-filters-grid,
   .advanced-adoption-filters-grid {

@@ -117,6 +117,16 @@ const AdvancedFilters = ({
     setCitySearchTerm("");
   };
 
+  const toggleDropdown = (name) => {
+    setShowAnimalDropdown(name === "animal" ? prev => !prev : false);
+    setShowSexDropdown(name === "sex" ? prev => !prev : false);
+    setShowCityDropdown(name === "city" ? prev => !prev : false);
+    setShowAgeDropdown(name === "age" ? prev => !prev : false);
+    setShowCertificateDropdown(name === "certificate" ? prev => !prev : false);
+    setShowVaccineDropdown(name === "vaccine" ? prev => !prev : false);
+    setShowSterilizeDropdown(name === "sterilize" ? prev => !prev : false);
+  };
+
   const closeFilterDashboard = () => {
     closeAllDropdowns();
     setIsOpen(false);
@@ -135,202 +145,126 @@ const AdvancedFilters = ({
   };
 
 
-const handleAnimalSelect = (animal) => {
-  let newSelected;
-  
-  if (animal === "all") {
-    const allSelected = selectedAnimals.length === animals.length;
+  const handleAnimalSelect = (animal) => {
+    let newSelected;
 
-    if (allSelected) {
-      newSelected = [];
-      setShowAnimalDropdown(false);
-    } 
-    
-    else {
-      newSelected = [...animals];
+    if (animal === "all") {
+      const allSelected = selectedAnimals.length === animals.length;
+
+      newSelected = allSelected ? [] : [...animals];
+    } else {
+      newSelected = selectedAnimals.includes(animal)
+        ? selectedAnimals.filter(item => item !== animal)
+        : [...selectedAnimals, animal];
     }
-  } 
-  
-  else {
-    newSelected = selectedAnimals.includes(animal)
-      ? selectedAnimals.filter(item => item !== animal)
-      : [...selectedAnimals, animal];
-  }
-  
-  setSelectedAnimals(newSelected);
-  setFilterAnimal(newSelected.length > 0 ? newSelected.join(",") : "all");
-  lastToggleTime.current = Date.now();
 
-  setShowAnimalDropdown(false);
-};
+    setSelectedAnimals(newSelected);
+    setFilterAnimal(newSelected.length > 0 ? newSelected.join(",") : "all");
+  };
 
 
   const handleSexSelect = (sex) => {
     let newSelected;
-    
+
     if (sex === "all") {
       const allSelected = selectedSexes.length === sexes.length;
-      
-      if (allSelected && Date.now() - lastToggleTime.current < 1000) {
-        newSelected = [];
-        closeFilterDashboard();
-      } 
-      
-      else {
-        newSelected = [...sexes];
-      }
-    } 
-    
-    else {
+      newSelected = allSelected ? [] : [...sexes];
+    } else {
       newSelected = selectedSexes.includes(sex)
         ? selectedSexes.filter(item => item !== sex)
         : [...selectedSexes, sex];
     }
-    
+
     setSelectedSexes(newSelected);
     setFilterSex(newSelected.length > 0 ? newSelected.join(",") : "all");
-    lastToggleTime.current = Date.now();
   };
 
   const handleCitySelect = (city) => {
     let newSelected;
-    
+    const targetCities = citySearchTerm ? filteredCities : cities;
+
     if (city === "all") {
-      const citiesToToggle = citySearchTerm ? filteredCities : cities;
-      const allSelected = selectedCities.length === citiesToToggle.length;
-      
-      if (allSelected && Date.now() - lastToggleTime.current < 1000) {
-        newSelected = [];
-        closeFilterDashboard();
-      } 
-      
-      else {
-        newSelected = [...citiesToToggle];
-      }
-    } 
-    
-    else {
+      const allSelected = selectedCities.length === targetCities.length;
+      newSelected = allSelected ? [] : [...targetCities];
+    } else {
       newSelected = selectedCities.includes(city)
         ? selectedCities.filter(item => item !== city)
         : [...selectedCities, city];
     }
-    
+
     setSelectedCities(newSelected);
     setFilterCity(newSelected.length > 0 ? newSelected.join(",") : "all");
-    lastToggleTime.current = Date.now();
   };
 
   const handleAgeSelect = (ageValue) => {
     let newSelected;
-    
+    const allAgeValues = ageOptions.map(age => age.value);
+
     if (ageValue === "all") {
-      const allAgeValues = ageOptions.map(age => age.value);
       const allSelected = selectedAges.length === allAgeValues.length;
-      
-      if (allSelected && Date.now() - lastToggleTime.current < 1000) {
-        newSelected = [];
-        closeFilterDashboard();
-      } 
-      
-      else {
-        newSelected = [...allAgeValues];
-      }
-    } 
-    
-    else {
+      newSelected = allSelected ? [] : [...allAgeValues];
+    } else {
       newSelected = selectedAges.includes(ageValue)
         ? selectedAges.filter(item => item !== ageValue)
         : [...selectedAges, ageValue];
     }
-    
+
     setSelectedAges(newSelected);
     setFilterAge(newSelected.length > 0 ? newSelected.join(",") : "all");
-    lastToggleTime.current = Date.now();
   };
 
   const handleCertificateSelect = (certificate) => {
     let newSelected;
-    
-    if (certificate === "all") {
-      const allStatusValues = statusOptions.map(status => status.value);
-      const allSelected = selectedCertificates.length === allStatusValues.length;
+    const allStatusValues = statusOptions.map(status => status.value);
 
-      if (allSelected && Date.now() - lastToggleTime.current < 1000) {
-        newSelected = [];
-        closeFilterDashboard();
-      } 
-      
-      else {
-        newSelected = [...allStatusValues];
-      }
-    } 
-    
-    else {
+    if (certificate === "all") {
+      const allSelected = selectedCertificates.length === allStatusValues.length;
+      newSelected = allSelected ? [] : [...allStatusValues];
+    } else {
       newSelected = selectedCertificates.includes(certificate)
         ? selectedCertificates.filter(item => item !== certificate)
         : [...selectedCertificates, certificate];
     }
-    
+
     setSelectedCertificates(newSelected);
     setFilterHasCertificate(newSelected.length > 0 ? newSelected.join(",") : "all");
-    lastToggleTime.current = Date.now();
   };
 
   const handleVaccineSelect = (vaccine) => {
     let newSelected;
-    
-    if (vaccine === "all") {
-      const allStatusValues = statusYesNoOptions.map(status => status.value);
-      const allSelected = selectedVaccinations.length === allStatusValues.length;
+    const allStatusValues = statusYesNoOptions.map(status => status.value);
 
-      if (allSelected && Date.now() - lastToggleTime.current < 1000) {
-        newSelected = [];
-        closeFilterDashboard();
-      } 
-      
-      else {
-        newSelected = [...allStatusValues];
-      }
-    } 
-    
-    else {
+    if (vaccine === "all") {
+      const allSelected = selectedVaccinations.length === allStatusValues.length;
+      newSelected = allSelected ? [] : [...allStatusValues];
+    } else {
       newSelected = selectedVaccinations.includes(vaccine)
         ? selectedVaccinations.filter(item => item !== vaccine)
         : [...selectedVaccinations, vaccine];
     }
-    
+
     setSelectedVaccinations(newSelected);
     setFilterIsVaccinated(newSelected.length > 0 ? newSelected.join(",") : "all");
-    lastToggleTime.current = Date.now();
   };
+
 
   const handleSterilizeSelect = (sterilize) => {
     let newSelected;
-    
-    if (sterilize === "all") {
-      const allStatusValues = statusYesNoOptions.map(status => status.value);
-      const allSelected = selectedSterilizations.length === allStatusValues.length;
+    const allStatusValues = statusYesNoOptions.map(status => status.value);
 
-      if (allSelected && Date.now() - lastToggleTime.current < 1000) {
-        newSelected = [];
-        closeFilterDashboard();
-      } 
-      
-      else {
-        newSelected = [...allStatusValues];
-      }
-    } 
-    
-    else {
+    if (sterilize === "all") {
+      const allSelected = selectedSterilizations.length === allStatusValues.length;
+      newSelected = allSelected ? [] : [...allStatusValues];
+    } else {
       newSelected = selectedSterilizations.includes(sterilize)
         ? selectedSterilizations.filter(item => item !== sterilize)
         : [...selectedSterilizations, sterilize];
     }
-    
+
     setSelectedSterilizations(newSelected);
     setFilterIsSterilized(newSelected.length > 0 ? newSelected.join(",") : "all");
-    lastToggleTime.current = Date.now();
   };
+
 
   const removeAnimalFilter = () => {
     setSelectedAnimals([]);
@@ -522,6 +456,7 @@ const handleAnimalSelect = (animal) => {
         <div 
           className={`advanced-custom-select ${showAnimalDropdown ? 'active' : ''}`} 
           onClick={() => {
+            
             closeAllDropdowns();
             setShowAnimalDropdown(!showAnimalDropdown);
           }}
@@ -1153,9 +1088,18 @@ const handleAnimalSelect = (animal) => {
         
         {isOpen && (
           <div className="advanced-options-wrapper">
-            {renderMainFilters()}
-            {renderAdoptionFilters()}
-            {renderActiveFilters()}
+            <div className="advanced-main-filters-section">
+              {renderMainFilters()}
+            </div>
+
+            <div className="advanced-adoption-filters-section">
+              {renderAdoptionFilters()}
+            </div>
+
+            <div className="advanced-active-filters-section">
+              {renderActiveFilters()}
+            </div>
+
           </div>
         )}
       </div>
