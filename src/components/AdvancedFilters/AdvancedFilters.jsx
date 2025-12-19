@@ -152,7 +152,9 @@ const AdvancedFilters = ({
       const allSelected = selectedAnimals.length === animals.length;
 
       newSelected = allSelected ? [] : [...animals];
-    } else {
+    } 
+    
+    else {
       newSelected = selectedAnimals.includes(animal)
         ? selectedAnimals.filter(item => item !== animal)
         : [...selectedAnimals, animal];
@@ -169,7 +171,9 @@ const AdvancedFilters = ({
     if (sex === "all") {
       const allSelected = selectedSexes.length === sexes.length;
       newSelected = allSelected ? [] : [...sexes];
-    } else {
+    } 
+    
+    else {
       newSelected = selectedSexes.includes(sex)
         ? selectedSexes.filter(item => item !== sex)
         : [...selectedSexes, sex];
@@ -186,7 +190,9 @@ const AdvancedFilters = ({
     if (city === "all") {
       const allSelected = selectedCities.length === targetCities.length;
       newSelected = allSelected ? [] : [...targetCities];
-    } else {
+    } 
+    
+    else {
       newSelected = selectedCities.includes(city)
         ? selectedCities.filter(item => item !== city)
         : [...selectedCities, city];
@@ -203,7 +209,9 @@ const AdvancedFilters = ({
     if (ageValue === "all") {
       const allSelected = selectedAges.length === allAgeValues.length;
       newSelected = allSelected ? [] : [...allAgeValues];
-    } else {
+    } 
+    
+    else {
       newSelected = selectedAges.includes(ageValue)
         ? selectedAges.filter(item => item !== ageValue)
         : [...selectedAges, ageValue];
@@ -220,7 +228,9 @@ const AdvancedFilters = ({
     if (certificate === "all") {
       const allSelected = selectedCertificates.length === allStatusValues.length;
       newSelected = allSelected ? [] : [...allStatusValues];
-    } else {
+    } 
+    
+    else {
       newSelected = selectedCertificates.includes(certificate)
         ? selectedCertificates.filter(item => item !== certificate)
         : [...selectedCertificates, certificate];
@@ -237,7 +247,9 @@ const AdvancedFilters = ({
     if (vaccine === "all") {
       const allSelected = selectedVaccinations.length === allStatusValues.length;
       newSelected = allSelected ? [] : [...allStatusValues];
-    } else {
+    } 
+    
+    else {
       newSelected = selectedVaccinations.includes(vaccine)
         ? selectedVaccinations.filter(item => item !== vaccine)
         : [...selectedVaccinations, vaccine];
@@ -255,7 +267,9 @@ const AdvancedFilters = ({
     if (sterilize === "all") {
       const allSelected = selectedSterilizations.length === allStatusValues.length;
       newSelected = allSelected ? [] : [...allStatusValues];
-    } else {
+    } 
+    
+    else {
       newSelected = selectedSterilizations.includes(sterilize)
         ? selectedSterilizations.filter(item => item !== sterilize)
         : [...selectedSterilizations, sterilize];
@@ -450,27 +464,57 @@ const AdvancedFilters = ({
     return `${multipleText} (${selectedItems.length})`;
   };
 
+  const FilterField = ({ title, children, hasValue = false }) => {
+    return (
+      <div className="advanced-filter-title-container">
+        <div className="advanced-filter-title">
+          <svg 
+            className="advanced-filter-title-icon" 
+            width="14" 
+            height="14" 
+            viewBox="0 0 24 24" 
+            fill="none"
+          >
+            <path 
+              d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            />
+          </svg>
+          {title}
+          {hasValue && (
+            <span className="advanced-filter-title-indicator"></span>
+          )}
+        </div>
+        {children}
+      </div>
+    );
+  };
+
   const renderMainFilters = () => (
     <div className="advanced-main-filters-grid">
       <div className="advanced-filter-select-wrapper">
-        <div 
-          className={`advanced-custom-select ${showAnimalDropdown ? 'active' : ''}`} 
-          onClick={() => {
-            
-            closeAllDropdowns();
-            setShowAnimalDropdown(!showAnimalDropdown);
-          }}
+        <FilterField 
+          title="انتخاب نوع حیوان" 
+          hasValue={selectedAnimals.length > 0}
         >
-          <span className="advanced-select-placeholder-text">
-            {getMultiSelectPlaceholder(selectedAnimals, "نوع حیوان", "نوع", "انواع حیوان", animals.length)}
-          </span>
-        </div>
+          <div 
+            className={`advanced-custom-select ${showAnimalDropdown ? 'active' : ''}`} 
+            onClick={() => {
+              closeAllDropdowns();
+              setShowAnimalDropdown(!showAnimalDropdown);
+            }}
+          >
+            <span className="advanced-select-placeholder-text">
+              {getMultiSelectPlaceholder(selectedAnimals, "نوع حیوان", "نوع", "انواع حیوان", animals.length)}
+            </span>
+          </div>
+        </FilterField>
 
         {showAnimalDropdown && (
           <div className="advanced-dropdown-menu advanced-multi-select">
-            <div className="advanced-dropdown-header">
-              <span className="advanced-multi-select-title">انتخاب نوع حیوان</span>
-            </div>
             <div className="advanced-dropdown-options-list">
               <div 
                 className={`advanced-dropdown-option ${selectedAnimals.length === animals.length ? "selected" : ""}`}
@@ -512,23 +556,25 @@ const AdvancedFilters = ({
       </div>
 
       <div className="advanced-filter-select-wrapper">
-        <div 
-          className={`advanced-custom-select ${showSexDropdown ? 'active' : ''}`} 
-          onClick={() => {
-            closeAllDropdowns();
-            setShowSexDropdown(!showSexDropdown);
-          }}
+        <FilterField 
+          title="انتخاب جنسیت" 
+          hasValue={selectedSexes.length > 0}
         >
-          <span className="advanced-select-placeholder-text">
-            {getMultiSelectPlaceholder(selectedSexes, "جنسیت", "جنسیت", "جنسیت‌ها", sexes.length)}
-          </span>
-        </div>
+          <div 
+            className={`advanced-custom-select ${showSexDropdown ? 'active' : ''}`} 
+            onClick={() => {
+              closeAllDropdowns();
+              setShowSexDropdown(!showSexDropdown);
+            }}
+          >
+            <span className="advanced-select-placeholder-text">
+              {getMultiSelectPlaceholder(selectedSexes, "جنسیت", "جنسیت", "جنسیت‌ها", sexes.length)}
+            </span>
+          </div>
+        </FilterField>
 
         {showSexDropdown && (
           <div className="advanced-dropdown-menu advanced-multi-select">
-            <div className="advanced-dropdown-header">
-              <span className="advanced-multi-select-title">انتخاب جنسیت</span>
-            </div>
             <div className="advanced-dropdown-options-list">
               <div 
                 className={`advanced-dropdown-option ${selectedSexes.length === sexes.length ? "selected" : ""}`}
@@ -570,23 +616,28 @@ const AdvancedFilters = ({
       </div>
 
       <div className="advanced-filter-select-wrapper">
-        <div 
-          className={`advanced-custom-select ${showCityDropdown ? 'active' : ''}`} 
-          onClick={() => {
-            closeAllDropdowns();
-            setShowCityDropdown(!showCityDropdown);
-          }}
+        <FilterField 
+          title="انتخاب شهر" 
+          hasValue={selectedCities.length > 0}
         >
-          <span className="advanced-select-placeholder-text">
-            {getMultiSelectPlaceholder(
-              selectedCities, 
-              "شهر", 
-              "شهر", 
-              "شهرها", 
-              citySearchTerm ? filteredCities.length : cities.length
-            )}
-          </span>
-        </div>
+          <div 
+            className={`advanced-custom-select ${showCityDropdown ? 'active' : ''}`} 
+            onClick={() => {
+              closeAllDropdowns();
+              setShowCityDropdown(!showCityDropdown);
+            }}
+          >
+            <span className="advanced-select-placeholder-text">
+              {getMultiSelectPlaceholder(
+                selectedCities, 
+                "شهر", 
+                "شهر", 
+                "شهرها", 
+                citySearchTerm ? filteredCities.length : cities.length
+              )}
+            </span>
+          </div>
+        </FilterField>
 
         {showCityDropdown && (
           <div className="advanced-dropdown-menu advanced-multi-select advanced-city-dropdown">
@@ -654,28 +705,30 @@ const AdvancedFilters = ({
       </div>
 
       <div className="advanced-filter-select-wrapper">
-        <div 
-          className={`advanced-custom-select ${showAgeDropdown ? 'active' : ''}`} 
-          onClick={() => {
-            closeAllDropdowns();
-            setShowAgeDropdown(!showAgeDropdown);
-          }}
+        <FilterField 
+          title="انتخاب بازه سنی" 
+          hasValue={selectedAges.length > 0}
         >
-          <span className="advanced-select-placeholder-text">
-            {selectedAges.length === 0 ? "سن" : 
-              selectedAges.length === 1 ? 
-                `سن: ${ageOptions.find(a => a.value === selectedAges[0])?.label}` :
-                selectedAges.length === ageOptions.length ? "سن: همه" :
-                `سن (${selectedAges.length} بازه)`
-            }
-          </span>
-        </div>
+          <div 
+            className={`advanced-custom-select ${showAgeDropdown ? 'active' : ''}`} 
+            onClick={() => {
+              closeAllDropdowns();
+              setShowAgeDropdown(!showAgeDropdown);
+            }}
+          >
+            <span className="advanced-select-placeholder-text">
+              {selectedAges.length === 0 ? "سن" : 
+                selectedAges.length === 1 ? 
+                  `سن: ${ageOptions.find(a => a.value === selectedAges[0])?.label}` :
+                  selectedAges.length === ageOptions.length ? "سن: همه" :
+                  `سن (${selectedAges.length} بازه)`
+              }
+            </span>
+          </div>
+        </FilterField>
 
         {showAgeDropdown && (
           <div className="advanced-dropdown-menu advanced-multi-select">
-            <div className="advanced-dropdown-header">
-              <span className="advanced-multi-select-title">انتخاب بازه سنی</span>
-            </div>
             <div className="advanced-dropdown-options-list">
               <div 
                 className={`advanced-dropdown-option ${selectedAges.length === ageOptions.length ? "selected" : ""}`}
@@ -718,13 +771,17 @@ const AdvancedFilters = ({
     </div>
   );
 
-  const renderAdoptionFilters = () => {
-    if (activeFilter !== "سرپرستی") return null;
+const renderAdoptionFilters = () => {
+  if (activeFilter !== "سرپرستی") return null;
 
-    return (
-      <div className="advanced-adoption-specific-filters">
-        <div className="advanced-adoption-filters-grid">
-          <div className="advanced-filter-select-wrapper">
+  return (
+    <div className="advanced-adoption-specific-filters">
+      <div className="advanced-adoption-filters-grid">
+        <div className="advanced-filter-select-wrapper">
+          <FilterField 
+            title="انتخاب وضعیت شناسنامه" 
+            hasValue={selectedCertificates.length > 0}
+          >
             <div 
               className={`advanced-custom-select ${showCertificateDropdown ? 'active' : ''}`} 
               onClick={() => {
@@ -742,53 +799,55 @@ const AdvancedFilters = ({
                 )}
               </span>
             </div>
+          </FilterField>
 
-            {showCertificateDropdown && (
-              <div className="advanced-dropdown-menu advanced-multi-select">
-                <div className="advanced-dropdown-header">
-                  <span className="advanced-multi-select-title">وضعیت شناسنامه</span>
+          {showCertificateDropdown && (
+            <div className="advanced-dropdown-menu advanced-multi-select">
+              <div className="advanced-dropdown-options-list">
+                <div 
+                  className={`advanced-dropdown-option ${selectedCertificates.length === statusOptions.length ? "selected" : ""}`}
+                  onClick={() => handleCertificateSelect("all")}
+                >
+                  <div className="advanced-checkbox-wrapper">
+                    <div className={`advanced-checkbox ${selectedCertificates.length === statusOptions.length ? "checked" : ""}`}>
+                      {selectedCertificates.length === statusOptions.length && (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                          <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      )}
+                    </div>
+                    <span>همه وضعیت‌ها</span>
+                  </div>
                 </div>
-                <div className="advanced-dropdown-options-list">
+                
+                {statusOptions.map((status) => (
                   <div 
-                    className={`advanced-dropdown-option ${selectedCertificates.length === statusOptions.length ? "selected" : ""}`}
-                    onClick={() => handleCertificateSelect("all")}
+                    key={status.value}
+                    className={`advanced-dropdown-option ${selectedCertificates.includes(status.value) ? "selected" : ""}`}
+                    onClick={() => handleCertificateSelect(status.value)}
                   >
                     <div className="advanced-checkbox-wrapper">
-                      <div className={`advanced-checkbox ${selectedCertificates.length === statusOptions.length ? "checked" : ""}`}>
-                        {selectedCertificates.length === statusOptions.length && (
+                      <div className={`advanced-checkbox ${selectedCertificates.includes(status.value) ? "checked" : ""}`}>
+                        {selectedCertificates.includes(status.value) && (
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
                             <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                           </svg>
                         )}
                       </div>
-                      <span>همه وضعیت‌ها</span>
+                      <span>{status.label}</span>
                     </div>
                   </div>
-                  
-                  {statusOptions.map((status) => (
-                    <div 
-                      key={status.value}
-                      className={`advanced-dropdown-option ${selectedCertificates.includes(status.value) ? "selected" : ""}`}
-                      onClick={() => handleCertificateSelect(status.value)}
-                    >
-                      <div className="advanced-checkbox-wrapper">
-                        <div className={`advanced-checkbox ${selectedCertificates.includes(status.value) ? "checked" : ""}`}>
-                          {selectedCertificates.includes(status.value) && (
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                              <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                          )}
-                        </div>
-                        <span>{status.label}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                ))}
               </div>
-            )}
-          </div>
+            </div>
+          )}
+        </div>
 
-          <div className="advanced-filter-select-wrapper">
+        <div className="advanced-filter-select-wrapper">
+          <FilterField 
+            title="انتخاب وضعیت واکسیناسیون" 
+            hasValue={selectedVaccinations.length > 0}
+          >
             <div 
               className={`advanced-custom-select ${showVaccineDropdown ? 'active' : ''}`} 
               onClick={() => {
@@ -806,53 +865,55 @@ const AdvancedFilters = ({
                 )}
               </span>
             </div>
+          </FilterField>
 
-            {showVaccineDropdown && (
-              <div className="advanced-dropdown-menu advanced-multi-select">
-                <div className="advanced-dropdown-header">
-                  <span className="advanced-multi-select-title">وضعیت واکسیناسیون</span>
+          {showVaccineDropdown && (
+            <div className="advanced-dropdown-menu advanced-multi-select">
+              <div className="advanced-dropdown-options-list">
+                <div 
+                  className={`advanced-dropdown-option ${selectedVaccinations.length === statusYesNoOptions.length ? "selected" : ""}`}
+                  onClick={() => handleVaccineSelect("all")}
+                >
+                  <div className="advanced-checkbox-wrapper">
+                    <div className={`advanced-checkbox ${selectedVaccinations.length === statusYesNoOptions.length ? "checked" : ""}`}>
+                      {selectedVaccinations.length === statusYesNoOptions.length && (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                          <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      )}
+                    </div>
+                    <span>همه وضعیت‌ها</span>
+                  </div>
                 </div>
-                <div className="advanced-dropdown-options-list">
+                
+                {statusYesNoOptions.map((status) => (
                   <div 
-                    className={`advanced-dropdown-option ${selectedVaccinations.length === statusYesNoOptions.length ? "selected" : ""}`}
-                    onClick={() => handleVaccineSelect("all")}
+                    key={status.value}
+                    className={`advanced-dropdown-option ${selectedVaccinations.includes(status.value) ? "selected" : ""}`}
+                    onClick={() => handleVaccineSelect(status.value)}
                   >
                     <div className="advanced-checkbox-wrapper">
-                      <div className={`advanced-checkbox ${selectedVaccinations.length === statusYesNoOptions.length ? "checked" : ""}`}>
-                        {selectedVaccinations.length === statusYesNoOptions.length && (
+                      <div className={`advanced-checkbox ${selectedVaccinations.includes(status.value) ? "checked" : ""}`}>
+                        {selectedVaccinations.includes(status.value) && (
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
                             <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                           </svg>
                         )}
                       </div>
-                      <span>همه وضعیت‌ها</span>
+                      <span>{status.label}</span>
                     </div>
                   </div>
-                  
-                  {statusYesNoOptions.map((status) => (
-                    <div 
-                      key={status.value}
-                      className={`advanced-dropdown-option ${selectedVaccinations.includes(status.value) ? "selected" : ""}`}
-                      onClick={() => handleVaccineSelect(status.value)}
-                    >
-                      <div className="advanced-checkbox-wrapper">
-                        <div className={`advanced-checkbox ${selectedVaccinations.includes(status.value) ? "checked" : ""}`}>
-                          {selectedVaccinations.includes(status.value) && (
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                              <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                          )}
-                        </div>
-                        <span>{status.label}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                ))}
               </div>
-            )}
-          </div>
+            </div>
+          )}
+        </div>
 
-          <div className="advanced-filter-select-wrapper">
+        <div className="advanced-filter-select-wrapper">
+          <FilterField 
+            title="انتخاب وضعیت عقیم‌سازی" 
+            hasValue={selectedSterilizations.length > 0}
+          >
             <div 
               className={`advanced-custom-select ${showSterilizeDropdown ? 'active' : ''}`} 
               onClick={() => {
@@ -870,55 +931,53 @@ const AdvancedFilters = ({
                 )}
               </span>
             </div>
+          </FilterField>
 
-            {showSterilizeDropdown && (
-              <div className="advanced-dropdown-menu advanced-multi-select">
-                <div className="advanced-dropdown-header">
-                  <span className="advanced-multi-select-title">وضعیت عقیم‌سازی</span>
+          {showSterilizeDropdown && (
+            <div className="advanced-dropdown-menu advanced-multi-select">
+              <div className="advanced-dropdown-options-list">
+                <div 
+                  className={`advanced-dropdown-option ${selectedSterilizations.length === statusYesNoOptions.length ? "selected" : ""}`}
+                  onClick={() => handleSterilizeSelect("all")}
+                >
+                  <div className="advanced-checkbox-wrapper">
+                    <div className={`advanced-checkbox ${selectedSterilizations.length === statusYesNoOptions.length ? "checked" : ""}`}>
+                      {selectedSterilizations.length === statusYesNoOptions.length && (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                          <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      )}
+                    </div>
+                    <span>همه وضعیت‌ها</span>
+                  </div>
                 </div>
-                <div className="advanced-dropdown-options-list">
+                
+                {statusYesNoOptions.map((status) => (
                   <div 
-                    className={`advanced-dropdown-option ${selectedSterilizations.length === statusYesNoOptions.length ? "selected" : ""}`}
-                    onClick={() => handleSterilizeSelect("all")}
+                    key={status.value}
+                    className={`advanced-dropdown-option ${selectedSterilizations.includes(status.value) ? "selected" : ""}`}
+                    onClick={() => handleSterilizeSelect(status.value)}
                   >
                     <div className="advanced-checkbox-wrapper">
-                      <div className={`advanced-checkbox ${selectedSterilizations.length === statusYesNoOptions.length ? "checked" : ""}`}>
-                        {selectedSterilizations.length === statusYesNoOptions.length && (
+                      <div className={`advanced-checkbox ${selectedSterilizations.includes(status.value) ? "checked" : ""}`}>
+                        {selectedSterilizations.includes(status.value) && (
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
                             <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                           </svg>
                         )}
                       </div>
-                      <span>همه وضعیت‌ها</span>
+                      <span>{status.label}</span>
                     </div>
                   </div>
-                  
-                  {statusYesNoOptions.map((status) => (
-                    <div 
-                      key={status.value}
-                      className={`advanced-dropdown-option ${selectedSterilizations.includes(status.value) ? "selected" : ""}`}
-                      onClick={() => handleSterilizeSelect(status.value)}
-                    >
-                      <div className="advanced-checkbox-wrapper">
-                        <div className={`advanced-checkbox ${selectedSterilizations.includes(status.value) ? "checked" : ""}`}>
-                          {selectedSterilizations.includes(status.value) && (
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                              <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                          )}
-                        </div>
-                        <span>{status.label}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                ))}
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
   const renderActiveFilters = () => {
     const badges = [];
