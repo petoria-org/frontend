@@ -4,6 +4,10 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  background-image: 
+    radial-gradient(at 40% 20%, rgba(255, 255, 255, 0.1) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(255, 255, 255, 0.1) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, rgba(255, 255, 255, 0.1) 0px, transparent 50%);
 }
 
 .user-profile-page main {
@@ -27,20 +31,53 @@
   border-radius: 20px;
   border: 0;
   box-shadow: none;
-  width: 1168px;
+  width: 1400px;
   height: 181px;
+  backdrop-filter: blur(10px);
+  background: rgba(251, 251, 251, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  animation: profileCardEntrance 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes profileCardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .profile-card-header {
   height: 33px;
-  background-color: #7ab3e0;
+  background: linear-gradient(135deg, #7ab3e0 0%, #5a9bc9 100%);
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-card-header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 .profile-card-content {
   position: relative;
-  background-color: #fbfbfb;
+  background-color: transparent;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
   padding: 40px;
@@ -69,7 +106,9 @@
   border: 2px solid;
   border-color: #ffffff;
   border-radius: 51px;
-  box-shadow: 0px 0px 45px #1c7cd266;
+  box-shadow: 
+    0px 0px 45px rgba(28, 124, 210, 0.4),
+    inset 0 0 20px rgba(255, 255, 255, 0.6);
   height: 106px;
   width: 106px;
   left: calc((120px - 106px) / 2);
@@ -85,14 +124,28 @@
   top: 0;
   left: 0;
   border-radius: 50%;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
 }
 
 .profile-pet-icon {
   position: absolute;
-  top: -15px; 
-  left: -10px; 
+  top: -15px;
+  left: -10px;
   width: 85px;
   height: 85px;
+}
+
+.paw-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: 
+  brightness(0) saturate(100%) 
+  invert(61%) sepia(23%) saturate(1123%) 
+  hue-rotate(174deg) brightness(93%) contrast(90%)
+  opacity(0.5);
+  transform: rotate(30deg);
+  transition: transform 0.3s ease, filter 0.3s ease;
 }
 
 .logout-button {
@@ -103,22 +156,28 @@
   align-items: center;
   height: auto;
   padding: 6px 12px;
-  background-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 18px;
-  box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.15), 
-              0px -5px 10px rgba(255, 255, 255, 0.2), 
-              0px 2px 10px rgba(254, 254, 254, 0.15);
-  backdrop-filter: blur(20px) brightness(100%);
-  -webkit-backdrop-filter: blur(20px) brightness(100%);
-  border: none;
+  box-shadow: 
+    0px 10px 25px rgba(0, 0, 0, 0.15), 
+    0px -5px 10px rgba(255, 255, 255, 0.2), 
+    0px 2px 10px rgba(254, 254, 254, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
   z-index: 10;
 }
 
 .logout-button:hover {
-  background-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 
+    0px 15px 35px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 .logout-text {
@@ -136,21 +195,27 @@
   transform: translateX(50%);
   height: 28px;
   width: 28px;
-  background-color: white;
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 50%;
   border: none;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0px 4px 12px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10;
+  border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
 .edit-profile-button:hover {
-  background-color: #f0f8ff;
-  transform: translateX(50%) scale(1.1);
+  background: rgba(255, 255, 255, 1);
+  transform: translateX(50%) scale(1.15) rotate(15deg);
+  box-shadow: 
+    0px 8px 20px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
 }
 
 .profile-info {
@@ -173,6 +238,7 @@
   margin: 0;
   text-align: right;
   direction: rtl;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .profile-email-container {
@@ -184,17 +250,27 @@
   justify-content: flex-end;
   width: 250px;
   height: 33px;
-  background-color: #E8F4FF;
-  border: 1px solid #1C7CD2;
+  background: rgba(232, 244, 255, 0.8);
+  border: 1px solid rgba(28, 124, 210, 0.3);
   border-radius: 16px;
   padding: 6px 12px;
   position: relative;
+  backdrop-filter: blur(5px);
+  box-shadow: 
+    inset 0 1px 3px rgba(0, 0, 0, 0.1),
+    0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.profile-email-container:hover {
+  background: rgba(232, 244, 255, 0.95);
+  border-color: rgba(28, 124, 210, 0.5);
 }
 
 .email-icon-wrapper {
   width: 28px;
   height: 24px;
-  background-color: white;
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -203,6 +279,7 @@
   right: 12px;
   top: 50%;
   transform: translateY(-50%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
 .profile-email {
@@ -223,11 +300,16 @@
 }
 
 .pet-listings-container {
-  width: 1168px;
-  background-color: #fbfbfb;
+  width: 1400px;
+  background: rgba(251, 251, 251, 0.95);
   border-radius: 20px;
   padding: 40px;
   box-sizing: border-box;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 .pet-listings-header {
@@ -243,6 +325,7 @@
   line-height: normal;
   direction: rtl;
   margin-bottom: 8px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .pet-listings-subtitle {
@@ -263,12 +346,14 @@
 .pet-categories-list {
   width: 100%;
   height: 45px;
-  background-color: #e7e7e7;
+  background: rgba(231, 231, 231, 0.8);
   border-radius: 24px;
   padding: 2px;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 0;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .pet-category-tab {
@@ -277,20 +362,56 @@
   background-color: transparent;
   border: none;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.pet-category-tab::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.pet-category-tab:hover::before {
+  opacity: 1;
 }
 
 .pet-category-tab.active {
-  background-color: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    0 2px 4px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transform: translateY(-1px);
 }
 
-.pet-category-tab:hover:not(.active) {
-  background-color: rgba(255, 255, 255, 0.3);
+.pet-category-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 3px;
+  background: linear-gradient(90deg, #7ab3e0, #5a9bc9);
+  border-radius: 2px;
+  animation: tabIndicator 0.3s ease;
+}
+
+@keyframes tabIndicator {
+  from { width: 0; opacity: 0; }
+  to { width: 20px; opacity: 1; }
 }
 
 .pet-category-content {
@@ -298,6 +419,8 @@
   align-items: center;
   gap: 8px;
   direction: rtl;
+  z-index: 1;
+  position: relative;
 }
 
 .pet-category-label {
@@ -315,14 +438,16 @@
   justify-content: center;
   min-width: 24px;
   height: 24px;
-  background-color: #d9d9d9;
+  background: rgba(217, 217, 217, 0.8);
   border-radius: 12px;
   padding: 0 6px;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .pet-category-tab.active .pet-category-count {
-  background-color: #7ab3e0;
+  background: linear-gradient(135deg, #7ab3e0, #5a9bc9);
+  box-shadow: 0 2px 4px rgba(122, 179, 224, 0.2);
 }
 
 .pet-category-count span {
@@ -346,46 +471,63 @@
 
 .pet-listing-card {
   width: 100%;
-  min-height: 520px;
+  min-height: 420px;
+  height: 480px;
   overflow: hidden;
-  border: 0;
-  box-shadow: none;
-  background-color: transparent;
   border-radius: 20px;
   animation: cardAppear 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
+  position: relative;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 
+    0 12px 30px rgba(0, 0, 0, 0.1),
+    0 5px 15px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 249, 255, 0.95) 100%);
 }
 
 @keyframes cardAppear {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px) scale(0.95);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 .pet-listing-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  transform: translateY(-8px);
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.15),
+    0 10px 25px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border-color: rgba(122, 179, 224, 0.4);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(240, 247, 255, 0.98) 100%);
 }
 
 .pet-listing-image-container {
   position: relative;
   height: 200px;
   flex-shrink: 0;
+  overflow: hidden;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
 }
 
 .pet-listing-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pet-listing-card:hover .pet-listing-image {
+  transform: scale(1.05);
 }
 
 .pet-listing-status {
@@ -393,45 +535,36 @@
   top: 15px;
   left: 15px;
   height: 32px;
-  padding: 0 14px;
+  padding: 0 16px;
   border-radius: 20px;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 12px;
   font-family: 'Inter', Helvetica;
   display: flex;
   align-items: center;
   gap: 8px;
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(255, 255, 255, 0.8);
   z-index: 2;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 6px 20px rgba(0, 0, 0, 0.1),
+    0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .pet-listing-status.found {
-  background: rgba(159, 199, 235, 0.95);
+  background: rgba(159, 199, 235, 0.85);
   color: white;
 }
 
 .pet-listing-status.lost {
-  background: rgba(234, 151, 153, 0.95);
+  background: rgba(234, 151, 153, 0.85);
   color: white;
 }
 
 .pet-listing-status.adoption {
-  background: rgba(122, 238, 151, 0.95);
+  background: rgba(122, 238, 151, 0.85);
   color: white;
-}
-
-.status-icon-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.status-label {
-  font-weight: 600;
-  letter-spacing: 0.2px;
 }
 
 .status-pulse {
@@ -441,34 +574,31 @@
   animation: statusPulse 2s infinite;
 }
 
-.pet-listing-status.found .status-pulse {
-  background: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
-}
-
-.pet-listing-status.lost .status-pulse {
-  background: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
-}
-
-.pet-listing-status.adoption .status-pulse {
-  background: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
-}
-
 @keyframes statusPulse {
   0% {
     transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
   }
   70% {
     transform: scale(1);
-    box-shadow: 0 0 0 6px rgba(255, 255, 255, 0);
+    box-shadow: 0 0 0 8px rgba(255, 255, 255, 0);
   }
   100% {
     transform: scale(0.95);
     box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
   }
+}
+
+.pet-listing-card:hover .pet-listing-status {
+  transform: translateY(-3px);
+  box-shadow: 
+    0 10px 25px rgba(0, 0, 0, 0.15),
+    0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.status-label {
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }
 
 .action-buttons-container {
@@ -481,23 +611,33 @@
 .glass-card {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-radius: 24px;
+  border-radius: 18px;
   border: 1.5px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 
-    0 8px 32px rgba(31, 38, 135, 0.15),
-    0 2px 10px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  padding: 12px;
-  width: 48px;
+  padding: 10px;
+  width: 46px;
   display: flex;
   justify-content: center;
   align-items: center;
+  background: rgba(255, 255, 255, 0.25);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.pet-listing-card:hover .glass-card {
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.35);
+  border-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 
+    0 15px 35px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .action-buttons-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
 }
 
@@ -512,226 +652,205 @@
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 0;
-  background: white;
+  background: rgba(255, 255, 255, 0.9);
   box-shadow: 
     0 4px 12px rgba(0, 0, 0, 0.1),
-    0 1px 3px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  position: relative;
+    0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.9);
 }
 
 .action-button:hover {
-  transform: translateY(-4px);
+  transform: translateY(-3px) scale(1.1);
+  background: rgba(255, 255, 255, 1);
   box-shadow: 
-    0 12px 24px rgba(0, 0, 0, 0.15),
-    0 4px 8px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    0 10px 25px rgba(0, 0, 0, 0.15),
+    0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
-.action-button::after {
-  content: attr(title);
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%) translateY(10px);
-  background: rgba(0, 0, 0, 0.85);
-  color: white;
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-size: 13px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-  font-family: 'Inter', Helvetica;
-  z-index: 10;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  font-weight: 500;
+.action-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.action-button:hover::after {
-  opacity: 1;
+.story-icon-container {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
 }
 
-.story-button {
-  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
-  border: 1px solid rgba(3, 169, 244, 0.3);
+.story-icon-container.with-success-story svg path {
+  fill: #1c7bd1;
+  transition: fill 0.3s ease;
 }
 
-.story-button:hover {
-  background: linear-gradient(135deg, #BBDEFB 0%, #90CAF9 100%);
-  border: 1px solid rgba(3, 169, 244, 0.5);
+.story-icon-container.with-success-story:hover svg path {
+  fill: #155fa0;
 }
 
-.edit-button {
-  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
-  border: 1px solid rgba(76, 175, 80, 0.3);
+.story-icon-container.with-success-story {
+  border: 2px solid #1c7bd1;
+  box-shadow:
+    0 0 0 3px rgba(28, 123, 209, 0.15),
+    0 4px 10px rgba(28, 123, 209, 0.35);
+  background: rgba(255, 255, 255, 0.95);
 }
 
-.edit-button:hover {
-  background: linear-gradient(135deg, #C8E6C9 0%, #A5D6A7 100%);
-  border: 1px solid rgba(76, 175, 80, 0.5);
-}
-
-.delete-button {
-  background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%);
-  border: 1px solid rgba(244, 67, 54, 0.3);
-}
-
-.delete-button:hover {
-  background: linear-gradient(135deg, #FFCDD2 0%, #EF9A9A 100%);
-  border: 1px solid rgba(244, 67, 54, 0.5);
-}
-
-.action-button svg {
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+.story-icon-container.with-success-story:hover {
+  transform: scale(1.1);
+  box-shadow:
+    0 0 0 4px rgba(28, 123, 209, 0.25),
+    0 6px 16px rgba(28, 123, 209, 0.45);
 }
 
 .pet-listing-content {
-  background-color: #efefef;
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
-  border-top: 3px solid black;
-  padding: 20px;
+  padding: 24px;
   flex: 1;
   display: flex;
   flex-direction: column;
-}
-
-.simple-resolved-indicator {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: linear-gradient(135deg, #e8f5e9 0%, #d4edda 100%);
-  border: 1px solid #c3e6cb;
-  border-radius: 8px;
-  padding: 10px 14px;
-  margin-bottom: 16px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #155724;
-  direction: rtl;
-}
-
-.resolved-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.resolved-text {
-  flex: 1;
-  font-weight: 600;
-}
-
-.remove-story-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  opacity: 0.6;
-  flex-shrink: 0;
-}
-
-.remove-story-btn:hover {
-  opacity: 1;
-  transform: scale(1.1);
+  gap: 16px;
+  background: transparent;
 }
 
 .pet-listing-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 16px;
   direction: rtl;
-  flex-shrink: 0;
+  padding-bottom: 12px;
+  border-bottom: 2px solid rgba(122, 179, 224, 0.15);
 }
 
 .pet-listing-info {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 12px;
+  flex: 1;
 }
 
 .pet-listing-name {
   font-family: 'Inter', Helvetica;
   font-weight: 700;
-  color: black;
-  font-size: 18px;
-  letter-spacing: 0;
+  color: #2c3e50;
+  font-size: 20px;
   line-height: 1.3;
   margin: 0;
+  position: relative;
+  display: inline-block;
+}
+
+.pet-listing-name::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  right: 0;
+  width: 40px;
+  height: 3px;
+  background: linear-gradient(90deg, #7ab3e0, transparent);
+  border-radius: 2px;
 }
 
 .pet-listing-subtitle {
-  font-weight: 400;
-  color: #666666;
+  font-weight: 500;
+  color: #7f8c8d;
   font-size: 14px;
   font-family: 'Inter', Helvetica;
-  letter-spacing: 0;
-  line-height: normal;
   margin: 0;
 }
 
 .pet-listing-type {
-  background-color: #c1c6cc;
-  color: black;
-  border: 1px solid #a6a6a6;
-  border-radius: 10px;
-  height: 28px;
-  padding: 0 14px;
+  background: linear-gradient(135deg, #7ab3e0 0%, #5a9bc9 100%);
+  color: white;
+  border-radius: 16px;
+  height: 30px;
+  padding: 0 16px;
   font-weight: 600;
-  font-size: 12px;
+  font-size: 13px;
   font-family: 'Inter', Helvetica;
   display: flex;
   align-items: center;
   justify-content: center;
   white-space: nowrap;
   flex-shrink: 0;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(122, 179, 224, 0.3);
+}
+
+.pet-listing-card:hover .pet-listing-type {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(122, 179, 224, 0.4);
 }
 
 .pet-listing-description {
-  color: #666666;
+  color: #5a6c7d;
   font-size: 14px;
   font-family: 'Inter', Helvetica;
   font-weight: 400;
   line-height: 1.6;
   direction: rtl;
-  margin-bottom: 20px;
-  flex: 1;
-  text-align: justify;
+  margin: 0;
+  padding: 4px 0;
+  background: transparent;
+}
+
+.pet-details-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .pet-listing-detail {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 12px;
   direction: rtl;
-  flex-shrink: 0;
+  padding: 8px 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  position: relative;
+}
+
+.pet-listing-detail::before {
+  content: '';
+  position: absolute;
+  right: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  background: #7ab3e0;
+  border-radius: 50%;
+  opacity: 0.6;
 }
 
 .detail-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   flex-shrink: 0;
+  color: #7ab3e0;
+  background: rgba(122, 179, 224, 0.1);
+  border-radius: 8px;
+  padding: 4px;
 }
 
 .pet-listing-detail-text {
-  color: #666666;
+  color: #4a5568;
   font-size: 14px;
   font-family: 'Inter', Helvetica;
-  font-weight: 400;
-  line-height: 1.5;
+  font-weight: 500;
+  line-height: 1.4;
   flex: 1;
 }
 
@@ -739,122 +858,54 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  box-shadow: 0px -5px 10px rgba(255, 255, 255, 0.2),
-              inset 0px 2px 10px rgba(254, 254, 254, 0.15),
-              0px 10px 25px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(20px) brightness(100%);
-  -webkit-backdrop-filter: blur(20px) brightness(100%);
-  padding: 8px 16px;
-  width: fit-content;
-  margin-right: auto;
-  margin-left: 0;
-  margin-top: auto;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  flex-shrink: 0;
+  padding: 8px 12px;
+  border-top: 2px solid rgba(122, 179, 224, 0.15);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1.5px solid rgba(122, 179, 224, 0.3);
+  border-radius: 24px;
+  box-shadow: 
+    0 4px 12px rgba(122, 179, 224, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(5px);
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  width: auto;
+  z-index: 1;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pet-listing-card:hover .pet-listing-time {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(122, 179, 224, 0.5);
+  box-shadow: 
+    0 6px 20px rgba(122, 179, 224, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
 }
 
 .time-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 14px;
-  height: 14px;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
+  color: #1c7bd1;
+  background: rgba(28, 123, 209, 0.1);
+  border-radius: 50%;
+  padding: 4px;
+  border: 1px solid rgba(28, 123, 209, 0.2);
 }
 
 .pet-listing-time-text {
-  color: #898989;
-  font-size: 12px;
+  color: #2c3e50;
+  font-size: 13px;
   font-family: 'Inter', Helvetica;
-  font-weight: 500;
-  letter-spacing: 0;
-  line-height: normal;
+  font-weight: 600;
   direction: rtl;
-}
-
-.pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  margin-top: 32px;
-  padding-top: 20px;
-  border-top: 1px solid #e0e0e0;
-}
-
-.pagination-button {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: white;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.pagination-button:hover:not(:disabled) {
-  background-color: #f3f4f6;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.pagination-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background-color: #f5f5f5;
-}
-
-.pagination-button:disabled:hover {
-  background-color: #f5f5f5;
-  transform: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.pagination-pages {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.pagination-page-button {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: white;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  font-family: 'Inter', Helvetica;
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.pagination-page-button:hover {
-  background-color: #f3f4f6;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.pagination-page-button.active {
-  background-color: #7ab3e0;
-  color: white;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 6px rgba(122, 179, 224, 0.2);
-}
-
-.pagination-page-button.active:hover {
-  background-color: #5a9bc9;
+  flex: 1;
+  text-align: right;
 }
 
 @media (max-width: 1200px) {
@@ -865,12 +916,6 @@
 
   .pet-listings-grid {
     grid-template-columns: repeat(2, 1fr);
-    justify-items: center;
-  }
-
-  .pet-listing-card {
-    width: 100%;
-    max-width: 380px;
   }
 }
 
@@ -888,13 +933,6 @@
     height: auto;
   }
 
-  .profile-content-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-  }
-
   .profile-info {
     position: static;
     transform: none;
@@ -910,19 +948,6 @@
     transform: translateX(50%);
   }
 
-  .profile-pet-icon {
-    top: -40px;
-    left: auto;
-    right: 20px;
-  }
-
-  .logout-button {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
   .pet-categories-list {
     grid-template-columns: repeat(2, 1fr);
     height: auto;
@@ -932,54 +957,11 @@
 
   .pet-category-tab {
     height: 50px;
-    margin-bottom: 0;
   }
 
   .pet-listings-grid {
     grid-template-columns: 1fr;
     gap: 24px;
-  }
-
-  .pet-listing-card {
-    width: 100%;
-    max-width: 420px;
-  }
-
-  .action-buttons-container {
-    top: 10px;
-    right: 10px;
-  }
-
-  .glass-card {
-    width: 54px;
-    padding: 10px;
-  }
-
-  .action-button {
-    width: 40px;
-    height: 40px;
-  }
-
-  .pagination {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .pagination-pages {
-    order: 2;
-  }
-
-  .pagination-button {
-    width: 50px;
-    height: 50px;
-  }
-
-  .pagination-button:first-child {
-    order: 1;
-  }
-
-  .pagination-button:last-child {
-    order: 3;
   }
 }
 
@@ -1009,43 +991,19 @@
     height: 20px;
   }
 
-  .pet-category-count span {
-    font-size: 10px;
-  }
-
   .pet-listing-status {
     top: 10px;
     left: 10px;
     height: 28px;
-    padding: 0 10px;
-    font-size: 10px;
-  }
-  
-  .action-buttons-container {
-    top: 8px;
-    right: 8px;
-  }
-
-  .glass-card {
-    width: 48px;
-    padding: 8px;
-  }
-
-  .action-button {
-    width: 36px;
-    height: 36px;
-  }
-
-  .simple-resolved-indicator {
-    padding: 8px 12px;
-    font-size: 12px;
+    padding: 0 12px;
+    font-size: 11px;
   }
 
   .pet-listing-image-container {
-    height: 180px;
+    height: 160px;
   }
 
   .pet-listing-card {
-    min-height: 480px;
+    min-height: 400px;
   }
 }

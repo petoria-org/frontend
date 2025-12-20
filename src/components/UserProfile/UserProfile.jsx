@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "../../styles/UserProfile.css";
 import { SuccessStoryCreation } from "../SuccessStoryCreation";
+import { Pagination } from './../Pagination/Pagination';
 
 export const UserProfile = ({ onEditClick }) => {
   const [allAds, setAllAds] = useState([
@@ -266,26 +267,33 @@ export const UserProfile = ({ onEditClick }) => {
   };
 
   const LocationIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <path d="M12 2C8.13401 2 5 5.13401 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13401 15.866 2 12 2Z" fill="#666666"/>
-      <circle cx="12" cy="9" r="3" fill="white"/>
-    </svg>
+    <img 
+      src="src/assets/icons/location.svg" 
+      alt="مکان"
+      width="16" 
+      height="16"
+      className="icon-img"
+    />
   );
 
   const CalendarIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" fill="#666666"/>
-      <line x1="16" y1="2" x2="16" y2="6" stroke="white" strokeWidth="2"/>
-      <line x1="8" y1="2" x2="8" y2="6" stroke="white" strokeWidth="2"/>
-      <line x1="3" y1="10" x2="21" y2="10" stroke="white" strokeWidth="2"/>
-    </svg>
+    <img 
+      src="src/assets/icons/calendar-2.svg" 
+      alt="تاریخ"
+      width="16" 
+      height="16"
+      className="icon-img"
+    />
   );
 
   const ClockIcon = () => (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="10" fill="#898989"/>
-      <path d="M12 6V12L16 14" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-    </svg>
+    <img 
+      src="src/assets/icons/clock.svg" 
+      alt="زمان"
+      width="12" 
+      height="12"
+      className="icon-img"
+    />
   );
 
   const LogOutIcon = () => (
@@ -297,10 +305,11 @@ export const UserProfile = ({ onEditClick }) => {
   );
 
   const EmailIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" fill="#666666"/>
-      <polyline points="22,6 12,13 2,6" stroke="white" strokeWidth="2"/>
-    </svg>
+    <img
+    src="src/assets/icons/email.svg"
+    width="18"
+    hight="18"
+    />
   );
 
   const Edit3Icon = () => (
@@ -330,47 +339,30 @@ export const UserProfile = ({ onEditClick }) => {
   );
 
   const EditIcon = () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="#4CAF50" strokeWidth="2"/>
-      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="#4CAF50" strokeWidth="2"/>
-    </svg>
+    <div className="action-icon-container">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="#5CDC87" strokeWidth="2"/>
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="#5CDC87" strokeWidth="2"/>
+      </svg>
+    </div>
   );
 
   const DeleteIcon = () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <path d="M3 6h18" stroke="#F44336" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="#F44336" strokeWidth="2"/>
-    </svg>
+    <div className="action-icon-container">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <path d="M3 6h18" stroke="#F44336" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="#F44336" strokeWidth="2"/>
+      </svg>
+    </div>
   );
 
-  const StoryIcon = () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" fill="#03A9F4"/>
-    </svg>
+  const StoryIcon = ({ hasSuccessStory }) => (
+    <div className={`story-icon-container ${hasSuccessStory ? 'with-success-story' : ''}`}>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" fill="#8ED8FF"/>
+      </svg>
+    </div>
   );
-
-  const StatusIcon = ({ type }) => {
-    const icons = {
-      found: (
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="10" fill="#0867BD"/>
-          <path d="M8 12l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-        </svg>
-      ),
-      lost: (
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="10" fill="#C3080B"/>
-          <path d="M8 8l8 8M16 8l-8 8" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-        </svg>
-      ),
-      adoption: (
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-          <path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.46 11.5 4 14l8 8 8-8c2.54-2.5 2.54-7.3.42-9.42z" fill="#0F7228"/>
-        </svg>
-      )
-    };
-    return icons[type] || null;
-  };
 
   const ImageCountIcon = () => (
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
@@ -378,6 +370,16 @@ export const UserProfile = ({ onEditClick }) => {
       <circle cx="8.5" cy="8.5" r="1.5" fill="white"/>
       <path d="M21 15L16 10 5 21" stroke="white" strokeWidth="2"/>
     </svg>
+  );
+
+  const PawIcon = () => (
+    <img 
+      src="src/assets/icons/pet.svg" 
+      alt="پنجه حیوان"
+      width="85"
+      height="85"
+      className="paw-icon"
+    />
   );
 
   return (
@@ -412,14 +414,7 @@ export const UserProfile = ({ onEditClick }) => {
                 </div>
 
                 <div className="profile-pet-icon">
-                  <svg width="85" height="85" viewBox="0 0 85 85" fill="none">
-                    <path d="M42.5 20C45.2614 20 47.5 17.7614 47.5 15C47.5 12.2386 45.2614 10 42.5 10C39.7386 10 37.5 12.2386 37.5 15C37.5 17.7614 39.7386 20 42.5 20Z" fill="#7AB3E0"/>
-                    <path d="M60 35C62.7614 35 65 32.7614 65 30C65 27.2386 62.7614 25 60 25C57.2386 25 55 27.2386 55 30C55 32.7614 57.2386 35 60 35Z" fill="#7AB3E0"/>
-                    <path d="M25 35C27.7614 35 30 32.7614 30 30C30 27.2386 27.7614 25 25 25C22.2386 25 20 27.2386 20 30C20 32.7614 22.2386 35 25 35Z" fill="#7AB3E0"/>
-                    <path d="M52.5 55C55.2614 55 57.5 52.7614 57.5 50C57.5 47.2386 55.2614 45 52.5 45C49.7386 45 47.5 47.2386 47.5 50C47.5 52.7614 49.7386 55 52.5 55Z" fill="#7AB3E0"/>
-                    <path d="M32.5 55C35.2614 55 37.5 52.7614 37.5 50C37.5 47.2386 35.2614 45 32.5 45C29.7386 45 27.5 47.2386 27.5 50C27.5 52.7614 29.7386 55 32.5 55Z" fill="#7AB3E0"/>
-                    <path d="M42.5 70C49.4036 70 55 64.4036 55 57.5C55 50.5964 49.4036 45 42.5 45C35.5964 45 30 50.5964 30 57.5C30 64.4036 35.5964 70 42.5 70Z" fill="#7AB3E0"/>
-                  </svg>
+                  <PawIcon />
                 </div>
                 
                 <button className="logout-button">
@@ -459,7 +454,7 @@ export const UserProfile = ({ onEditClick }) => {
 
             <div className="pet-listings-grid">
               {currentAds.map((pet) => (
-                <div key={pet.id} className="pet-listing-card">
+                <div key={pet.id} className={`pet-listing-card ${pet.resolved ? 'resolved' : ''}`}>
                   <div className="pet-listing-image-container">
                     <img
                       src={pet.image}
@@ -468,9 +463,6 @@ export const UserProfile = ({ onEditClick }) => {
                     />
                     
                     <div className={`pet-listing-status ${pet.status}`}>
-                      <div className="status-icon-wrapper">
-                        <StatusIcon type={pet.status} />
-                      </div>
                       <span className="status-label">{pet.statusLabel}</span>
                       <div className="status-pulse"></div>
                     </div>
@@ -483,7 +475,7 @@ export const UserProfile = ({ onEditClick }) => {
                             onClick={() => handleMarkAsResolved(pet.id)}
                             title={pet.resolved ? "مشاهده/ویرایش داستان موفقیت" : "ثبت داستان موفقیت"}
                           >
-                            <StoryIcon />
+                            <StoryIcon hasSuccessStory={pet.resolved} />
                           </button>
                           
                           <button 
@@ -507,24 +499,6 @@ export const UserProfile = ({ onEditClick }) => {
                   </div>
 
                   <div className="pet-listing-content">
-                    {pet.resolved && (
-                      <div className="simple-resolved-indicator">
-                        <div className="resolved-icon">
-                          <CheckCircleIcon />
-                        </div>
-                        <span className="resolved-text">به سرانجام رسیده</span>
-                        <button 
-                          className="remove-story-btn"
-                          onClick={() => handleRemoveSuccessStory(pet.id)}
-                          title="حذف داستان موفقیت"
-                        >
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                            <path d="M18 6L6 18M6 6l12 12" stroke="#721c24" strokeWidth="2" strokeLinecap="round"/>
-                          </svg>
-                        </button>
-                      </div>
-                    )}
-
                     <div className="pet-listing-header">
                       <div className="pet-listing-info">
                         <h3 className="pet-listing-name">{pet.name}</h3>
@@ -537,18 +511,20 @@ export const UserProfile = ({ onEditClick }) => {
 
                     <p className="pet-listing-description">{pet.desc}</p>
 
-                    <div className="pet-listing-detail">
-                      <div className="detail-icon">
-                        <LocationIcon />
+                    <div className="pet-details-container">
+                      <div className="pet-listing-detail">
+                        <div className="detail-icon">
+                          <LocationIcon />
+                        </div>
+                        <span className="pet-listing-detail-text">{pet.location}</span>
                       </div>
-                      <span className="pet-listing-detail-text">{pet.location}</span>
-                    </div>
 
-                    <div className="pet-listing-detail">
-                      <div className="detail-icon">
-                        <CalendarIcon />
+                      <div className="pet-listing-detail">
+                        <div className="detail-icon">
+                          <CalendarIcon />
+                        </div>
+                        <span className="pet-listing-detail-text">{pet.time}</span>
                       </div>
-                      <span className="pet-listing-detail-text">{pet.time}</span>
                     </div>
 
                     <div className="pet-listing-time">
@@ -561,50 +537,26 @@ export const UserProfile = ({ onEditClick }) => {
                 </div>
               ))}
             </div>
-
-            {filteredAds.length > itemsPerPage && (
-              <div className="pagination">
-                <button
-                  className="pagination-button"
-                  onClick={handlePreviousPage}
-                  disabled={currentPage === 1}
-                >
-                  <ChevronRightIcon />
-                </button>
-
-                <div className="pagination-pages">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <button
-                      key={page}
-                      className={`pagination-page-button ${currentPage === page ? 'active' : ''}`}
-                      onClick={() => handlePageClick(page)}
-                    >
-                      {page}
-                    </button>
-                  ))}
-                </div>
-
-                <button
-                  className="pagination-button"
-                  onClick={handleNextPage}
-                  disabled={currentPage === totalPages}
-                >
-                  <ChevronLeftIcon />
-                </button>
-              </div>
-            )}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageClick}
+              onPrevious={handlePreviousPage}
+              onNext={handleNextPage}
+            />
           </div>
         </section>
       </main>
 
-      {showSuccessStoryModal && selectedPetForStory && (
+      {showSuccessStoryModal && (
         <SuccessStoryCreation
-          petData={selectedPetForStory}
-          onClose={() => {
+          pet={selectedPetForStory}
+          onSave={handleSuccessStorySave}
+          onCancel={() => {
             setShowSuccessStoryModal(false);
             setSelectedPetForStory(null);
           }}
-          onSave={handleSuccessStorySave}
+          onRemove={handleRemoveSuccessStory}
         />
       )}
     </div>

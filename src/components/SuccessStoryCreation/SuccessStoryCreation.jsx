@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import "../../styles/SuccessStoryCreation.css";
 
-export const SuccessStoryCreation = ({ petData, onClose, onSave }) => {
+export const SuccessStoryCreation = ({ pet, onSave, onCancel, onRemove }) => {
   const [images, setImages] = useState([]);
   const [storyText, setStoryText] = useState("");
   const [isDragging, setIsDragging] = useState(false);
@@ -10,28 +10,25 @@ export const SuccessStoryCreation = ({ petData, onClose, onSave }) => {
   const fileInputRef = useRef(null);
   const dropZoneRef = useRef(null);
 
-    useEffect(() => {
-    // قفل کردن اسکرول صفحه اصلی
+  useEffect(() => {
     document.body.style.overflow = "hidden";
-
     return () => {
-        // آزاد کردن اسکرول وقتی مودال بسته شد
-        document.body.style.overflow = "";
+      document.body.style.overflow = "";
     };
-    }, []);
+  }, []);
 
   useEffect(() => {
-    if (petData?.successStory) {
-      setStoryText(petData.successStory);
+    if (pet?.successStory) {
+      setStoryText(pet.successStory);
     }
-    if (petData?.images && Array.isArray(petData.images)) {
-      setImages(petData.images.map((url, index) => ({
+    if (pet?.images && Array.isArray(pet.images)) {
+      setImages(pet.images.map((url, index) => ({
         id: Date.now() + index,
         url: url,
         name: `تصویر ${index + 1}`
       })));
     }
-  }, [petData]);
+  }, [pet]);
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -67,6 +64,8 @@ export const SuccessStoryCreation = ({ petData, onClose, onSave }) => {
     if (files.length > 0) {
       handleFiles(files);
     }
+
+    e.target.value = "";
   };
 
   const handleFiles = (files) => {
@@ -76,63 +75,73 @@ export const SuccessStoryCreation = ({ petData, onClose, onSave }) => {
       return;
     }
 
-    files.forEach((file, index) => {
+    const newImages = files.map((file, index) => {
       const reader = new FileReader();
       
-      setUploadProgress(prev => ({
-        ...prev,
-        [file.name]: 0
-      }));
-
-      const interval = setInterval(() => {
-        setUploadProgress(prev => {
-          const current = prev[file.name] || 0;
-          if (current >= 90) {
-            clearInterval(interval);
-            return prev;
-          }
-          return {
-            ...prev,
-            [file.name]: current + 10
-          };
-        });
-      }, 100);
-
-      reader.onload = (e) => {
-        const newImage = {
-          id: Date.now() + index,
-          url: e.target.result,
-          file: file,
-          name: file.name
-        };
-
-        setImages(prev => [...prev, newImage]);
-        
+      return new Promise((resolve) => {
         setUploadProgress(prev => ({
           ...prev,
-          [file.name]: 100
+          [file.name]: 0
         }));
 
-        setTimeout(() => {
+        const interval = setInterval(() => {
           setUploadProgress(prev => {
-            const newProgress = { ...prev };
-            delete newProgress[file.name];
-            return newProgress;
+            const current = prev[file.name] || 0;
+            if (current >= 90) {
+              clearInterval(interval);
+              return prev;
+            }
+            return {
+              ...prev,
+              [file.name]: current + 10
+            };
           });
-        }, 500);
+        }, 100);
 
-        clearInterval(interval);
-      };
+        reader.onload = (e) => {
+          const newImage = {
+            id: Date.now() + index,
+            url: e.target.result,
+            file: file,
+            name: file.name
+          };
 
-      reader.readAsDataURL(file);
+          setUploadProgress(prev => ({
+            ...prev,
+            [file.name]: 100
+          }));
+
+          setTimeout(() => {
+            setUploadProgress(prev => {
+              const newProgress = { ...prev };
+              delete newProgress[file.name];
+              return newProgress;
+            });
+          }, 500);
+
+          clearInterval(interval);
+          resolve(newImage);
+        };
+
+        reader.readAsDataURL(file);
+      });
+    });
+
+    Promise.all(newImages).then(loadedImages => {
+      setImages(prev => [...prev, ...loadedImages]);
     });
   };
 
   const removeImage = (id) => {
-    setImages(prev => prev.filter(img => img.id !== id));
-    if (activeImageIndex >= images.length - 1) {
-      setActiveImageIndex(prev => Math.max(0, prev - 1));
-    }
+    setImages(prev => {
+      const nextImages = prev.filter(img => img.id !== id);
+
+      setActiveImageIndex(index =>
+        index >= nextImages.length ? Math.max(0, nextImages.length - 1) : index
+      );
+
+      return nextImages;
+    });
   };
 
   const handleSave = () => {
@@ -142,18 +151,51 @@ export const SuccessStoryCreation = ({ petData, onClose, onSave }) => {
     }
 
     const successData = {
-      petId: petData?.id,
-      petName: petData?.name,
-      storyText,
+      petId: pet?.id,
+      action: "save", 
+      storyText: storyText.trim(),
       images: images.map(img => img.url),
       createdAt: new Date().toISOString()
     };
 
     onSave?.(successData);
+
+    setStoryText("");
+    setImages([]);
+    setActiveImageIndex(0);
+  };
+
+  const handleCancel = () => {
+    setStoryText("");
+    setImages([]);
+    setActiveImageIndex(0);
+
+    onCancel?.();
+  };
+
+  const handleRemoveStory = () => {
+    if (window.confirm("آیا از حذف داستان موفقیت مطمئن هستید؟")) {
+      const removeData = {
+        petId: pet?.id,
+        action: "remove",
+        storyText: "",
+        images: []
+      };
+      
+      onSave?.(removeData);
+
+      setStoryText("");
+      setImages([]);
+      setActiveImageIndex(0);
+    }
+  };
+
+  const handleClose = () => {
+    handleCancel();
   };
 
   const ImageIcon = () => (
-    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
       <circle cx="8.5" cy="8.5" r="1.5" />
       <polyline points="21 15 16 10 5 21" />
@@ -202,30 +244,38 @@ export const SuccessStoryCreation = ({ petData, onClose, onSave }) => {
     </svg>
   );
 
+  const TrashIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M3 6h18" />
+      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+    </svg>
+  );
+
   return (
-    <div className="success-story-creation-overlay">
-      <div className="success-story-creation-modal">
-        {/* Header */}
+    <div className="success-story-creation-overlay" onClick={handleClose}>
+      <div className="success-story-creation-modal" onClick={(e) => e.stopPropagation()}>
         <div className="success-story-header">
           <div className="header-content">
             <div className="header-icon">
               <SparkleIcon />
             </div>
             <div className="header-text">
-              <h2 className="success-story-title">داستان موفقیت</h2>
+              <h2 className="success-story-title">
+                {pet?.successStory ? "ویرایش داستان موفقیت" : "ثبت داستان موفقیت"}
+              </h2>
               <p className="success-story-subtitle">
-                داستان خود را از پیدا کردن {petData?.name || "پت خود"} به اشتراک بگذارید
+                {pet?.successStory 
+                  ? `داستان موفقیت ${pet?.name || "پت"} را ویرایش کنید`
+                  : `داستان خود را از پیدا کردن ${pet?.name || "پت خود"} به اشتراک بگذارید`}
               </p>
             </div>
           </div>
-          <button className="close-button" onClick={onClose}>
+          <button className="close-button" onClick={handleClose}>
             <CloseIcon />
           </button>
         </div>
 
-        {/* Main Content */}
         <div className="success-story-content">
-          {/* Image Upload Section */}
           <div className="image-upload-section">
             <div className="section-header">
               <div className="section-title">
@@ -238,17 +288,19 @@ export const SuccessStoryCreation = ({ petData, onClose, onSave }) => {
               </div>
             </div>
 
-            {/* Drop Zone */}
             <div 
               ref={dropZoneRef}
-              className={`drop-zone ${isDragging ? 'dragging' : ''} ${images.length === 0 ? 'empty' : ''}`}
+              className={`drop-zone ${isDragging ? 'dragging' : ''}`}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
-              onClick={() => images.length === 0 && fileInputRef.current?.click()}
+              style={{ cursor: images.length === 0 ? 'pointer' : 'default' }}
             >
               {images.length === 0 ? (
-                <div className="empty-drop-zone">
+                <div 
+                  className="empty-drop-zone"
+                  onClick={() => fileInputRef.current?.click()}
+                >
                   <div className="upload-icon">
                     <UploadIcon />
                   </div>
@@ -259,98 +311,98 @@ export const SuccessStoryCreation = ({ petData, onClose, onSave }) => {
                 </div>
               ) : (
                 <div className="image-preview-container">
-                  {/* Main Preview */}
-                  {images[activeImageIndex] && (
-                    <div className="main-image-preview">
-                      <img 
-                        src={images[activeImageIndex].url} 
-                        alt={`Preview ${activeImageIndex + 1}`}
-                        className="main-preview-image"
-                      />
-                      
-                      {/* Navigation Arrows */}
-                      {images.length > 1 && (
-                        <>
-                          <button 
-                            className="nav-arrow prev-arrow"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setActiveImageIndex(prev => 
-                                prev === 0 ? images.length - 1 : prev - 1
-                              );
-                            }}
-                          >
-                            <ArrowRightIcon />
-                          </button>
-                          <button 
-                            className="nav-arrow next-arrow"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setActiveImageIndex(prev => 
-                                prev === images.length - 1 ? 0 : prev + 1
-                              );
-                            }}
-                          >
-                            <ArrowLeftIcon />
-                          </button>
-                        </>
-                      )}
+                  <div className="preview-area">
+                    {images[activeImageIndex] && (
+                      <div className="main-image-preview">
+                        <img 
+                          src={images[activeImageIndex].url} 
+                          alt={`Preview ${activeImageIndex + 1}`}
+                          className="main-preview-image"
+                        />
+                        
+                        {images.length > 1 && (
+                          <>
+                            <button 
+                              className="nav-arrow prev-arrow"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveImageIndex(prev => 
+                                  prev === 0 ? images.length - 1 : prev - 1
+                                );
+                              }}
+                            >
+                              <ArrowRightIcon />
+                            </button>
+                            <button 
+                              className="nav-arrow next-arrow"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveImageIndex(prev => 
+                                  prev === images.length - 1 ? 0 : prev + 1
+                                );
+                              }}
+                            >
+                              <ArrowLeftIcon />
+                            </button>
+                          </>
+                        )}
 
-                      {/* Progress Bar for Uploading Images */}
-                      {uploadProgress[images[activeImageIndex]?.name] && 
-                       uploadProgress[images[activeImageIndex]?.name] < 100 && (
-                        <div className="upload-progress-bar">
-                          <div 
-                            className="progress-fill"
-                            style={{ 
-                              width: `${uploadProgress[images[activeImageIndex]?.name]}%` 
-                            }}
-                          />
+                        {uploadProgress[images[activeImageIndex]?.name] && 
+                         uploadProgress[images[activeImageIndex]?.name] < 100 && (
+                          <div className="upload-progress-bar">
+                            <div 
+                              className="progress-fill"
+                              style={{ 
+                                width: `${uploadProgress[images[activeImageIndex]?.name]}%` 
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    <div className="thumbnail-container">
+                      {images.map((image, index) => (
+                        <div 
+                          key={image.id}
+                          className={`thumbnail-wrapper ${index === activeImageIndex ? 'active' : ''}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveImageIndex(index);
+                          }}
+                        >
+                          <div className="thumbnail">
+                            <img 
+                              src={image.url} 
+                              alt={`Thumbnail ${index + 1}`}
+                              className="thumbnail-image"
+                            />
+                            <button 
+                              className="remove-thumbnail"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeImage(image.id);
+                              }}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+
+                      {images.length < 7 && (
+                        <div 
+                          className="add-more-thumbnail"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            fileInputRef.current?.click();
+                          }}
+                        >
+                          <div className="add-more-icon">+</div>
+                          <span className="add-more-text">افزودن</span>
                         </div>
                       )}
                     </div>
-                  )}
-
-                  {/* Thumbnails */}
-                  <div className="thumbnail-container">
-                    {images.map((image, index) => (
-                      <div 
-                        key={image.id}
-                        className={`thumbnail-wrapper ${index === activeImageIndex ? 'active' : ''}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActiveImageIndex(index);
-                        }}
-                      >
-                        <div className="thumbnail">
-                          <img 
-                            src={image.url} 
-                            alt={`Thumbnail ${index + 1}`}
-                            className="thumbnail-image"
-                          />
-                          <button 
-                            className="remove-thumbnail"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              removeImage(image.id);
-                            }}
-                          >
-                            ×
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-
-                    {/* Add More Button */}
-                    {images.length < 7 && (
-                      <div 
-                        className="add-more-thumbnail"
-                        onClick={() => fileInputRef.current?.click()}
-                      >
-                        <div className="add-more-icon">+</div>
-                        <span className="add-more-text">افزودن</span>
-                      </div>
-                    )}
                   </div>
                 </div>
               )}
@@ -366,7 +418,6 @@ export const SuccessStoryCreation = ({ petData, onClose, onSave }) => {
             </div>
           </div>
 
-          {/* Story Text Section */}
           <div className="story-text-section">
             <div className="section-header">
               <div className="section-title">
@@ -395,7 +446,6 @@ export const SuccessStoryCreation = ({ petData, onClose, onSave }) => {
                 dir="rtl"
               />
               
-              {/* Text Formatting Tools */}
               <div className="text-formatting-tools">
                 <button 
                   className="format-btn"
@@ -421,7 +471,6 @@ export const SuccessStoryCreation = ({ petData, onClose, onSave }) => {
               </div>
             </div>
 
-            {/* Tips */}
             <div className="story-tips">
               <h4 className="tips-title">نکات نوشتن داستان موفق:</h4>
               <ul className="tips-list">
@@ -434,9 +483,23 @@ export const SuccessStoryCreation = ({ petData, onClose, onSave }) => {
           </div>
         </div>
 
-        {/* Footer */}
         <div className="success-story-footer">
-          <button className="cancel-btn" onClick={onClose}>
+          {pet?.successStory && (
+            <button 
+              className="cancel-btn" 
+              onClick={handleRemoveStory}
+              style={{ 
+                background: '#fee2e2',
+                color: '#dc2626',
+                borderColor: '#fca5a5'
+              }}
+            >
+              <TrashIcon />
+              <span>حذف داستان</span>
+            </button>
+          )}
+          
+          <button className="cancel-btn" onClick={handleCancel}>
             انصراف
           </button>
           <button 
@@ -445,7 +508,7 @@ export const SuccessStoryCreation = ({ petData, onClose, onSave }) => {
             disabled={!storyText.trim()}
           >
             <SparkleIcon />
-            <span>انتشار داستان موفقیت</span>
+            <span>{pet?.successStory ? "بروزرسانی داستان" : "انتشار داستان موفقیت"}</span>
           </button>
         </div>
       </div>
