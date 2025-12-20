@@ -5,10 +5,10 @@ import SortFilters from "../SortFilters";
 import "../../styles/AllPosts.css";
 
 const API_ENDPOINTS = {
-  all: "/posts/all/",
-  lost: "/posts/api/lost-posts/",
-  found: "/posts/api/found-posts/",
-  adoption: "/posts/api/surrender-posts/",
+  all: "/api/posts/all/",
+  lost: "/api/posts/lost-posts/",
+  found: "/api/posts/found-posts/",
+  adoption: "/api/posts/surrender-posts/",
 };
 
 const PLACEHOLDER_IMAGE = "/images/placeholder.jpg";
