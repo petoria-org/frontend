@@ -1,0 +1,137 @@
+export const chatEvents = [
+  // Chat 6 messages (open conversation)
+  {
+    type: "chat_list_update",
+    chat: {
+      id: 6,
+      last_message: {
+        id: 42,
+        chat_id: 6,
+        sender_id: 2,
+        sender_name: "مینا احمدی",
+        content: "سلام! چه ساعتی پیدا کردیش؟ یقه یا نشانه‌ی خاصی داشت؟",
+        timestamp: "2025-12-20T10:30:12.786739+00:00",
+        is_read: false,
+        reply_to: null,
+        attachments: [],
+      },
+      unread_count: 2,
+    },
+  },
+  {
+    type: "chat_list_update",
+    chat: {
+      id: 6,
+      last_message: {
+        id: 43,
+        chat_id: 6,
+        sender_id: 1,
+        sender_name: "petoria",
+        content: "سلام، حدود ۴ عصر، یقه‌ی آبی داشت و خیلی آروم بود.",
+        timestamp: "2025-12-20T10:30:55.786739+00:00",
+        is_read: true,
+        reply_to: null,
+        attachments: [],
+      },
+      unread_count: 2,
+    },
+  },
+  {
+    type: "chat_list_update",
+    chat: {
+      id: 6,
+      last_message: {
+        id: 44,
+        chat_id: 6,
+        sender_id: 2,
+        sender_name: "مینا احمدی",
+        content: "میتونی یه عکس دیگه بفرستی؟ شاید سگ ما باشه.",
+        timestamp: "2025-12-20T10:31:12.786739+00:00",
+        is_read: false,
+        reply_to: null,
+        attachments: [],
+      },
+      unread_count: 2,
+    },
+  },
+  {
+    type: "chat_list_update",
+    chat: {
+      id: 6,
+      last_message: {
+        id: 45,
+        chat_id: 6,
+        sender_id: 1,
+        sender_name: "petoria",
+        content: "",
+        timestamp: "2025-12-20T10:31:50.786739+00:00",
+        is_read: false,
+        reply_to: null,
+        attachments: [
+          {
+            type: "image",
+            url: "https://images.unsplash.com/photo-1525253086316-d0c936c814f8?w=1400&q=80",
+            name: "dog.jpg",
+          },
+        ],
+      },
+      unread_count: 2,
+    },
+  },
+
+  // Other chats (for right list)
+  {
+    type: "chat_list_update",
+    chat: {
+      id: 7,
+      last_message: {
+        id: 60,
+        chat_id: 7,
+        sender_id: 2,
+        sender_name: "مینا احمدی",
+        content: "بله همچنان صاحب آن پیدا نشده است!",
+        timestamp: "2025-12-20T12:58:00.000000+00:00",
+        is_read: false,
+        reply_to: null,
+        attachments: [],
+      },
+      unread_count: 2,
+    },
+  },
+  {
+    type: "chat_list_update",
+    chat: {
+      id: 8,
+      last_message: {
+        id: 61,
+        chat_id: 8,
+        sender_id: 2,
+        sender_name: "مینا احمدی",
+        content: "برای سرپرستی لونا شرایط چیه؟",
+        timestamp: "2025-12-20T12:58:00.000000+00:00",
+        is_read: false,
+        reply_to: null,
+        attachments: [],
+      },
+      unread_count: 2,
+    },
+  },
+  {
+    type: "chat_list_update",
+    chat: {
+      id: 9,
+      last_message: {
+        id: 62,
+        chat_id: 9,
+        sender_id: 2,
+        sender_name: "مینا احمدی",
+        content: "آخرین بار کجا دیدیش؟",
+        timestamp: "2025-12-20T12:58:00.000000+00:00",
+        is_read: false,
+        reply_to: null,
+        attachments: [],
+      },
+      unread_count: 2,
+    },
+  },
+];
