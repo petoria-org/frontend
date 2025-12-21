@@ -160,4 +160,6 @@ const SuccessStoriesAll = () => {
       )}
     </div>
   );
-}
+};
+
+export default SuccessStoriesAll;
