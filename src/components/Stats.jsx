@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../styles/Stats.css";
 
-const ALL_POSTS_URL = "/posts/all/";
+const ALL_POSTS_URL = "/api/posts/all/";
 
 export default function Stats() {
   const [activeAdsCount, setActiveAdsCount] = useState(null);
