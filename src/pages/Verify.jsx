@@ -1,15 +1,19 @@
 import "../styles/Verify.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { verifyOtp, requestOtp } from "../Services/authservice";
 
 const Verify = () => {
   const navigate = useNavigate();
   const location = useLocation();
+
   const email = location.state?.email;
+  const purpose = location.state?.purpose;
 
   const [code, setCode] = useState(["", "", "", "", "", ""]);
-  const [timer, setTimer] = useState(5);
+  const [timer, setTimer] = useState(15);
   const [canResend, setCanResend] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Timer countdown
   useEffect(() => {
@@ -29,24 +33,67 @@ const Verify = () => {
     newCode[index] = value;
     setCode(newCode);
 
-    if (value && index < 5) {
-      document.getElementById(`code-${index + 1}`).focus();
+    if (value && index < code.length - 1) {
+      const nextInput = document.getElementById(`code-${index + 1}`);
+      if (nextInput) {
+        nextInput.focus();
+      }
     }
   };
 
-  // Resend code
-  const handleResend = () => {
-    setTimer(5);
-    setCanResend(false);
 
-    console.log("Resend code to:", email);
+  // Resend code
+  const handleResend = async () => {
+    if (!canResend) return;
+
+    setCanResend(false);
+    setTimer(15);
+
+    const result = await requestOtp(email);
+
+    if (!result.success) {
+      alert(result.message);
+      return;
+    }
+
+    alert("کد تأیید جدید ارسال شد");
   };
 
-  const handleSubmit = () => {
-    const finalCode = code.join("");
-    console.log("User entered code:", finalCode);
 
-    navigate("/reset-password");
+  const handleSubmit = async () => {
+    const finalCode = code.join("");
+
+    if (finalCode.length !== 6) {
+      alert("لطفاً کد ۶ رقمی را کامل وارد کنید");
+      return;
+    }
+
+    setLoading(true);
+
+    const result = await verifyOtp({
+      email,
+      otp: finalCode,
+      purpose,
+    });
+
+    setLoading(false);
+
+    if (!result.success) {
+      alert(result.message);
+      return;
+    }
+
+    if (purpose === "reset") {
+      navigate("/reset-password", {
+        state: {
+          email,
+          code: finalCode,
+        },
+      });
+    } else {
+      alert("حساب کاربری شما با موفقیت فعال شد");
+      navigate("/login");
+    }
   };
 
   return (
@@ -96,10 +143,14 @@ const Verify = () => {
           </div>
 
           {/* Continue */}
-          <button className="verify-submit-btn" onClick={handleSubmit}>
-            <span>تأیید و ادامه</span>
+         <button
+            className="verify-submit-btn"
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            <span>{loading ? "در حال بررسی..." : "تأیید و ادامه"}</span>
             <img className="arrow" src="/src/icons/arrow-right.svg" alt="arrow-right" />
-          </button>
+         </button>
 
         </div>
       </div>

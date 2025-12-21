@@ -4,48 +4,88 @@ import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useNavigate } from "react-router-dom";
+import { signup } from "../Services/authservice";
+import { useState } from "react";
 
 const Register = () => {
+  const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
+
   const schema = yup.object().shape({
-  fullName: yup.string()
-  .required('نام و نام خانوادگی را وارد کنید')
-  .min(3, 'نام و نام خانوادگی باید حداقل ۳ کاراکتر باشد')
-  .max(100, 'نام و نام خانوادگی باید حداکثر ۱۰۰ کاراکتر باشد')
-  .matches(/^[\u0600-\u06FF\s]+$/, 
-  'نام و نام خانوادگی باید فقط حروف فارسی باشد')
-  .trim(),
-  username: yup.string()
-  .required('نام کاربری را وارد کنید')
-  .min(3, 'نام کاربری باید حداقل ۳ کاراکتر باشد')
-  .max(30, 'نام کاربری باید حداکثر ۳۰ کاراکتر باشد')
-  .matches(/^[a-zA-Z0-9._]+$/, 'نام کاربری فقط باید شامل حروف انگلیسی، اعداد، نقطه و زیرخط باشد')
-  .trim(),
-  phoneNumber: yup.string()
-  .required('شماره موبایل را وارد کنید')
-  .matches(/^09\d{9}$/, 'شماره موبایل معتبر نیست'),
-  email: yup.string()
-  .required('ایمیل را وارد کنید')
-  .email('ایمیل وارد شده معتبر نیست')
-  .trim(),
-  password: yup.string()
-  .required('رمز عبور را وارد کنید')
-  .min(8, 'رمز عبور باید حداقل ۸ کاراکتر باشد')
-  .matches(/[A-Z]/, 'رمز عبور باید حداقل یک حرف بزرگ داشته باشد')
-  .matches(/[a-z]/, 'رمز عبور باید حداقل یک حرف کوچک داشته باشد')
-  .matches(/[0-9]/, 'رمز عبور باید حداقل یک عدد داشته باشد')
-  .matches(/[@$!%*?&#]/, 'رمز عبور باید حداقل یک کاراکتر خاص داشته باشد'),
-  confirmPassword: yup.string()
-  .required('تکرار رمز عبور را وارد کنید')
-  .oneOf([yup.ref('password'), null], 'رمز عبور و تکرار آن یکسان نیست'),
+    firstName: yup.string()
+      .required('نام را وارد کنید')
+      .min(2, 'نام باید حداقل ۲ کاراکتر باشد')
+      .max(30, 'نام باید حداکثر ۳۰ کاراکتر باشد')
+      .matches(/^[\u0600-\u06FF\s]+$/, 'نام باید فقط حروف فارسی باشد')
+      .trim(),
+
+    lastName: yup.string()
+      .required('نام خانوادگی را وارد کنید')
+      .min(2, 'نام خانوادگی باید حداقل ۲ کاراکتر باشد')
+      .max(30, 'نام خانوادگی باید حداکثر ۳۰ کاراکتر باشد')
+      .matches(/^[\u0600-\u06FF\s]+$/, 'نام خانوادگی باید فقط حروف فارسی باشد')
+      .trim(),
+    
+    username: yup.string()
+      .required('نام کاربری را وارد کنید')
+      .min(2, 'نام کاربری باید حداقل ۲ کاراکتر باشد')
+      .max(50, 'نام کاربری باید حداکثر ۵۰ کاراکتر باشد')
+      .matches(/^[a-zA-Z0-9._]+$/, 'نام کاربری فقط باید شامل حروف انگلیسی، اعداد، نقطه و _ باشد')
+      .trim(),
+
+    email: yup.string()
+      .required('ایمیل را وارد کنید')
+      .email('ایمیل وارد شده معتبر نیست')
+      .trim(),
+
+    password: yup.string()
+      .required('رمز عبور را وارد کنید')
+      .min(8, 'رمز عبور باید حداقل ۸ کاراکتر باشد')
+      .matches(/[A-Z]/, 'رمز عبور باید حداقل یک حرف بزرگ داشته باشد')
+      .matches(/[a-z]/, 'رمز عبور باید حداقل یک حرف کوچک داشته باشد')
+      .matches(/[0-9]/, 'رمز عبور باید حداقل یک عدد داشته باشد')
+      .matches(/[@$!%*?&#]/, 'رمز عبور باید حداقل یک کاراکتر خاص داشته باشد'),
+
+    confirmPassword: yup.string()
+      .required('تکرار رمز عبور را وارد کنید')
+      .oneOf([yup.ref('password'), null], 'رمز عبور و تکرار آن یکسان نیست'),
+    });
+
+    const {register, handleSubmit, formState: {errors}} = useForm({
+      resolver: yupResolver(schema)
   });
 
-  const {register, handleSubmit, formState: {errors}} = useForm({
-    resolver: yupResolver(schema)
-  });
+  const onSubmit = async (data) => {
+    setLoading(true);
 
-  const onSubmit = (data) => {
-    console.log(data);
-  }
+    const payload = {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      username: data.username,
+      email: data.email,
+      password: data.password,
+      confirmPassword: data.confirmPassword
+    };
+
+    const result = await signup(payload);
+
+    setLoading(false);
+
+    if (!result.success) {
+      alert(result.message);
+      return;
+    }
+
+    navigate("/verify", {
+      state: {
+        email: data.email,
+        purpose: "email",
+      },
+    });
+  };
+
 
   return (
     <div className="register-page">
@@ -55,21 +95,36 @@ const Register = () => {
             <h2 className="register-title">ثبت نام</h2>
             <p className="register-subtitle">حساب کاربری جدید بسازید</p>
             <form onSubmit={handleSubmit(onSubmit)}>
-              {/* Full name */}
+              {/* First name */}
               <label className="field-label">
-                  نام و نام خانوادگی*
+                  نام*
               </label>
               <div className="input-wrapper">
                 <img className="input-icon" src="/src/icons/user.svg" alt="user" />
                 <input
                   type="text"
                   className="text-input"
-                  placeholder="نام کامل خود را وارد کنید"
-                  {...register("fullName")}
+                  placeholder="نام خود را وارد کنید"
+                  {...register("firstName")}
                 />
               </div>
-              <p className="error">{errors.fullName?.message}</p>
+              <p className="error">{errors.firstName?.message}</p>
 
+              {/* Last name */}
+              <label className="field-label">
+                  نام خانوادگی*
+              </label>
+              <div className="input-wrapper">
+                <img className="input-icon" src="/src/icons/user.svg" alt="user" />
+                <input
+                  type="text"
+                  className="text-input"
+                  placeholder="نام خانوادگی خود را وارد کنید"
+                  {...register("lastName")}
+                />
+              </div>
+              <p className="error">{errors.lastName?.message}</p>
+              
               {/* Username */}
               <label className="field-label">
                   نام کاربری*
@@ -84,20 +139,6 @@ const Register = () => {
                 />
               </div>
               <p className="error">{errors.username?.message}</p>
-
-              {/* Phone */}
-              <label className="field-label">
-                  شماره موبایل*
-              </label>
-              <div className="input-wrapper">
-                  <img className="input-icon" src="/src/icons/call.svg" alt="call" />
-                <input
-                  className="text-input"
-                  placeholder="09123456789"
-                  {...register("phoneNumber")}
-                />
-              </div>
-              <p className="error">{errors.phoneNumber?.message}</p>
 
               {/* Email */}
               <label className="field-label">
@@ -144,8 +185,8 @@ const Register = () => {
               <p className="error">{errors.confirmPassword?.message}</p>
 
               {/* Register button */}
-              <button className="register-btn">
-                <span>ثبت نام</span>
+              <button className="register-btn" disabled={loading}>
+                <span>{loading ? "در حال ارسال..." : "ثبت نام"}</span>
                 <img className="arrow" src="/src/icons/arrow-right.svg" alt="arrow-right" />
               </button>
             </form>

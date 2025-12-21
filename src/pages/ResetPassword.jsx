@@ -4,10 +4,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { resetPassword } from "../Services/authservice";
+import { useLocation } from "react-router-dom";
 
 const ResetPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const email = location.state?.email;
+  const code = location.state?.code;
 
   const schema = yup.object().shape({
     password: yup.string()
@@ -26,15 +32,24 @@ const ResetPassword = () => {
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     setIsLoading(true);
 
-    setTimeout(() => {
-      navigate("/login", {
-        state: { email: data.email },
-      });
-      setIsLoading(false);
-    }, 1000);
+    const result = await resetPassword({
+      email,
+      code,
+      newPassword: data.password,
+    });
+
+    setIsLoading(false);
+
+    if (!result.success) {
+      alert(result.message);
+      return;
+    }
+
+    alert("رمز عبور با موفقیت تغییر کرد");
+    navigate("/login");
   };
 
   return (
