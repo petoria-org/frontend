@@ -4,6 +4,8 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useState } from "react";
+import { requestOtp } from "../Services/authservice";
+
 
 const ForgotPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -21,15 +23,24 @@ const ForgotPassword = () => {
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     setIsLoading(true);
 
-    setTimeout(() => {
-      navigate("/verify", {
-        state: { email: data.email },
-      });
-      setIsLoading(false);
-    }, 1000);
+    const result = await requestOtp(data.email);
+
+    setIsLoading(false);
+
+    if (!result.success) {
+      alert(result.message);
+      return;
+    }
+
+    navigate("/verify", {
+      state: {
+        email: data.email,
+        purpose: "reset",
+      },
+    });
   };
 
   return (

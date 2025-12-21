@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "../styles/Stats.css";
-
-const ALL_POSTS_URL = "/api/posts/all/";
+import api from "../Services/api";
 
 export default function Stats() {
   const [activeAdsCount, setActiveAdsCount] = useState(null);
@@ -11,22 +10,23 @@ export default function Stats() {
     const fetchActiveAdsCount = async () => {
       try {
         setError("");
-        const res = await fetch(ALL_POSTS_URL);
-        if (!res.ok) throw new Error(`Request failed: ${res.status}`);
 
-        const data = await res.json();
+        const res = await api.get("posts/all/");
+        const data = res.data;
 
         let count = 0;
         if (typeof data.count === "number") {
           count = data.count;
         } else if (Array.isArray(data)) {
           count = data.length;
+        } else if (Array.isArray(data.results)) {
+          count = data.results.length;
         }
 
         setActiveAdsCount(count);
       } catch (err) {
         console.error("Stats fetch error:", err);
-        setError("Error loading posts");
+        setError("خطا در دریافت آگهی‌ها");
       }
     };
 
