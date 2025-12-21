@@ -2,163 +2,89 @@ import React, { useState } from "react";
 import "../../styles/UserProfile.css";
 import { SuccessStoryCreation } from "../SuccessStoryCreation";
 import { Pagination } from './../Pagination/Pagination';
+import { useEffect } from "react";
+import {
+  getUserProfile,
+  getUserLostPosts,
+  getUserFoundPosts,
+  getUserSurrenderPosts,
+} from "../../Services/userService";
+import api from "../../Services/api";
 
 export const UserProfile = ({ onEditClick }) => {
-  const [allAds, setAllAds] = useState([
-    {
-      id: 1,
-      name: "ماکس",
-      desc: "سگ نژاد ژرمن شپرد نر 3 ساله",
-      location: "تهران، پارک ملت",
-      time: "۱۴۰۲/۰۸/۱۵",
-      postTime: "سه روز پیش",
-      type: "سگ",
-      image: "src/assets/images/max.svg",
-      status: "lost",
-      statusLabel: "گم شده",
-      resolved: false,
-      successStory: "",
-      images: []
-    },
-    {
-      id: 2,
-      name: "ابیگل",
-      desc: "گربه پرشین سفید با چشمان سبز",
-      location: "تهران، خیابان ولیعصر",
-      time: "۱۴۰۴/۰۸/۱۸",
-      postTime: "یک هفته پیش",
-      type: "گربه",
-      image: "src/assets/images/abigail.png",
-      status: "found",
-      statusLabel: "پیدا شده",
-      resolved: true,
-      successStory: "ابیگل بعد از 3 روز جستجو در پارک محله پیدا شد!",
-      images: ["src/assets/images/abigail.png"]
-    },
-    {
-      id: 3,
-      name: "جوکر",
-      desc: "گربه پرشین ماده خاکستری با چشمان طلایی",
-      location: "تهران، سعادت‌آباد",
-      time: "۱۴۰۴/۰۸/۰۴",
-      postTime: "پنج روز پیش",
-      type: "گربه",
-      image: "src/assets/images/joker.svg",
-      status: "lost",
-      statusLabel: "گم شده",
-    },
-    {
-      id: 4,
-      name: "لونا",
-      desc: "سگ ماده قهوه‌ای رنگ 3 ماهه بازیگوش",
-      location: "تهران، شهرک غرب",
-      time: "۱۴۰۴/۰۵/۱۸",
-      postTime: "دو هفته پیش",
-      type: "سگ",
-      image: "src/assets/images/luna.svg",
-      status: "adoption",
-      statusLabel: "سرپرستی",
-      resolved: true,
-      successStory: "لونا توسط یک خانواده عالی در شهرک غرب به سرپرستی گرفته شد.",
-      images: ["src/assets/images/luna.svg"]
-    },
-   {
-      id: 5,
-      name: "میلو",
-      desc: "گربه پرشین عسلی با چشمان مشکی",
-      location: "تهران، نیاوران",
-      time: "۱۴۰۴/۰۸/۱۰",
-      postTime: "دو روز پیش",
-      type: "گربه",
-      image: "src/assets/images/milu.png",
-      status: "found",
-      statusLabel: "پیدا شده",
-    },
-    {
-      id: 6,
-      name: "باکس",
-      desc: "سگ نژاد گلدن نر 2 ساله",
-      location: "تهران، اقدسیه",
-      time: "۱۴۰۴/۰۸/۱۲",
-      postTime: "چهار روز پیش",
-      type: "سگ",
-      image: "src/assets/images/box.png",
-      status: "lost",
-      statusLabel: "گم شده",
-    },
-    {
-      id: 7,
-      name: "چارلی",
-      desc: "سگ نژاد گلدن رتریور 4 ماهه",
-      location: "تهران، فرمانیه",
-      time: "۱۴۰۴/۰۵/۲۰",
-      postTime: "سه هفته پیش",
-      type: "سگ",
-      image: "src/assets/images/luna.svg",
-      status: "adoption",
-      statusLabel: "سرپرستی",
-    },
-    {
-      id: 8,
-      name: "لئو",
-      desc: "گربه پرشین نر قهوه ای با چشمان سبز",
-      location: "تهران، زعفرانیه",
-      time: "۱۴۰۴/۰۸/۰۶",
-      postTime: "شش روز پیش",
-      type: "گربه",
-      image: "src/assets/images/joker.svg",
-      status: "lost",
-      statusLabel: "گم شده",
-    },
-    {
-      id: 9,
-      name: "رکس",
-      desc: "سگ نژاد دوبرمن نر 1 ساله",
-      location: "تهران، پاسداران",
-      time: "۱۴۰۴/۰۷/۲۰",
-      postTime: "ده روز پیش",
-      type: "سگ",
-      image: "src/assets/images/max.svg",
-      status: "found",
-      statusLabel: "پیدا شده",
-    },
-    {
-      id: 10,
-      name: "سیمرغ",
-      desc: "گربه پرشین نقرهای با چشمان آبی",
-      location: "تهران، شیخ بهایی",
-      time: "۱۴۰۴/۰۸/۰۱",
-      postTime: "هفت روز پیش",
-      type: "گربه",
-      image: "src/assets/images/abigail.png",
-      status: "lost",
-      statusLabel: "گم شده",
-    },
-    {
-      id: 11,
-      name: "بادی",
-      desc: "سگ نژاد هاسکی ماده 2 ساله",
-      location: "تهران، ونک",
-      time: "۱۴۰۴/۰۷/۱۵",
-      postTime: "دو هفته پیش",
-      type: "سگ",
-      image: "src/assets/images/luna.svg",
-      status: "adoption",
-      statusLabel: "سرپرستی",
-    },
-    {
-      id: 12,
-      name: "میشا",
-      desc: "گربه پرشین سفید 3 ساله",
-      location: "تهران، میرداماد",
-      time: "۱۴۰۴/۰۸/۰۵",
-      postTime: "چهار روز پیش",
-      type: "گربه",
-      image: "src/assets/images/joker.svg",
-      status: "found",
-      statusLabel: "پیدا شده",
-    },
-  ]);
+  const [allAds, setAllAds] = useState([]);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("access");
+    if (!token) {
+      window.location.href = "/login";
+      return;
+    }
+  }, []);
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        const profile = await getUserProfile();
+        setUser(profile);
+
+        const [lost, found, surrender] = await Promise.all([
+          getUserLostPosts(),
+          getUserFoundPosts(),
+          getUserSurrenderPosts(),
+        ]);
+
+        const mappedAds = [
+          ...lost.map(p => ({
+            id: p.id,
+            name: p.title,
+            type: p.pet_type === "cat" ? "گربه" : "سگ",
+            status: "lost",
+            statusLabel: "گم شده",
+            image: p.thumbnail || "/src/assets/images/default-pet.png",
+            time: new Date(p.lost_time).toLocaleDateString("fa-IR"),
+            postTime: "—",
+            resolved: false,
+          })),
+          ...found.map(p => ({
+            id: p.id,
+            name: p.title,
+            type: p.pet_type === "cat" ? "گربه" : "سگ",
+            status: "found",
+            statusLabel: "پیدا شده",
+            image: p.thumbnail || "/src/assets/images/default-pet.png",
+            time: new Date(p.created_at).toLocaleDateString("fa-IR"),
+            postTime: "—",
+            resolved: false,
+          })),
+          ...surrender.map(p => ({
+            id: p.id,
+            name: p.title,
+            type: p.pet_type === "cat" ? "گربه" : "سگ",
+            status: "adoption",
+            statusLabel: "سرپرستی",
+            image: p.thumbnail || "/src/assets/images/default-pet.png",
+            time: new Date(p.created_at).toLocaleDateString("fa-IR"),
+            postTime: "—",
+            resolved: false,
+          })),
+        ];
+
+        setAllAds(mappedAds);
+      } catch (err) {
+        console.error("Profile fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const [activeFilter, setActiveFilter] = useState("همه");
   const [currentPage, setCurrentPage] = useState(1);
@@ -244,6 +170,9 @@ export const UserProfile = ({ onEditClick }) => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentAds = filteredAds.slice(startIndex, endIndex);
+
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedAd, setSelectedAd] = useState(null);
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
@@ -392,14 +321,21 @@ export const UserProfile = ({ onEditClick }) => {
               <div className="profile-content-wrapper">
 
                 <div className="profile-info">
-                  <h2 className="profile-username">sara_nasher</h2>
+                  <h2 className="profile-username">
+                    {user?.username || ""}
+                  </h2>
+
                   <div className="profile-email-container">
                     <div className="email-icon-wrapper">
                       <EmailIcon />
                     </div>
-                    <span className="profile-email">saranasher8@gmail.com</span>
+
+                    <span className="profile-email">
+                      {user?.email || ""}
+                    </span>
                   </div>
                 </div>
+
 
                 <div className="avatar-container">
                   <div className="avatar-border" />
@@ -417,7 +353,14 @@ export const UserProfile = ({ onEditClick }) => {
                   <PawIcon />
                 </div>
                 
-                <button className="logout-button">
+                <button
+                  className="logout-button"
+                  onClick={() => {
+                    localStorage.removeItem("access");
+                    localStorage.removeItem("refresh");
+                    window.location.href = "/login";
+                  }}
+                >
                   <LogOutIcon />
                   <span className="logout-text">خروج</span>
                 </button>
