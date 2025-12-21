@@ -124,7 +124,7 @@
   background-clip: text;
   background-size: 200% auto;
   animation: gradient 3s ease-in-out infinite;
-  margin-right: -400px;
+  margin-right: 24px;
 }
 
 @keyframes gradient {

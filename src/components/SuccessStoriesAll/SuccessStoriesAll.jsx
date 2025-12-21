@@ -131,7 +131,13 @@ const SuccessStoriesAll = () => {
                             <div className="title-line-all"></div>
                           </div>
                           <div className="author-date-all">
-                            <span className="author-icon-all">👤</span>
+                            <span className="author-icon-all">
+                              <img
+                                src="/src/assets/icons/user-3.svg"
+                                alt="user"
+                                className="author-icon-img"
+                              />
+                            </span>
                             <span className="story-author-all">{story.author}</span>
                             <span className="date-separator-all">•</span>
                             <span className="story-date-all">{story.date}</span>

@@ -1,15 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../../styles/UserProfile.css";
 import { SuccessStoryCreation } from "../SuccessStoryCreation";
 import { Pagination } from './../Pagination/Pagination';
-import { useEffect } from "react";
 import {
   getUserProfile,
   getUserLostPosts,
   getUserFoundPosts,
   getUserSurrenderPosts,
 } from "../../Services/userService";
-import api from "../../Services/api";
 
 export const UserProfile = ({ onEditClick }) => {
   const [allAds, setAllAds] = useState([]);
