@@ -9,6 +9,11 @@ export const UserProfilePage = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedAd, setSelectedAd] = useState(null);
 
+  const [refreshKey, setRefreshKey] = useState(0);
+  const refreshAds = () => {
+    setRefreshKey(prev => prev + 1);
+  };
+
   useEffect(() => {
     if (showEditModal) {
       document.body.classList.add('modal-open');
@@ -35,6 +40,7 @@ export const UserProfilePage = () => {
     console.log("آگهی ویرایش شده:", updatedAd);
     setShowEditModal(false);
     setSelectedAd(null);
+    refreshAds();
   };
 
   return (
@@ -48,7 +54,10 @@ export const UserProfilePage = () => {
         
         <div className="main-content-area">
           <div className="content-wrapper">
-            <UserProfile onEditClick={handleEditClick} />
+            <UserProfile 
+              onEditClick={handleEditClick}
+              refreshKey={refreshKey}
+            />
           </div>
         </div>
         

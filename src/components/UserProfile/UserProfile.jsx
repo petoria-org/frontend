@@ -7,9 +7,58 @@ import {
   getUserLostPosts,
   getUserFoundPosts,
   getUserSurrenderPosts,
+  deleteLostPost,
+  deleteFoundPost,
+  deleteSurrenderPost,
 } from "../../Services/userService";
 
-export const UserProfile = ({ onEditClick }) => {
+const toJalaliDate = (dateString) => {
+  if (!dateString) return "";
+
+  return new Intl.DateTimeFormat("fa-IR", {
+    year: "numeric",
+    month: "long",  
+    day: "numeric",
+  }).format(new Date(dateString));
+};
+
+const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, petName }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="delete-modal-overlay">
+      <div className="delete-modal">
+        <div className="delete-modal-header">
+          <div className="delete-modal-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+              <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" stroke="#F44336" strokeWidth="2"/>
+              <path d="M15 9l-6 6m0-6l6 6" stroke="#F44336" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+          </div>
+          <h3 className="delete-modal-title">حذف آگهی</h3>
+          <p className="delete-modal-subtitle">آیا از حذف آگهی "{petName}" مطمئن هستید؟</p>
+        </div>
+        
+        <div className="delete-modal-actions">
+          <button 
+            className="delete-modal-cancel-btn"
+            onClick={onClose}
+          >
+            لغو
+          </button>
+          <button 
+            className="delete-modal-confirm-btn"
+            onClick={onConfirm}
+          >
+            بله، حذف شود
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const UserProfile = ({ onEditClick, refreshKey }) => {
   const [allAds, setAllAds] = useState([]);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -21,7 +70,6 @@ export const UserProfile = ({ onEditClick }) => {
       return;
     }
   }, []);
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,10 +93,13 @@ export const UserProfile = ({ onEditClick }) => {
             status: "lost",
             statusLabel: "گم شده",
             image: p.thumbnail || "/src/assets/images/default-pet.png",
-            time: new Date(p.lost_time).toLocaleDateString("fa-IR"),
-            postTime: "—",
+            time: toJalaliDate(p.lost_time),
+            location: p.location?.readable || "",
+            desc: p.description || "",
+            postTime: toJalaliDate(p.created_at),
             resolved: false,
           })),
+
           ...found.map(p => ({
             id: p.id,
             name: p.title,
@@ -56,8 +107,10 @@ export const UserProfile = ({ onEditClick }) => {
             status: "found",
             statusLabel: "پیدا شده",
             image: p.thumbnail || "/src/assets/images/default-pet.png",
-            time: new Date(p.created_at).toLocaleDateString("fa-IR"),
-            postTime: "—",
+            time: toJalaliDate(p.found_time),
+            location: p.location?.readable || "",
+            desc: p.description || "",
+            postTime: toJalaliDate(p.created_at),
             resolved: false,
           })),
           ...surrender.map(p => ({
@@ -67,8 +120,10 @@ export const UserProfile = ({ onEditClick }) => {
             status: "adoption",
             statusLabel: "سرپرستی",
             image: p.thumbnail || "/src/assets/images/default-pet.png",
-            time: new Date(p.created_at).toLocaleDateString("fa-IR"),
-            postTime: "—",
+            time: toJalaliDate(p.created_at),
+            location: p.location?.readable || "",
+            desc: p.description || "",
+            postTime: toJalaliDate(p.created_at),
             resolved: false,
           })),
         ];
@@ -82,12 +137,14 @@ export const UserProfile = ({ onEditClick }) => {
     };
 
     fetchData();
-  }, []);
+  }, [refreshKey]);
 
   const [activeFilter, setActiveFilter] = useState("همه");
   const [currentPage, setCurrentPage] = useState(1);
   const [showSuccessStoryModal, setShowSuccessStoryModal] = useState(false);
   const [selectedPetForStory, setSelectedPetForStory] = useState(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [petToDelete, setPetToDelete] = useState(null);
   const itemsPerPage = 6;
 
   const handleMarkAsResolved = (petId) => {
@@ -112,12 +169,32 @@ export const UserProfile = ({ onEditClick }) => {
     setSelectedPetForStory(null);
   };
 
-  const handleDeleteAd = (adId) => {
-    if (window.confirm("آیا از حذف این آگهی مطمئن هستید؟")) {
-      setAllAds(prevAds => prevAds.filter(ad => ad.id !== adId));
-      if (filteredAds.length <= itemsPerPage && currentPage > 1) {
-        setCurrentPage(1);
+  const handleDeleteClick = (ad) => {
+    setPetToDelete(ad);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!petToDelete) return;
+
+    try {
+      if (petToDelete.status === "lost") {
+        await deleteLostPost(petToDelete.id);
+      } else if (petToDelete.status === "found") {
+        await deleteFoundPost(petToDelete.id);
+      } else if (petToDelete.status === "adoption") {
+        await deleteSurrenderPost(petToDelete.id);
       }
+
+      setAllAds((prev) => prev.filter((item) => item.id !== petToDelete.id));
+      setCurrentPage(1);
+      
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("خطا در حذف آگهی");
+    } finally {
+      setDeleteModalOpen(false);
+      setPetToDelete(null);
     }
   };
 
@@ -429,7 +506,7 @@ export const UserProfile = ({ onEditClick }) => {
                           
                           <button 
                             className="action-button delete-button"
-                            onClick={() => handleDeleteAd(pet.id)}
+                            onClick={() => handleDeleteClick(pet)}
                             title="حذف آگهی"
                           >
                             <DeleteIcon />
@@ -500,6 +577,16 @@ export const UserProfile = ({ onEditClick }) => {
           onRemove={handleRemoveSuccessStory}
         />
       )}
+
+      <DeleteConfirmationModal
+        isOpen={deleteModalOpen}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setPetToDelete(null);
+        }}
+        onConfirm={handleDeleteConfirm}
+        petName={petToDelete?.name || ""}
+      />
     </div>
   );
 };
