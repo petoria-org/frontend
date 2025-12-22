@@ -8,7 +8,9 @@ import locationIcon from '../../assets/icons/location.svg';
 import uploadIcon from '../../assets/icons/direct-inbox.svg';
 import contactIcon from '../../assets/icons/stickynote.svg';
 import closeIcon from '../../assets/icons/close.svg';
+import mapIcon from '../../assets/icons/map.svg';
 import { NotificationToast } from '../NotificationToast/NotificationToast';
+import MapPicker from '../MapPicker/MapPicker';
 import {
   getLostPostDetail,
   getFoundPostDetail,
@@ -50,12 +52,21 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
     isSterilized: false,
     email: "",
     phone: "",
-    contact_email: true
+    contact_email: true,
+    latitude: "",
+    longitude: "",
+    country: "",
+    city: "",
+    district: "",
+    state: "",
+    road: ""
   });
 
   const [selectedAdType, setSelectedAdType] = useState("lost");
   const [notification, setNotification] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showMapPicker, setShowMapPicker] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(null);
 
   useEffect(() => {
     if (!adData) return;
@@ -77,12 +88,29 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
           setSelectedAdType("adoption");
         }
 
+        const locationData = data.location || {};
+
+        const locationInfo = {
+          lat: parseFloat(locationData.latitude) || 35.715298,
+          lng: parseFloat(locationData.longitude) || 51.404343,
+          country: locationData.country || "",
+          city: locationData.city || "",
+          district: locationData.district || "",
+          state: locationData.state || "",
+          road: locationData.road || "",
+          readable: locationData.readable || ""
+        };
+
+        setSelectedLocation(
+          locationData.latitude && locationData.longitude ? locationInfo : null
+        );
+
         setFormData({
           name: data.pet_name || "",
           type: data.title || "",
           age: data.pet_age || "",
           gender: data.pet_sex === "male" ? "نر" : "ماده",
-          location: data.location?.readable || "",
+          location: locationInfo.readable || "",
           lostTime: toInputDateTime(data.lost_time),
           foundTime: toInputDateTime(data.found_time),
           specialSigns: data.Specific_symptoms || "",
@@ -99,6 +127,8 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
           phone: data.phone || "",
           contact_email: data.contact_email !== undefined ? data.contact_email : true
         });
+
+
       } catch (error) {
         console.error("Error fetching post detail:", error);
         setNotification({
@@ -214,54 +244,83 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
     setNotification({ message, type });
   };
 
+  const handleLocationSelect = (locationData) => {
+    const newLocation = {
+      lat: parseFloat(locationData.lat),
+      lng: parseFloat(locationData.lng),
+      country: locationData.country || "",
+      city: locationData.city || "",
+      district: locationData.district || "",
+      state: locationData.state || "",
+      road: locationData.road || "",
+      readable: locationData.readable || ""
+    };
+
+    setSelectedLocation(newLocation);
+
+    setFormData(prev => ({
+      ...prev,
+      location: newLocation.readable
+    }));
+
+    setShowMapPicker(false);
+  };
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    const payload = {
-      title: formData.type,
-      pet_name: formData.name,
-      pet_type: formData.animalType === "گربه" ? "cat" : "dog",
-      pet_sex: formData.gender === "نر" ? "male" : "female",
-      pet_age: formData.age || null,
-      Specific_symptoms: formData.specialSigns || "",
-      description: formData.description,
-      diseases: formData.diseases || "",
-      has_birth_certificate: formData.hasCertificate,
-      vaccination: formData.isVaccinated,
-      steriliz: formData.isSterilized,
-      contact_email: formData.contact_email
-    };
+  const locationPayload = selectedLocation
+    ? {
+        country: selectedLocation.country,
+        city: selectedLocation.city,
+        latitude: selectedLocation.lat,
+        longitude: selectedLocation.lng
+      }
+    : null;
 
-    // فقط اگر کاربر اجازه نمایش ایمیل را داده، اطلاعات تماس را ارسال کنید
+  const payload = {
+    title: formData.type,
+    pet_name: formData.name,
+    pet_type: formData.animalType === "گربه" ? "cat" : "dog",
+    pet_sex: formData.gender === "نر" ? "male" : "female",
+    pet_age: formData.age || null,
+    Specific_symptoms: formData.specialSigns || "",
+    description: formData.description,
+    diseases: formData.diseases || "",
+    has_birth_certificate: formData.hasCertificate,
+    vaccination: formData.isVaccinated,
+    steriliz: formData.isSterilized,
+    contact_email: formData.contact_email,
+    location: locationPayload
+  };
+
+
     if (formData.contact_email) {
       if (formData.email) payload.email = formData.email;
       if (formData.phone) payload.phone = formData.phone;
     } else {
-      // اگر contact_email false است، مطمئن شویم اطلاعات تماس ارسال نمی‌شود
       delete payload.email;
       delete payload.phone;
     }
 
     try {
+      let result;
       if (selectedAdType === "lost") {
         payload.lost_time = toISO(formData.lostTime);
-        await updateLostPost(adData.id, payload);
-      }
-
-      if (selectedAdType === "found") {
+        result = await updateLostPost(adData.id, payload);
+      } else if (selectedAdType === "found") {
         payload.found_time = toISO(formData.foundTime);
-        await updateFoundPost(adData.id, payload);
-      }
-
-      if (selectedAdType === "adoption") {
-        await updateSurrenderPost(adData.id, payload);
+        result = await updateFoundPost(adData.id, payload);
+      } else if (selectedAdType === "adoption") {
+        result = await updateSurrenderPost(adData.id, payload);
       }
 
       showNotification("آگهی با موفقیت ویرایش شد", "success");
       
       setTimeout(() => {
-        onSave();
+        onSave(result || payload);
         setIsLoading(false);
       }, 1500);
 
@@ -272,8 +331,109 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
     }
   };
 
-  return (
-    <>
+  const renderLocationInfo = () => {
+    if (!selectedLocation) {
+      return (
+        <div className="location-info-card empty">
+          <div className="location-info-icon">
+            <img src={mapIcon} alt="نقشه" />
+          </div>
+          <div className="location-info-content">
+            <h4 className="location-info-title">موقعیت مکانی انتخاب نشده</h4>
+            <p className="location-info-description">
+              برای انتخاب موقعیت مکانی بر روی دکمه "انتخاب موقعیت مکانی" کلیک کنید
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="location-info-card">
+        <div className="location-info-header">
+          <div className="location-info-icon">
+            <img src={locationIcon} alt="موقعیت" />
+          </div>
+          <h4 className="location-info-title">موقعیت انتخاب شده</h4>
+        </div>
+        
+        <div className="location-details">
+          <div className="location-detail-row">
+            <span className="location-detail-label">مختصات:</span>
+            <span className="location-detail-value">
+              {selectedLocation.lat.toFixed(6)}، {selectedLocation.lng.toFixed(6)}
+            </span>
+          </div>
+          
+          {selectedLocation.country && (
+            <div className="location-detail-row">
+              <span className="location-detail-label">کشور:</span>
+              <span className="location-detail-value">{selectedLocation.country}</span>
+            </div>
+          )}
+          
+          {selectedLocation.state && (
+            <div className="location-detail-row">
+              <span className="location-detail-label">استان:</span>
+              <span className="location-detail-value">{selectedLocation.state}</span>
+            </div>
+          )}
+          
+          {selectedLocation.city && (
+            <div className="location-detail-row">
+              <span className="location-detail-label">شهر:</span>
+              <span className="location-detail-value">{selectedLocation.city}</span>
+            </div>
+          )}
+          
+          {selectedLocation.district && (
+            <div className="location-detail-row">
+              <span className="location-detail-label">محله:</span>
+              <span className="location-detail-value">{selectedLocation.district}</span>
+            </div>
+          )}
+          
+          {selectedLocation.road && (
+            <div className="location-detail-row">
+              <span className="location-detail-label">خیابان:</span>
+              <span className="location-detail-value">{selectedLocation.road}</span>
+            </div>
+          )}
+          
+          <div className="location-full-address">
+            <span className="location-detail-label">آدرس کامل:</span>
+            <span className="location-detail-value-full">{selectedLocation.readable}</span>
+          </div>
+        </div>
+        
+        <button 
+          type="button"
+          className="change-location-btn"
+          onClick={() => setShowMapPicker(true)}
+          disabled={isLoading}
+        >
+          <img src={mapIcon} alt="تغییر موقعیت" />
+          تغییر موقعیت
+        </button>
+      </div>
+    );
+  };
+
+  const renderContent = () => {
+    if (showMapPicker) {
+      return (
+        <div className="map-picker-modal">
+          <MapPicker 
+            initialPoint={selectedLocation ? [selectedLocation.lat, selectedLocation.lng] : [35.715298, 51.404343]}
+            onLocationSelect={handleLocationSelect}
+            onClose={() => setShowMapPicker(false)}
+            className="fullscreen-map"
+          />
+        </div>
+      );
+    }
+
+    return (
       <div className="notification-options-section">
         <div className="notification-options-container">
           <div className="notification-options-content">
@@ -543,22 +703,18 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                       <div className="form-vertical-fields">
                         <div className="form-field">
                           <label className="form-label form-distance">موقعیت مکانی</label>
-                          <div className="input-container">
-                            <input
-                              type="text"
-                              name="location"
-                              value={formData.location}
-                              onChange={handleInputChange}
-                              className="form-input-with-icon"
-                              placeholder="مثال: پارک لاله، خیابان ولیعصر، منطقه ۱"
-                              required
+                          <div className="location-section">
+                            <button 
+                              type="button"
+                              className="location-select-button"
+                              onClick={() => setShowMapPicker(true)}
                               disabled={isLoading}
-                            />
-                            <img 
-                              src={locationIcon} 
-                              alt="Location" 
-                              className="form-input-icon"
-                            />
+                            >
+                              <img src={mapIcon} alt="نقشه" className="location-button-icon" />
+                              {selectedLocation ? "تغییر موقعیت مکانی" : "انتخاب موقعیت مکانی"}
+                            </button>
+                            
+                            {renderLocationInfo()}
                           </div>
                         </div>
                       </div>
@@ -876,6 +1032,12 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
           </div>
         </div>
       </div>
+    );
+  };
+
+  return (
+    <>
+      {renderContent()}
 
       {notification && (
         <NotificationToast
