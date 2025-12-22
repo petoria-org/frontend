@@ -78,8 +78,12 @@ export default function OpenConv({
     <section className="open">
       <div className="open__top">
         <div className="open__profile">
+          <img
+            className="open__avatar"
+            src={chat.avatar}
+            alt={chat.name}
+          />
           <div className="open__name">{chat.title}</div>
-          <div className="open__avatar" />
         </div>
       </div>
 
@@ -96,10 +100,9 @@ export default function OpenConv({
       </div>
 
       <div className="open__composer">
-        <button className="iconBtn" type="button" onClick={onAttach} aria-label="attach">
-          +
+        <button className="sendBtn" type="button" onClick={onSend} aria-label="send" disabled={!chat}>
+          ➤
         </button>
-
         <input
           className="composer__input"
           value={inputValue}
@@ -110,9 +113,7 @@ export default function OpenConv({
           }}
           disabled={!chat}
         />
-
-        <button className="sendBtn" type="button" onClick={onSend} aria-label="send" disabled={!chat}>
-          ➤
+        <button className="iconBtn" type="button" onClick={onAttach} aria-label="attach"> +
         </button>
       </div>
     </section>
