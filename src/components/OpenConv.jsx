@@ -1,3 +1,4 @@
+// src/components/OpenConv.jsx
 import React, { useEffect, useRef } from "react";
 
 function MessageBubble({ m }) {
@@ -5,8 +6,8 @@ function MessageBubble({ m }) {
   const hasAttachments = (m.attachments?.length || 0) > 0;
 
   return (
-    <div className={`msgRow ${m.side === "out" ? "msgRow--out" : "msgRow--in"}`}>
-      <div className={`msg ${m.side === "out" ? "msg--out" : ""}`}>
+    <div className={`msgRow ${isMine ? "msgRow--out" : "msgRow--in"}`}>
+      <div className={`msg ${isMine ? "msg--out" : ""}`}>
         {!!m.text && <div className="msg__text">{m.text}</div>}
 
         {hasAttachments && (
@@ -39,9 +40,13 @@ function MessageBubble({ m }) {
 
         <div className="msg__meta">
           <span className="msg__time">{m.time}</span>
+
+          {/* ✅ Only my messages show ticks:
+              seen => ✓✓
+              sent/undefined => ✓ */}
           {isMine && (
             <span className={`msg__tick msg__tick--${m.status || "sent"}`}>
-              {m.status === "seen" ? "✓✓" : m.status === "delivered" ? "✓✓" : "✓"}
+              {m.status === "seen" ? "✓✓" : "✓"}
             </span>
           )}
         </div>
@@ -78,11 +83,7 @@ export default function OpenConv({
     <section className="open">
       <div className="open__top">
         <div className="open__profile">
-          <img
-            className="open__avatar"
-            src={chat.avatar}
-            alt={chat.name}
-          />
+          <img className="open__avatar" src={chat.avatar} alt={chat.title} />
           <div className="open__name">{chat.title}</div>
         </div>
       </div>
@@ -100,9 +101,16 @@ export default function OpenConv({
       </div>
 
       <div className="open__composer">
-        <button className="sendBtn" type="button" onClick={onSend} aria-label="send" disabled={!chat}>
+        <button
+          className="sendBtn"
+          type="button"
+          onClick={onSend}
+          aria-label="send"
+          disabled={!chat}
+        >
           ➤
         </button>
+
         <input
           className="composer__input"
           value={inputValue}
@@ -113,7 +121,9 @@ export default function OpenConv({
           }}
           disabled={!chat}
         />
-        <button className="iconBtn" type="button" onClick={onAttach} aria-label="attach"> +
+
+        <button className="iconBtn" type="button" onClick={onAttach} aria-label="attach">
+          +
         </button>
       </div>
     </section>

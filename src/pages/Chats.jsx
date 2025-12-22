@@ -1,118 +1,133 @@
-import React, { useMemo, useState } from "react";
+// src/pages/Chats.jsx  (or src/pages/chat.jsx)
+import React, { useEffect, useMemo, useState } from "react";
 import OpenConv from "../components/OpenConv";
 import Conversations from "../components/Conversations";
 import { Navbar_SignIn } from "../components/Navbar_SignIn";
 import "../styles/Chats.css";
 
-import { chatEvents } from "../mock/chatEvents";
-
-const CURRENT_USER_ID = 1;
+import { getChatList, getChatMessages } from "../Services/chatService";
 
 function formatTime(iso) {
+  if (!iso) return "";
   const d = new Date(iso);
   return d.toLocaleTimeString("fa-IR", { hour: "2-digit", minute: "2-digit" });
 }
 
-function buildStateFromEvents(events) {
-  const chatsById = new Map();
-  const messagesByChatId = new Map();
+// Decode JWT payload to get user_id (UI-only)
+function getCurrentUserIdFromAccessToken() {
+  const token = localStorage.getItem("access");
+  if (!token) return null;
 
-  for (const e of events) {
-    if (e.type !== "chat_list_update" || !e.chat) continue;
-
-    const chat = e.chat;
-
-    chatsById.set(chat.id, {
-      id: chat.id,
-      unread_count: chat.unread_count,
-      last_message: chat.last_message,
-    });
-
-    if (chat.last_message) {
-      const cid = chat.id;
-      const arr = messagesByChatId.get(cid) || [];
-      if (!arr.some((m) => m.id === chat.last_message.id)) {
-        arr.push(chat.last_message);
-      }
-      messagesByChatId.set(cid, arr);
-    }
+  try {
+    const payloadBase64 = token.split(".")[1];
+    const payloadJson = atob(
+      payloadBase64.replace(/-/g, "+").replace(/_/g, "/")
+    );
+    const payload = JSON.parse(payloadJson);
+    return Number(payload.user_id);
+  } catch {
+    return null;
   }
-
-  return {
-    chats: Array.from(chatsById.values()).sort((a, b) => {
-      const ta = a.last_message?.timestamp || 0;
-      const tb = b.last_message?.timestamp || 0;
-      return new Date(tb) - new Date(ta);
-    }),
-    messagesByChatId,
-  };
 }
 
 export default function ChatPage() {
-  const { chats, messagesByChatId } = useMemo(
-    () => buildStateFromEvents(chatEvents),
-    []
-  );
-
+  const [chats, setChats] = useState([]);
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [inputValue, setInputValue] = useState("");
 
+  const [messages, setMessages] = useState([]);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+
+  const currentUserId = useMemo(() => getCurrentUserIdFromAccessToken(), []);
+
+  // 1) Load chat list
+  useEffect(() => {
+    const loadChats = async () => {
+      const res = await getChatList();
+      if (res.success) {
+        setChats(Array.isArray(res.data) ? res.data : []);
+      } else {
+        setChats([]);
+        alert(res.message || "خطا در دریافت لیست گفتگوها");
+      }
+    };
+    loadChats();
+  }, []);
+
+  // 2) Load messages on chat select
+  useEffect(() => {
+    if (!selectedChatId) {
+      setMessages([]);
+      return;
+    }
+
+    const loadMessages = async () => {
+      setLoadingMessages(true);
+      const res = await getChatMessages(selectedChatId);
+      setLoadingMessages(false);
+
+      if (res.success) {
+        const arr = Array.isArray(res.data) ? res.data : [];
+        // backend often newest-first; reverse to show oldest -> newest
+        setMessages(arr.slice().reverse());
+      } else {
+        setMessages([]);
+        alert(res.message || "خطا در دریافت پیام‌ها");
+      }
+    };
+
+    loadMessages();
+  }, [selectedChatId]);
+
+  // Sidebar mapping
   const convItems = useMemo(() => {
-    return chats.map((c) => {
-      let tag = "پیدا شده: گلدن رتریور";
-      let tagStyle = "blue";
-
-      if (c.id === 8) {
-        tag = "سرپرستی: لونا";
-        tagStyle = "green";
-      }
-      if (c.id === 9) {
-        tag = "گم شده: بادی";
-        tagStyle = "red";
-      }
-
-      return {
-        id: c.id,
-        name: c.last_message?.sender_name || "—",
-        time: c.last_message?.timestamp
-          ? formatTime(c.last_message.timestamp)
-          : "",
-        tag,
-        tagStyle,
-        unreadCount: c.unread_count || 0,
-        hint: c.last_message?.content || "—",
-      };
-    });
+    const safeChats = Array.isArray(chats) ? chats : [];
+    return safeChats.map((c) => ({
+      id: c.id,
+      name:
+        c.other_participant?.username ||
+        c.last_message?.sender_name ||
+        "Unknown",
+      avatar: c.other_participant?.avatar || "https://i.pravatar.cc/80?img=12",
+      time: c.last_message?.timestamp ? formatTime(c.last_message.timestamp) : "",
+      tag: "chat",
+      unreadCount: c.unread_count || 0,
+      hint: c.last_message?.content || "",
+    }));
   }, [chats]);
 
-  const openMessages = useMemo(() => {
-    if (!selectedChatId) return [];
-    const raw = messagesByChatId.get(selectedChatId) || [];
-
-    return raw.map((m) => ({
-      id: m.id,
-      side: m.sender_id === CURRENT_USER_ID ? "out" : "in",
-      text: m.content || "",
-      time: formatTime(m.timestamp),
-      status: m.is_read ? "seen" : "delivered",
-      attachments: (m.attachments || []).map((a) => ({
-        type: a.type,
-        url: a.url,
-        name: a.name,
-      })),
-    }));
-  }, [messagesByChatId, selectedChatId]);
-
+  // Open chat header
   const openChat = useMemo(() => {
     if (!selectedChatId) return null;
-
     const c = convItems.find((x) => x.id === selectedChatId);
+    if (!c) return null;
+
     return {
-      id: selectedChatId,
-      title: c?.name || "—",
-      subtitle: c ? `گفتگو درمورد ${c.tag}` : "",
+      id: c.id,
+      title: c.name,
+      subtitle: "",
+      avatar: c.avatar,
     };
   }, [selectedChatId, convItems]);
+
+  // Messages mapping for OpenConv (tick logic based on is_read + mine)
+  const openMessages = useMemo(() => {
+    const safe = Array.isArray(messages) ? messages : [];
+
+    return safe.map((m) => {
+      const isMine = currentUserId != null && m.sender === currentUserId;
+
+      return {
+        id: m.id,
+        side: isMine ? "out" : "in",
+        text: m.content || "",
+        time: formatTime(m.timestamp),
+        // ✅ my message: seen -> double tick, else single tick
+        status: isMine ? (m.is_read ? "seen" : "sent") : undefined,
+        attachments: [],
+      };
+    });
+  }, [messages, currentUserId]);
 
   const handleSend = () => {
     const t = inputValue.trim();
@@ -135,7 +150,20 @@ export default function ChatPage() {
 
         <OpenConv
           chat={openChat}
-          messages={openMessages}
+          messages={
+            loadingMessages
+              ? [
+                  {
+                    id: "loading",
+                    side: "in",
+                    text: "در حال بارگذاری…",
+                    time: "",
+                    status: undefined,
+                    attachments: [],
+                  },
+                ]
+              : openMessages
+          }
           inputValue={inputValue}
           onInputChange={setInputValue}
           onSend={handleSend}

@@ -153,18 +153,18 @@ export const ShowDetailsAdopt = () => {
       let postType = "";
       
       if (window.location.pathname.includes("lost")) {
-        url = `/posts/api/lost-posts/${id}/`;
+        url = `/api/posts/lost-posts/${id}/`;
         postType = "lost";
       } else if (window.location.pathname.includes("found")) {
-        url = `/posts/api/found-posts/${id}/`;
+        url = `/api/posts/found-posts/${id}/`;
         postType = "found";
       } else if (window.location.pathname.includes("surrender") || 
                  window.location.pathname.includes("adoption")) {
-        url = `/posts/api/surrender-posts/${id}/`;
+        url = `/api/posts/surrender-posts/${id}/`;
         postType = "surrender";
         setIsAdoptionPost(true);
       } else {
-        url = `/posts/all/${id}/`;
+        url = `/api/posts/all/${id}/`;
       }
       
       const response = await fetch(url);

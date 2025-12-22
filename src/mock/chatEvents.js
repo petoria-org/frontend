@@ -4,6 +4,7 @@ export const chatEvents = [
     type: "chat_list_update",
     chat: {
       id: 6,
+      tag: "found",
       last_message: {
         id: 42,
         chat_id: 6,
@@ -22,6 +23,7 @@ export const chatEvents = [
     type: "chat_list_update",
     chat: {
       id: 6,
+      tag: "found",
       last_message: {
         id: 43,
         chat_id: 6,
@@ -40,6 +42,7 @@ export const chatEvents = [
     type: "chat_list_update",
     chat: {
       id: 6,
+      tag: "adopt",
       last_message: {
         id: 44,
         chat_id: 6,
@@ -58,6 +61,7 @@ export const chatEvents = [
     type: "chat_list_update",
     chat: {
       id: 6,
+      tag: "lost",
       last_message: {
         id: 45,
         chat_id: 6,
@@ -78,12 +82,11 @@ export const chatEvents = [
       unread_count: 2,
     },
   },
-
-  // Other chats (for right list)
   {
     type: "chat_list_update",
     chat: {
       id: 7,
+      tag: "adopt",
       last_message: {
         id: 60,
         chat_id: 7,
@@ -102,6 +105,7 @@ export const chatEvents = [
     type: "chat_list_update",
     chat: {
       id: 8,
+      tag: "lost",
       last_message: {
         id: 61,
         chat_id: 8,
@@ -120,6 +124,7 @@ export const chatEvents = [
     type: "chat_list_update",
     chat: {
       id: 9,
+      tag: "lost",
       last_message: {
         id: 62,
         chat_id: 9,
