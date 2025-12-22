@@ -314,10 +314,10 @@ export default function MapPicker({
         <div className="header-content">
           <div className="title-wrapper">
             <div className="map-icon">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1c7bd1" strokeWidth="2">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2">
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
                 <circle cx="12" cy="10" r="3"/>
-              </svg>
+            </svg>
             </div>
             <h2 className="map-title">انتخاب موقعیت مکانی</h2>
           </div>
@@ -460,10 +460,10 @@ export default function MapPicker({
             <div className="info-header">
               <div className="header-title">
                 <div className="location-icon">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1c7bd1" strokeWidth="2">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
                     <circle cx="12" cy="10" r="3"/>
-                  </svg>
+                </svg>
                 </div>
                 <h3>موقعیت انتخاب شده</h3>
               </div>
@@ -476,39 +476,39 @@ export default function MapPicker({
             </div>
 
             <div className="coordinates-section">
-              <div className="section-title">
+            <div className="section-title">
                 <div className="title-icon">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1c7bd1" strokeWidth="2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1c7bd1" strokeWidth="2">
                     <circle cx="12" cy="12" r="10"/>
                     <path d="m12 2 7 7-7 7-7-7 7-7z"/>
-                  </svg>
+                </svg>
                 </div>
                 <span>مختصات جغرافیایی</span>
-              </div>
-              <div className="coordinates-grid">
+            </div>
+            <div className="coordinates-container">
                 <div className="coord-item">
-                  <div className="coord-icon">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1c7bd1" strokeWidth="2">
-                      <path d="M12 2a15.3 15.3 0 0 0-3 4.53A15.3 15.3 0 0 0 6 10c0 4.5 6 9 6 9s6-4.5 6-9a15.3 15.3 0 0 0-3-3.47A15.3 15.3 0 0 0 12 2Z"/>
+                <div className="coord-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 2a15.3 15.3 0 0 0-3 4.53A15.3 15.3 0 0 0 6 10c0 4.5 6 9 6 9s6-4.5 6-9a15.3 15.3 0 0 0-3-3.47A15.3 15.3 0 0 0 12 2Z"/>
                     </svg>
-                  </div>
-                  <div>
+                </div>
+                <div className="coord-content">
                     <div className="coord-label">عرض جغرافیایی</div>
                     <div className="coord-value">{point[0].toFixed(6)}</div>
-                  </div>
+                </div>
                 </div>
                 <div className="coord-item">
-                  <div className="coord-icon">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1c7bd1" strokeWidth="2">
-                      <path d="M2 12a10.5 10.5 0 0 1 4.53-3A10.5 10.5 0 0 1 10 6c4.5 0 9 6 9 6s-4.5 6-9 6a10.5 10.5 0 0 1-3.47-3A10.5 10.5 0 0 1 2 12Z"/>
+                <div className="coord-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M2 12a10.5 10.5 0 0 1 4.53-3A10.5 10.5 0 0 1 10 6c4.5 0 9 6 9 6s-4.5 6-9 6a10.5 10.5 0 0 1-3.47-3A10.5 10.5 0 0 1 2 12Z"/>
                     </svg>
-                  </div>
-                  <div>
+                </div>
+                <div className="coord-content">
                     <div className="coord-label">طول جغرافیایی</div>
                     <div className="coord-value">{point[1].toFixed(6)}</div>
-                  </div>
                 </div>
-              </div>
+                </div>
+            </div>
             </div>
 
             <div className="address-section">

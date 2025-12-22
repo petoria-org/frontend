@@ -517,7 +517,7 @@ export default function NewPosts() {
       <div className="show-more-container-new-posts">
         <button
           className="show-more-btn-new-posts"
-          onClick={() => navigate("/pposts")}
+          onClick={() => navigate("/posts")}
         >
           مشاهده بیشتر
           <svg className="arrow-icon" viewBox="0 0 24 24" fill="none">
