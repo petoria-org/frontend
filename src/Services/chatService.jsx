@@ -43,3 +43,10 @@ export const getChatMessages = async (chatId) => {
     };
   }
 };
+
+export function buildChatWsUrl() {
+  const token = localStorage.getItem("access");
+  if (!token) return null;
+
+  return `ws://localhost:8000/ws/chat/?token=${encodeURIComponent(token)}`;
+}

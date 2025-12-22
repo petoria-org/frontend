@@ -1,11 +1,11 @@
-// src/pages/Chats.jsx  (or src/pages/chat.jsx)
-import React, { useEffect, useMemo, useState } from "react";
+// src/pages/Chats.jsx
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import OpenConv from "../components/OpenConv";
 import Conversations from "../components/Conversations";
 import { Navbar_SignIn } from "../components/Navbar_SignIn";
 import "../styles/Chats.css";
 
-import { getChatList, getChatMessages } from "../Services/chatService";
+import { getChatList, getChatMessages , buildChatWsUrl } from "../Services/chatService";
 
 function formatTime(iso) {
   if (!iso) return "";
@@ -40,6 +40,43 @@ export default function ChatPage() {
 
   const currentUserId = useMemo(() => getCurrentUserIdFromAccessToken(), []);
 
+  // ✅ WebSocket ref (connect once on page load)
+  const wsRef = useRef(null);
+
+  // ✅ Connect WS when user enters ChatPage
+  useEffect(() => {
+    const url = buildChatWsUrl();
+    if (!url) return;
+
+    const ws = new WebSocket(url);
+    wsRef.current = ws;
+
+    ws.onopen = () => {
+      console.log("WebSocket connected");
+    };
+
+    ws.onmessage = (event) => {
+      // For now: only log incoming data (next step will handle it)
+      console.log("WS message:", event.data);
+    };
+
+    ws.onerror = (e) => {
+      console.error("WebSocket error:", e);
+    };
+
+    ws.onclose = () => {
+      console.log("WebSocket closed");
+    };
+
+    // ✅ cleanup when leaving page
+    return () => {
+      try {
+        ws.close();
+      } catch {}
+      wsRef.current = null;
+    };
+  }, []);
+
   // 1) Load chat list
   useEffect(() => {
     const loadChats = async () => {
@@ -67,7 +104,13 @@ export default function ChatPage() {
       setLoadingMessages(false);
 
       if (res.success) {
-        const arr = Array.isArray(res.data) ? res.data : [];
+        // ✅ Supports paginated response: {results:[...]} OR array
+        const arr = Array.isArray(res.data?.results)
+          ? res.data.results
+          : Array.isArray(res.data)
+          ? res.data
+          : [];
+
         // backend often newest-first; reverse to show oldest -> newest
         setMessages(arr.slice().reverse());
       } else {
@@ -133,6 +176,7 @@ export default function ChatPage() {
     const t = inputValue.trim();
     if (!t || !selectedChatId) return;
 
+    // (next step later) - currently not sending through WS
     alert(`Send to chat ${selectedChatId}: ${t}`);
     setInputValue("");
   };
@@ -167,7 +211,7 @@ export default function ChatPage() {
           inputValue={inputValue}
           onInputChange={setInputValue}
           onSend={handleSend}
-          onAttach={() => alert("attach")}
+          onAttach={(type) => alert(`attach type: ${type}`)}
         />
       </div>
     </div>
