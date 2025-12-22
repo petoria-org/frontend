@@ -1,11 +1,10 @@
-// Updated login.jsx
 import "../styles/Login.css";
 import "../styles/AuthCommon.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { login } from "../Services/authservice"; // Adjust the import path
+import { login } from "../Services/authservice";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -22,21 +21,21 @@ const Login = () => {
   const onSubmit = async (data) => {
     try {
       const response = await login(data);
-      
+
       if (response.success) {
+        localStorage.setItem("access", response.data.access);
+        localStorage.setItem("refresh", response.data.refresh);
         console.log("Login successful:", response.data);
-        // Redirect to dashboard or home page
-        navigate("/dashboard");
+        navigate("/");
       } else {
-        // Handle API error response
         alert(response.message || "Login failed");
       }
     } catch (error) {
       console.error("Login error:", error);
-      // Display error message to user
-      alert(error.message || "An error occurred during login");
+      alert("An error occurred during login");
     }
-  }
+  };
+
 
   return (
     <div className="login-page">

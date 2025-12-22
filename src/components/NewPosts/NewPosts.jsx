@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import AdvancedFilters from "../AdvancedFilters";
 import SortFilters from "../SortFilters";
 import "../../styles/NewPosts.css";
+import api from "../../Services/api";
 
 const API_ENDPOINTS = {
-  all: "/api/posts/all/",
-  lost: "/api/posts/lost-posts/",
-  found: "/api/posts/found-posts/",
-  adoption: "/api/posts/surrender-posts/",
+  all: "posts/all/",
+  lost: "posts/lost-posts/",
+  found: "posts/found-posts/",
+  adoption: "posts/surrender-posts/",
 };
 
 const PLACEHOLDER_IMAGE = "/images/placeholder.jpg";
@@ -67,21 +68,15 @@ export default function NewPosts() {
     setError("");
 
     try {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`دریافت داده با خطا مواجه شد: ${res.status}`);
-
-      const data = await res.json();
+      const res = await api.get(url);
+      const data = res.data;
       const results = Array.isArray(data) ? data : data.results || [];
 
       setPosts(results);
-    } 
-    
-    catch (err) {
+    } catch (err) {
       console.error("خطا در دریافت آگهی‌ها:", err);
       setError("بارگذاری آگهی‌ها موفقیت‌آمیز نبود.");
-    } 
-    
-    finally {
+    } finally {
       setLoading(false);
     }
   };
