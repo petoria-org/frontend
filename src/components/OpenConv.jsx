@@ -1,13 +1,25 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-function MessageBubble({ m }) {
+function MessageBubble({ m, onReply, chatTitle }) {
   const isMine = m.side === "out";
+  const safeText = m.text || "";
+  const senderName = m.senderName || (isMine ? "You" : chatTitle || "Sender");
 
   return (
     <div className={`msgRow ${isMine ? "msgRow--out" : "msgRow--in"}`}>
       <div className={`msg ${isMine ? "msg--out" : ""}`}>
-        {!!m.text && <div className="msg__text">{m.text}</div>}
+        <button
+          type="button"
+          className={`msg__replyBtn ${isMine ? "msg__replyBtn--out" : "msg__replyBtn--in"}`}
+          aria-label="reply to message"
+          onClick={() => onReply?.({ ...m, text: safeText, senderName })}
+          title="Reply"
+        >
+          {"\u21a9"}
+        </button>
+
+        {!!safeText && <div className="msg__text">{safeText}</div>}
 
         <div className="msg__meta">
           <span className="msg__time">{m.time}</span>
@@ -109,10 +121,39 @@ export default function OpenConv({
   const bottomRef = useRef(null);
   const attachBtnRef = useRef(null);
   const [attachOpen, setAttachOpen] = useState(false);
+  const [replyTarget, setReplyTarget] = useState(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages.length]);
+
+  useEffect(() => {
+    if (replyTarget) {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [replyTarget]);
+
+  useEffect(() => {
+    // Clear reply when switching chats
+    setReplyTarget(null);
+  }, [chat?.id]);
+
+  const handleSendClick = () => {
+    if (!chat) return;
+    if (!inputValue.trim()) return;
+    onSend?.(replyTarget);
+    setReplyTarget(null);
+  };
+
+  const handleReplyPick = (msg) => {
+    if (!msg) return;
+    const textSnippet = (msg.text || "").trim();
+    setReplyTarget({
+      id: msg.id,
+      text: textSnippet || "(No text)",
+      senderName: msg.senderName || (msg.side === "out" ? "You" : chat?.title || "Sender"),
+    });
+  };
 
   if (!chat) {
     return (
@@ -139,18 +180,39 @@ export default function OpenConv({
           {chat.subtitle}
         </div>
 
-        <div className="open__messages">
+        <div className={replyTarget ? "open__messages open__messages--withReply" : "open__messages"}>
           {messages.map((m) => (
-            <MessageBubble key={m.id} m={m} />
+            <MessageBubble
+              key={m.id}
+              m={m}
+              onReply={handleReplyPick}
+              chatTitle={chat.title}
+            />
           ))}
           <div ref={bottomRef} />
         </div>
+
+        {replyTarget && (
+          <div className="replyPreview" title={replyTarget.text}>
+            <div className="replyPreview__text">
+              ({replyTarget.senderName} : {replyTarget.text})
+            </div>
+            <button
+              type="button"
+              className="replyPreview__close"
+              aria-label="cancel reply"
+              onClick={() => setReplyTarget(null)}
+            >
+              x
+            </button>
+          </div>
+        )}
 
         <div className="open__composer">
           <button
             className="sendBtn"
             type="button"
-            onClick={onSend}
+            onClick={handleSendClick}
             aria-label="send"
             disabled={!chat}
           >
@@ -163,7 +225,7 @@ export default function OpenConv({
             onChange={(e) => onInputChange?.(e.target.value)}
             placeholder="پیام خود را بنویسید…"
             onKeyDown={(e) => {
-              if (e.key === "Enter") onSend?.();
+              if (e.key === "Enter") handleSendClick();
             }}
             disabled={!chat}
           />

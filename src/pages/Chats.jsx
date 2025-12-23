@@ -212,6 +212,11 @@ export default function ChatPage() {
         time: formatTime(m.timestamp),
         status: isMine ? (m.is_read ? "seen" : "sent") : undefined,
         attachments: [],
+        senderName:
+          m.sender_name ||
+          m.sender_username ||
+          m.sender_fullname ||
+          (isMine ? "You" : "Other"),
       };
     });
   }, [messages, currentUserId]);
