@@ -184,7 +184,7 @@ export const ShowDetailsAdopt = () => {
     } 
     
     else {
-      navigate('/pposts'); 
+      navigate('/posts'); 
     }
   };
 
