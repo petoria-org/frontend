@@ -232,6 +232,7 @@ body{
   padding: 16px;
   background: #f6f8fb;
 }
+
 .open__messages--withReply{
   padding-bottom: 56px; /* minimal space for reply bar */
 }

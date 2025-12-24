@@ -7,7 +7,11 @@ function MessageBubble({ m, onReply, chatTitle }) {
   const senderName = m.senderName || (isMine ? "You" : chatTitle || "Sender");
 
   return (
-    <div className={`msgRow ${isMine ? "msgRow--out" : "msgRow--in"}`}>
+    // ✅ data-msgid added for IntersectionObserver (only real ids will be set)
+    <div
+      className={`msgRow ${isMine ? "msgRow--out" : "msgRow--in"}`}
+      data-msgid={m.id ?? ""}
+    >
       <div className={`msg ${isMine ? "msg--out" : ""}`}>
         <button
           type="button"
@@ -44,9 +48,8 @@ function AttachMenuPortal({ open, anchorEl, onClose, onPick }) {
 
     const update = () => {
       const r = anchorEl.getBoundingClientRect();
-      // menu above the button (similar to your previous bottom: 48px)
-      const top = r.top - 8; // we will translate up with CSS via transform
-      const left = r.left;   // align left edge; rtl is ok
+      const top = r.top - 8;
+      const left = r.left;
       setPos({ top, left });
     };
 
@@ -59,11 +62,9 @@ function AttachMenuPortal({ open, anchorEl, onClose, onPick }) {
     };
   }, [open, anchorEl]);
 
-  // close on outside click (since it's in body)
   useEffect(() => {
     if (!open) return;
     const onDoc = (e) => {
-      // if click is on anchor, ignore (button handler already toggles)
       if (anchorEl && anchorEl.contains(e.target)) return;
       onClose?.();
     };
@@ -79,7 +80,7 @@ function AttachMenuPortal({ open, anchorEl, onClose, onPick }) {
       style={{
         top: pos.top,
         left: pos.left,
-        transform: "translateY(-100%)", // pop above the button
+        transform: "translateY(-100%)",
       }}
       role="menu"
       aria-label="attach options"
@@ -117,11 +118,23 @@ export default function OpenConv({
   onInputChange,
   onSend,
   onAttach,
+
+  // ✅ NEW: used by Chat.jsx for partial seen tracking
+  onMountMessagesViewport,
 }) {
   const bottomRef = useRef(null);
   const attachBtnRef = useRef(null);
+
+  // ✅ NEW: ref to the scrollable messages container
+  const messagesViewportRef = useRef(null);
+
   const [attachOpen, setAttachOpen] = useState(false);
   const [replyTarget, setReplyTarget] = useState(null);
+
+  // expose viewport to parent once mounted
+  useEffect(() => {
+    onMountMessagesViewport?.(messagesViewportRef.current);
+  }, [onMountMessagesViewport]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -134,14 +147,13 @@ export default function OpenConv({
   }, [replyTarget]);
 
   useEffect(() => {
-    // Clear reply when switching chats
     setReplyTarget(null);
   }, [chat?.id]);
 
   const handleSendClick = () => {
     if (!chat) return;
     if (!inputValue.trim()) return;
-    onSend?.(replyTarget);
+    onSend?.(replyTarget); // ✅ sends replyTarget up to Chat.jsx
     setReplyTarget(null);
   };
 
@@ -180,10 +192,14 @@ export default function OpenConv({
           {chat.subtitle}
         </div>
 
-        <div className={replyTarget ? "open__messages open__messages--withReply" : "open__messages"}>
+        {/* ✅ this MUST be the scroll container */}
+        <div
+          ref={messagesViewportRef}
+          className={replyTarget ? "open__messages open__messages--withReply" : "open__messages"}
+        >
           {messages.map((m) => (
             <MessageBubble
-              key={m.id}
+              key={m.id ?? m.client_temp_id ?? `${m.time}_${Math.random()}`}
               m={m}
               onReply={handleReplyPick}
               chatTitle={chat.title}
