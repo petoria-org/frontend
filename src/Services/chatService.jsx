@@ -13,12 +13,18 @@ const parseError = (error, fallback = "عملیات ناموفق بود") => {
   return fallback;
 };
 
+const normalizeResults = (data) => {
+  if (Array.isArray(data?.results)) return data.results;
+  if (Array.isArray(data)) return data;
+  return [];
+};
+
 export const getChatList = async () => {
   try {
     const res = await api.get("/chat/list/");
     return {
       success: true,
-      data: res.data?.results || [],
+      data: normalizeResults(res.data),
     };
   } catch (error) {
     return {
@@ -33,12 +39,29 @@ export const getChatMessages = async (chatId) => {
     const res = await api.get(`/chat/messages/${chatId}/`);
     return {
       success: true,
-      data: res.data?.results || [],
+      data: normalizeResults(res.data),
     };
   } catch (error) {
     return {
       success: false,
       message: parseError(error, "دریافت پیام‌ها ناموفق بود"),
+    };
+  }
+};
+
+// ✅ get-or-create chat for recipient
+// Backend should implement: POST /chat/ensure/ { recipient_id } -> returns chat object {id,...}
+export const ensureChat = async (recipientId) => {
+  try {
+    const res = await api.post("/chat/ensure/", { recipient_id: recipientId });
+    return {
+      success: true,
+      data: res.data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: parseError(error, "ساخت/یافتن گفتگو ناموفق بود"),
     };
   }
 };
