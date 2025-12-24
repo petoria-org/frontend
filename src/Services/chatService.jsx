@@ -1,4 +1,3 @@
-// src/Services/chatService.jsx
 import api from "./api";
 
 const parseError = (error, fallback = "عملیات ناموفق بود") => {

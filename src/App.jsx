@@ -14,6 +14,8 @@ import ResetPassword from './pages/ResetPassword.jsx'
 import Notification from './pages/Notification.jsx'
 import Verify from './pages/verify.jsx'
 import LocationPicker from "./pages/LocationPicker/LocationPicker.jsx";
+import ChatPage from './pages/Chats.jsx';
+import SuccessStoriesAllPage from './pages/SuccessStoriesAllPage/SuccessStoriesAllPage.jsx'
 
 function App() {
 
@@ -31,6 +33,8 @@ function App() {
       <Route path='/notification' element={<Notification />} />
       <Route path='/verify' element={<Verify />} />
       <Route path='/pick-location' element={<LocationPicker />} />
+      <Route path='/chats' element={<ChatPage />} />
+      <Route path='/success-stories' element={<SuccessStoriesAllPage />} />
     </Routes>
     </>
   )
