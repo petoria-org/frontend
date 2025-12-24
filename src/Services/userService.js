@@ -67,3 +67,8 @@ export const uploadPostImage = async (file) => {
 
   return res.data; 
 };
+
+export const deletePostImage = async (imageId) => {
+  const res = await api.delete(`/posts/images/${imageId}/`);
+  return res.data;
+};

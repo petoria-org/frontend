@@ -71,6 +71,8 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
     }
   }, []);
 
+  const API_BASE_URL = "http://127.0.0.1:8000";
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -92,7 +94,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
             type: p.pet_type === "cat" ? "گربه" : "سگ",
             status: "lost",
             statusLabel: "گم شده",
-            image: p.thumbnail || "/src/assets/images/default-pet.png",
+            image: p.thumbnail ? `${API_BASE_URL}${p.thumbnail}` : "/src/assets/images/default-pet.png",
             time: toJalaliDate(p.updated_at),
             location: p.location?.readable || "",
             desc: p.description || "",
@@ -106,20 +108,21 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
             type: p.pet_type === "cat" ? "گربه" : "سگ",
             status: "found",
             statusLabel: "پیدا شده",
-            image: p.thumbnail || "/src/assets/images/default-pet.png",
+            image: p.thumbnail ? `${API_BASE_URL}${p.thumbnail}` : "/src/assets/images/default-pet.png",
             time: toJalaliDate(p.updated_at),
             location: p.location?.readable || "",
             desc: p.description || "",
             postTime: toJalaliDate(p.found_time),
             resolved: false,
           })),
+
           ...surrender.map(p => ({
             id: p.id,
             name: p.title,
             type: p.pet_type === "cat" ? "گربه" : "سگ",
             status: "adoption",
             statusLabel: "سرپرستی",
-            image: p.thumbnail || "/src/assets/images/default-pet.png",
+            image: p.thumbnail ? `${API_BASE_URL}${p.thumbnail}` : "/src/assets/images/default-pet.png",
             time: toJalaliDate(p.updated_at),
             location: p.location?.readable || "",
             desc: p.description || "",

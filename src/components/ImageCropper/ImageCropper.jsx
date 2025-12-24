@@ -69,8 +69,7 @@ useEffect(() => {
         
         const x = (wrapperRect.width - imgWidth) / 2;
         const y = (wrapperRect.height - imgHeight) / 2;
-        
-        console.log("Image position calculated:", { x, y, wrapperRect, imgWidth, imgHeight });
+
         setImagePosition({ x, y });
       }
     };
@@ -261,42 +260,44 @@ const getCroppedImage = useCallback(async () => {
   });
 }, [image, crop, scale, rotation, calculatedCropSize, format, quality, imagePosition]);
 
+
 const handleCrop = async () => {
   try {
     setIsLoading(true);
-    console.log("Starting crop process...");
-    
-    console.log("Getting cropped image blob...");
+
     const blob = await getCroppedImage();
-    console.log("Got blob:", blob);
-    
-    console.log("Uploading to backend...");
+
     const result = await uploadPostImage(blob);
-    console.log("Upload result:", result);
+
+    const BACKEND_URL = "http://localhost:8000";
+    let fullImageUrl;
     
-    const fullImageUrl = result.image.startsWith('http') 
-      ? result.image 
-      : `${window.location.origin}${result.image}`;
+    if (result.image.startsWith("http")) {
+      fullImageUrl = result.image;
+    } 
     
-    console.log("Full image URL:", fullImageUrl);
+    else {
+      let imagePath = result.image;
+      if (imagePath.startsWith("/")) {
+        imagePath = imagePath.substring(1);
+      }
+      fullImageUrl = `${BACKEND_URL}/${imagePath}`;
+    }
+    
+    const timestamp = Date.now();
+    const imageUrlWithTimestamp = `${fullImageUrl}${fullImageUrl.includes('?') ? '&' : '?'}t=${timestamp}`;
     
     const croppedResult = {
       id: result.id,
-      image: fullImageUrl
+      image: imageUrlWithTimestamp,
+      backendId: result.id,
+      originalData: result
     };
-    
-    console.log("Calling onCropComplete...");
+
     onCropComplete(croppedResult);
-    
-    console.log("Closing modal...");
     onClose();
-    
   } catch (error) {
-    console.error("Upload failed - Full error:", error);
-    console.error("Error message:", error.message);
-    console.error("Error stack:", error.stack);
-    
-    alert(`خطا در آپلود تصویر: ${error.message || 'لطفاً دوباره تلاش کنید'}`);
+    console.error("Upload failed:", error);
   } finally {
     setIsLoading(false);
   }
