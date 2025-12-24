@@ -1,18 +1,44 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-function MessageBubble({ m, onReply, chatTitle }) {
+function MessageBubble({ m, onReply, chatTitle, onJumpToMessage }) {
   const isMine = m.side === "out";
   const safeText = m.text || "";
   const senderName = m.senderName || (isMine ? "You" : chatTitle || "Sender");
 
+  const reply = m.replyTo?.id
+    ? {
+        id: m.replyTo.id,
+        name: m.replyTo.sender_name || "User",
+        text: m.replyTo.content || "",
+      }
+    : null;
+
   return (
-    // ✅ data-msgid added for IntersectionObserver (only real ids will be set)
     <div
       className={`msgRow ${isMine ? "msgRow--out" : "msgRow--in"}`}
       data-msgid={m.id ?? ""}
     >
       <div className={`msg ${isMine ? "msg--out" : ""}`}>
+        {reply && (
+          <div
+            className={`replyQuote ${isMine ? "replyQuote--out" : "replyQuote--in"}`}
+            role="button"
+            tabIndex={0}
+            title="Jump to replied message"
+            onClick={() => onJumpToMessage?.(reply.id)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") onJumpToMessage?.(reply.id);
+            }}
+          >
+            <div className="replyQuote__bar" />
+            <div className="replyQuote__content">
+              <div className="replyQuote__name">{reply.name}</div>
+              <div className="replyQuote__text">{reply.text}</div>
+            </div>
+          </div>
+        )}
+
         <button
           type="button"
           className={`msg__replyBtn ${isMine ? "msg__replyBtn--out" : "msg__replyBtn--in"}`}
@@ -39,7 +65,6 @@ function MessageBubble({ m, onReply, chatTitle }) {
   );
 }
 
-/** Portal menu rendered into <body> so it never gets clipped */
 function AttachMenuPortal({ open, anchorEl, onClose, onPick }) {
   const [pos, setPos] = useState({ top: 0, left: 0 });
 
@@ -77,11 +102,7 @@ function AttachMenuPortal({ open, anchorEl, onClose, onPick }) {
   return createPortal(
     <div
       className="attachMenuPortal"
-      style={{
-        top: pos.top,
-        left: pos.left,
-        transform: "translateY(-100%)",
-      }}
+      style={{ top: pos.top, left: pos.left, transform: "translateY(-100%)" }}
       role="menu"
       aria-label="attach options"
     >
@@ -118,20 +139,16 @@ export default function OpenConv({
   onInputChange,
   onSend,
   onAttach,
-
-  // ✅ NEW: used by Chat.jsx for partial seen tracking
   onMountMessagesViewport,
 }) {
   const bottomRef = useRef(null);
   const attachBtnRef = useRef(null);
-
-  // ✅ NEW: ref to the scrollable messages container
   const messagesViewportRef = useRef(null);
 
   const [attachOpen, setAttachOpen] = useState(false);
   const [replyTarget, setReplyTarget] = useState(null);
 
-  // expose viewport to parent once mounted
+  // expose viewport to parent (seen observer)
   useEffect(() => {
     onMountMessagesViewport?.(messagesViewportRef.current);
   }, [onMountMessagesViewport]);
@@ -141,30 +158,32 @@ export default function OpenConv({
   }, [messages.length]);
 
   useEffect(() => {
-    if (replyTarget) {
-      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [replyTarget]);
-
-  useEffect(() => {
     setReplyTarget(null);
   }, [chat?.id]);
 
   const handleSendClick = () => {
     if (!chat) return;
     if (!inputValue.trim()) return;
-    onSend?.(replyTarget); // ✅ sends replyTarget up to Chat.jsx
+    onSend?.(replyTarget);
     setReplyTarget(null);
   };
 
   const handleReplyPick = (msg) => {
-    if (!msg) return;
+    if (!msg?.id) return;
     const textSnippet = (msg.text || "").trim();
     setReplyTarget({
       id: msg.id,
       text: textSnippet || "(No text)",
-      senderName: msg.senderName || (msg.side === "out" ? "You" : chat?.title || "Sender"),
+      senderName:
+        msg.senderName || (msg.side === "out" ? "You" : chat?.title || "Sender"),
     });
+  };
+
+  const jumpToMessage = (msgId) => {
+    const viewport = messagesViewportRef.current;
+    if (!viewport || !msgId) return;
+    const el = viewport.querySelector(`[data-msgid="${msgId}"]`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
   };
 
   if (!chat) {
@@ -179,7 +198,17 @@ export default function OpenConv({
 
   return (
     <section className="open">
-      <div style={{ display: "flex", flexDirection: "column", width: "100%", minHeight: 0 }}>
+      {/* ✅ CSS-proof layout */}
+      <div
+        className="open__col"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
+          height: "100%",
+          minHeight: 0,
+        }}
+      >
         <div className="open__top">
           <div className="open__profile">
             <img className="open__avatar" src={chat.avatar} alt={chat.title} />
@@ -192,10 +221,16 @@ export default function OpenConv({
           {chat.subtitle}
         </div>
 
-        {/* ✅ this MUST be the scroll container */}
+        {/* ✅ messages area must be scroll container and flex:1 */}
         <div
           ref={messagesViewportRef}
-          className={replyTarget ? "open__messages open__messages--withReply" : "open__messages"}
+          className="open__messages"
+          style={{
+            flex: 1,
+            minHeight: 0,
+            overflowY: "auto",
+            position: "relative",
+          }}
         >
           {messages.map((m) => (
             <MessageBubble
@@ -203,28 +238,34 @@ export default function OpenConv({
               m={m}
               onReply={handleReplyPick}
               chatTitle={chat.title}
+              onJumpToMessage={jumpToMessage}
             />
           ))}
           <div ref={bottomRef} />
         </div>
 
+        {/* ✅ reply bar sits ABOVE composer, never overlays input */}
         {replyTarget && (
-          <div className="replyPreview" title={replyTarget.text}>
-            <div className="replyPreview__text">
-              ({replyTarget.senderName} : {replyTarget.text})
+          <div className="replyComposer" style={{ flex: "0 0 auto" }}>
+            <div className="replyComposer__bar" />
+            <div className="replyComposer__text">
+              <div className="replyComposer__name">{replyTarget.senderName}</div>
+              <div className="replyComposer__snippet">{replyTarget.text}</div>
             </div>
             <button
               type="button"
-              className="replyPreview__close"
+              className="replyComposer__close"
               aria-label="cancel reply"
               onClick={() => setReplyTarget(null)}
+              title="Cancel reply"
             >
-              x
+              ×
             </button>
           </div>
         )}
 
-        <div className="open__composer">
+        {/* ✅ composer always at bottom */}
+        <div className="open__composer" style={{ flex: "0 0 auto" }}>
           <button
             className="sendBtn"
             type="button"

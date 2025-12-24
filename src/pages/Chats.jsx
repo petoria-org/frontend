@@ -108,23 +108,16 @@ export default function ChatPage() {
   }, []);
 
   // Upsert chat & sort
-  const upsertChatAndSort = (
-    incomingChatOrId,
-    maybeLastMessage,
-    unreadCountOverride
-  ) => {
+  const upsertChatAndSort = (incomingChatOrId, maybeLastMessage, unreadCountOverride) => {
     setChats((prev) => {
       const list = Array.isArray(prev) ? [...prev] : [];
 
       const chatId =
-        typeof incomingChatOrId === "object"
-          ? incomingChatOrId?.id
-          : incomingChatOrId;
+        typeof incomingChatOrId === "object" ? incomingChatOrId?.id : incomingChatOrId;
 
       if (!chatId) return list;
 
-      const incomingChat =
-        typeof incomingChatOrId === "object" ? incomingChatOrId : null;
+      const incomingChat = typeof incomingChatOrId === "object" ? incomingChatOrId : null;
       const idx = list.findIndex((c) => String(c.id) === String(chatId));
 
       const lastMsg =
@@ -211,12 +204,11 @@ export default function ChatPage() {
         return;
       }
 
-      // ✅ 1) message_sent (server ack for my message)
+      // ✅ message_sent (server ack)
       if (data?.type === "message_sent" && data?.chat_id && data?.message) {
         const chatId = data.chat_id;
         const serverMsg = data.message;
 
-        // move chat top + reset unread for open
         upsertChatAndSort(chatId, serverMsg, 0);
 
         if (String(chatId) === String(selectedChatIdRef.current)) {
@@ -242,14 +234,18 @@ export default function ChatPage() {
             }
 
             if (replaceIndex !== -1) {
-              copy[replaceIndex] = { ...serverMsg, _optimistic: false };
+              const prevMsg = copy[replaceIndex];
+              copy[replaceIndex] = {
+                ...prevMsg,
+                ...serverMsg,
+                // ✅ keep reply_to if server ack doesn't include it
+                reply_to: serverMsg.reply_to ?? prevMsg.reply_to ?? null,
+                _optimistic: false,
+              };
               return copy;
             }
 
-            if (
-              serverMsg.id &&
-              copy.some((m) => m?.id && String(m.id) === String(serverMsg.id))
-            ) {
+            if (serverMsg.id && copy.some((m) => m?.id && String(m.id) === String(serverMsg.id))) {
               return copy;
             }
 
@@ -260,7 +256,7 @@ export default function ChatPage() {
         return;
       }
 
-      // ✅ 2) new_message (if your backend ever sends it)
+      // ✅ new_message (if backend ever sends it)
       if (data?.type === "new_message" && data?.chat_id && data?.message) {
         const chatId = data.chat_id;
         const msg = data.message;
@@ -268,7 +264,6 @@ export default function ChatPage() {
         const me = currentUserIdRef.current;
         const senderId = msg?.sender_id ?? msg?.sender;
 
-        // Avoid duplicating my own message if backend broadcasts it here too
         if (me != null && senderId != null && String(senderId) === String(me)) {
           upsertChatAndSort(data.chat || chatId, msg);
           return;
@@ -278,13 +273,11 @@ export default function ChatPage() {
 
         if (isOpen) {
           setMessages((prev) => {
-            if (msg.id && prev.some((m) => m?.id && String(m.id) === String(msg.id)))
-              return prev;
+            if (msg.id && prev.some((m) => m?.id && String(m.id) === String(msg.id))) return prev;
             return [...prev, msg];
           });
         }
 
-        // sidebar unread
         setChats((prev) => {
           const list = Array.isArray(prev) ? [...prev] : [];
           const idx = list.findIndex((c) => String(c.id) === String(chatId));
@@ -323,36 +316,27 @@ export default function ChatPage() {
         return;
       }
 
-      // ✅ 3) chat_list_update (YOUR backend sends this when I receive a message)
+      // ✅ chat_list_update (YOUR backend sends this for incoming message)
       if (data?.type === "chat_list_update" && data?.chat?.id) {
         const chat = data.chat;
         const chatId = chat.id;
         const msg = chat.last_message;
 
-        // always update sidebar
         upsertChatAndSort(chat);
 
-        // if open chat, append last_message to messages so it appears realtime
         if (msg && String(chatId) === String(selectedChatIdRef.current)) {
           setMessages((prev) => {
-            if (
-              msg.id &&
-              prev.some((m) => m?.id && String(m.id) === String(msg.id))
-            )
-              return prev;
+            if (msg.id && prev.some((m) => m?.id && String(m.id) === String(msg.id))) return prev;
             return [...prev, msg];
           });
         }
 
-        // if not open, backend might be sending unread_count wrong (like 0)
-        // so we locally bump unread by 1 (never decreasing below server value)
         if (String(chatId) !== String(selectedChatIdRef.current) && msg?.id) {
           setChats((prev) =>
             (Array.isArray(prev) ? prev : []).map((c) => {
               if (String(c.id) !== String(chatId)) return c;
               const baseUnread = Number(c.unread_count || 0);
-              const serverUnread =
-                typeof chat.unread_count === "number" ? chat.unread_count : 0;
+              const serverUnread = typeof chat.unread_count === "number" ? chat.unread_count : 0;
               return { ...c, unread_count: Math.max(serverUnread, baseUnread + 1) };
             })
           );
@@ -361,21 +345,15 @@ export default function ChatPage() {
         return;
       }
 
-      // ✅ 4) read receipts: messages_seen
-      if (
-        data?.type === "messages_seen" &&
-        data?.chat_id &&
-        Array.isArray(data?.message_ids)
-      ) {
+      // ✅ read receipts: messages_seen
+      if (data?.type === "messages_seen" && data?.chat_id && Array.isArray(data?.message_ids)) {
         const chatId = data.chat_id;
         const ids = data.message_ids.map(String);
 
         if (String(chatId) === String(selectedChatIdRef.current)) {
           setMessages((prev) =>
             prev.map((m) =>
-              m?.id != null && ids.includes(String(m.id))
-                ? { ...m, is_read: true }
-                : m
+              m?.id != null && ids.includes(String(m.id)) ? { ...m, is_read: true } : m
             )
           );
         }
@@ -385,8 +363,7 @@ export default function ChatPage() {
             if (String(c.id) !== String(chatId)) return c;
             const last = c.last_message;
             if (!last?.id) return c;
-            if (ids.includes(String(last.id)))
-              return { ...c, last_message: { ...last, is_read: true } };
+            if (ids.includes(String(last.id))) return { ...c, last_message: { ...last, is_read: true } };
             return c;
           })
         );
@@ -458,18 +435,14 @@ export default function ChatPage() {
 
     setSelectedChatId(chatId);
 
-    const chatObj = (Array.isArray(chats) ? chats : []).find(
-      (c) => String(c.id) === String(chatId)
-    );
+    const chatObj = (Array.isArray(chats) ? chats : []).find((c) => String(c.id) === String(chatId));
     const other = chatObj?.other_participant;
 
-    if (other?.id)
-      setRecipient({ id: other.id, username: other.username || "Unknown" });
+    if (other?.id) setRecipient({ id: other.id, username: other.username || "Unknown" });
     else setRecipient(null);
 
     wsSend({ action: "open_chat", chat_id: chatId });
 
-    // reset unread on open
     setChats((prev) =>
       (Array.isArray(prev) ? prev : []).map((c) =>
         String(c.id) === String(chatId) ? { ...c, unread_count: 0 } : c
@@ -489,20 +462,12 @@ export default function ChatPage() {
     return sorted.map((c) => {
       const lastSenderId = c.last_message?.sender_id ?? c.last_message?.sender;
       const isMineLast =
-        currentUserId != null &&
-        lastSenderId != null &&
-        String(lastSenderId) === String(currentUserId);
+        currentUserId != null && lastSenderId != null && String(lastSenderId) === String(currentUserId);
 
       return {
         id: c.id,
-        name:
-          c.other_participant?.username ||
-          c.last_message?.sender_name ||
-          "Unknown",
-        avatar:
-          c.other_participant?.avatar ||
-          c.avatar ||
-          "https://i.pravatar.cc/80?img=12",
+        name: c.other_participant?.username || c.last_message?.sender_name || "Unknown",
+        avatar: c.other_participant?.avatar || c.avatar || "https://i.pravatar.cc/80?img=12",
         time: c.last_message?.timestamp ? formatTime(c.last_message.timestamp) : "",
         unreadCount: c.unread_count || 0,
         hint: c.last_message?.content || "",
@@ -521,15 +486,27 @@ export default function ChatPage() {
     return { id: c.id, title, subtitle: "", avatar: c.avatar };
   }, [selectedChatId, convItems, recipient]);
 
-  // Messages mapping
+  // Messages mapping (✅ keeps reply_to for UI)
   const openMessages = useMemo(() => {
     const safe = Array.isArray(messages) ? messages : [];
+
     return safe.map((m) => {
       const senderId = m.sender_id ?? m.sender;
       const isMine = currentUserId != null && Number(senderId) === Number(currentUserId);
 
+      const rt = m?.reply_to && typeof m.reply_to === "object" ? m.reply_to : null;
+      const replyTo =
+        rt?.id != null
+          ? {
+              id: rt.id,
+              sender_id: rt.sender_id,
+              sender_name: rt.sender_name,
+              content: rt.content,
+            }
+          : null;
+
       return {
-        id: m.id, // backend id (needed for seen tracking)
+        id: m.id,
         client_temp_id: m.client_temp_id,
         side: isMine ? "out" : "in",
         text: m.content || "",
@@ -538,9 +515,10 @@ export default function ChatPage() {
         attachments: m.attachments || [],
         senderName: m.sender_name || (isMine ? "You" : "Other"),
         chat_id: m.chat_id,
-        sender_id: m.sender_id ?? m.sender,
+        sender_id: senderId,
         is_read: !!m.is_read,
         _optimistic: !!m._optimistic,
+        replyTo,
       };
     });
   }, [messages, currentUserId]);
@@ -587,7 +565,6 @@ export default function ChatPage() {
           seenPendingRef.current.add(Number(msgId));
           scheduleFlushSeen();
 
-          // local optimistic read
           setMessages((prev) =>
             prev.map((mm) =>
               mm?.id && String(mm.id) === String(msgId) ? { ...mm, is_read: true } : mm
@@ -649,6 +626,10 @@ export default function ChatPage() {
       is_read: false,
       attachments: [],
       _optimistic: true,
+      // UI only (so reply block shows immediately)
+      reply_to: replyTarget?.id
+        ? { id: replyTarget.id, sender_name: replyTarget.senderName, content: replyTarget.text }
+        : null,
     };
 
     setMessages((prev) => [...prev, optimisticMsg]);
@@ -666,23 +647,13 @@ export default function ChatPage() {
 
     if (!ok) {
       setMessages((prev) =>
-        prev.map((m) =>
-          m.client_temp_id === clientId ? { ...m, _failed: true } : m
-        )
+        prev.map((m) => (m.client_temp_id === clientId ? { ...m, _failed: true } : m))
       );
       alert("ارسال پیام ناموفق بود.");
     } else {
-      // optimistic sidebar update for ticks (include sender_id)
       upsertChatAndSort(
         chatId,
-        {
-          content: text,
-          timestamp: nowIso,
-          sender_id: currentUserId,
-          sender_name: "You",
-          chat_id: chatId,
-          is_read: false,
-        },
+        { content: text, timestamp: nowIso, sender_id: currentUserId, is_read: false },
         0
       );
     }
@@ -718,7 +689,7 @@ export default function ChatPage() {
           inputValue={inputValue}
           onInputChange={setInputValue}
           onSend={handleSend}
-          onAttach={(type) => alert(`attach type: ${type }`)}
+          onAttach={(type) => alert(`attach type: ${type}`)}
           onMountMessagesViewport={handleMountMessagesViewport}
         />
       </div>

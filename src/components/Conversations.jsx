@@ -17,7 +17,6 @@ export default function Conversations({
         {items.map((c) => {
           const active = c.id === selectedChatId;
 
-          // ✔ = sent, ✔✔ = seen (only if last message is mine)
           const tick = c.isMineLast ? (c.lastIsRead ? "✓✓" : "✓") : "";
 
           return (

@@ -432,6 +432,119 @@ body{
   color: #A2A4A6;
 }
 
+/* ===== Reply quote inside bubble ===== */
+.replyQuote {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+  padding: 8px 10px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  user-select: none;
+  opacity: 0.95;
+}
+
+.replyQuote:focus {
+  outline: 2px solid rgba(0, 0, 0, 0.12);
+  outline-offset: 2px;
+}
+
+.replyQuote__bar {
+  width: 3px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.18);
+  flex: 0 0 auto;
+}
+
+.replyQuote__content {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.replyQuote__name {
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0.9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.replyQuote__text {
+  font-size: 12px;
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* different background on in/out bubbles */
+.replyQuote--in {
+  background: rgba(0, 0, 0, 0.04);
+}
+.replyQuote--out {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* ===== Reply composer bar (above input) ===== */
+.replyComposer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  margin: 8px 10px 0;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.replyComposer__bar {
+  width: 3px;
+  height: 34px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.2);
+  flex: 0 0 auto;
+}
+
+.replyComposer__text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.replyComposer__name {
+  font-size: 12px;
+  font-weight: 800;
+  opacity: 0.9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.replyComposer__snippet {
+  font-size: 12px;
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.replyComposer__close {
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  cursor: pointer;
+  opacity: 0.6;
+  padding: 0 6px;
+}
+.replyComposer__close:hover {
+  opacity: 1;
+}
+
 @media (max-width: 980px){
   body{ overflow: hidden; }
 
