@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/NotificationOptionsSection.css";
-import searchIcon from '../../assets/icons/Search.svg';
+import searchIcon from '../../assets/icons/search.svg';
 import checkmarkIcon from '../../assets/icons/Checkmark Color.svg';
 import heartIcon from '../../assets/icons/Vector.svg';
 import calendarIcon from '../../assets/icons/calendar-2.svg';
@@ -9,6 +9,7 @@ import uploadIcon from '../../assets/icons/direct-inbox.svg';
 import contactIcon from '../../assets/icons/stickynote.svg';
 import closeIcon from '../../assets/icons/close.svg';
 import mapIcon from '../../assets/icons/map.svg';
+import lockIcon from "../../assets/icons/lock.svg";
 import { NotificationToast } from '../NotificationToast/NotificationToast';
 import MapPicker from '../MapPicker/MapPicker';
 import {
@@ -19,16 +20,244 @@ import {
   updateFoundPost,
   updateSurrenderPost
 } from "../../Services/userService";
+import moment from 'jalali-moment';
+import fa from 'date-fns/locale/fa-IR';
+import DatePickerModule from "react-multi-date-picker";
+const DatePicker = DatePickerModule.default || DatePickerModule;
+import persian from "react-date-object/calendars/persian";
+import persian_fa from "react-date-object/locales/persian_fa";
+import "../../styles/DatePickerCustom.css";
 
 const toInputDateTime = (iso) => {
   if (!iso) return "";
-  return new Date(iso).toISOString().slice(0, 16);
+  return new Date(iso);
 };
 
 const toISO = (value) => {
   if (!value) return null;
   return new Date(value).toISOString();
 };
+
+const TimeInput = ({ value, onChange, disabled }) => {
+  const [hours, setHours] = useState("00");
+  const [minutes, setMinutes] = useState("00");
+  
+  useEffect(() => {
+    if (value instanceof Date) {
+      setHours(String(value.getHours()).padStart(2, '0'));
+      setMinutes(String(value.getMinutes()).padStart(2, '0'));
+    } else {
+      setHours("00");
+      setMinutes("00");
+    }
+  }, [value]);
+
+  const handleHourChange = (e) => {
+    const newHour = e.target.value;
+    if (/^\d{0,2}$/.test(newHour)) {
+      let hourNum = parseInt(newHour) || 0;
+      if (hourNum > 23) hourNum = 23;
+      const newHours = String(hourNum).padStart(2, '0');
+      setHours(newHours);
+      
+      const newDate = value ? new Date(value) : new Date();
+      newDate.setHours(hourNum);
+      if (!value) {
+        newDate.setMinutes(parseInt(minutes) || 0);
+      }
+      onChange(newDate);
+    }
+  };
+
+  const handleMinuteChange = (e) => {
+    const newMinute = e.target.value;
+    if (/^\d{0,2}$/.test(newMinute)) {
+      let minuteNum = parseInt(newMinute) || 0;
+      if (minuteNum > 59) minuteNum = 59;
+      const newMinutes = String(minuteNum).padStart(2, '0');
+      setMinutes(newMinutes);
+      
+      const newDate = value ? new Date(value) : new Date();
+      newDate.setMinutes(minuteNum);
+      if (!value) {
+        newDate.setHours(parseInt(hours) || 0);
+      }
+      onChange(newDate);
+    }
+  };
+
+  const incrementHour = () => {
+    let hourNum = parseInt(hours) || 0;
+    hourNum = (hourNum + 1) % 24;
+    const newHours = String(hourNum).padStart(2, '0');
+    setHours(newHours);
+    
+    const newDate = value ? new Date(value) : new Date();
+    newDate.setHours(hourNum);
+    if (!value) {
+      newDate.setMinutes(parseInt(minutes) || 0);
+    }
+    onChange(newDate);
+  };
+
+  const decrementHour = () => {
+    let hourNum = parseInt(hours) || 0;
+    hourNum = hourNum - 1;
+    if (hourNum < 0) hourNum = 23;
+    const newHours = String(hourNum).padStart(2, '0');
+    setHours(newHours);
+    
+    const newDate = value ? new Date(value) : new Date();
+    newDate.setHours(hourNum);
+    if (!value) {
+      newDate.setMinutes(parseInt(minutes) || 0);
+    }
+    onChange(newDate);
+  };
+
+  const incrementMinute = () => {
+    let minuteNum = parseInt(minutes) || 0;
+    let hourNum = parseInt(hours) || 0;
+    
+    minuteNum = minuteNum + 1;
+    
+    if (minuteNum > 59) {
+      minuteNum = 0;
+      hourNum = (hourNum + 1) % 24;
+      setHours(String(hourNum).padStart(2, '0'));
+    }
+    
+    const newMinutes = String(minuteNum).padStart(2, '0');
+    setMinutes(newMinutes);
+    
+    const newDate = value ? new Date(value) : new Date();
+    newDate.setHours(hourNum);
+    newDate.setMinutes(minuteNum);
+    
+    onChange(newDate);
+  };
+
+  const decrementMinute = () => {
+    let minuteNum = parseInt(minutes) || 0;
+    let hourNum = parseInt(hours) || 0;
+    
+    minuteNum = minuteNum - 1;
+    
+    if (minuteNum < 0) {
+      minuteNum = 59;
+      hourNum = hourNum - 1;
+      if (hourNum < 0) hourNum = 23;
+      setHours(String(hourNum).padStart(2, '0'));
+    }
+    
+    const newMinutes = String(minuteNum).padStart(2, '0');
+    setMinutes(newMinutes);
+    
+    const newDate = value ? new Date(value) : new Date();
+    newDate.setHours(hourNum);
+    newDate.setMinutes(minuteNum);
+    
+    onChange(newDate);
+  };
+
+  const handleWheel = (e, type) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -1 : 1;
+    
+    if (type === 'hour') {
+      if (delta > 0) {
+        incrementHour();
+      } else {
+        decrementHour();
+      }
+    } else {
+      if (delta > 0) {
+        incrementMinute();
+      } else {
+        decrementMinute();
+      }
+    }
+  };
+
+  return (
+    <div className="time-selector-container">
+      <div className="time-selector-wrapper">
+        <div className="time-input-group-combined">
+          <div className="time-input-field">
+            <input
+              type="number"
+              value={hours}
+              onChange={handleHourChange}
+              className="time-input"
+              maxLength={2}
+              min="0"
+              max="23"
+              disabled={disabled}
+              inputMode="numeric"
+              pattern="[0-9]*"
+              onWheel={(e) => handleWheel(e, 'hour')}
+            />
+          </div>
+          
+          <span className="time-colon">:</span>
+          
+          <div className="time-input-field">
+            <input
+              type="number"
+              value={minutes}
+              onChange={handleMinuteChange}
+              className="time-input"
+              maxLength={2}
+              min="0"
+              max="59"
+              disabled={disabled}
+              inputMode="numeric"
+              pattern="[0-9]*"
+              onWheel={(e) => handleWheel(e, 'minute')}
+            />
+          </div>
+        </div>
+        <div className="time-unit-label-combined">ساعت و دقیقه</div>
+      </div>
+    </div>
+  );
+};
+const PersianDatePickerInput = React.forwardRef(({ value, onClick, placeholder, disabled, showTimeInput = false, onTimeChange, onChange }, ref) => (
+  <div className="persian-datepicker-input-container">
+    <div className="date-time-separate-inputs">
+      <input
+        type="text"
+        value={value ? moment(value).locale('fa').format('jYYYY/jMM/jDD') : ""}
+        onClick={onClick}
+        ref={ref}
+        className="form-input-with-icon date-input"
+        placeholder="انتخاب تاریخ"
+        readOnly
+        disabled={disabled}
+        style={{ marginBottom: '10px' }}
+      />
+      {showTimeInput && (
+        <div className="time-input-section">
+          <label className="time-input-label">زمان:</label>
+          <TimeInput 
+            value={value} 
+            onChange={onTimeChange} 
+            disabled={disabled}
+          />
+        </div>
+      )}
+    </div>
+    <img 
+      src={calendarIcon} 
+      alt="Time" 
+      className="form-input-icon"
+      onClick={onClick}
+      style={{ cursor: 'pointer', top: '28px' }}
+    />
+  </div>
+));
+
+PersianDatePickerInput.displayName = 'PersianDatePickerInput';
 
 export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
   const [formData, setFormData] = useState({
@@ -37,8 +266,8 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
     age: "",
     gender: "",
     location: "",
-    lostTime: "",
-    foundTime: "",
+    lostTime: null,
+    foundTime: null,
     specialSigns: "",
     description: "",
     status: "گم شده",
@@ -105,14 +334,25 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
           locationData.latitude && locationData.longitude ? locationInfo : null
         );
 
+        let lostTime = null;
+        let foundTime = null;
+        
+        if (data.lost_time) {
+          lostTime = new Date(data.lost_time);
+        }
+        
+        if (data.found_time) {
+          foundTime = new Date(data.found_time);
+        }
+
         setFormData({
           name: data.pet_name || "",
           type: data.title || "",
           age: data.pet_age || "",
           gender: data.pet_sex === "male" ? "نر" : "ماده",
           location: locationInfo.readable || "",
-          lostTime: toInputDateTime(data.lost_time),
-          foundTime: toInputDateTime(data.found_time),
+          lostTime: lostTime,
+          foundTime: foundTime,
           specialSigns: data.Specific_symptoms || "",
           description: data.description || "",
           breed: data.breed || "",
@@ -125,9 +365,15 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
           imagePreview: data.thumbnail || "",
           email: data.email || "",
           phone: data.phone || "",
-          contact_email: data.contact_email !== undefined ? data.contact_email : true
+          contact_email: data.contact_email !== undefined ? data.contact_email : true,
+          latitude: locationData.latitude || "",
+          longitude: locationData.longitude || "",
+          country: locationData.country || "",
+          city: locationData.city || "",
+          district: locationData.district || "",
+          state: locationData.state || "",
+          road: locationData.road || ""
         });
-
 
       } catch (error) {
         console.error("Error fetching post detail:", error);
@@ -155,6 +401,76 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
       ...prev,
       [name]: !prev[name]
     }));
+  };
+
+  const handleTimeChangeLost = (time) => {
+    setFormData(prev => ({
+      ...prev,
+      lostTime: time
+    }));
+  };
+
+  const handleTimeChangeFound = (time) => {
+    setFormData(prev => ({
+      ...prev,
+      foundTime: time
+    }));
+  };
+
+  const handleDateChangeLost = (date) => {
+    if (!date) {
+      setFormData(prev => ({
+        ...prev,
+        lostTime: null
+      }));
+      return;
+    }
+    
+    if (formData.lostTime) {
+      const newDate = new Date(date);
+      newDate.setHours(formData.lostTime.getHours());
+      newDate.setMinutes(formData.lostTime.getMinutes());
+      setFormData(prev => ({
+        ...prev,
+        lostTime: newDate
+      }));
+    } else {
+      const newDate = new Date(date);
+      newDate.setHours(0);
+      newDate.setMinutes(0);
+      setFormData(prev => ({
+        ...prev,
+        lostTime: newDate
+      }));
+    }
+  };
+
+  const handleDateChangeFound = (date) => {
+    if (!date) {
+      setFormData(prev => ({
+        ...prev,
+        foundTime: null
+      }));
+      return;
+    }
+    
+    if (formData.foundTime) {
+      const newDate = new Date(date);
+      newDate.setHours(formData.foundTime.getHours());
+      newDate.setMinutes(formData.foundTime.getMinutes());
+      setFormData(prev => ({
+        ...prev,
+        foundTime: newDate
+      }));
+    } else {
+      const newDate = new Date(date);
+      newDate.setHours(0);
+      newDate.setMinutes(0);
+      setFormData(prev => ({
+        ...prev,
+        foundTime: newDate
+      }));
+    }
   };
 
   const handleAdTypeSelect = (type) => {
@@ -260,42 +576,51 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
 
     setFormData(prev => ({
       ...prev,
-      location: newLocation.readable
+      location: newLocation.readable,
+      latitude: newLocation.lat.toString(),
+      longitude: newLocation.lng.toString(),
+      country: newLocation.country,
+      city: newLocation.city,
+      district: newLocation.district,
+      state: newLocation.state,
+      road: newLocation.road
     }));
 
     setShowMapPicker(false);
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-  const locationPayload = selectedLocation
-    ? {
-        country: selectedLocation.country,
-        city: selectedLocation.city,
-        latitude: selectedLocation.lat,
-        longitude: selectedLocation.lng
-      }
-    : null;
+    const locationPayload = selectedLocation
+      ? {
+          country: selectedLocation.country,
+          city: selectedLocation.city,
+          district: selectedLocation.district,
+          state: selectedLocation.state,
+          road: selectedLocation.road,
+          latitude: selectedLocation.lat.toString(),
+          longitude: selectedLocation.lng.toString(),
+          readable: selectedLocation.readable
+        }
+      : null;
 
-  const payload = {
-    title: formData.type,
-    pet_name: formData.name,
-    pet_type: formData.animalType === "گربه" ? "cat" : "dog",
-    pet_sex: formData.gender === "نر" ? "male" : "female",
-    pet_age: formData.age || null,
-    Specific_symptoms: formData.specialSigns || "",
-    description: formData.description,
-    diseases: formData.diseases || "",
-    has_birth_certificate: formData.hasCertificate,
-    vaccination: formData.isVaccinated,
-    steriliz: formData.isSterilized,
-    contact_email: formData.contact_email,
-    location: locationPayload
-  };
-
+    const payload = {
+      title: formData.type,
+      pet_name: formData.name,
+      pet_type: formData.animalType === "گربه" ? "cat" : "dog",
+      pet_sex: formData.gender === "نر" ? "male" : "female",
+      pet_age: formData.age || null,
+      Specific_symptoms: formData.specialSigns || "", // <-- اینجا اضافه شد
+      description: formData.description,
+      diseases: formData.diseases || "",
+      has_birth_certificate: formData.hasCertificate,
+      vaccination: formData.isVaccinated,
+      steriliz: formData.isSterilized,
+      contact_email: formData.contact_email,
+      location: locationPayload
+    };
 
     if (formData.contact_email) {
       if (formData.email) payload.email = formData.email;
@@ -432,7 +757,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
         </div>
       );
     }
-
+  
     return (
       <div className="notification-options-section">
         <div className="notification-options-container">
@@ -606,7 +931,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                       
                       <div className="form-grid">
                         <div className="form-field">
-                          <label className="form-label">نام حیوان</label>
+                          <label className="form-label-edit">نام حیوان</label>
                           <div className="input-container">
                             <input
                               type="text"
@@ -622,7 +947,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                         </div>
 
                         <div className="form-field">
-                          <label className="form-label">عنوان آگهی</label>
+                          <label className="form-label-edit">عنوان آگهی</label>
                           <div className="input-container">
                             <input
                               type="text"
@@ -638,7 +963,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                         </div>
 
                         <div className="form-field">
-                          <label className="form-label">نژاد</label>
+                          <label className="form-label-edit">نژاد</label>
                           <div className="input-container">
                             <input
                               type="text"
@@ -653,7 +978,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                         </div>
 
                         <div className="form-field">
-                          <label className="form-label">نوع حیوان</label>
+                          <label className="form-label-edit">نوع حیوان</label>
                           <div className="input-container">
                             <input
                               type="text"
@@ -668,7 +993,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                         </div>
 
                         <div className="form-field">
-                          <label className="form-label">سن</label>
+                          <label className="form-label-edit">سن</label>
                           <div className="input-container">
                             <input
                               type="text"
@@ -683,7 +1008,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                         </div>
 
                         <div className="form-field">
-                          <label className="form-label">جنسیت</label>
+                          <label className="form-label-edit">جنسیت</label>
                           <div className="input-container">
                             <select
                               name="gender"
@@ -702,7 +1027,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
 
                       <div className="form-vertical-fields">
                         <div className="form-field">
-                          <label className="form-label form-distance">موقعیت مکانی</label>
+                          <label className="form-label-edit form-distance">موقعیت مکانی</label>
                           <div className="location-section">
                             <button 
                               type="button"
@@ -727,43 +1052,43 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                     <div className="form-section">
                       <div className="form-vertical-fields">
                         <div className="form-field">
-                          <label className="form-label form-distance">زمان گم شدن</label>
-                          <div className="input-container">
-                            <input
-                              type="datetime-local"
-                              name="lostTime"
-                              value={formData.lostTime}
-                              onChange={handleInputChange}
-                              className="form-input-with-icon"
-                              placeholder="مثال: دیروز عصر، ۱۴۰۲/۰۸/۱۵، ۱۸:۳۰"
-                              required
-                              disabled={isLoading}
-                            />
-                            <img 
-                              src={calendarIcon} 
-                              alt="Time" 
-                              className="form-input-icon"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="form-section">
-                      <div className="form-vertical-fields">
-                        <div className="form-field">
-                          <label className="form-label form-distance">علائم خاص</label>
-                          <div className="input-container">
-                            <input
-                              type="text"
-                              name="specialSigns"
-                              value={formData.specialSigns}
-                              onChange={handleInputChange}
-                              className="form-input"
-                              placeholder="مثال: لکه سفید روی پیشانی، پای شکسته، قلاده قرمز"
-                              required
-                              disabled={isLoading}
-                            />
+                          <h3 className="form-section-title">زمان گم شدن</h3>
+                          <div className="date-time-horizontal-container">
+                            <div className="date-input-container">
+                              <label className="form-label-edit form-label-date">تاریخ گم شدن</label>
+                              <div className="input-container datepicker-field">
+                                <DatePicker
+                                  value={formData.lostTime}
+                                  onChange={(date) => {
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      lostTime: date ? date.toDate() : null
+                                    }));
+                                  }}
+                                  calendar={persian}
+                                  locale={persian_fa}
+                                  format="YYYY/MM/DD"
+                                  placeholder="انتخاب تاریخ"
+                                  calendarPosition="bottom-start"
+                                  disabled={isLoading}
+                                  inputClass="form-input date-input-compact"
+                                  containerStyle={{ width: '100%', overflow: 'visible' }}
+                                  weekDays={["شنبه", "یک‌شنبه", "دوشنبه", "سه‌شنبه", "چهارشنبه", "پنج‌شنبه", "جمعه"]}
+                                  portal={true}
+                                />
+                              </div>
+                            </div>
+                            
+                            <div className="time-input-container-main">
+                              <label className="form-label-edit form-label-time">ساعت گم شدن</label>
+                              <div className="time-input-section-main">
+                                <TimeInput 
+                                  value={formData.lostTime} 
+                                  onChange={handleTimeChangeLost} 
+                                  disabled={isLoading}
+                                />
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -771,48 +1096,66 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                   </>
                 )}
 
+                                      <div className="form-section">
+                                        <div className="form-vertical-fields">
+                                          <div className="form-field">
+                                            <label className="form-label-edit form-distance">علائم خاص</label>
+                                            <div className="input-container">
+                                              <textarea
+                                                name="specialSigns"
+                                                value={formData.specialSigns}
+                                                onChange={handleInputChange}
+                                                className="form-textarea"
+                                                placeholder="علائم خاص حیوان مانند رنگ خاص، لکه، جراحت، یا ویژگی‌های منحصر به فرد را ذکر کنید"
+                                                rows="3"
+                                                disabled={isLoading}
+                                              />
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
                 {selectedAdType === "found" && (
                   <>
                     <div className="form-section">
                       <div className="form-vertical-fields">
                         <div className="form-field">
-                          <label className="form-label form-distance">زمان پیدا شدن</label>
-                          <div className="input-container">
-                            <input
-                              type="datetime-local"
-                              name="foundTime"
-                              value={formData.foundTime}
-                              onChange={handleInputChange}
-                              className="form-input-with-icon"
-                              placeholder="مثال: امروز صبح، ۱۴۰۲/۰۸/۱۶، ۰۸:۱۵"
-                              required
-                              disabled={isLoading}
-                            />
-                            <img 
-                              src={calendarIcon} 
-                              alt="Time" 
-                              className="form-input-icon"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="form-section">
-                      <div className="form-vertical-fields">
-                        <div className="form-field">
-                          <label className="form-label form-distance">علائم خاص</label>
-                          <div className="input-container">
-                            <input
-                              type="text"
-                              name="specialSigns"
-                              value={formData.specialSigns}
-                              onChange={handleInputChange}
-                              className="form-input"
-                              placeholder="مثال: لکه سفید روی پیشانی، پای شکسته، قلاده قرمز"
-                              required
-                              disabled={isLoading}
-                            />
+                          <h3 className="form-section-title">زمان پیدا شدن</h3>
+                          <div className="date-time-horizontal-container">
+                            <div className="date-input-container">
+                              <label className="form-label-edit form-label-date">تاریخ پیدا شدن</label>
+                              <div className="input-container datepicker-field">
+                                <DatePicker
+                                  value={formData.foundTime}
+                                  onChange={(date) => {
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      foundTime: date ? date.toDate() : null
+                                    }));
+                                  }}
+                                  calendar={persian}
+                                  locale={persian_fa}
+                                  format="YYYY/MM/DD"
+                                  placeholder="انتخاب تاریخ"
+                                  calendarPosition="bottom-start"
+                                  disabled={isLoading}
+                                  inputClass="form-input date-input-compact"
+                                  containerStyle={{ width: '100%' }}
+                                  weekDays={["شنبه", "یک‌شنبه", "دوشنبه", "سه‌شنبه", "چهارشنبه", "پنج‌شنبه", "جمعه"]}
+                                  portal={true}
+                                />
+                              </div>
+                            </div>
+                            
+                            <div className="time-input-container-main">
+                              <label className="form-label-edit form-label-time">ساعت پیدا شدن</label>
+                              <div className="time-input-section-main">
+                                <TimeInput 
+                                  value={formData.foundTime} 
+                                  onChange={handleTimeChangeFound} 
+                                  disabled={isLoading}
+                                />
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -825,7 +1168,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                     <div className="form-section">
                       <div className="form-vertical-fields">
                         <div className="form-field">
-                          <label className="form-label form-distance">بیماری‌ها (در صورت وجود)</label>
+                          <label className="form-label-edit form-distance">بیماری‌ها (در صورت وجود)</label>
                           <div className="input-container">
                             <input
                               type="text"
@@ -844,7 +1187,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                     <div className="form-section">
                       <div className="form-vertical-fields">
                         <div className="form-field">
-                          <label className="form-label form-distance">وضعیت سلامت</label>
+                          <label className="form-label-edit form-distance">وضعیت سلامت</label>
                           <div className="health-status-grid">
                             <div className={`health-status-card ${formData.hasCertificate ? 'active' : ''}`}>
                               <span className="health-status-label">دارای شناسنامه</span>
@@ -894,7 +1237,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                 <div className="form-section">
                   <div className="form-vertical-fields">
                     <div className="form-field">
-                      <label className="form-label form-distance">توضیحات</label>
+                      <label className="form-label-edit form-distance">توضیحات</label>
                       <div className="input-container">
                         <textarea
                           name="description"
@@ -948,16 +1291,16 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                       {formData.contact_email ? (
                         <div className="contact-info-card">
                           <div className="contact-info-header">
-                            <h4 className="contact-info-title">اطلاعات تماس</h4>
                             <img 
                               src={contactIcon} 
                               alt="Contact" 
                               className="contact-info-icon"
                             />
+                            <h4 className="contact-info-title">اطلاعات تماس</h4>
                           </div>
                           <div className="form-grid">
                             <div className="form-field">
-                              <label className="form-label form-label-small">ایمیل</label>
+                              <label className="form-label-edit form-label-edit-small">ایمیل</label>
                               <div className="input-container">
                                 <input
                                   type="email"
@@ -977,7 +1320,9 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                         </div>
                       ) : (
                         <div className="contact-disabled-message">
-                          <div className="contact-disabled-icon">🔒</div>
+                          <div className="contact-disabled-icon">
+                            <img src={lockIcon} alt='قفل'/>
+                          </div>
                           <div className="contact-disabled-content">
                             <h4 className="contact-disabled-title">اطلاعات تماس مخفی است</h4>
                             <p className="contact-disabled-description">
@@ -1048,4 +1393,4 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
       )}
     </>
   );
-};
+}
