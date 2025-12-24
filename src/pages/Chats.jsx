@@ -1,15 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import OpenConv from "../components/OpenConv";
 import Conversations from "../components/Conversations";
 import { Navbar_SignIn } from "../components/Navbar_SignIn";
 import "../styles/Chats.css";
 
-import {
-  getChatList,
-  getChatMessages,
-  buildChatWsUrl,
-  ensureChat, // ✅ must exist in chatService.js
-} from "../Services/chatService";
+import { getChatList, getChatMessages, buildChatWsUrl, ensureChat } from "../Services/chatService";
 
 function formatTime(iso) {
   if (!iso) return "";
@@ -40,7 +35,7 @@ export default function ChatPage() {
   const [messages, setMessages] = useState([]);
   const [loadingMessages, setLoadingMessages] = useState(false);
 
-  // store current open recipient (must come from chat list: other_participant)
+  // store current open recipient (from chat list: other_participant)
   const [recipient, setRecipient] = useState(null); // { id, username }
   const recipientRef = useRef(null);
 
@@ -50,6 +45,13 @@ export default function ChatPage() {
   const wsRef = useRef(null);
   const selectedChatIdRef = useRef(null);
   const currentUserIdRef = useRef(null);
+
+  // ====== Seen tracking refs ======
+  const messagesViewportRef = useRef(null);     // scroll container in OpenConv
+  const observerRef = useRef(null);             // IntersectionObserver instance
+  const seenSentRef = useRef(new Set());        // msg IDs already sent to backend
+  const seenPendingRef = useRef(new Set());     // msg IDs to send soon (batch)
+  const seenFlushTimerRef = useRef(null);       // debounce timer
 
   useEffect(() => {
     selectedChatIdRef.current = selectedChatId;
@@ -75,20 +77,47 @@ export default function ChatPage() {
     }
   };
 
+  // Flush pending seen IDs immediately
+  const flushSeen = useCallback(() => {
+    const chatId = selectedChatIdRef.current;
+    if (!chatId) return;
+    if (seenPendingRef.current.size === 0) return;
+
+    const ids = Array.from(seenPendingRef.current);
+    seenPendingRef.current.clear();
+
+    wsSend({
+      action: "mark_seen",
+      chat_id: chatId,
+      message_ids: ids,
+    });
+  }, []);
+
+  // Schedule a flush (debounced) to batch many seen IDs
+  const scheduleFlushSeen = useCallback(() => {
+    if (seenFlushTimerRef.current) return;
+    seenFlushTimerRef.current = setTimeout(() => {
+      seenFlushTimerRef.current = null;
+      flushSeen();
+    }, 250);
+  }, [flushSeen]);
+
+  // Called by OpenConv to give us the viewport element
+  const handleMountMessagesViewport = useCallback((el) => {
+    messagesViewportRef.current = el;
+  }, []);
+
   // Upsert chat and keep sorted by last_message timestamp / updated_at
   const upsertChatAndSort = (incomingChatOrId, maybeLastMessage, unreadCountOverride) => {
     setChats((prev) => {
       const list = Array.isArray(prev) ? [...prev] : [];
 
       const chatId =
-        typeof incomingChatOrId === "object"
-          ? incomingChatOrId?.id
-          : incomingChatOrId;
+        typeof incomingChatOrId === "object" ? incomingChatOrId?.id : incomingChatOrId;
 
       if (!chatId) return list;
 
-      const incomingChat =
-        typeof incomingChatOrId === "object" ? incomingChatOrId : null;
+      const incomingChat = typeof incomingChatOrId === "object" ? incomingChatOrId : null;
 
       const idx = list.findIndex((c) => String(c.id) === String(chatId));
 
@@ -177,36 +206,23 @@ export default function ChatPage() {
         return;
       }
 
-      // ✅ 1) message_sent -> FIX: remove optimistic duplicate then append server message
+      // message_sent -> replace optimistic message
       if (data?.type === "message_sent" && data?.chat_id && data?.message) {
         const chatId = data.chat_id;
         const serverMsg = data.message;
 
-        // Update sidebar so chat moves to top
         upsertChatAndSort(chatId, serverMsg, 0);
 
         if (String(chatId) === String(selectedChatIdRef.current)) {
           setMessages((prev) => {
             const me = currentUserIdRef.current;
-
-            // If server echoed client_temp_id, replace by it
-            if (serverMsg.client_temp_id) {
-              const idx = prev.findIndex(
-                (m) => m?.client_temp_id === serverMsg.client_temp_id
-              );
-              if (idx !== -1) {
-                const copy = [...prev];
-                copy[idx] = { ...serverMsg, _optimistic: false };
-                return copy;
-              }
-            }
-
-            // Otherwise remove last optimistic message from me with same content (in this chat)
-            const filtered = [...prev];
             const content = String(serverMsg.content ?? "");
 
-            for (let i = filtered.length - 1; i >= 0; i--) {
-              const m = filtered[i];
+            const copy = [...prev];
+            let replaceIndex = -1;
+
+            for (let i = copy.length - 1; i >= 0; i--) {
+              const m = copy[i];
               const isMatch =
                 m?._optimistic &&
                 String(m.chat_id) === String(chatId) &&
@@ -214,24 +230,31 @@ export default function ChatPage() {
                 String(m.content ?? "") === content;
 
               if (isMatch) {
-                filtered.splice(i, 1);
+                replaceIndex = i;
                 break;
               }
             }
 
-            // Dedupe by id
-            if (serverMsg.id && filtered.some((m) => m?.id && String(m.id) === String(serverMsg.id))) {
-              return filtered;
+            if (replaceIndex !== -1) {
+              copy[replaceIndex] = { ...serverMsg, _optimistic: false };
+              return copy;
             }
 
-            return [...filtered, serverMsg];
+            if (
+              serverMsg.id &&
+              copy.some((m) => m?.id && String(m.id) === String(serverMsg.id))
+            ) {
+              return copy;
+            }
+
+            return [...copy, serverMsg];
           });
         }
 
         return;
       }
 
-      // ✅ 2) new_message (if backend sends it) -> update list + add to open chat
+      // new_message -> update list + open chat (if backend broadcasts)
       if (data?.type === "new_message" && data?.chat_id && data?.message) {
         const chatId = data.chat_id;
         const msg = data.message;
@@ -239,7 +262,7 @@ export default function ChatPage() {
         const me = currentUserIdRef.current;
         const senderId = msg?.sender_id ?? msg?.sender;
 
-        // Prevent duplicates if backend broadcasts my own message too
+        // If backend broadcasts my own message too, avoid duplicating
         if (me != null && senderId != null && String(senderId) === String(me)) {
           upsertChatAndSort(data.chat || chatId, msg);
           return;
@@ -249,12 +272,13 @@ export default function ChatPage() {
 
         if (isOpen) {
           setMessages((prev) => {
-            if (msg.id && prev.some((m) => m?.id && String(m.id) === String(msg.id))) return prev;
+            if (msg.id && prev.some((m) => m?.id && String(m.id) === String(msg.id)))
+              return prev;
             return [...prev, msg];
           });
         }
 
-        // Update sidebar and unread count
+        // Update sidebar + unread
         setChats((prev) => {
           const list = Array.isArray(prev) ? [...prev] : [];
           const idx = list.findIndex((c) => String(c.id) === String(chatId));
@@ -293,11 +317,19 @@ export default function ChatPage() {
         return;
       }
 
-      // ✅ 3) chat_list_update
       if (data?.type === "chat_list_update" && data?.chat?.id) {
         upsertChatAndSort(data.chat);
         return;
       }
+
+      // OPTIONAL: if your backend sends seen updates, you can handle them here
+      // if (data?.type === "messages_seen" && data?.chat_id && Array.isArray(data?.message_ids)) {
+      //   setMessages((prev) =>
+      //     prev.map((m) =>
+      //       data.message_ids.includes(m.id) ? { ...m, is_read: true } : m
+      //     )
+      //   );
+      // }
 
       console.log("WS JSON:", data);
     };
@@ -307,6 +339,9 @@ export default function ChatPage() {
 
     return () => {
       try {
+        flushSeen(); // flush pending seen before leaving
+      } catch {}
+      try {
         wsSend({ action: "close_chat" });
       } catch {}
       try {
@@ -314,7 +349,7 @@ export default function ChatPage() {
       } catch {}
       wsRef.current = null;
     };
-  }, []);
+  }, [flushSeen]);
 
   // Load chat list
   useEffect(() => {
@@ -356,6 +391,9 @@ export default function ChatPage() {
 
   // Select chat
   const handleSelectChat = (chatId) => {
+    // flush seen from previous chat before switching
+    flushSeen();
+
     setSelectedChatId(chatId);
 
     const chatObj = (Array.isArray(chats) ? chats : []).find(
@@ -412,7 +450,7 @@ export default function ChatPage() {
     return { id: c.id, title, subtitle: "", avatar: c.avatar };
   }, [selectedChatId, convItems, recipient]);
 
-  // Messages mapping
+  // Messages mapping (IMPORTANT: keep message.id for seen tracking)
   const openMessages = useMemo(() => {
     const safe = Array.isArray(messages) ? messages : [];
 
@@ -421,18 +459,93 @@ export default function ChatPage() {
       const isMine = currentUserId != null && Number(senderId) === Number(currentUserId);
 
       return {
-        id: m.id ?? m.client_temp_id,
+        id: m.id, // ✅ must be real backend message ID for seen
+        client_temp_id: m.client_temp_id, // local only
         side: isMine ? "out" : "in",
         text: m.content || "",
         time: formatTime(m.timestamp),
         status: isMine ? (m.is_read ? "seen" : "sent") : undefined,
         attachments: m.attachments || [],
         senderName: m.sender_name || (isMine ? "You" : "Other"),
+
+        // keep raw for observer logic if needed
+        _raw: m,
       };
     });
   }, [messages, currentUserId]);
 
-  // Send message
+  // ====== IntersectionObserver: mark visible incoming messages as seen ======
+  useEffect(() => {
+    // cleanup old observer
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+      observerRef.current = null;
+    }
+
+    const viewport = messagesViewportRef.current;
+    if (!viewport) return;
+    if (!selectedChatId) return;
+
+    // Reset per-chat tracking
+    seenSentRef.current = new Set();
+    seenPendingRef.current = new Set();
+
+    // Build quick lookup from current messages state
+    const byId = new Map();
+    for (const m of messages) {
+      if (!m?.id) continue;
+
+      const senderId = m.sender_id ?? m.sender;
+      const isMine = currentUserId != null && Number(senderId) === Number(currentUserId);
+
+      byId.set(String(m.id), {
+        isMine,
+        isRead: !!m.is_read,
+        chatId: m.chat_id,
+      });
+    }
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+
+          const msgId = entry.target?.getAttribute("data-msgid");
+          if (!msgId) continue;
+
+          const meta = byId.get(String(msgId));
+          if (!meta) continue;
+
+          // ensure correct chat
+          if (String(meta.chatId) !== String(selectedChatIdRef.current)) continue;
+
+          // only incoming + unread
+          if (meta.isMine) continue;
+          if (meta.isRead) continue;
+
+          // dedupe
+          if (seenSentRef.current.has(String(msgId))) continue;
+
+          // queue
+          seenSentRef.current.add(String(msgId));
+          seenPendingRef.current.add(Number(msgId));
+          scheduleFlushSeen();
+        }
+      },
+      { root: viewport, threshold: 0.6 }
+    );
+
+    // Observe all message nodes (OpenConv must put data-msgid on each message node)
+    const nodes = viewport.querySelectorAll("[data-msgid]");
+    nodes.forEach((n) => observerRef.current.observe(n));
+
+    return () => {
+      if (observerRef.current) observerRef.current.disconnect();
+      observerRef.current = null;
+    };
+  }, [selectedChatId, messages, currentUserId, scheduleFlushSeen]);
+
+  // Send message (minimal WS payload)
   const handleSend = async () => {
     const text = inputValue.trim();
     if (!text) return;
@@ -443,28 +556,29 @@ export default function ChatPage() {
       return;
     }
 
-    const r = recipientRef.current;
-    if (!r?.id) {
-      alert("طرف مقابل این گفتگو مشخص نیست. (recipient=null)");
-      return;
-    }
-
-    // Ensure chat exists (create if missing)
+    // If chat doesn't exist yet, we still need recipient to create it
     let chatId = selectedChatIdRef.current;
-    try {
-      if (!chatId) chatId = await ensureChatIdForRecipient(r.id);
-    } catch (e) {
-      alert(e?.message || "ساخت/یافتن گفتگو ناموفق بود.");
-      return;
+    if (!chatId) {
+      const r = recipientRef.current;
+      if (!r?.id) {
+        alert("برای ساخت گفتگو باید recipient مشخص باشد.");
+        return;
+      }
+      try {
+        chatId = await ensureChatIdForRecipient(r.id);
+      } catch (e) {
+        alert(e?.message || "ساخت/یافتن گفتگو ناموفق بود.");
+        return;
+      }
     }
 
-    // optimistic message
+    // optimistic local message
     const clientId = `tmp_${Date.now()}_${Math.random().toString(16).slice(2)}`;
     const nowIso = new Date().toISOString();
 
     const optimisticMsg = {
       id: null,
-      client_temp_id: clientId,
+      client_temp_id: clientId, // local only
       chat_id: chatId,
       sender_id: currentUserId,
       sender_name: "You",
@@ -478,25 +592,23 @@ export default function ChatPage() {
     setMessages((prev) => [...prev, optimisticMsg]);
     setInputValue("");
 
-    // send payload
+    // minimal payload you requested
     const payload = {
       action: "send_message",
       chat_id: chatId,
-      recipient_id: r.id,
       message: text,
       reply_to_id: null,
       attachment_ids: [],
-      client_temp_id: clientId, // if backend echoes it, replacement is perfect
     };
 
     const ok = wsSend(payload);
+
     if (!ok) {
       setMessages((prev) =>
         prev.map((m) => (m.client_temp_id === clientId ? { ...m, _failed: true } : m))
       );
       alert("ارسال پیام ناموفق بود.");
     } else {
-      // optimistic sidebar jump
       upsertChatAndSort(chatId, { content: text, timestamp: nowIso }, 0);
     }
   };
@@ -532,6 +644,8 @@ export default function ChatPage() {
           onInputChange={setInputValue}
           onSend={handleSend}
           onAttach={(type) => alert(`attach type: ${type}`)}
+
+          onMountMessagesViewport={handleMountMessagesViewport}
         />
       </div>
     </div>
