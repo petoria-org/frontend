@@ -195,45 +195,69 @@ useEffect(() => {
 const getCroppedImage = useCallback(async () => {
   return new Promise((resolve, reject) => {
     const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { alpha: true });
 
     canvas.width = calculatedCropSize.width;
     canvas.height = calculatedCropSize.height;
 
+    // پاک کردن canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
     const img = new Image();
+    img.crossOrigin = "anonymous";
     img.onload = () => {
       try {
-        const scaleFactor = scale;
-        const rotationRad = (rotation * Math.PI) / 180;
+        // محاسبه ابعاد تصویر بعد از scale
+        const scaledWidth = img.width * scale;
+        const scaledHeight = img.height * scale;
         
-        const cos = Math.abs(Math.cos(rotationRad));
-        const sin = Math.abs(Math.sin(rotationRad));
-        const rotatedWidth = img.width * cos + img.height * sin;
-        const rotatedHeight = img.width * sin + img.height * cos;
+        // محاسبه موقعیت تصویر در کادر
+        const imageX = crop.x - imagePosition.x;
+        const imageY = crop.y - imagePosition.y;
         
-        canvas.width = calculatedCropSize.width;
-        canvas.height = calculatedCropSize.height;
+        // تنظیم transform برای rotation
+        ctx.save();
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate((rotation * Math.PI) / 180);
         
-        if (format !== "png") {
-          ctx.fillStyle = "white";
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // اگر تصویر از کادر کوچکتر است، وسط‌چین بدون برش
+        if (scaledWidth <= canvas.width && scaledHeight <= canvas.height) {
+          ctx.translate(-scaledWidth / 2, -scaledHeight / 2);
+          ctx.scale(scale, scale);
+          ctx.drawImage(img, 0, 0);
+        } 
+        // تصویر بزرگتر است - برش بزن
+        else {
+          ctx.translate(-canvas.width / 2, -canvas.height / 2);
+          ctx.scale(scale, scale);
+          
+          // محاسبه مختصات برش
+          const sourceX = Math.max(0, imageX / scale);
+          const sourceY = Math.max(0, imageY / scale);
+          
+          // محاسبه ابعاد قابل برش
+          const maxSourceWidth = img.width - sourceX;
+          const maxSourceHeight = img.height - sourceY;
+          const targetWidth = canvas.width / scale;
+          const targetHeight = canvas.height / scale;
+          
+          const sourceWidth = Math.min(maxSourceWidth, targetWidth);
+          const sourceHeight = Math.min(maxSourceHeight, targetHeight);
+          
+          ctx.drawImage(
+            img,
+            sourceX,
+            sourceY,
+            sourceWidth,
+            sourceHeight,
+            0,
+            0,
+            canvas.width / scale,
+            canvas.height / scale
+          );
         }
         
-        ctx.translate(canvas.width / 2, canvas.height / 2);
-        ctx.rotate(rotationRad);
-        ctx.scale(scaleFactor, scaleFactor);
-        ctx.translate(-canvas.width / 2, -canvas.height / 2);
-        
-        const sourceX = Math.max(0, (crop.x / scaleFactor) - (imagePosition.x / scaleFactor));
-        const sourceY = Math.max(0, (crop.y / scaleFactor) - (imagePosition.y / scaleFactor));
-        const sourceWidth = Math.min(img.width - sourceX, calculatedCropSize.width / scaleFactor);
-        const sourceHeight = Math.min(img.height - sourceY, calculatedCropSize.height / scaleFactor);
-        
-        ctx.drawImage(
-          img,
-          sourceX, sourceY, sourceWidth, sourceHeight,
-          0, 0, canvas.width, canvas.height
-        );
+        ctx.restore();
         
         canvas.toBlob(
           (blob) => {
@@ -259,7 +283,6 @@ const getCroppedImage = useCallback(async () => {
     img.src = image;
   });
 }, [image, crop, scale, rotation, calculatedCropSize, format, quality, imagePosition]);
-
 
 const handleCrop = async () => {
   try {
