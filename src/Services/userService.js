@@ -49,3 +49,21 @@ export const updateFoundPost = (id, data) =>
 
 export const updateSurrenderPost = (id, data) =>
   api.put(`/posts/surrender-posts/${id}/`, data);
+
+// ---------- UPLOAD post image ----------
+export const uploadPostImage = async (file) => {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const res = await api.post(
+    "/posts/images/upload/",
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+
+  return res.data; 
+};
