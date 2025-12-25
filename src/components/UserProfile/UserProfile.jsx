@@ -94,6 +94,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
           ...lost.map(p => ({
             id: p.id,
             name: p.title,
+            breed: p.breed || "",
             type: p.pet_type === "cat" ? "گربه" : "سگ",
             status: "lost",
             statusLabel: "گم شده",
@@ -108,6 +109,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
           ...found.map(p => ({
             id: p.id,
             name: p.title,
+            breed: p.breed || "",
             type: p.pet_type === "cat" ? "گربه" : "سگ",
             status: "found",
             statusLabel: "پیدا شده",
@@ -122,6 +124,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
           ...surrender.map(p => ({
             id: p.id,
             name: p.title,
+            breed: p.breed || "",
             type: p.pet_type === "cat" ? "گربه" : "سگ",
             status: "adoption",
             statusLabel: "سرپرستی",
@@ -522,7 +525,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                     <div className="pet-listing-header">
                       <div className="pet-listing-info">
                         <h3 className="pet-listing-name">{pet.name}</h3>
-                        <p className="pet-listing-subtitle">{pet.name}</p>
+                        <p className="pet-listing-subtitle">{pet.breed || "نامشخص"}</p>
                       </div>
                       <div className="pet-listing-type">
                         {pet.type}
