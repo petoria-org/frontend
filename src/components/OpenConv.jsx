@@ -153,9 +153,16 @@ export default function OpenConv({
     onMountMessagesViewport?.(messagesViewportRef.current);
   }, [onMountMessagesViewport]);
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chat?.id, messages.length]);
+useEffect(() => {
+  const viewport = messagesViewportRef.current;
+  if (!viewport) return;
+
+  viewport.scrollTo({
+    top: viewport.scrollHeight,
+    behavior: "smooth",
+  });
+}, [chat?.id, messages.length]);
+
 
   useEffect(() => {
     setReplyTarget(null);
