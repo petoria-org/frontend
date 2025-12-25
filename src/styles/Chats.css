@@ -118,22 +118,6 @@ body{
 
 .time_unread_container{ margin-right: auto; }
 
-.convItem__tag{
-  font-size: 12px;
-  padding: 4px 6px;
-  border-radius: 10px;
-  background: #eaf3ff;
-  color: var(--blue);
-  border: 1px solid #cfe3ff;
-  white-space: nowrap;
-  max-width: 240px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.convItem__tag--green{ background: #F7F7F7; border-color: #107328; color: #107328; }
-.convItem__tag--red{ background: #F7F7F7; border-color: #C4090C; color: #C4090C; }
-
 .convItem__unread{
   min-width: 22px;
   height: 22px;

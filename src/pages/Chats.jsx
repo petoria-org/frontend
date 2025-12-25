@@ -59,6 +59,12 @@ export default function ChatPage() {
   const selectedChatIdRef = useRef(null);
   const currentUserIdRef = useRef(null);
 
+  // latest messages ref (prevents stale closures)
+  const messagesRef = useRef([]);
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+
   useEffect(() => {
     selectedChatIdRef.current = selectedChatId;
   }, [selectedChatId]);
@@ -93,24 +99,13 @@ export default function ChatPage() {
   const seenPendingRef = useRef(new Set());
   const seenFlushTimerRef = useRef(null);
 
-  const scheduleFlushSeen = useCallback(() => {
-    if (seenFlushTimerRef.current) return;
-    seenFlushTimerRef.current = setTimeout(() => {
-      seenFlushTimerRef.current = null;
-      flushSeen();
-    }, 250);
-  }, []);
-
   const flushSeen = useCallback(() => {
     const chatId = selectedChatIdRef.current;
     if (!chatId) return;
     if (seenPendingRef.current.size === 0) return;
 
     const ws = wsRef.current;
-    if (!ws || ws.readyState !== WebSocket.OPEN) {
-      scheduleFlushSeen();
-      return;
-    }
+    if (!ws || ws.readyState !== WebSocket.OPEN) return;
 
     const ids = Array.from(seenPendingRef.current);
 
@@ -122,10 +117,22 @@ export default function ChatPage() {
 
     if (ok) {
       seenPendingRef.current.clear();
-    } else {
-      scheduleFlushSeen();
     }
-  }, [wsSend, scheduleFlushSeen]);
+  }, [wsSend]);
+
+  const scheduleFlushSeen = useCallback(() => {
+    if (seenFlushTimerRef.current) return;
+    seenFlushTimerRef.current = setTimeout(() => {
+      seenFlushTimerRef.current = null;
+      // if WS is not open, we'll try next time something schedules a flush
+      flushSeen();
+      // if still pending (ws closed), it will remain in seenPendingRef and can flush later
+      if (seenPendingRef.current.size > 0) {
+        // try once more shortly
+        scheduleFlushSeen();
+      }
+    }, 250);
+  }, [flushSeen]);
 
   const handleMountMessagesViewport = useCallback((el) => {
     messagesViewportRef.current = el;
@@ -138,60 +145,59 @@ export default function ChatPage() {
   }, [selectedChatId]);
 
   // Upsert chat & sort
-  const upsertChatAndSort = useCallback(
-    (incomingChatOrId, maybeLastMessage, unreadCountOverride) => {
-      setChats((prev) => {
-        const list = Array.isArray(prev) ? [...prev] : [];
+  const upsertChatAndSort = useCallback((incomingChatOrId, maybeLastMessage, unreadCountOverride) => {
+    setChats((prev) => {
+      const list = Array.isArray(prev) ? [...prev] : [];
 
-        const chatId =
-          typeof incomingChatOrId === "object"
-            ? incomingChatOrId?.id
-            : incomingChatOrId;
+      const chatId =
+        typeof incomingChatOrId === "object"
+          ? incomingChatOrId?.id
+          : incomingChatOrId;
 
-        if (!chatId) return list;
+      if (!chatId) return list;
 
-        const incomingChat =
-          typeof incomingChatOrId === "object" ? incomingChatOrId : null;
-        const idx = list.findIndex((c) => String(c.id) === String(chatId));
+      const incomingChat =
+        typeof incomingChatOrId === "object" ? incomingChatOrId : null;
+      const idx = list.findIndex((c) => String(c.id) === String(chatId));
 
-        const lastMsg =
-          incomingChat?.last_message ??
-          maybeLastMessage ??
-          (idx >= 0 ? list[idx]?.last_message : null);
+      const lastMsg =
+        incomingChat?.last_message ??
+        maybeLastMessage ??
+        (idx >= 0 ? list[idx]?.last_message : null);
 
-        const updated = {
-          ...(idx >= 0 ? list[idx] : {}),
-          ...(incomingChat || {}),
-          id: chatId,
-          last_message: lastMsg,
-          unread_count:
-            typeof unreadCountOverride === "number"
-              ? unreadCountOverride
-              : typeof incomingChat?.unread_count === "number"
-              ? incomingChat.unread_count
-              : idx >= 0
-              ? list[idx].unread_count || 0
-              : 0,
-          last_message_time:
-            incomingChat?.last_message_time ||
-            lastMsg?.timestamp ||
-            (idx >= 0 ? list[idx]?.last_message_time : undefined),
-          updated_at:
-            incomingChat?.last_message_time ||
-            lastMsg?.timestamp ||
-            incomingChat?.updated_at ||
-            (idx >= 0 ? list[idx]?.updated_at : undefined),
-        };
+      const nextUnread =
+        typeof unreadCountOverride === "number"
+          ? unreadCountOverride
+          : typeof incomingChat?.unread_count === "number"
+          ? incomingChat.unread_count
+          : idx >= 0
+          ? list[idx].unread_count || 0
+          : 0;
 
-        if (idx >= 0) list[idx] = updated;
-        else list.push(updated);
+      const updated = {
+        ...(idx >= 0 ? list[idx] : {}),
+        ...(incomingChat || {}),
+        id: chatId,
+        last_message: lastMsg,
+        unread_count: nextUnread,
+        last_message_time:
+          incomingChat?.last_message_time ||
+          lastMsg?.timestamp ||
+          (idx >= 0 ? list[idx]?.last_message_time : undefined),
+        updated_at:
+          incomingChat?.last_message_time ||
+          lastMsg?.timestamp ||
+          incomingChat?.updated_at ||
+          (idx >= 0 ? list[idx]?.updated_at : undefined),
+      };
 
-        list.sort((a, b) => new Date(getChatSortTime(b)) - new Date(getChatSortTime(a)));
-        return list;
-      });
-    },
-    []
-  );
+      if (idx >= 0) list[idx] = updated;
+      else list.push(updated);
+
+      list.sort((a, b) => new Date(getChatSortTime(b)) - new Date(getChatSortTime(a)));
+      return list;
+    });
+  }, []);
 
   // Ensure chat exists
   const ensureChatIdForRecipient = useCallback(
@@ -206,8 +212,8 @@ export default function ChatPage() {
 
       const chat = res.data;
 
-    upsertChatAndSort(chat);
-    setSelectedChatId(chat.id);
+      upsertChatAndSort(chat);
+      setSelectedChatId(chat.id);
 
       const other = chat?.other_participant;
       if (other?.id) {
@@ -216,74 +222,100 @@ export default function ChatPage() {
 
       return chat.id;
     },
-    [upsertChatAndSort, wsSend]
+    [upsertChatAndSort]
   );
 
-  // ✅ Apply read updates to UI
-  // - Trust unread_count from server when provided
-  const applyReadUpdate = useCallback(
-    ({ chatIdMaybeNull, ids, unreadCountMaybe }) => {
-      if (!Array.isArray(ids) || ids.length === 0) return;
+  // ✅ Apply read updates to UI (authoritative for read state + unread_count if provided)
+  const applyReadUpdate = useCallback(({ chatIdMaybeNull, ids, unreadCountMaybe }) => {
+    if (!Array.isArray(ids) || ids.length === 0) return;
 
-      const chatId = chatIdMaybeNull ?? selectedChatIdRef.current;
-      if (!chatId) return;
+    const chatId = chatIdMaybeNull ?? selectedChatIdRef.current;
+    if (!chatId) return;
 
-      const idSet = new Set(ids.map(String));
+    const idSet = new Set(ids.map(String));
 
-      // update messages when this chat is open
-      if (String(chatId) === String(selectedChatIdRef.current)) {
-        setMessages((prev) =>
-          prev.map((m) =>
-            m?.id != null && idSet.has(String(m.id)) ? { ...m, is_read: true } : m
-          )
-        );
+    // update messages when this chat is open
+    if (String(chatId) === String(selectedChatIdRef.current)) {
+      setMessages((prev) =>
+        prev.map((m) =>
+          m?.id != null && idSet.has(String(m.id)) ? { ...m, is_read: true } : m
+        )
+      );
+    }
+
+    // update sidebar unread_count + last_message is_read
+    setChats((prev) => {
+      const list = Array.isArray(prev) ? [...prev] : [];
+      let found = false;
+
+      const updated = list.map((c) => {
+        if (String(c.id) !== String(chatId)) return c;
+        found = true;
+
+        const last = c.last_message;
+        const lastNeedsUpdate = last?.id && idSet.has(String(last.id));
+
+        const nextUnread =
+          typeof unreadCountMaybe === "number"
+            ? unreadCountMaybe
+            : typeof c.unread_count === "number"
+            ? c.unread_count
+            : 0;
+
+        return {
+          ...c,
+          unread_count: nextUnread,
+          last_message: lastNeedsUpdate ? { ...last, is_read: true } : last,
+        };
+      });
+
+      if (!found) {
+        updated.push({
+          id: chatId,
+          unread_count: typeof unreadCountMaybe === "number" ? unreadCountMaybe : 0,
+          last_message: null,
+        });
       }
 
-      // update sidebar
-      setChats((prev) => {
-        const list = Array.isArray(prev) ? [...prev] : [];
-        let found = false;
+      return updated;
+    });
+  }, []);
 
-        const updated = list.map((c) => {
-          if (String(c.id) !== String(chatId)) return c;
-          found = true;
+  // ✅ helper: mark all unread incoming (loaded) messages as read (best UX when opening chat)
+  const markAllUnreadInOpenChatNow = useCallback(() => {
+    const chatId = selectedChatIdRef.current;
+    const me = currentUserIdRef.current;
+    if (!chatId || me == null) return;
 
-          const last = c.last_message;
-          const lastNeedsUpdate = last?.id && idSet.has(String(last.id));
+    const arr = messagesRef.current || [];
+    if (!Array.isArray(arr) || arr.length === 0) return;
 
-          const nextUnread =
-            typeof unreadCountMaybe === "number"
-              ? unreadCountMaybe
-              : typeof c.unread_count === "number"
-              ? c.unread_count
-              : 0;
+    const idsToRead = [];
+    for (const msg of arr) {
+      if (!msg?.id) continue;
+      const senderId = msg.sender_id ?? msg.sender;
+      const isMine = senderId != null && String(senderId) === String(me);
+      if (isMine) continue;
+      if (msg.is_read) continue;
+      if (seenSentRef.current.has(String(msg.id))) continue;
 
-          return {
-            ...c,
-            unread_count: nextUnread,
-            last_message: lastNeedsUpdate ? { ...last, is_read: true } : last,
-          };
-        });
+      seenSentRef.current.add(String(msg.id));
+      seenPendingRef.current.add(Number(msg.id));
+      idsToRead.push(Number(msg.id));
+    }
 
-        if (!found) {
-          const nextUnread =
-            typeof unreadCountMaybe === "number"
-              ? unreadCountMaybe
-              : 0;
-          updated.push({
-            id: chatId,
-            unread_count: nextUnread,
-            last_message: null,
-          });
-        }
+    if (idsToRead.length) {
+      // optimistic UI
+      setMessages((prev) =>
+        prev.map((m) =>
+          m?.id != null && idsToRead.includes(Number(m.id)) ? { ...m, is_read: true } : m
+        )
+      );
+      scheduleFlushSeen();
+    }
+  }, [scheduleFlushSeen]);
 
-        return updated;
-      });
-    },
-    []
-  );
-
-  // ✅ helper: scan visible DOM and mark unread incoming as read
+  // ✅ helper: scan visible DOM and mark unread incoming as read (fallback)
   const markVisibleUnreadNow = useCallback(() => {
     const viewport = messagesViewportRef.current;
     const chatId = selectedChatIdRef.current;
@@ -293,13 +325,14 @@ export default function ChatPage() {
     const nodes = viewport.querySelectorAll("[data-msgid]");
     if (!nodes || nodes.length === 0) return;
 
+    const currentMessages = messagesRef.current || [];
     const idsToRead = [];
+
     for (const n of nodes) {
       const msgId = n.getAttribute("data-msgid");
       if (!msgId) continue;
 
-      // find message meta from state
-      const msg = messages.find((x) => x?.id != null && String(x.id) === String(msgId));
+      const msg = currentMessages.find((x) => x?.id != null && String(x.id) === String(msgId));
       if (!msg) continue;
 
       const senderId = msg.sender_id ?? msg.sender;
@@ -315,7 +348,6 @@ export default function ChatPage() {
     }
 
     if (idsToRead.length) {
-      // optimistic UI
       setMessages((prev) =>
         prev.map((m) =>
           m?.id != null && idsToRead.includes(Number(m.id)) ? { ...m, is_read: true } : m
@@ -323,7 +355,7 @@ export default function ChatPage() {
       );
       scheduleFlushSeen();
     }
-  }, [messages, scheduleFlushSeen]);
+  }, [scheduleFlushSeen]);
 
   // WS connect
   useEffect(() => {
@@ -349,7 +381,15 @@ export default function ChatPage() {
         const chatId = data.chat_id;
         const serverMsg = data.message;
 
-        upsertChatAndSort(chatId, serverMsg, 0);
+        // If server provides unread_count in this payload (some APIs do), trust it.
+        const serverUnread =
+          typeof data?.unread_count === "number"
+            ? data.unread_count
+            : typeof data?.chat?.unread_count === "number"
+            ? data.chat.unread_count
+            : undefined;
+
+        upsertChatAndSort(chatId, serverMsg, typeof serverUnread === "number" ? serverUnread : 0);
 
         if (String(chatId) === String(selectedChatIdRef.current)) {
           setMessages((prev) => {
@@ -406,6 +446,7 @@ export default function ChatPage() {
         const chatId = chat.id;
         const msg = chat.last_message;
 
+        // ✅ Always trust server unread_count if present
         upsertChatAndSort(chat);
 
         if (msg && String(chatId) === String(selectedChatIdRef.current)) {
@@ -413,19 +454,16 @@ export default function ChatPage() {
             if (msg.id && prev.some((m) => m?.id && String(m.id) === String(msg.id))) return prev;
             return [...prev, msg];
           });
+
+          // If we are currently viewing this chat, mark unread incoming as read quickly
+          // (server may still count as unread until mark_read is processed)
+          setTimeout(() => {
+            markVisibleUnreadNow();
+          }, 0);
         }
 
-        // only bump unread if it's NOT the open chat
-        if (String(chatId) !== String(selectedChatIdRef.current) && msg?.id) {
-          setChats((prev) =>
-            (Array.isArray(prev) ? prev : []).map((c) => {
-              if (String(c.id) !== String(chatId)) return c;
-              const baseUnread = Number(c.unread_count || 0);
-              const serverUnread = typeof chat.unread_count === "number" ? chat.unread_count : 0;
-              return { ...c, unread_count: Math.max(serverUnread, baseUnread + 1) };
-            })
-          );
-        }
+        // ❌ Removed client-side "+1" unread bump to avoid desync.
+        // Server should be source of truth for unread_count.
 
         return;
       }
@@ -466,7 +504,7 @@ export default function ChatPage() {
       } catch {}
       wsRef.current = null;
     };
-  }, [wsSend, upsertChatAndSort, flushSeen, applyReadUpdate]);
+  }, [upsertChatAndSort, flushSeen, applyReadUpdate, markVisibleUnreadNow]);
 
   // Load chat list
   useEffect(() => {
@@ -506,17 +544,26 @@ export default function ChatPage() {
     loadMessages();
   }, [selectedChatId]);
 
-  // ✅ after messages load/open: mark visible unread once
+  // ✅ after messages load/open:
+  // 1) mark all unread incoming as read (loaded)
+  // 2) also run visible scan (in case DOM nodes are ready a bit later)
   useEffect(() => {
     if (!selectedChatId) return;
     if (loadingMessages) return;
 
-    const t = setTimeout(() => {
+    const t1 = setTimeout(() => {
+      markAllUnreadInOpenChatNow();
+    }, 0);
+
+    const t2 = setTimeout(() => {
       markVisibleUnreadNow();
     }, 50);
 
-    return () => clearTimeout(t);
-  }, [selectedChatId, loadingMessages, messages.length, markVisibleUnreadNow]);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [selectedChatId, loadingMessages, messages.length, markAllUnreadInOpenChatNow, markVisibleUnreadNow]);
 
   // Select chat
   const handleSelectChat = useCallback(
@@ -533,14 +580,14 @@ export default function ChatPage() {
       if (other?.id) setRecipient({ id: other.id, username: other.username || "Unknown" });
       else setRecipient(null);
 
-      // ✅ optimistic reset unread for opened chat
+      // ✅ optimistic reset unread for opened chat (server should later confirm)
       setChats((prev) =>
         (Array.isArray(prev) ? prev : []).map((c) =>
           String(c.id) === String(chatId) ? { ...c, unread_count: 0 } : c
         )
       );
     },
-    [chats, flushSeen, wsSend]
+    [chats, flushSeen]
   );
 
   // Sidebar items
@@ -627,28 +674,31 @@ export default function ChatPage() {
     if (!viewport) return;
     if (!selectedChatId) return;
 
-    const byId = new Map();
-    for (const m of messages) {
-      if (!m?.id) continue;
-      const senderId = m.sender_id ?? m.sender;
-      const isMine = currentUserId != null && String(senderId) === String(currentUserId);
-      byId.set(String(m.id), { isMine, isRead: !!m.is_read, chatId: m.chat_id });
-    }
-
     observerRef.current = new IntersectionObserver(
       (entries) => {
+        const chatId = selectedChatIdRef.current;
+        const me = currentUserIdRef.current;
+        if (!chatId || me == null) return;
+
         for (const entry of entries) {
           if (!entry.isIntersecting) continue;
 
           const msgId = entry.target?.getAttribute("data-msgid");
           if (!msgId) continue;
 
-          const meta = byId.get(String(msgId));
-          if (!meta) continue;
+          const msg = (messagesRef.current || []).find(
+            (x) => x?.id != null && String(x.id) === String(msgId)
+          );
+          if (!msg) continue;
 
-          if (String(meta.chatId) !== String(selectedChatIdRef.current)) continue;
-          if (meta.isMine) continue;
-          if (meta.isRead) continue;
+          // ensure still same chat
+          if (String(msg.chat_id) !== String(chatId)) continue;
+
+          const senderId = msg.sender_id ?? msg.sender;
+          const isMine = senderId != null && String(senderId) === String(me);
+          if (isMine) continue;
+
+          if (msg.is_read) continue;
           if (seenSentRef.current.has(String(msgId))) continue;
 
           seenSentRef.current.add(String(msgId));
@@ -664,8 +714,8 @@ export default function ChatPage() {
       },
       {
         root: viewport,
-        threshold: 0.15,               // ✅ easier to trigger
-        rootMargin: "120px 0px 120px 0px", // ✅ mark a bit before fully visible
+        threshold: 0.15,
+        rootMargin: "120px 0px 120px 0px",
       }
     );
 
@@ -676,7 +726,7 @@ export default function ChatPage() {
       if (observerRef.current) observerRef.current.disconnect();
       observerRef.current = null;
     };
-  }, [selectedChatId, messages, currentUserId, scheduleFlushSeen]);
+  }, [selectedChatId, currentUserId, scheduleFlushSeen]);
 
   // Send message
   const handleSend = useCallback(
@@ -744,6 +794,7 @@ export default function ChatPage() {
         );
         alert("ارسال پیام ناموفق بود.");
       } else {
+        // optimistic sidebar update; unread_count should remain 0 for my own sent message
         upsertChatAndSort(
           chatId,
           { content: text, timestamp: nowIso, sender: currentUserId, is_read: false },
