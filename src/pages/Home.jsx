@@ -1,7 +1,5 @@
 import { useEffect } from "react";
 import api from "../Services/api";
-
-import { Navbar } from "../components/Navbar";
 import Hero from "../components/Hero";
 import Stats from "../components/Stats";
 import SucccessStories from "../components/SuccessStories";
@@ -26,7 +24,6 @@ export default function Home() {
 
   return (
     <div>
-      <Navbar />
       <Hero />
       <Stats />
       <SucccessStories />

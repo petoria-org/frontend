@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/NotificationOptionsSection.css";
-import searchIcon from '../../assets/icons/search.svg';
+import searchIcon from '../../assets/icons/Search.svg';
 import checkmarkIcon from '../../assets/icons/Checkmark Color.svg';
 import heartIcon from '../../assets/icons/Vector.svg';
 import calendarIcon from '../../assets/icons/calendar-2.svg';
@@ -12,13 +12,16 @@ import mapIcon from '../../assets/icons/map.svg';
 import lockIcon from "../../assets/icons/lock.svg";
 import { NotificationToast } from '../NotificationToast/NotificationToast';
 import MapPicker from '../MapPicker/MapPicker';
+import { ImageCropper } from "../ImageCropper";
+import { config } from "../../config";
 import {
   getLostPostDetail,
   getFoundPostDetail,
   getSurrenderPostDetail,
   updateLostPost,
   updateFoundPost,
-  updateSurrenderPost
+  updateSurrenderPost,
+  deletePostImage
 } from "../../Services/userService";
 import moment from 'jalali-moment';
 import fa from 'date-fns/locale/fa-IR';
@@ -27,6 +30,8 @@ const DatePicker = DatePickerModule.default || DatePickerModule;
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import "../../styles/DatePickerCustom.css";
+import DeleteConfirmationModal from '../DeleteConfirmationModal/DeleteConfirmationModal';
+
 
 const toInputDateTime = (iso) => {
   if (!iso) return "";
@@ -296,7 +301,14 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showMapPicker, setShowMapPicker] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [imageToCrop, setImageToCrop] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(null);
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [imageToDelete, setImageToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  
   useEffect(() => {
     if (!adData) return;
 
@@ -345,6 +357,30 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
           foundTime = new Date(data.found_time);
         }
 
+    const backendImages = data.images?.map(img => {
+      let imageUrl = img.image;
+      if (imageUrl && !imageUrl.startsWith("http")) {
+        if (imageUrl.startsWith("/")) {
+          imageUrl = imageUrl.substring(1);
+        }
+        
+        const BACKEND_URL = config.BACKEND_URL;
+        imageUrl = `${BACKEND_URL}/${imageUrl}`;
+      }
+      const timestamp = Date.now();
+      const finalUrl = `${imageUrl}${imageUrl.includes('?') ? '&' : '?'}t=${timestamp}`;
+      
+      return {
+        id: img.id,
+        backendId: img.id,
+        file: null,
+        isFromBackend: true,
+        preview: finalUrl,
+      };
+    }) || [];
+
+  
+
         setFormData({
           name: data.pet_name || "",
           type: data.title || "",
@@ -361,7 +397,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
           hasCertificate: data.has_birth_certificate || false,
           isVaccinated: data.vaccination || false,
           isSterilized: data.steriliz || false,
-          images: [],
+          images: backendImages,
           imagePreview: data.thumbnail || "",
           email: data.email || "",
           phone: data.phone || "",
@@ -386,6 +422,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
 
     fetchDetail();
   }, [adData]);
+
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -473,6 +510,86 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
     }
   };
 
+  const handleImageUploadWithCrop = (e) => {
+  const files = Array.from(e.target.files);
+  
+  if (files.length === 0) return;
+  
+  const file = files[0];
+  const reader = new FileReader();
+  
+  reader.onload = (e) => {
+    setImageToCrop(e.target.result);
+    setCurrentImageIndex(null); 
+    setCropModalOpen(true);
+  };
+  
+  reader.readAsDataURL(file);
+};
+  const handleCropImageClick = (imageIndex) => {
+    const image = formData.images[imageIndex];
+
+    const cleanUrl = image.preview.split("?")[0];
+    setImageToCrop(`${cleanUrl}?t=${Date.now()}`);
+
+    setCurrentImageIndex(imageIndex);
+    setCropModalOpen(true);
+  };
+
+const handleCropComplete = async (croppedResult) => {
+  if (!croppedResult) return;
+  
+  try {
+    const timestamp = Date.now();
+    let imageUrl = croppedResult.image;
+
+    if (!imageUrl.includes('?t=')) {
+      imageUrl = `${imageUrl.split('?')[0]}?t=${timestamp}`;
+    }
+    
+    const newImage = {
+      id: timestamp + Math.random(), 
+      file: null,
+      backendId: croppedResult.backendId || croppedResult.id,
+      isFromBackend: true,
+      preview: imageUrl, 
+      originalData: croppedResult.originalData
+    };
+    
+    setFormData(prev => {
+      if (currentImageIndex !== null) {
+        const newImages = [...prev.images];
+        newImages[currentImageIndex] = newImage;
+        return { ...prev, images: newImages };
+      } 
+      
+      else {
+        return {
+          ...prev,
+          images: [...prev.images, newImage]
+        };
+      }
+    });
+    
+    setNotification({
+      message: currentImageIndex !== null 
+        ? "عکس با موفقیت برش و ذخیره شد" 
+        : "عکس جدید با موفقیت افزوده شد",
+      type: "success"
+    });
+    
+  } catch (error) {
+    console.error("Error handling cropped image:", error);
+    setNotification({
+      message: "خطا در ذخیره‌سازی عکس",
+      type: "error"
+    });
+  } finally {
+    setCropModalOpen(false);
+    setCurrentImageIndex(null);
+  }
+};
+
   const handleAdTypeSelect = (type) => {
     setSelectedAdType(type);
     const statusMap = {
@@ -534,15 +651,69 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
     });
   };
 
-  const handleRemoveImage = (imageId) => {
-    setFormData(prev => ({
-      ...prev,
-      images: prev.images.filter(img => img.id !== imageId)
-    }));
-    setNotification({
-      message: "عکس با موفقیت حذف شد",
-      type: "success"
-    });
+  const handleRemoveImage = async (imageId) => {
+      const imageToDelete = formData.images.find(img => img.id === imageId);
+      
+      if (!imageToDelete) return;
+      
+      if (imageToDelete.backendId) {
+        setImageToDelete({
+          id: imageId,
+          backendId: imageToDelete.backendId,
+          preview: imageToDelete.preview
+        });
+        setShowDeleteModal(true);
+      } 
+      
+      else {
+        setFormData(prev => ({
+          ...prev,
+          images: prev.images.filter(img => img.id !== imageId)
+        }));
+        
+        setNotification({
+          message: "عکس با موفقیت حذف شد",
+          type: "success"
+        });
+      }
+    }; 
+
+  const confirmDeleteImage = async () => {
+    if (!imageToDelete) return;
+    
+    try {
+      setIsDeleting(true);
+      
+      await deletePostImage(imageToDelete.backendId);
+      
+      setFormData(prev => ({
+        ...prev,
+        images: prev.images.filter(img => img.id !== imageToDelete.id)
+      }));
+      
+      setNotification({
+        message: "عکس با موفقیت از سرور حذف شد",
+        type: "success"
+      });
+
+      setShowDeleteModal(false);
+      setImageToDelete(null);
+      
+    } catch (error) {
+      console.error("Error deleting image from server:", error);
+      setNotification({
+        message: "خطا در حذف عکس از سرور",
+        type: "error"
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const cancelDeleteImage = () => {
+    setShowDeleteModal(false);
+    setImageToDelete(null);
+    setIsDeleting(false);
   };
 
   const handleRemoveAllImages = () => {
@@ -606,13 +777,17 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
         }
       : null;
 
+    const imageIds = formData.images
+      .filter(img => img.backendId)
+      .map(img => img.backendId);
+
     const payload = {
       title: formData.type,
       pet_name: formData.name,
       pet_type: formData.animalType === "گربه" ? "cat" : "dog",
       pet_sex: formData.gender === "نر" ? "male" : "female",
       pet_age: formData.age || null,
-      Specific_symptoms: formData.specialSigns || "", // <-- اینجا اضافه شد
+      Specific_symptoms: formData.specialSigns || "",
       description: formData.description,
       diseases: formData.diseases || "",
       has_birth_certificate: formData.hasCertificate,
@@ -621,6 +796,10 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
       contact_email: formData.contact_email,
       location: locationPayload
     };
+
+    if (imageIds.length > 0) {
+      payload.image_ids = imageIds;
+    }
 
     if (formData.contact_email) {
       if (formData.email) payload.email = formData.email;
@@ -635,10 +814,14 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
       if (selectedAdType === "lost") {
         payload.lost_time = toISO(formData.lostTime);
         result = await updateLostPost(adData.id, payload);
-      } else if (selectedAdType === "found") {
+      } 
+      
+      else if (selectedAdType === "found") {
         payload.found_time = toISO(formData.foundTime);
         result = await updateFoundPost(adData.id, payload);
-      } else if (selectedAdType === "adoption") {
+      } 
+      
+      else if (selectedAdType === "adoption") {
         result = await updateSurrenderPost(adData.id, payload);
       }
 
@@ -863,22 +1046,56 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                         <div className="upload-container-content">
                           <div className="uploaded-images-grid">
                             {formData.images.map((image, index) => (
-                              <div key={image.id} className="image-gallery-item">
+                              <div
+                                key={`${image.backendId || image.id}-${Date.now()}`}
+                                className="image-gallery-item"
+                              >
                                 <div className="image-item-overlay">
-                                  <img 
-                                    src={image.preview} 
-                                    alt={`تصویر ${index + 1}`} 
-                                    className="gallery-image"
-                                  />
+
+                                    <img 
+                                      src={image.preview} 
+                                      alt={`تصویر ${index + 1}`} 
+                                      className="gallery-image"
+                                      onError={(e) => { 
+                                        
+                                        const originalUrl = image.preview.split('?')[0];
+                                        const retryUrl = `${originalUrl}?retry=${Date.now()}`;
+                                        
+                                        e.target.src = retryUrl;
+                                        
+                                        e.target.onerror = () => {
+                                          e.target.src = '/default-image.jpg';
+                                          e.target.onerror = null; 
+                                        };
+                                      }}
+                                      loading="lazy" 
+                                    />
                                   <div className="image-actions">
-                                    <button 
-                                      type="button"
-                                      className="remove-single-image-btn"
-                                      onClick={() => handleRemoveImage(image.id)}
-                                      disabled={isLoading}
-                                    >
-                                      <img src={closeIcon} alt="حذف" className="remove-icon" />
-                                    </button>
+                                    <div className="image-actions-left">
+                                      <button 
+                                        type="button"
+                                        className="crop-image-btn"
+                                        onClick={() => handleCropImageClick(index)}
+                                        disabled={isLoading}
+                                        title="برش تصویر"
+                                      >
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="white" strokeWidth="2"/>
+                                          <line x1="8" y1="3" x2="8" y2="21" stroke="white" strokeWidth="2"/>
+                                          <line x1="16" y1="3" x2="16" y2="21" stroke="white" strokeWidth="2"/>
+                                        </svg>
+                                      </button>
+
+                                      <button 
+                                        type="button"
+                                        className="remove-single-image-btn"
+                                        onClick={() => handleRemoveImage(image.id)}
+                                        disabled={isLoading}
+                                        title={image.backendId ? "حذف عکس از سرور" : "حذف عکس"}
+                                      >
+                                        <img src={closeIcon} alt="حذف" className="remove-icon" />
+                                      </button>
+                                    </div>
                                     <span className="image-badge">{index + 1}</span>
                                   </div>
                                 </div>
@@ -886,29 +1103,28 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                             ))}
                           </div>
 
-                          {formData.images.length < 7 && (
-                            <label className="image-upload-button">
-                              <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageUpload}
-                                multiple
-                                style={{ display: 'none' }}
-                                disabled={isLoading}
-                              />
-                              <div className="upload-button-content">
-                                <div className="upload-button-icon-wrapper">
-                                  <img 
-                                    src={uploadIcon} 
-                                    alt="Upload" 
-                                    className="upload-button-icon"
-                                  />
-                                  <div className="upload-button-plus">+</div>
-                                </div>
-                                <span className="upload-button-text">افزودن عکس</span>
+                        {formData.images.length < 7 && (
+                          <label className="image-upload-button">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleImageUploadWithCrop}
+                              style={{ display: 'none' }}
+                              disabled={isLoading}
+                            />
+                            <div className="upload-button-content">
+                              <div className="upload-button-icon-wrapper">
+                                <img 
+                                  src={uploadIcon} 
+                                  alt="Upload" 
+                                  className="upload-button-icon"
+                                />
+                                <div className="upload-button-plus">+</div>
                               </div>
-                            </label>
-                          )}
+                              <span className="upload-button-text">افزودن عکس</span>
+                            </div>
+                          </label>
+                        )}
                         </div>
                         
                         <div className="upload-container-footer">
@@ -1347,29 +1563,10 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
                   </button>
                   <button 
                     type="submit" 
-                    className="form-button form-button-submit"
+                    className={`form-button form-button-submit ${isLoading ? 'loading' : ''}`}
                     disabled={isLoading}
                   >
-                    {isLoading ? (
-                      <span className="loading-spinner">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" opacity="0.3"/>
-                          <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="4" strokeLinecap="round">
-                            <animateTransform 
-                              attributeName="transform" 
-                              type="rotate" 
-                              from="0 12 12" 
-                              to="360 12 12" 
-                              dur="1s" 
-                              repeatCount="indefinite"
-                            />
-                          </path>
-                        </svg>
-                        در حال ذخیره...
-                      </span>
-                    ) : (
-                      "ذخیره تغییرات"
-                    )}
+                    {isLoading ? "در حال ذخیره..." : "ذخیره تغییرات"}
                   </button>
                 </div>
               </form>
@@ -1383,7 +1580,28 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
   return (
     <>
       {renderContent()}
+      
+      {cropModalOpen && (
+        <ImageCropper
+          image={imageToCrop}
+          onCropComplete={handleCropComplete}
+          onClose={() => setCropModalOpen(false)}
+          aspect={4/3} 
+        />
+      )}
 
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={cancelDeleteImage}
+        onConfirm={confirmDeleteImage}
+        title="حذف عکس از سرور"
+        message="آیا از حذف این عکس اطمینان دارید؟"
+        confirmText="حذف عکس"
+        cancelText="لغو"
+        isLoading={isDeleting}
+        imageUrl={imageToDelete?.preview}
+      />
+      
       {notification && (
         <NotificationToast
           message={notification.message}

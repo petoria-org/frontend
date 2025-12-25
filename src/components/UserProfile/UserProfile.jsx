@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../../styles/UserProfile.css";
 import { SuccessStoryCreation } from "../SuccessStoryCreation";
 import { Pagination } from './../Pagination/Pagination';
+import { useAuth } from "../../context/AuthContext";
 import {
   getUserProfile,
   getUserLostPosts,
@@ -11,6 +12,7 @@ import {
   deleteFoundPost,
   deleteSurrenderPost,
 } from "../../Services/userService";
+import { config } from "../../config";
 
 const toJalaliDate = (dateString) => {
   if (!dateString) return "";
@@ -62,6 +64,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
   const [allAds, setAllAds] = useState([]);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { logout } = useAuth();
 
   useEffect(() => {
     const token = localStorage.getItem("access");
@@ -70,6 +73,8 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
       return;
     }
   }, []);
+
+  const BACKEND_URL = config.BACKEND_URL;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -89,10 +94,11 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
           ...lost.map(p => ({
             id: p.id,
             name: p.title,
+            breed: p.breed || "",
             type: p.pet_type === "cat" ? "گربه" : "سگ",
             status: "lost",
             statusLabel: "گم شده",
-            image: p.thumbnail || "/src/assets/images/default-pet.png",
+            image: p.thumbnail ? `${BACKEND_URL}${p.thumbnail}` : "/src/assets/images/default-pet.png",
             time: toJalaliDate(p.updated_at),
             location: p.location?.readable || "",
             desc: p.description || "",
@@ -103,23 +109,26 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
           ...found.map(p => ({
             id: p.id,
             name: p.title,
+            breed: p.breed || "",
             type: p.pet_type === "cat" ? "گربه" : "سگ",
             status: "found",
             statusLabel: "پیدا شده",
-            image: p.thumbnail || "/src/assets/images/default-pet.png",
+            image: p.thumbnail ? `${BACKEND_URL}${p.thumbnail}` : "/src/assets/images/default-pet.png",
             time: toJalaliDate(p.updated_at),
             location: p.location?.readable || "",
             desc: p.description || "",
             postTime: toJalaliDate(p.found_time),
             resolved: false,
           })),
+
           ...surrender.map(p => ({
             id: p.id,
             name: p.title,
+            breed: p.breed || "",
             type: p.pet_type === "cat" ? "گربه" : "سگ",
             status: "adoption",
             statusLabel: "سرپرستی",
-            image: p.thumbnail || "/src/assets/images/default-pet.png",
+            image: p.thumbnail ? `${BACKEND_URL}${p.thumbnail}` : "/src/assets/images/default-pet.png",
             time: toJalaliDate(p.updated_at),
             location: p.location?.readable || "",
             desc: p.description || "",
@@ -430,11 +439,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                 
                 <button
                   className="logout-button"
-                  onClick={() => {
-                    localStorage.removeItem("access");
-                    localStorage.removeItem("refresh");
-                    window.location.href = "/login";
-                  }}
+                  onClick={() => logout()}
                 >
                   <LogOutIcon />
                   <span className="logout-text">خروج</span>
@@ -520,7 +525,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                     <div className="pet-listing-header">
                       <div className="pet-listing-info">
                         <h3 className="pet-listing-name">{pet.name}</h3>
-                        <p className="pet-listing-subtitle">{pet.name}</p>
+                        <p className="pet-listing-subtitle">{pet.breed || "نامشخص"}</p>
                       </div>
                       <div className="pet-listing-type">
                         {pet.type}

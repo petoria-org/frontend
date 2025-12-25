@@ -3,12 +3,14 @@ import { useNavigate } from "react-router-dom";
 import AdvancedFilters from "../AdvancedFilters";
 import SortFilters from "../SortFilters";
 import "../../styles/AllPosts.css";
+import { config } from "../../config";
 
+const API_BASE_URL = config.API_BASE_URL;
 const API_ENDPOINTS = {
-  all: "/api/posts/all/",
-  lost: "/api/posts/lost-posts/",
-  found: "/api/posts/found-posts/",
-  adoption: "/api/posts/surrender-posts/",
+  all: `${API_BASE_URL}/posts/all/`,
+  lost: `${API_BASE_URL}/posts/lost-posts/`,
+  found: `${API_BASE_URL}/posts/found-posts/`,
+  adoption: `${API_BASE_URL}/posts/surrender-posts/`,
 };
 
 const PLACEHOLDER_IMAGE = "/images/placeholder.jpg";
