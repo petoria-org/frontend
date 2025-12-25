@@ -72,3 +72,16 @@ export const deletePostImage = async (imageId) => {
   const res = await api.delete(`/posts/images/${imageId}/`);
   return res.data;
 };
+
+// ---------- CREATE POSTS ----------
+export const createLostPost = (data) => {
+  return api.post("/posts/lost-posts/", data);
+};
+
+export const createFoundPost = (data) => {
+  return api.post("/posts/found-posts/", data);
+};
+
+export const createSurrenderPost = (data) => {
+  return api.post("/posts/surrender-posts/", data);
+};
