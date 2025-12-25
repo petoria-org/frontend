@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import OpenConv from "../components/OpenConv";
 import Conversations from "../components/Conversations";
-import { Navbar_SignIn } from "../components/Navbar_SignIn";
 import "../styles/Chats.css";
 
 import { getChatList, getChatMessages, buildChatWsUrl } from "../Services/chatService";
@@ -364,8 +363,6 @@ export default function ChatPage() {
 
   return (
     <div className="chatShell">
-      <Navbar_SignIn />
-
       <div className="chatMain">
         <Conversations
           items={convItems}

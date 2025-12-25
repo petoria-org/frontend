@@ -11,13 +11,13 @@ let isRefreshing = false;
 let failedQueue = [];
 
 const processQueue = (error, token = null) => {
-  failedQueue.forEach(prom => {
+  failedQueue.forEach((prom) => {
     error ? prom.reject(error) : prom.resolve(token);
   });
   failedQueue = [];
 };
 
-// Attach access token
+// Attach token
 api.interceptors.request.use((config) => {
   const access = localStorage.getItem("access");
   if (access) {
@@ -26,20 +26,17 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Handle 401 & refresh
+// Refresh logic
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry
-    ) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
-        }).then(token => {
+        }).then((token) => {
           originalRequest.headers.Authorization = `Bearer ${token}`;
           return api(originalRequest);
         });
@@ -50,7 +47,6 @@ api.interceptors.response.use(
 
       const refresh = localStorage.getItem("refresh");
       if (!refresh) {
-        // logout();
         return Promise.reject(error);
       }
 
@@ -69,7 +65,6 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (err) {
         processQueue(err, null);
-        // logout();
         return Promise.reject(err);
       } finally {
         isRefreshing = false;
@@ -79,11 +74,5 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-const logout = () => {
-  localStorage.removeItem("access");
-  localStorage.removeItem("refresh");
-//   window.location.href = "/login";
-};
 
 export default api;

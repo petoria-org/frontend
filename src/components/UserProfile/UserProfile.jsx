@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../../styles/UserProfile.css";
 import { SuccessStoryCreation } from "../SuccessStoryCreation";
 import { Pagination } from './../Pagination/Pagination';
+import { useAuth } from "../../context/AuthContext";
 import {
   getUserProfile,
   getUserLostPosts,
@@ -62,6 +63,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
   const [allAds, setAllAds] = useState([]);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { logout } = useAuth();
 
   useEffect(() => {
     const token = localStorage.getItem("access");
@@ -433,11 +435,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                 
                 <button
                   className="logout-button"
-                  onClick={() => {
-                    localStorage.removeItem("access");
-                    localStorage.removeItem("refresh");
-                    window.location.href = "/login";
-                  }}
+                  onClick={() => logout()}
                 >
                   <LogOutIcon />
                   <span className="logout-text">خروج</span>

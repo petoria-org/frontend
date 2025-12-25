@@ -1,81 +1,127 @@
-import React, { useState } from "react";
 import "../styles/Navbar.css";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
-export const Navbar = () => {
-  const [activeItem, setActiveItem] = useState("پروفایل");
+const Navbar = () => {
+  const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
 
-  const handleItemClick = (itemName) => {
-    setActiveItem(itemName);
-  };
-
-  const isActive = (itemName) => {
-    return activeItem === itemName;
+  const handleNewAd = () => {
+    if (!isLoggedIn) {
+      navigate("/login", {
+        state: { from: "/pick-location" },
+      });
+    } else {
+      navigate("/pick-location");
+    }
   };
 
   return (
     <div className="navbar">
-      <div 
-        className={`signUp-nav ${isActive("ورود") ? "active" : ""}`}
-        onClick={() => handleItemClick("ورود")}
-      >
-        <div className="signUp-text">ورود</div>
-        <img 
-          className="signUp-icon"
-          alt="login"
-          src="src/icons/login.svg"
-        />
-      </div>
+      {/* ================= BEFORE LOGIN ================= */}
+      {!isLoggedIn && (
+        <NavLink
+          to="/login"
+          className={({ isActive }) =>
+            `nav-item ${isActive ? "active" : ""}`
+          }
+        >
+          <div className="nav-text">ورود</div>
+          <img className="nav-icon" src="/src/icons/login.svg" alt="login" />
+        </NavLink>
+      )}
 
-      <div className="new-ad-button">
+      
+      {/* ================= NEW AD ================= */}
+      <div className="new-ad-button" onClick={handleNewAd}>
         <div className="new-ad-text">آگهی جدید</div>
         <img
           className="add-icon"
-          alt="Add"
-          src="/src/icons/add.svg"
+          src="/src/assets/icons/add.svg"
+          alt="add"
         />
       </div>
 
-      <div 
-        className={`ads-nav ${isActive("آگهی ها") ? "active" : ""}`}
-        onClick={() => handleItemClick("آگهی ها")}
+      {/* ================= AFTER LOGIN ================= */}
+      {isLoggedIn && (
+        <>
+          <NavLink
+            to="/user-profile"
+            className={({ isActive }) =>
+              `nav-item ${isActive ? "active" : ""}`
+            }
+          >
+            <div className="nav-text">پروفایل</div>
+            <img
+              className="nav-icon"
+              src="/src/assets/icons/user.svg"
+              alt="profile"
+            />
+          </NavLink>
+
+          <NavLink
+            to="/chats"
+            className={({ isActive }) =>
+              `nav-item ${isActive ? "active" : ""}`
+            }
+          >
+            <div className="nav-text">گفتگوها</div>
+            <img
+              className="nav-icon"
+              src="/src/assets/icons/message.svg"
+              alt="chat"
+            />
+          </NavLink>
+        </>
+      )}
+
+      {/* ================= SHARED ================= */}
+      <NavLink
+        to="/posts"
+        className={({ isActive }) =>
+          `nav-item ${isActive ? "active" : ""}`
+        }
       >
-        <div className="ads-text">آگهی ها</div>
+        <div className="nav-text">آگهی ها</div>
         <img
-          className="ads-icon"
-          alt="Advertisements"
+          className="advertisements-icon"
           src="/src/assets/icons/Advertisements.svg"
+          alt="posts"
         />
-      </div>
+      </NavLink>
 
-      <div 
-        className={`stories-nav ${isActive("داستان های موفق") ? "active" : ""}`}
-        onClick={() => handleItemClick("داستان های موفق")}
+      <NavLink
+        to="/success-stories"
+        className={({ isActive }) =>
+          `nav-item ${isActive ? "active" : ""}`
+        }
       >
-        <div className="stories-text">داستان های موفق</div>
+        <div className="nav-text">داستان های موفق</div>
         <img
           className="heart-icon"
-          alt="Heart"
           src="/src/assets/icons/heart.svg"
+          alt="success"
         />
-      </div>
+      </NavLink>
 
-      <div 
-        className={`home-nav ${isActive("خانه") ? "active" : ""}`}
-        onClick={() => handleItemClick("خانه")}
+      <NavLink
+        to="/"
+        className={({ isActive }) =>
+          `nav-item ${isActive ? "active" : ""}`
+        }
       >
-        <div className="home-text">خانه</div>
+        <div className="nav-text">خانه</div>
         <img
           className="home-icon"
-          alt="House"
           src="/src/assets/icons/house.svg"
+          alt="home"
         />
-      </div>
+      </NavLink>
 
-      <img
-        className="logo"
-        alt="Logo"
-        src="/src/icons/logo.jpg"
-      />
+      {/* Logo */}
+      <img className="logo" src="/src/assets/images/logo.jpg" alt="logo" />
     </div>
   );
 };
+
+export default Navbar;
