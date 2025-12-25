@@ -9,6 +9,9 @@ import BackIcon from "../../assets/icons/arrow-left.svg";
 import ContactInfoIcon from "../../assets/icons/stickynote.svg";
 import PetImage from "../../assets/images/shivvava.png";
 import "../../styles/ShowDetailsAdopt.css";
+import { config } from "../../config";
+
+const API_BASE_URL = config.API_BASE_URL;
 
 const HealthToggle = ({ checked, disabled = false, label }) => {
   return (
@@ -25,7 +28,7 @@ const HealthToggle = ({ checked, disabled = false, label }) => {
   );
 };
 
-export const ShowDetailsAdopt = () => {
+export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, postData: propPostData }) => {
   const [isAdoptionPost, setIsAdoptionPost] = useState(false);
   const [healthStatus, setHealthStatus] = useState({
     has_birth_certificate: false,
@@ -47,23 +50,26 @@ export const ShowDetailsAdopt = () => {
   const location = useLocation();
   
   useEffect(() => {
-    if (location.state?.postData) {
-      const data = location.state.postData;
-      setPostData(data);
-      initializeData(data);
-    } 
-    
-    else {
-      const postId = new URLSearchParams(window.location.search).get('id');
-      if (postId) {
-        fetchPostDetails(postId);
-      } 
-      
-      else {
-        setLoading(false);
-      }
+    const stateData = propPostData || location.state?.postData || null;
+    const stateId = propPostId || location.state?.postId || null;
+    const stateType = propPostType || location.state?.postType || null;
+    const queryId = new URLSearchParams(window.location.search).get("id");
+    const resolvedId = stateId || stateData?.rawId || queryId;
+
+    if (stateData) {
+      setPostData(stateData);
+      initializeData(stateData);
     }
-  }, [location]);
+
+    if (resolvedId) {
+      fetchPostDetails(resolvedId, stateType, !stateData);
+      return;
+    }
+
+    if (!stateData) {
+      setLoading(false);
+    }
+  }, [propPostData, propPostId, propPostType, location]);
 
   const initializeData = (data) => {
     const isAdoption = data.type === "surrender" || 
@@ -145,33 +151,48 @@ export const ShowDetailsAdopt = () => {
     setLoading(false);
   };
 
-  const fetchPostDetails = async (id) => {
+  const fetchPostDetails = async (id, explicitPostType, showLoading = true) => {
     try {
-      setLoading(true);
+      if (showLoading) {
+        setLoading(true);
+      }
       
       let url = "";
-      let postType = "";
+      let postType = explicitPostType || "";
+
+      if (postType === "adoption") {
+        postType = "surrender";
+      }
       
-      if (window.location.pathname.includes("lost")) {
-        url = `/api/posts/lost-posts/${id}/`;
+      if (postType === "lost") {
+        url = `${API_BASE_URL}/posts/lost-posts/${id}/`;
+      } else if (postType === "found") {
+        url = `${API_BASE_URL}/posts/found-posts/${id}/`;
+      } else if (postType === "surrender") {
+        url = `${API_BASE_URL}/posts/surrender-posts/${id}/`;
+        setIsAdoptionPost(true);
+      } else if (window.location.pathname.includes("lost")) {
+        url = `${API_BASE_URL}/posts/lost-posts/${id}/`;
         postType = "lost";
       } else if (window.location.pathname.includes("found")) {
-        url = `/api/posts/found-posts/${id}/`;
+        url = `${API_BASE_URL}/posts/found-posts/${id}/`;
         postType = "found";
       } else if (window.location.pathname.includes("surrender") || 
                  window.location.pathname.includes("adoption")) {
-        url = `/api/posts/surrender-posts/${id}/`;
+        url = `${API_BASE_URL}/posts/surrender-posts/${id}/`;
         postType = "surrender";
         setIsAdoptionPost(true);
       } else {
-        url = `/api/posts/all/${id}/`;
+        url = `${API_BASE_URL}/posts/all/${id}/`;
       }
       
       const response = await fetch(url);
       if (!response.ok) throw new Error("خطا در دریافت اطلاعات");
       
       const data = await response.json();
-      initializeData({...data, type: postType});
+      const normalizedData = { ...data, type: postType || data.type };
+      setPostData(normalizedData);
+      initializeData(normalizedData);
     } catch (error) {
       console.error("خطا در دریافت جزئیات پست:", error);
       setLoading(false);
@@ -304,7 +325,6 @@ export const ShowDetailsAdopt = () => {
               </h2>
               <div className="diseases-content">
                 {postData?.diseases || 
-                 postData?.Specific_symptoms || 
                  postData?.originalData?.diseases ||
                  "این حیوان هیچ بیماری خاصی ندارد."}
               </div>

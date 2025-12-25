@@ -1,4 +1,7 @@
 import api from "./api";
+import { config } from "../config";
+
+const WS_BASE_URL = config.BACKEND_URL.replace(/^http/, "ws");
 
 const parseError = (error, fallback = "عملیات ناموفق بود") => {
   if (!error.response) return "عدم ارتباط با سرور";
@@ -47,5 +50,5 @@ export function buildChatWsUrl() {
   const token = localStorage.getItem("access");
   if (!token) return null;
 
-  return `ws://localhost:8000/ws/chat/?token=${encodeURIComponent(token)}`;
+  return `${WS_BASE_URL}/ws/chat/?token=${encodeURIComponent(token)}`;
 }

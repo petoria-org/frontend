@@ -13,6 +13,7 @@ import lockIcon from "../../assets/icons/lock.svg";
 import { NotificationToast } from '../NotificationToast/NotificationToast';
 import MapPicker from '../MapPicker/MapPicker';
 import { ImageCropper } from "../ImageCropper";
+import { config } from "../../config";
 import {
   getLostPostDetail,
   getFoundPostDetail,
@@ -363,7 +364,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
           imageUrl = imageUrl.substring(1);
         }
         
-        const BACKEND_URL = "http://localhost:8000";
+        const BACKEND_URL = config.BACKEND_URL;
         imageUrl = `${BACKEND_URL}/${imageUrl}`;
       }
       const timestamp = Date.now();
