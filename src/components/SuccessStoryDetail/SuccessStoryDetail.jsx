@@ -1,211 +1,417 @@
+// ShowDetailsAdopt.jsx
+
 import React, { useState, useEffect } from "react";
-import "../../styles/SuccessStoryDetail.css";
+import { useNavigate, useLocation } from "react-router-dom";
+import HeartIcon from "../../assets/icons/heart.svg";
+import LocationIcon from "../../assets/icons/location.svg";
+import GenderIcon from "../../assets/icons/tick-circle.svg";
+import AgeIcon from "../../assets/icons/clock.svg";
+import PetIcon from "../../assets/icons/pet.svg";
+import BackIcon from "../../assets/icons/arrow-left.svg";
+import ContactInfoIcon from "../../assets/icons/stickynote.svg";
+import PetImage from "../../assets/images/shivvava.png";
+import "../../styles/ShowDetailsAdopt.css";
 
-export const SuccessStoryDetail = ({ story, onClose }) => {
-  const [selectedImage, setSelectedImage] = useState(story.images && story.images.length > 0 ? story.images[0] : story.image);
-    
+const HealthToggle = ({ checked, disabled = false, label }) => {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      className={`health-toggle ${checked ? 'checked' : ''} ${disabled ? 'disabled' : ''}`}
+      disabled={true}
+      tabIndex={-1}
+    >
+      <span className="switch-thumb" />
+    </button>
+  );
+};
+
+export const ShowDetailsAdopt = () => {
+  const [isAdoptionPost, setIsAdoptionPost] = useState(false);
+  const [healthStatus, setHealthStatus] = useState({
+    has_birth_certificate: false,
+    vaccination: false,
+    steriliz: false
+  });
+  
+  const [contactInfo, setContactInfo] = useState({
+    name: "",
+    email: ""
+  });
+  
+  const [petDetails, setPetDetails] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showDefaultImage, setShowDefaultImage] = useState(false);
+  const [postData, setPostData] = useState(null);
+  
+  const navigate = useNavigate();
+  const location = useLocation();
+  
   useEffect(() => {
-    const originalStyle = window.getComputedStyle(document.body).overflow;
-    document.body.style.overflow = 'hidden';
+    if (location.state?.postData) {
+      const data = location.state.postData;
+      setPostData(data);
+      initializeData(data);
+    } 
     
-    return () => {
-      document.body.style.overflow = originalStyle;
-    };
-  }, []);
+    else {
+      const postId = new URLSearchParams(window.location.search).get('id');
+      if (postId) {
+        fetchPostDetails(postId);
+      } 
+      
+      else {
+        setLoading(false);
+      }
+    }
+  }, [location]);
 
-    const storyImages = story.images && story.images.length > 0
-    ? story.images
-    : story.image
-        ? [story.image]
-        : [];
+  const initializeData = (data) => {
+    const isAdoption = data.type === "surrender" || 
+                      data.originalData?.type === "surrender" ||
+                      location.pathname.includes("surrender");
+    
+    setIsAdoptionPost(isAdoption);
+    
+    const details = [
+      {
+        label: "نوع حیوان",
+        value: data.pet_type === "dog" ? "سگ" : 
+               data.pet_type === "cat" ? "گربه" : "سایر",
+        icon: PetIcon,
+      },
+      {
+        label: "نژاد",
+        value: data.breed || data.originalData?.breed || "نامشخص",
+        icon: HeartIcon,
+      },
+      {
+        label: "سن",
+        value: data.pet_age ? `${data.pet_age} سال` : 
+               data.originalData?.pet_age ? `${data.originalData.pet_age} سال` : "نامشخص",
+        icon: AgeIcon,
+      },
+      {
+        label: "جنسیت",
+        value: data.pet_sex === "male" ? "نر" : 
+               data.pet_sex === "female" ? "ماده" : "نامشخص",
+        icon: GenderIcon,
+      },
+    ];
+    
+    setPetDetails(details);
+    
+    if (isAdoption) {
+      const newHealthStatus = {
+        has_birth_certificate: data.has_birth_certificate || 
+                              data.originalData?.has_birth_certificate || 
+                              false,
+        vaccination: data.vaccination || 
+                    data.originalData?.vaccination || 
+                    false,
+        steriliz: data.steriliz || 
+                 data.originalData?.steriliz || 
+                 false,
+      };
+      setHealthStatus(newHealthStatus);
+    } 
+    else {
+      setHealthStatus({
+        has_birth_certificate: false,
+        vaccination: false,
+        steriliz: false
+      });
+    }
+    
+    const contactEmail = data.contact_email || 
+                        data.user_email || 
+                        data.originalData?.contact_email ||
+                        data.originalData?.user_email ||
+                        (data.contact_phone ? `تماس: ${data.contact_phone}` : "");
+    
+    setContactInfo({
+      name: data.contact_name || 
+            data.user_name || 
+            data.originalData?.contact_name ||
+            data.originalData?.user_name ||
+            "",
+      email: contactEmail || ""
+    });
 
-  const BackIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-      <path d="M19 12H5M12 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  );
+    const hasImage = data.pet_image && 
+                    data.pet_image !== "null" && 
+                    data.pet_image !== "";
+    
+    setShowDefaultImage(!hasImage);
+    setLoading(false);
+  };
 
-  const CloseIcon = () => (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-      <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  );
+  const fetchPostDetails = async (id) => {
+    try {
+      setLoading(true);
+      
+      let url = "";
+      let postType = "";
+      
+      if (window.location.pathname.includes("lost")) {
+        url = `/api/posts/lost-posts/${id}/`;
+        postType = "lost";
+      } else if (window.location.pathname.includes("found")) {
+        url = `/api/posts/found-posts/${id}/`;
+        postType = "found";
+      } else if (window.location.pathname.includes("surrender") || 
+                 window.location.pathname.includes("adoption")) {
+        url = `/api/posts/surrender-posts/${id}/`;
+        postType = "surrender";
+        setIsAdoptionPost(true);
+      } else {
+        url = `/api/posts/all/${id}/`;
+      }
+      
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("خطا در دریافت اطلاعات");
+      
+      const data = await response.json();
+      initializeData({...data, type: postType});
+    } catch (error) {
+      console.error("خطا در دریافت جزئیات پست:", error);
+      setLoading(false);
+    }
+  };
 
-  const HeartIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-    </svg>
-  );
+  const handleBackClick = () => {
+    if (document.referrer.includes('/posts') || location.state?.fromPosts) {
+      navigate(-1);
+    } 
+    
+    else {
+      navigate('/posts'); 
+    }
+  };
+
+  const handleStartChat = () => {
+    console.log("شروع گفتگو", { contactInfo, postData });
+  };
+
+  if (loading) {
+    return (
+      <div className="show-details-container loading">
+        <div className="loading-message">در حال بارگذاری جزئیات...</div>
+      </div>
+    );
+  }
+
+  const getStatusText = () => {
+    if (isAdoptionPost) return "سرپرستی";
+    
+    const type = postData?.type || 
+                postData?.originalData?.type || 
+                "";
+    
+    switch(type) {
+      case "lost":
+        return "گم شده";
+      case "found":
+        return "پیدا شده";
+      default:
+        return "آگهی";
+    }
+  };
 
   return (
-    <div className="story-detail-overlay" onClick={onClose}>
-      <div className="story-detail-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="story-detail-header">
-          <div className="header-content">
-            <div className="header-icon">
-              <HeartIcon />
-            </div>
-            <div className="header-text">
-              <h1 className="success-story-title">جزئیات داستان موفق</h1>
-              <p className="success-story-subtitle">مشاهده کامل داستان موفقیت</p>
-            </div>
-            <button className="close-button" onClick={onClose}>
-              <CloseIcon />
-            </button>
-          </div>
-        </div>
+    <div className="show-details-container">
+      <div className="back-button-container">
+        <button 
+          onClick={handleBackClick}
+          className="back-button"
+          aria-label="بازگشت به لیست آگهی‌ها"
+        >
+          <span className="back-text">بازگشت به لیست آگهی‌ها</span>
+          <img src={BackIcon} alt="بازگشت" className="back-icon" />
+        </button>
+      </div>
 
-        <div className="story-detail-content">
-          <div className="images-section">
-            <div className="image-upload-section">
-              <div className="section-header">
-                <h3 className="section-title">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                    <circle cx="8.5" cy="8.5" r="1.5"/>
-                    <polyline points="21 15 16 10 5 21"/>
-                  </svg>
-                  <span>تصویر اصلی داستان</span>
-                </h3>
+      <div className="main-card">
+        <div className="card-content-wrapper">
+          <div className="card-image-container">
+            {showDefaultImage ? (
+              <div className="no-image-placeholder">
+                <div className="placeholder-icon">🐾</div>
+                <div className="placeholder-text">تصویر موجود نیست</div>
               </div>
-              <div className="main-image-preview">
-                <img
-                  src={selectedImage}
-                  alt={story.title}
-                  className="main-preview-image"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZjBmMGYwIj48cmVjdCB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9IiNmMGYwZjAiLz48cGF0aCBkPSJNMTkgNUg1Yy0xLjEgMC0yIC45LTIgMnYxNGMwIDEuMS45IDIgMiAyaDE0YzEuMSAwIDItLjkgMi0yVjdjMC0xLjEtLjktMi0yLTJ6bTAgMTZINVY3aDE0djE0ek0xMy41MSA4LjQ5Yy0xLjA2LTEuMDYtIi43OC0xLjA2LTMuODQgMEw3LjUgMTEuMTdsLS4wOS0uMDljLS4zOS0uMzktMS4wMi0uMzktMS40MSAwLS4zOS4zOS0uMzkgMS4wMiAwIDEuNDFsMy41OSAzLjU5Yy44OS44OSAyLjMzLjg5IDMuMjIwMGw1LjU5LTUuNTljLjM5LS4zOS4zOS0xLjAyIDAtMS40MS0uMzktLjM4LTEuMDItLjM5LTEuNDEtLjA4bC01LjA4IDUuMDd6Ii8+PC9zdmc+";
-                  }}
-                />
-              </div>
-            </div>
-
-            {storyImages.length > 1 && (
-              <div className="image-upload-section">
-                <div className="section-header">
-                  <h3 className="section-title">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
-                    <span>عکس‌های داستان</span>
-                  </h3>
-                  <div className="image-counter">
-                    <span className="current-count">{storyImages.length}</span>
-                    <span className="max-count">/7</span>
-                  </div>
-                </div>
-                <div className="thumbnail-container">
-                  {storyImages.map((img, index) => (
-                    <div
-                      key={index}
-                      className={`thumbnail-wrapper ${selectedImage === img ? 'active' : ''}`}
-                      onClick={() => setSelectedImage(img)}
-                    >
-                      <div className="thumbnail">
-                        <img
-                          src={img}
-                          alt={`تصویر ${index + 1}`}
-                          className="thumbnail-image"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2YwZjBmMCI+PHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSIjZjBmMGYwIi8+PHBhdGggZD0iTTE5IDVINWMtMS4xIDAtMiAuOS0yIDJ2MTRjMCAxLjEuOSAyIDIgMmgxNGMxLjEgMCAyLS45IDItMlY3YzAtMS4xLS45LTItMi0yem0wIDE2SDVWN2gxNHYxNHpNMTMuNTEgOC40OWMtMS4wNi0xLjA2LTIuNzgtMS4wNi0zLjg0IDBMNy41IDExLjE3bC0uMDktLjA5Yy0uMzktLjM5LTEuMDItLjM5LTEuNDEgMC0uMzkuMzktLjM5IDEuMDIgMCAxLjQxbDMuNTkgMy41OWMuODkuODkgMi4zMy44OSAzLjIyMGw1LjU5LTUuNTljLjM5LS4zOS4zOS0xLjAyIDAtMS40MS0uMzktLjM4LTEuMDItLjM5LTEuNDEtLjA4bC01LjA4IDUuMDd6Ii8+PC9zdmc+";
-                          }}
-                        />
-                      </div>
-                      <div className="thumbnail-number-badge">{index + 1}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            ) : (
+              <img
+                className="card-image"
+                alt="Pet"
+                src={PetImage}
+              />
             )}
-          </div>
-
-          <div className="story-info-section">
-            <div className="story-text-section">
-              <div className="section-header">
-                <h3 className="section-title">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                  </svg>
-                  <span>اطلاعات داستان</span>
-                </h3>
-              </div>
-              
-              <div className="story-header-details">
-                <div className="story-title-wrapper">
-                  <h2 className="story-title-main">{story.title}</h2>
-                  <div 
-                    className="story-status-badge"
-                    style={{ 
-                      backgroundColor: story.statusColor,
-                      color: story.statusTextColor
-                    }}
-                  >
-                    <HeartIcon />
-                    <span>{story.status}</span>
-                  </div>
-                </div>
-                
-                <div className="story-meta">
-                  <div className="meta-item">
-                    <span className="meta-label">نویسنده:</span>
-                    <span className="meta-value">{story.author}</span>
-                  </div>
-                  <div className="meta-divider">•</div>
-                  <div className="meta-item">
-                    <span className="meta-label">تاریخ انتشار:</span>
-                    <span className="meta-value">{story.date}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="content-section">
-                <div className="section-header">
-                  <h4 className="section-title">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                      <polyline points="14 2 14 8 20 8"/>
-                      <line x1="16" y1="13" x2="8" y2="13"/>
-                      <line x1="16" y1="17" x2="8" y2="17"/>
-                      <polyline points="10 9 9 9 8 9"/>
-                    </svg>
-                    <span>داستان کامل</span>
-                  </h4>
-                </div>
-                <div className="story-text-content">
-                  <p>{story.content}</p>
-                </div>
-              </div>
-
-              <div className="tags-section">
-                <div className="section-header">
-                  <h4 className="section-title">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
-                      <line x1="7" y1="7" x2="7.01" y2="7"/>
-                    </svg>
-                    <span>برچسب‌ها</span>
-                  </h4>
-                </div>
-                <div className="tags-list">
-                  <span className="story-tag">#داستان_موفقیت</span>
-                  <span className="story-tag">#پتوریا</span>
-                  <span className="story-tag">#بازگشت_به_خانواده</span>
-                  <span className="story-tag">#حیوانات</span>
-                </div>
-              </div>
+            <div className="card-badge">
+              <span className="badge-text">
+                {getStatusText()}
+              </span>
             </div>
           </div>
-        </div>
 
-        <div className="story-detail-footer">
-          <div className="footer-actions">
-            <button className="cancel-btn" onClick={onClose}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M19 12H5M12 19l-7-7 7-7"/>
-              </svg>
-              <span>بازگشت به لیست</span>
+          <div className="content-section">
+            <h1 className="pet-name-show-details">
+              {postData?.pet_name || 
+               postData?.title || 
+               postData?.originalData?.pet_name || 
+               "بدون نام"}
+            </h1>
+
+            <div className="details-grid">
+              {petDetails.map((detail, index) => (
+                <div 
+                  key={index} 
+                  className="detail-item"
+                >
+                  <div className="detail-text">
+                    <div className="detail-value">
+                      {detail.value}
+                    </div>
+                    <div className="detail-label">
+                      {detail.label}
+                    </div>
+                  </div>
+                  <img
+                    src={detail.icon}
+                    alt={detail.label}
+                    className="detail-icon"
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="location-item">
+              <div className="detail-text">
+                <div className="detail-value">
+                  {postData?.location?.readable || 
+                   postData?.location || 
+                   postData?.originalData?.location?.readable ||
+                   postData?.originalData?.location ||
+                   "مکان نامشخص"}
+                </div>
+                <div className="detail-label">
+                  مکان
+                </div>
+              </div>
+              <img src={LocationIcon} alt="مکان" className="detail-icon" />
+            </div>
+
+            <section className="section">
+              <h2 className="section-title-show-details">
+                بیماری‌ها
+              </h2>
+              <div className="diseases-content">
+                {postData?.diseases || 
+                 postData?.Specific_symptoms || 
+                 postData?.originalData?.diseases ||
+                 "این حیوان هیچ بیماری خاصی ندارد."}
+              </div>
+            </section>
+
+            {isAdoptionPost && (
+              <section className="section">
+                <h2 className="section-title-show-details">
+                  وضعیت سلامت
+                </h2>
+                <div className="toggles-container">
+                  <div className="toggle-item">
+                    <HealthToggle
+                      checked={healthStatus.has_birth_certificate}
+                      disabled={false}
+                      label="دارای شناسنامه"
+                    />
+                    <span className="toggle-label">
+                      دارای شناسنامه
+                    </span>
+                  </div>
+                  <div className="toggle-item">
+                    <HealthToggle
+                      checked={healthStatus.vaccination}
+                      disabled={false}
+                      label="واکسینه شده"
+                    />
+                    <span className="toggle-label">
+                      واکسینه شده
+                    </span>
+                  </div>
+                  <div className="toggle-item">
+                    <HealthToggle
+                      checked={healthStatus.steriliz}
+                      disabled={false}
+                      label="عقیم شده"
+                    />
+                    <span className="toggle-label">
+                      عقیم شده
+                    </span>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            <section className="section">
+              <h2 className="section-title-show-details">
+                توضیحات
+              </h2>
+              <div className="description-content">
+                {postData?.description || 
+                 postData?.originalData?.description || 
+                 "توضیحاتی برای این آگهی ثبت نشده است."}
+              </div>
+            </section>
+
+            <section className="contact-section">
+              <div className="contact-container">
+                <div className="contact-header">
+                  <img src={ContactInfoIcon} alt="اطلاعات تماس" className="contact-icon-show-details" />
+                  <h2 className="contact-title">
+                    اطلاعات تماس
+                  </h2>
+                </div>
+
+                <div className="contact-fields">
+                  <div className="contact-field">
+                    <label className="field-label">
+                      ثبت‌کننده آگهی
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="نام و نام خانوادگی"
+                      value={contactInfo.name}
+                      readOnly
+                      className="contact-input readonly"
+                    />
+                  </div>
+                  <div className="contact-field">
+                    <label className="field-label">
+                      ایمیل
+                    </label>
+                    <input
+                      type="email"
+                      placeholder="آدرس ایمیل"
+                      value={contactInfo.email}
+                      readOnly
+                      className="contact-input readonly"
+                    />
+                  </div>
+                </div>
+
+                <p className="contact-note">
+                  اطلاعات تماس فقط برای ارتباط با ثبت‌کننده آگهی است
+                </p>
+              </div>
+            </section>
+
+            <button 
+              onClick={handleStartChat}
+              className="start-chat-button"
+              aria-label="شروع گفتگو"
+            >
+              شروع گفتگو
             </button>
           </div>
         </div>

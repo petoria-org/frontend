@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import PropTypes from "prop-types";
 import "../../styles/ImageCropper.css";
 import { uploadPostImage } from "../../Services/userService";
+import scissorsIcon from '../../assets/icons/Scissors.svg';
 
 const ImageCropper = ({
   image,
@@ -393,6 +394,8 @@ const handleCrop = async () => {
     return window.innerHeight * 0.9; 
   }, []);
 
+  
+
   return (
     <div className="image-cropper-modal-overlay">
       <div 
@@ -404,7 +407,13 @@ const handleCrop = async () => {
         <div className="cropper-modal-header">
           <div className="cropper-header-left">
             <h3 className="cropper-title">
-              <span className="cropper-title-icon">✂️</span>
+              <span className="cropper-title-icon">
+                    <img 
+                      src={scissorsIcon} 
+                      alt="قیچی" 
+                      className="scissors-svg-icon"
+                    />
+              </span>
               ویرایش تصویر
             </h3>
             <div className="image-dimensions">
@@ -429,7 +438,6 @@ const handleCrop = async () => {
               title="بازنشانی تنظیمات (R)"
               disabled={isLoading}
             >
-              <span className="btn-icon">↺</span>
               بازنشانی
             </button>
             <button
