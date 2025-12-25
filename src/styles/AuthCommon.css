@@ -1,0 +1,107 @@
+/* ===== Auth Page ===== */
+.auth-page {
+  width: 100%;
+  font-size: 15px;
+}
+
+/* ===== Card ===== */
+.auth-card {
+  width: 100%;
+  max-width: 350px;
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  padding: 30px 35px;
+  margin: 0 auto;
+}
+
+/* ===== Titles ===== */
+.auth-title {
+  font-size: 1.5em;
+  font-weight: 700;
+  color: #006BCB;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.auth-subtitle {
+  color: rgba(0, 0, 0, 0.7);
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+/* ===== Form ===== */
+.field-label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.input-wrapper {
+  position: relative;
+  margin-bottom: 5px;
+}
+
+.input-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.5em;
+  opacity: 0.6;
+}
+
+.text-input {
+  width: 100%;
+  padding: 10px 35px 10px 0;
+  border-radius: 10px;
+  border: 1px solid #55A5EC;
+  background-color: #E1E7ED;
+  outline: none;
+}
+
+.text-input::placeholder {
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.error {
+  color: red;
+  margin-bottom: 20px;
+}
+
+/* ===== Divider ===== */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background-color: rgba(0,0,0,0.2);
+}
+
+.divider-text {
+  color: rgba(0,0,0,0.3);
+}
+
+/* ===== Google Button ===== */
+.google-btn {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid #E1E7ED;
+  background-color: #fff;
+  padding: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.google-btn img {
+  width: 2em;
+}

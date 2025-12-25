@@ -1,21 +1,11 @@
-.verify-page {
-  background-color: #d3dee7;
-  min-height: 100vh;
-  font-size: 15px;
-}
-
-.verify-container {
-  padding-top: 150px;
-}
-
 .verify-main {
-  width: 70%;
+  width: 100%;
   max-width: 350px;
   border-radius: 15px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-  margin: auto;
   background-color: white;
   padding: 30px 35px;
+  margin: 0 auto;
 }
 
 /* Icon */
@@ -28,13 +18,6 @@
 
 .verify-icon img {
   width: 70px;
-}
-
-/* subtitle */
-.verify-subtitle {
-  color: #006BCB;
-  text-align: center;
-  margin-bottom: 15px;
 }
 
 /* email info text */
