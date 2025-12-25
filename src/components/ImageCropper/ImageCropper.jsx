@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import PropTypes from "prop-types";
 import "../../styles/ImageCropper.css";
 import { uploadPostImage } from "../../Services/userService";
+import { config } from "../../config";
 
 const ImageCropper = ({
   image,
@@ -292,7 +293,7 @@ const handleCrop = async () => {
 
     const result = await uploadPostImage(blob);
 
-    const BACKEND_URL = "http://localhost:8000";
+    const BACKEND_URL = config.BACKEND_URL;
     let fullImageUrl;
     
     if (result.image.startsWith("http")) {

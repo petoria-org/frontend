@@ -1,7 +1,8 @@
 import axios from "axios";
+import { config } from "../config";
 
 const api = axios.create({
-  baseURL: "http://127.0.0.1:8000/api",
+  baseURL: config.API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -52,7 +53,7 @@ api.interceptors.response.use(
 
       try {
         const res = await axios.post(
-          "http://127.0.0.1:8000/api/users/token/refresh/",
+          `${config.API_BASE_URL}/users/token/refresh/`,
           { refresh }
         );
 

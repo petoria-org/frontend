@@ -1,14 +1,45 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
 
-function MessageBubble({ m, onReply, chatTitle }) {
+function MessageBubble({ m, onReply, chatTitle, onJumpToMessage }) {
   const isMine = m.side === "out";
   const safeText = m.text || "";
   const senderName = m.senderName || (isMine ? "You" : chatTitle || "Sender");
 
+  const reply = m.replyTo?.id
+    ? {
+        id: m.replyTo.id,
+        name: m.replyTo.sender_name || "User",
+        text: m.replyTo.content || "",
+      }
+    : null;
+
   return (
-    <div className={`msgRow ${isMine ? "msgRow--out" : "msgRow--in"}`}>
+    <div
+      className={`msgRow ${isMine ? "msgRow--out" : "msgRow--in"}`}
+      // ✅ observe only real server messages
+      data-msgid={m.id != null ? String(m.id) : ""}
+    >
       <div className={`msg ${isMine ? "msg--out" : ""}`}>
+        {reply && (
+          <div
+            className={`replyQuote ${isMine ? "replyQuote--out" : "replyQuote--in"}`}
+            role="button"
+            tabIndex={0}
+            title="Jump to replied message"
+            onClick={() => onJumpToMessage?.(reply.id)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") onJumpToMessage?.(reply.id);
+            }}
+          >
+            <div className="replyQuote__bar" />
+            <div className="replyQuote__content">
+              <div className="replyQuote__name">{reply.name}</div>
+              <div className="replyQuote__text">{reply.text}</div>
+            </div>
+          </div>
+        )}
+
         <button
           type="button"
           className={`msg__replyBtn ${isMine ? "msg__replyBtn--out" : "msg__replyBtn--in"}`}
@@ -35,7 +66,6 @@ function MessageBubble({ m, onReply, chatTitle }) {
   );
 }
 
-/** Portal menu rendered into <body> so it never gets clipped */
 function AttachMenuPortal({ open, anchorEl, onClose, onPick }) {
   const [pos, setPos] = useState({ top: 0, left: 0 });
 
@@ -44,9 +74,8 @@ function AttachMenuPortal({ open, anchorEl, onClose, onPick }) {
 
     const update = () => {
       const r = anchorEl.getBoundingClientRect();
-      // menu above the button (similar to your previous bottom: 48px)
-      const top = r.top - 8; // we will translate up with CSS via transform
-      const left = r.left;   // align left edge; rtl is ok
+      const top = r.top - 8;
+      const left = r.left;
       setPos({ top, left });
     };
 
@@ -59,11 +88,9 @@ function AttachMenuPortal({ open, anchorEl, onClose, onPick }) {
     };
   }, [open, anchorEl]);
 
-  // close on outside click (since it's in body)
   useEffect(() => {
     if (!open) return;
     const onDoc = (e) => {
-      // if click is on anchor, ignore (button handler already toggles)
       if (anchorEl && anchorEl.contains(e.target)) return;
       onClose?.();
     };
@@ -76,11 +103,7 @@ function AttachMenuPortal({ open, anchorEl, onClose, onPick }) {
   return createPortal(
     <div
       className="attachMenuPortal"
-      style={{
-        top: pos.top,
-        left: pos.left,
-        transform: "translateY(-100%)", // pop above the button
-      }}
+      style={{ top: pos.top, left: pos.left, transform: "translateY(-100%)" }}
       role="menu"
       aria-label="attach options"
     >
@@ -117,43 +140,53 @@ export default function OpenConv({
   onInputChange,
   onSend,
   onAttach,
+  onMountMessagesViewport,
 }) {
   const bottomRef = useRef(null);
   const attachBtnRef = useRef(null);
+  const messagesViewportRef = useRef(null);
+
   const [attachOpen, setAttachOpen] = useState(false);
   const [replyTarget, setReplyTarget] = useState(null);
 
   useEffect(() => {
+    onMountMessagesViewport?.(messagesViewportRef.current);
+  }, [onMountMessagesViewport]);
+
+  useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages.length]);
+  }, [chat?.id, messages.length]);
 
   useEffect(() => {
-    if (replyTarget) {
-      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [replyTarget]);
-
-  useEffect(() => {
-    // Clear reply when switching chats
     setReplyTarget(null);
   }, [chat?.id]);
 
-  const handleSendClick = () => {
+  const handleSendClick = useCallback(() => {
     if (!chat) return;
     if (!inputValue.trim()) return;
     onSend?.(replyTarget);
     setReplyTarget(null);
-  };
+  }, [chat, inputValue, onSend, replyTarget]);
 
-  const handleReplyPick = (msg) => {
-    if (!msg) return;
-    const textSnippet = (msg.text || "").trim();
-    setReplyTarget({
-      id: msg.id,
-      text: textSnippet || "(No text)",
-      senderName: msg.senderName || (msg.side === "out" ? "You" : chat?.title || "Sender"),
-    });
-  };
+  const handleReplyPick = useCallback(
+    (msg) => {
+      if (!msg?.id) return;
+      const textSnippet = (msg.text || "").trim();
+      setReplyTarget({
+        id: msg.id,
+        text: textSnippet || "(No text)",
+        senderName: msg.senderName || (msg.side === "out" ? "You" : chat?.title || "Sender"),
+      });
+    },
+    [chat?.title]
+  );
+
+  const jumpToMessage = useCallback((msgId) => {
+    const viewport = messagesViewportRef.current;
+    if (!viewport || !msgId) return;
+    const el = viewport.querySelector(`[data-msgid="${msgId}"]`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, []);
 
   if (!chat) {
     return (
@@ -167,7 +200,16 @@ export default function OpenConv({
 
   return (
     <section className="open">
-      <div style={{ display: "flex", flexDirection: "column", width: "100%", minHeight: 0 }}>
+      <div
+        className="open__col"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
+          height: "100%",
+          minHeight: 0,
+        }}
+      >
         <div className="open__top">
           <div className="open__profile">
             <img className="open__avatar" src={chat.avatar} alt={chat.title} />
@@ -180,35 +222,48 @@ export default function OpenConv({
           {chat.subtitle}
         </div>
 
-        <div className={replyTarget ? "open__messages open__messages--withReply" : "open__messages"}>
+        <div
+          ref={messagesViewportRef}
+          className="open__messages"
+          style={{
+            flex: 1,
+            minHeight: 0,
+            overflowY: "auto",
+            position: "relative",
+          }}
+        >
           {messages.map((m) => (
             <MessageBubble
-              key={m.id}
+              key={m.id ?? m.client_temp_id ?? `${m.time}_${Math.random()}`}
               m={m}
               onReply={handleReplyPick}
               chatTitle={chat.title}
+              onJumpToMessage={jumpToMessage}
             />
           ))}
           <div ref={bottomRef} />
         </div>
 
         {replyTarget && (
-          <div className="replyPreview" title={replyTarget.text}>
-            <div className="replyPreview__text">
-              ({replyTarget.senderName} : {replyTarget.text})
+          <div className="replyComposer" style={{ flex: "0 0 auto" }}>
+            <div className="replyComposer__bar" />
+            <div className="replyComposer__text">
+              <div className="replyComposer__name">{replyTarget.senderName}</div>
+              <div className="replyComposer__snippet">{replyTarget.text}</div>
             </div>
             <button
               type="button"
-              className="replyPreview__close"
+              className="replyComposer__close"
               aria-label="cancel reply"
               onClick={() => setReplyTarget(null)}
+              title="Cancel reply"
             >
-              x
+              ×
             </button>
           </div>
         )}
 
-        <div className="open__composer">
+        <div className="open__composer" style={{ flex: "0 0 auto" }}>
           <button
             className="sendBtn"
             type="button"
