@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
 
 function MessageBubble({ m, onReply, chatTitle, onJumpToMessage }) {
@@ -17,7 +17,8 @@ function MessageBubble({ m, onReply, chatTitle, onJumpToMessage }) {
   return (
     <div
       className={`msgRow ${isMine ? "msgRow--out" : "msgRow--in"}`}
-      data-msgid={m.id ?? ""}
+      // ✅ observe only real server messages
+      data-msgid={m.id != null ? String(m.id) : ""}
     >
       <div className={`msg ${isMine ? "msg--out" : ""}`}>
         {reply && (
@@ -148,43 +149,44 @@ export default function OpenConv({
   const [attachOpen, setAttachOpen] = useState(false);
   const [replyTarget, setReplyTarget] = useState(null);
 
-  // expose viewport to parent (seen observer)
   useEffect(() => {
     onMountMessagesViewport?.(messagesViewportRef.current);
   }, [onMountMessagesViewport]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages.length]);
+  }, [chat?.id, messages.length]);
 
   useEffect(() => {
     setReplyTarget(null);
   }, [chat?.id]);
 
-  const handleSendClick = () => {
+  const handleSendClick = useCallback(() => {
     if (!chat) return;
     if (!inputValue.trim()) return;
     onSend?.(replyTarget);
     setReplyTarget(null);
-  };
+  }, [chat, inputValue, onSend, replyTarget]);
 
-  const handleReplyPick = (msg) => {
-    if (!msg?.id) return;
-    const textSnippet = (msg.text || "").trim();
-    setReplyTarget({
-      id: msg.id,
-      text: textSnippet || "(No text)",
-      senderName:
-        msg.senderName || (msg.side === "out" ? "You" : chat?.title || "Sender"),
-    });
-  };
+  const handleReplyPick = useCallback(
+    (msg) => {
+      if (!msg?.id) return;
+      const textSnippet = (msg.text || "").trim();
+      setReplyTarget({
+        id: msg.id,
+        text: textSnippet || "(No text)",
+        senderName: msg.senderName || (msg.side === "out" ? "You" : chat?.title || "Sender"),
+      });
+    },
+    [chat?.title]
+  );
 
-  const jumpToMessage = (msgId) => {
+  const jumpToMessage = useCallback((msgId) => {
     const viewport = messagesViewportRef.current;
     if (!viewport || !msgId) return;
     const el = viewport.querySelector(`[data-msgid="${msgId}"]`);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
-  };
+  }, []);
 
   if (!chat) {
     return (
@@ -198,7 +200,6 @@ export default function OpenConv({
 
   return (
     <section className="open">
-      {/* ✅ CSS-proof layout */}
       <div
         className="open__col"
         style={{
@@ -221,7 +222,6 @@ export default function OpenConv({
           {chat.subtitle}
         </div>
 
-        {/* ✅ messages area must be scroll container and flex:1 */}
         <div
           ref={messagesViewportRef}
           className="open__messages"
@@ -244,7 +244,6 @@ export default function OpenConv({
           <div ref={bottomRef} />
         </div>
 
-        {/* ✅ reply bar sits ABOVE composer, never overlays input */}
         {replyTarget && (
           <div className="replyComposer" style={{ flex: "0 0 auto" }}>
             <div className="replyComposer__bar" />
@@ -264,7 +263,6 @@ export default function OpenConv({
           </div>
         )}
 
-        {/* ✅ composer always at bottom */}
         <div className="open__composer" style={{ flex: "0 0 auto" }}>
           <button
             className="sendBtn"
