@@ -1,13 +1,12 @@
 .hero-container {
   height: 430px;
   width: 98%;
-  margin: 80px auto 0 auto;
+  margin: 0 auto;
   background-color: #55A5EC;
   border-radius: 12px;
   padding: 40px 24px;
   text-align: center;
   color: white;
-  box-sizing: border-box;
 }
 
 .hero-logo {

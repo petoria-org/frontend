@@ -1,6 +1,4 @@
 .user-profile-page {
-  background-color: #d3dee7;
-  min-height: 100vh;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -12,7 +10,6 @@
 
 .user-profile-page main {
   flex: 1;
-  padding: 26px 26px 32px;
   display: flex;
   flex-direction: column;
   gap: 32px;
