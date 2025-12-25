@@ -18,7 +18,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-import Verify from "./pages/verify";
+import Verify from "./pages/Verify";
 import LocationPicker from "./pages/LocationPicker/LocationPicker";
 
 // Protected pages

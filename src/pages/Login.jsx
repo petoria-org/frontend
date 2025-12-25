@@ -1,4 +1,4 @@
-import "../styles/Login.css";
+import "../styles/login.css";
 import "../styles/AuthCommon.css";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";

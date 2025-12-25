@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/NotificationOptionsSection.css";
-import searchIcon from '../../assets/icons/search.svg';
+import searchIcon from '../../assets/icons/Search.svg';
 import checkmarkIcon from '../../assets/icons/Checkmark Color.svg';
 import heartIcon from '../../assets/icons/Vector.svg';
 import calendarIcon from '../../assets/icons/calendar-2.svg';
