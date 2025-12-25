@@ -147,6 +147,7 @@ export default function OpenConv({
   const messagesViewportRef = useRef(null);
   const pendingScrollOnSendRef = useRef(false);
   const prevMessageCountRef = useRef(Array.isArray(messages) ? messages.length : 0);
+  const initialScrollDoneRef = useRef(false);
 
   const [attachOpen, setAttachOpen] = useState(false);
   const [replyTarget, setReplyTarget] = useState(null);
@@ -163,7 +164,10 @@ export default function OpenConv({
     const hasNewOutgoing = newMessages.some((msg) => msg?.side === "out");
 
     if (pendingScrollOnSendRef.current && hasNewOutgoing) {
-      bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+      const viewport = messagesViewportRef.current;
+      if (viewport) {
+        viewport.scrollTo({ top: viewport.scrollHeight, behavior: "smooth" });
+      }
       pendingScrollOnSendRef.current = false;
     }
 
@@ -173,6 +177,42 @@ export default function OpenConv({
   useEffect(() => {
     setReplyTarget(null);
   }, [chat?.id]);
+
+  useEffect(() => {
+    pendingScrollOnSendRef.current = false;
+    initialScrollDoneRef.current = false;
+    prevMessageCountRef.current = 0;
+  }, [chat?.id]);
+
+  useEffect(() => {
+    if (initialScrollDoneRef.current) return;
+
+    const viewport = messagesViewportRef.current;
+    if (!viewport) return;
+    if (!Array.isArray(messages) || messages.length === 0) return;
+
+    const isLoadingPlaceholder = messages.length === 1 && messages[0]?.id === "loading";
+    if (isLoadingPlaceholder) return;
+
+    const firstUnread = messages.find(
+      (m) => m && m.side !== "out" && !m.is_read && m.id != null
+    );
+
+    if (firstUnread) {
+      const target = viewport.querySelector(`[data-msgid="${firstUnread.id}"]`);
+      if (target) {
+        const top = Math.max(target.offsetTop - 8, 0); // slight offset from top
+        viewport.scrollTo({ top, behavior: "auto" });
+        initialScrollDoneRef.current = true;
+        return;
+      }
+    }
+
+    if (viewport) {
+      viewport.scrollTo({ top: viewport.scrollHeight, behavior: "auto" });
+      initialScrollDoneRef.current = true;
+    }
+  }, [messages]);
 
   const handleSendClick = useCallback(() => {
     if (!chat) return;
