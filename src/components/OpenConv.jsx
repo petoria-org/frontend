@@ -145,6 +145,8 @@ export default function OpenConv({
   const bottomRef = useRef(null);
   const attachBtnRef = useRef(null);
   const messagesViewportRef = useRef(null);
+  const pendingScrollOnSendRef = useRef(false);
+  const prevMessageCountRef = useRef(Array.isArray(messages) ? messages.length : 0);
 
   const [attachOpen, setAttachOpen] = useState(false);
   const [replyTarget, setReplyTarget] = useState(null);
@@ -153,16 +155,20 @@ export default function OpenConv({
     onMountMessagesViewport?.(messagesViewportRef.current);
   }, [onMountMessagesViewport]);
 
-useEffect(() => {
-  const viewport = messagesViewportRef.current;
-  if (!viewport) return;
+  useEffect(() => {
+    const prevCount = prevMessageCountRef.current;
+    const nextCount = Array.isArray(messages) ? messages.length : 0;
+    const newMessages =
+      Array.isArray(messages) && nextCount > prevCount ? messages.slice(prevCount, nextCount) : [];
+    const hasNewOutgoing = newMessages.some((msg) => msg?.side === "out");
 
-  viewport.scrollTo({
-    top: viewport.scrollHeight,
-    behavior: "smooth",
-  });
-}, [chat?.id, messages.length]);
+    if (pendingScrollOnSendRef.current && hasNewOutgoing) {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+      pendingScrollOnSendRef.current = false;
+    }
 
+    prevMessageCountRef.current = nextCount;
+  }, [messages]);
 
   useEffect(() => {
     setReplyTarget(null);
@@ -171,6 +177,7 @@ useEffect(() => {
   const handleSendClick = useCallback(() => {
     if (!chat) return;
     if (!inputValue.trim()) return;
+    pendingScrollOnSendRef.current = true;
     onSend?.(replyTarget);
     setReplyTarget(null);
   }, [chat, inputValue, onSend, replyTarget]);
