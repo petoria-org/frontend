@@ -20,17 +20,21 @@ import {
   updateLostPost,
   updateFoundPost,
   updateSurrenderPost,
+  createLostPost,
+  createFoundPost,
+  createSurrenderPost,
   deletePostImage
 } from "../../Services/userService";
 import moment from 'jalali-moment';
 import fa from 'date-fns/locale/fa-IR';
 import DatePickerModule from "react-multi-date-picker";
-const DatePicker = DatePickerModule.default || DatePickerModule;
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
+import { useOutletContext } from "react-router-dom";
 import "../../styles/DatePickerCustom.css";
 import DeleteConfirmationModal from '../DeleteConfirmationModal/DeleteConfirmationModal';
 
+const DatePicker = DatePickerModule.default || DatePickerModule;
 
 const toInputDateTime = (iso) => {
   if (!iso) return "";
@@ -263,8 +267,10 @@ const PersianDatePickerInput = React.forwardRef(({ value, onClick, placeholder, 
 
 PersianDatePickerInput.displayName = 'PersianDatePickerInput';
 
-export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
-  const [formData, setFormData] = useState({
+export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) => {
+  const isEdit = mode === "edit";
+
+  const initialFormState = {
     name: "",
     type: "",
     age: "",
@@ -293,7 +299,9 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
     district: "",
     state: "",
     road: ""
-  });
+  };
+
+  const [formData, setFormData] = useState(initialFormState);
 
   const [selectedAdType, setSelectedAdType] = useState("lost");
   const [notification, setNotification] = useState(null);
@@ -307,7 +315,36 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [imageToDelete, setImageToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  
+
+  const { setHideNavbar, setHideFooter } = useOutletContext();
+
+  useEffect(() => {
+    const shouldHide =
+      mode === "edit" || showMapPicker || cropModalOpen;
+
+    if (shouldHide) {
+      setHideNavbar(true);
+      setHideFooter(true);
+      document.body.style.overflow = "hidden";
+    } else {
+      setHideNavbar(false);
+      setHideFooter(false);
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      setHideNavbar(false);
+      setHideFooter(false);
+      document.body.style.overflow = "";
+    };
+  }, [
+    mode,
+    showMapPicker,
+    cropModalOpen,
+    setHideNavbar,
+    setHideFooter
+  ]);
+    
   useEffect(() => {
     if (!adData) return;
 
@@ -759,6 +796,31 @@ const handleCropComplete = async (croppedResult) => {
     setShowMapPicker(false);
   };
 
+  const resetForm = () => {
+    setFormData(initialFormState);
+    setSelectedLocation(null);
+    setSelectedAdType("lost");
+    setNotification(null);
+    setShowMapPicker(false);
+    setCropModalOpen(false);
+    setImageToCrop(null);
+    setCurrentImageIndex(null);
+    setShowDeleteModal(false);
+    setImageToDelete(null);
+    setIsDeleting(false);
+    setIsLoading(false);
+  };
+
+  const handleCancel = () => {
+    if (mode === "edit") {
+      onClose?.();
+    }
+
+    if (mode === "create") {
+      resetForm();
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -772,7 +834,7 @@ const handleCropComplete = async (croppedResult) => {
           road: selectedLocation.road,
           latitude: selectedLocation.lat.toString(),
           longitude: selectedLocation.lng.toString(),
-          readable: selectedLocation.readable
+          readable: selectedLocation.readable,
         }
       : null;
 
@@ -783,6 +845,7 @@ const handleCropComplete = async (croppedResult) => {
     const payload = {
       title: formData.type,
       pet_name: formData.name,
+      breed: formData.breed || "",
       pet_type: formData.animalType === "گربه" ? "cat" : "dog",
       pet_sex: formData.gender === "نر" ? "male" : "female",
       pet_age: formData.age || null,
@@ -793,7 +856,7 @@ const handleCropComplete = async (croppedResult) => {
       vaccination: formData.isVaccinated,
       steriliz: formData.isSterilized,
       contact_email: formData.contact_email,
-      location: locationPayload
+      location: locationPayload,
     };
 
     if (imageIds.length > 0) {
@@ -810,31 +873,51 @@ const handleCropComplete = async (croppedResult) => {
 
     try {
       let result;
-      if (selectedAdType === "lost") {
-        payload.lost_time = toISO(formData.lostTime);
-        result = await updateLostPost(adData.id, payload);
-      } 
-      
-      else if (selectedAdType === "found") {
-        payload.found_time = toISO(formData.foundTime);
-        result = await updateFoundPost(adData.id, payload);
-      } 
-      
-      else if (selectedAdType === "adoption") {
-        result = await updateSurrenderPost(adData.id, payload);
+
+      /* ================= EDIT ================= */
+      if (mode === "edit") {
+        if (selectedAdType === "lost") {
+          payload.lost_time = toISO(formData.lostTime);
+          result = await updateLostPost(adData.id, payload);
+        } 
+        else if (selectedAdType === "found") {
+          payload.found_time = toISO(formData.foundTime);
+          result = await updateFoundPost(adData.id, payload);
+        } 
+        else if (selectedAdType === "adoption") {
+          result = await updateSurrenderPost(adData.id, payload);
+        }
+
+        showNotification("آگهی با موفقیت ویرایش شد", "success");
       }
 
-      showNotification("آگهی با موفقیت ویرایش شد", "success");
-      
+      /* ================= CREATE ================= */
+      if (mode === "create") {
+        if (selectedAdType === "lost") {
+          payload.lost_time = toISO(formData.lostTime);
+          result = await createLostPost(payload);
+        } 
+        else if (selectedAdType === "found") {
+          payload.found_time = toISO(formData.foundTime);
+          result = await createFoundPost(payload);
+        } 
+        else if (selectedAdType === "adoption") {
+          result = await createSurrenderPost(payload);
+        }
+
+        showNotification("آگهی با موفقیت ثبت شد", "success");
+      }
+
       setTimeout(() => {
-        onSave(result || payload);
+        resetForm();
+        onSave?.(result?.data || result);
         setIsLoading(false);
-      }, 1500);
+      }, 1200);
 
     } catch (err) {
-      console.error("Update error:", err);
+      console.error("Submit error:", err);
       setIsLoading(false);
-      showNotification("خطا در ویرایش آگهی. لطفاً دوباره تلاش کنید", "error");
+      showNotification("خطا در ثبت آگهی. لطفاً دوباره تلاش کنید", "error");
     }
   };
 
@@ -920,7 +1003,7 @@ const handleCropComplete = async (croppedResult) => {
           disabled={isLoading}
         >
           <img src={mapIcon} alt="تغییر موقعیت" />
-          تغییر موقعیت
+          {selectedLocation ? "تغییر موقعیت" : "ثبت موقعیت"}
         </button>
       </div>
     );
@@ -947,14 +1030,17 @@ const handleCropComplete = async (croppedResult) => {
             <div className="notification-options-inner">
               
               <div className="form-section-header">
-                <h2 className="notification-options-title">ویرایش آگهی</h2>
-                <button 
-                  onClick={onClose}
-                  className="close-button"
-                  disabled={isLoading}
-                >
-                  ×
-                </button>
+                <h2 className="notification-options-title">{isEdit ? "ویرایش آگهی" : "ثبت آگهی جدید"}</h2>
+                {isEdit && (
+                  <button
+                    onClick={onClose}
+                    className="close-button"
+                    disabled={isLoading}
+                  >
+                    ×
+                  </button>
+                )}
+
               </div>
 
               <form onSubmit={handleSubmit}>
@@ -1555,7 +1641,7 @@ const handleCropComplete = async (croppedResult) => {
                   <button 
                     type="button" 
                     className="form-button form-button-cancel"
-                    onClick={onClose}
+                    onClick={handleCancel}
                     disabled={isLoading}
                   >
                     انصراف
@@ -1565,7 +1651,14 @@ const handleCropComplete = async (croppedResult) => {
                     className={`form-button form-button-submit ${isLoading ? 'loading' : ''}`}
                     disabled={isLoading}
                   >
-                    {isLoading ? "در حال ذخیره..." : "ذخیره تغییرات"}
+                    {isLoading
+                      ? isEdit
+                        ? "در حال ذخیره..."
+                        : "در حال ثبت..."
+                      : isEdit
+                        ? "ذخیره تغییرات"
+                        : "ثبت آگهی"
+                    }
                   </button>
                 </div>
               </form>
