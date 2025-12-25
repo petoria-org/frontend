@@ -9,10 +9,10 @@ const Navbar = () => {
   const handleNewAd = () => {
     if (!isLoggedIn) {
       navigate("/login", {
-        state: { from: "/pick-location" },
+        state: { from: "/create-ad" },
       });
     } else {
-      navigate("/pick-location");
+      navigate("/create-ad");
     }
   };
 
