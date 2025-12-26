@@ -30,9 +30,6 @@ export default function Conversations({
               />
               <div className="name_hint_container">
                 <div className="convItem__name">{c.name}</div>
-                <span className={`convItem__tag convItem__tag--${c.tagStyle || "blue"}`}>
-                  {c.tag}
-                </span>
                 <div className="convItem__hint">{c.hint}</div>
               </div>
 

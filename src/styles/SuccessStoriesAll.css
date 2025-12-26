@@ -1,29 +1,23 @@
 .success-stories-container-all {
-  background: linear-gradient(135deg, #f5f9ff 0%, #e8f2ff 50%, #f5f9ff 100%);
-  min-height: 100vh;
-  direction: rtl;
-  padding: 0;
   position: relative;
-  overflow-x: hidden;
+  direction: rtl;
+  overflow: hidden;
 }
 
 .blue-waves-all {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  inset: 0;
   background: 
     radial-gradient(circle at 20% 80%, rgba(28, 123, 209, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(74, 159, 227, 0.05) 0%, transparent 50%),
-    linear-gradient(135deg, #f5f9ff 0%, #e8f2ff 100%);
-  z-index: -1;
+    radial-gradient(circle at 80% 20%, rgba(74, 159, 227, 0.05) 0%, transparent 50%);
+  z-index: 0;
 }
 
 .success-stories-main-all {
   max-width: 1300px;
   margin: 0 auto;
-  padding: 100px 20px;
+  position: relative;
+  z-index: 1;
 }
 
 .stories-card-all {

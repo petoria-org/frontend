@@ -56,6 +56,14 @@
   background: #a8a8a8;
 }
 
+.create-ad-page .notification-options-content {
+  overflow-y: visible !important;
+  max-height: none !important;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
 .notification-options-inner {
   display: flex;
   flex-direction: column;

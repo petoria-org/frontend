@@ -1,4 +1,5 @@
 import "../styles/ResetPassword.css";
+import "../styles/AuthCommon.css";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -53,54 +54,52 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="reset-password-page">
-      <div className="reset-password-container">
-        <div className="reset-password-main">
-          <h2 className="reset-password-title">بازیابی رمز عبور</h2>
-          <p className="reset-password-subtitle">رمز عبور جدید خود را وارد کنید</p>
-            <form onSubmit={handleSubmit(onSubmit)} >
-              {/* New password */}
-              <label className="field-label">
-                  رمز عبور جدید
-              </label>
-              <div className="input-wrapper">
-                <img className="input-icon" src="/src/icons/lock.svg" alt="lock" />
-                <input
-                  type="password"
-                  className="text-input"
-                  placeholder="حداقل 8 کاراکتر"
-                  {...register("password")}
-                />
-              </div>
-              <p className="error">{errors.password?.message}</p>
+    <div className="auth-page">
+      <div className="reset-password-main">
+        <h2 className="auth-title">بازیابی رمز عبور</h2>
+        <p className="auth-subtitle">رمز عبور جدید خود را وارد کنید</p>
+          <form onSubmit={handleSubmit(onSubmit)} >
+            {/* New password */}
+            <label className="field-label">
+                رمز عبور جدید
+            </label>
+            <div className="input-wrapper">
+              <img className="input-icon" src="/src/icons/lock.svg" alt="lock" />
+              <input
+                type="password"
+                className="text-input"
+                placeholder="حداقل 8 کاراکتر"
+                {...register("password")}
+              />
+            </div>
+            <p className="error">{errors.password?.message}</p>
 
-              {/* Confirm password */}
-              <label className="field-label">
-                  تأیید رمز عبور
-              </label>
-              <div className="input-wrapper">
-                <img className="input-icon" src="/src/icons/lock.svg" alt="lock" />
-                <input
-                  type="password"
-                  className="text-input"
-                  placeholder="رمز عبور را دوباره وارد کنید"
-                  {...register("confirmPassword")}
-                />
-              </div>
-              <p className="error">{errors.confirmPassword?.message}</p>
+            {/* Confirm password */}
+            <label className="field-label">
+                تأیید رمز عبور
+            </label>
+            <div className="input-wrapper">
+              <img className="input-icon" src="/src/icons/lock.svg" alt="lock" />
+              <input
+                type="password"
+                className="text-input"
+                placeholder="رمز عبور را دوباره وارد کنید"
+                {...register("confirmPassword")}
+              />
+            </div>
+            <p className="error">{errors.confirmPassword?.message}</p>
 
 
-              {/* Reset password button */}
-              <button type="submit" className="reset-password-btn" disabled={isLoading}>
-              تغییر رمز عبور
-            </button>
-          </form>
-          <p className="reset-password">
-            <Link className="reset-password-link" to="/login">
-              بازگشت به ورود
-            </Link>
-          </p>
-        </div>
+            {/* Reset password button */}
+            <button type="submit" className="reset-password-btn" disabled={isLoading}>
+            تغییر رمز عبور
+          </button>
+        </form>
+        <p className="reset-password">
+          <Link className="reset-password-link" to="/login">
+            بازگشت به ورود
+          </Link>
+        </p>
       </div>
     </div>
   );

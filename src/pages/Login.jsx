@@ -1,4 +1,4 @@
-import "../styles/Login.css";
+import "../styles/login.css";
 import "../styles/AuthCommon.css";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -12,7 +12,6 @@ const Login = () => {
   const { login } = useAuth();
   const location = useLocation();
   const from = location.state?.from || "/";
-
 
   const schema = yup.object().shape({
     identifier: yup.string().required("ایمیل یا نام کاربری الزامی است"),
@@ -31,7 +30,6 @@ const Login = () => {
     const response = await loginRequest(data);
 
     if (response.success) {
-      // ✅ Only context handles tokens
       login({
         access: response.data.access,
         refresh: response.data.refresh,
@@ -44,88 +42,86 @@ const Login = () => {
   };
 
   return (
-    <div className="login-page">
-      <div className="login-container">
-        <div className="login-main">
-          <div className="login-card">
-            <h2 className="login-title">ورود به حساب کاربری</h2>
-            <p className="login-subtitle">به Petoria خوش آمدید</p>
+    <div className="auth-page">
+      <div className="login-main">
+        <div className="login-card">
+          <h2 className="auth-title">ورود به حساب کاربری</h2>
+          <p className="auth-subtitle">به Petoria خوش آمدید</p>
 
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <label className="field-label">ایمیل یا نام کاربری*</label>
-              <div className="input-wrapper">
-                <img
-                  className="input-icon"
-                  src="/src/icons/profile-circle.svg"
-                  alt="profile"
-                />
-                <input
-                  type="text"
-                  className="text-input"
-                  placeholder="ایمیل یا نام کاربری خود را وارد کنید"
-                  {...register("identifier")}
-                />
-              </div>
-              <p className="error">{errors.identifier?.message}</p>
-
-              <label className="field-label">رمز عبور*</label>
-              <div className="input-wrapper">
-                <img
-                  className="input-icon"
-                  src="/src/icons/lock.svg"
-                  alt="lock"
-                />
-                <input
-                  type="password"
-                  className="text-input"
-                  placeholder="رمز عبور خود را وارد کنید"
-                  {...register("password")}
-                />
-              </div>
-              <p className="error">{errors.password?.message}</p>
-
-              <Link className="forgot-pass" to="/forgot-password">
-                رمز عبور خود را فراموش کرده‌اید؟
-              </Link>
-
-              <button
-                className="login-btn"
-                type="submit"
-                disabled={isSubmitting}
-              >
-                <span>{isSubmitting ? "در حال ورود..." : "ورود"}</span>
-                {!isSubmitting && (
-                  <img
-                    className="arrow"
-                    src="/src/icons/arrow-right.svg"
-                    alt="arrow"
-                  />
-                )}
-              </button>
-            </form>
-
-            <div className="divider">
-              <span className="divider-line" />
-              <span className="divider-text">یا</span>
-              <span className="divider-line" />
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <label className="field-label">ایمیل یا نام کاربری*</label>
+            <div className="input-wrapper">
+              <img
+                className="input-icon"
+                src="/src/icons/profile-circle.svg"
+                alt="profile"
+              />
+              <input
+                type="text"
+                className="text-input"
+                placeholder="ایمیل یا نام کاربری خود را وارد کنید"
+                {...register("identifier")}
+              />
             </div>
+            <p className="error">{errors.identifier?.message}</p>
 
-            <button className="google-btn">
-              <span>ورود با حساب گوگل</span>
-              <img src="/src/icons/chrome.svg" alt="chrome" />
+            <label className="field-label">رمز عبور*</label>
+            <div className="input-wrapper">
+              <img
+                className="input-icon"
+                src="/src/icons/lock.svg"
+                alt="lock"
+              />
+              <input
+                type="password"
+                className="text-input"
+                placeholder="رمز عبور خود را وارد کنید"
+                {...register("password")}
+              />
+            </div>
+            <p className="error">{errors.password?.message}</p>
+
+            <Link className="forgot-pass" to="/forgot-password">
+              رمز عبور خود را فراموش کرده‌اید؟
+            </Link>
+
+            <button
+              className="login-btn"
+              type="submit"
+              disabled={isSubmitting}
+            >
+              <span>{isSubmitting ? "در حال ورود..." : "ورود"}</span>
+              {!isSubmitting && (
+                <img
+                  className="arrow"
+                  src="/src/icons/arrow-right.svg"
+                  alt="arrow"
+                />
+              )}
             </button>
+          </form>
 
-            <p className="signup-text">
-              حساب کاربری ندارید؟{" "}
-              <Link className="signup-link" to="/register">
-                ثبت نام کنید
-              </Link>
-            </p>
+          <div className="divider">
+            <span className="divider-line" />
+            <span className="divider-text">یا</span>
+            <span className="divider-line" />
           </div>
 
-          <div className="login-img">
-            <img src="/src/images/dog.svg" alt="dog" />
-          </div>
+          <button className="google-btn">
+            <span>ورود با حساب گوگل</span>
+            <img src="/src/icons/chrome.svg" alt="chrome" />
+          </button>
+
+          <p className="signup-text">
+            حساب کاربری ندارید؟{" "}
+            <Link className="signup-link" to="/register">
+              ثبت نام کنید
+            </Link>
+          </p>
+        </div>
+
+        <div className="login-img">
+          <img src="/src/images/dog.svg" alt="dog" />
         </div>
       </div>
     </div>
