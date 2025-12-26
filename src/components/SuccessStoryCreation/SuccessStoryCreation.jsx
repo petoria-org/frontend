@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import "../../styles/SuccessStoryCreation.css";
+import { useOutletContext } from "react-router-dom";
 
 export const SuccessStoryCreation = ({ pet, onSave, onCancel, onRemove }) => {
   const [images, setImages] = useState([]);
@@ -9,13 +10,21 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onRemove }) => {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const fileInputRef = useRef(null);
   const dropZoneRef = useRef(null);
+  const { setHideNavbar, setHideFooter } = useOutletContext();
 
   useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+
+    setHideNavbar(true);
+    setHideFooter(true);
     document.body.style.overflow = "hidden";
+
     return () => {
-      document.body.style.overflow = "";
+      setHideNavbar(false);
+      setHideFooter(false);
+      document.body.style.overflow = originalOverflow;
     };
-  }, []);
+  }, [setHideNavbar, setHideFooter]);
 
   useEffect(() => {
     if (pet?.successStory) {

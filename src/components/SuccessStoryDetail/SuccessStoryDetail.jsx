@@ -1,23 +1,30 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/SuccessStoryDetail.css";
+import { useOutletContext } from "react-router-dom";
 
 export const SuccessStoryDetail = ({ story, onClose }) => {
   const [selectedImage, setSelectedImage] = useState(story.images && story.images.length > 0 ? story.images[0] : story.image);
-    
-  useEffect(() => {
-    const originalStyle = window.getComputedStyle(document.body).overflow;
-    document.body.style.overflow = 'hidden';
-    
-    return () => {
-      document.body.style.overflow = originalStyle;
-    };
-  }, []);
+  const { setHideNavbar, setHideFooter } = useOutletContext();
 
-    const storyImages = story.images && story.images.length > 0
-    ? story.images
-    : story.image
-        ? [story.image]
-        : [];
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+
+    setHideNavbar(true);
+    setHideFooter(true);
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      setHideNavbar(false);
+      setHideFooter(false);
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [setHideNavbar, setHideFooter]);
+
+  const storyImages = story.images && story.images.length > 0
+  ? story.images
+  : story.image
+      ? [story.image]
+      : [];
 
   const BackIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
