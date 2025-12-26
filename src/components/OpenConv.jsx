@@ -15,10 +15,7 @@ function MessageBubble({ m, onReply, chatTitle, onJumpToMessage }) {
     : null;
 
   return (
-    <div
-      className={`msgRow ${isMine ? "msgRow--out" : "msgRow--in"}`}
-      data-msgid={m.id != null ? String(m.id) : ""}
-    >
+    <div className={`msgRow ${isMine ? "msgRow--out" : "msgRow--in"}`} data-msgid={m.id != null ? String(m.id) : ""}>
       <div className={`msg ${isMine ? "msg--out" : ""}`}>
         {reply && (
           <div
@@ -53,7 +50,6 @@ function MessageBubble({ m, onReply, chatTitle, onJumpToMessage }) {
 
         <div className="msg__meta">
           <span className="msg__time">{m.time}</span>
-
           {isMine && (
             <span className={`msg__tick msg__tick--${m.status || "sent"}`}>
               {m.status === "seen" ? "✓✓" : "✓"}
@@ -73,9 +69,7 @@ function AttachMenuPortal({ open, anchorEl, onClose, onPick }) {
 
     const update = () => {
       const r = anchorEl.getBoundingClientRect();
-      const top = r.top - 8;
-      const left = r.left;
-      setPos({ top, left });
+      setPos({ top: r.top - 8, left: r.left });
     };
 
     update();
@@ -152,17 +146,17 @@ export default function OpenConv({
   const [attachOpen, setAttachOpen] = useState(false);
   const [replyTarget, setReplyTarget] = useState(null);
 
-  // ✅ callback ref: ensures parent gets element reliably
+  // ✅ callback ref so parent ALWAYS receives the DOM element
   const setViewportEl = useCallback(
     (el) => {
       messagesViewportRef.current = el || null;
-      console.log("[OpenConv] setViewportEl called:", { hasEl: !!el, chatId: chat?.id });
+      console.log("[OpenConv] setViewportEl:", { hasEl: !!el, chatId: chat?.id });
       onMountMessagesViewport?.(el || null);
     },
     [onMountMessagesViewport, chat?.id]
   );
 
-  // debug: ensure nodes exist
+  // debug
   useEffect(() => {
     const vp = messagesViewportRef.current;
     if (!vp) return;
@@ -180,8 +174,7 @@ export default function OpenConv({
   useEffect(() => {
     const prevCount = prevMessageCountRef.current;
     const nextCount = Array.isArray(messages) ? messages.length : 0;
-    const newMessages =
-      Array.isArray(messages) && nextCount > prevCount ? messages.slice(prevCount, nextCount) : [];
+    const newMessages = nextCount > prevCount ? messages.slice(prevCount, nextCount) : [];
     const hasNewOutgoing = newMessages.some((msg) => msg?.side === "out");
 
     if (pendingScrollOnSendRef.current && hasNewOutgoing) {
@@ -218,8 +211,7 @@ export default function OpenConv({
     if (firstUnread) {
       const target = viewport.querySelector(`[data-msgid="${firstUnread.id}"]`);
       if (target) {
-        const top = Math.max(target.offsetTop - 8, 0);
-        viewport.scrollTo({ top, behavior: "auto" });
+        viewport.scrollTo({ top: Math.max(target.offsetTop - 8, 0), behavior: "auto" });
         initialScrollDoneRef.current = true;
         return;
       }
@@ -286,11 +278,6 @@ export default function OpenConv({
           </div>
         </div>
 
-        <div className="open__sub">
-          <span className="open__subIcon">🐾</span>
-          {chat.subtitle}
-        </div>
-
         <div
           ref={setViewportEl}
           className="open__messages"
@@ -345,6 +332,7 @@ export default function OpenConv({
 
           <div className="attachWrap">
             <button
+              ref={attachBtnRef}
               className="iconBtn"
               type="button"
               aria-label="attach"
