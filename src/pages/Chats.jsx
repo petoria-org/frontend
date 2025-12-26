@@ -41,6 +41,20 @@ function getChatSortTime(chat) {
 }
 
 export default function ChatPage() {
+  // =========================
+  // DEBUG
+  // =========================
+  const DEBUG = true;
+  const dlog = useCallback(
+    (...args) => {
+      if (DEBUG) console.log(...args);
+    },
+    [DEBUG]
+  );
+
+  // 🔥 If you do NOT see this log, you are not on this file/component.
+  dlog("🔥 [Chat.jsx] ChatPage render (IF YOU DON'T SEE THIS, WRONG FILE/ROUTE)");
+
   const [chats, setChats] = useState([]);
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [inputValue, setInputValue] = useState("");
@@ -52,6 +66,9 @@ export default function ChatPage() {
   const recipientRef = useRef(null);
 
   const currentUserId = useMemo(() => getCurrentUserIdFromAccessToken(), []);
+  useEffect(() => {
+    dlog("[Auth] currentUserId:", currentUserId);
+  }, [currentUserId, dlog]);
 
   // WS refs
   const wsRef = useRef(null);
@@ -76,87 +93,359 @@ export default function ChatPage() {
     recipientRef.current = recipient;
   }, [recipient]);
 
-  const wsSend = useCallback((payload) => {
-    const ws = wsRef.current;
-    if (!ws || ws.readyState !== WebSocket.OPEN) return false;
-    try {
-      ws.send(JSON.stringify(payload));
-      return true;
-    } catch (e) {
-      console.error("WS send failed:", e);
-      return false;
+// ✅ fallback: if OpenConv doesn't provide viewport, grab it from DOM
+  useEffect(() => {
+    if (messagesViewportRef.current) return;
+    const el = document.querySelector(".open__messages");
+    if (el) {
+      messagesViewportRef.current = el;
+      dlog("[Viewport fallback] grabbed .open__messages from DOM", { ok: true });
+    } else {
+      dlog("[Viewport fallback] .open__messages not found yet", { ok: false });
     }
-  }, []);
+  }, [selectedChatId, messages.length, dlog]);
 
-  // ===== Seen tracking (mark_read) =====
-  const messagesViewportRef = useRef(null);
-  const observerRef = useRef(null);
+  const wsSend = useCallback(
+    (payload) => {
+      const ws = wsRef.current;
+      const state = ws ? ws.readyState : -1;
+      const stateName =
+        state === WebSocket.CONNECTING
+          ? "CONNECTING"
+          : state === WebSocket.OPEN
+          ? "OPEN"
+          : state === WebSocket.CLOSING
+          ? "CLOSING"
+          : state === WebSocket.CLOSED
+          ? "CLOSED"
+          : "NO_WS";
 
-  // messages already queued/sent for this chat (prevents duplicates)
-  const seenSentRef = useRef(new Set());
-  // batch to send soon
-  const seenPendingRef = useRef(new Set());
-  const seenFlushTimerRef = useRef(null);
+      dlog("[WS SEND attempt]", { state: stateName, payload });
 
-  const flushSeen = useCallback(() => {
-    const chatId = selectedChatIdRef.current;
-    if (!chatId) return;
-    if (seenPendingRef.current.size === 0) return;
-
-    const ws = wsRef.current;
-    if (!ws || ws.readyState !== WebSocket.OPEN) return;
-
-    const ids = Array.from(seenPendingRef.current);
-
-    const ok = wsSend({
-      action: "mark_read",
-      chat_id: chatId,
-      message_ids: ids,
-    });
-
-    if (ok) {
-      seenPendingRef.current.clear();
-    }
-  }, [wsSend]);
-
-  const scheduleFlushSeen = useCallback(() => {
-    if (seenFlushTimerRef.current) return;
-    seenFlushTimerRef.current = setTimeout(() => {
-      seenFlushTimerRef.current = null;
-      // if WS is not open, we'll try next time something schedules a flush
-      flushSeen();
-      // if still pending (ws closed), it will remain in seenPendingRef and can flush later
-      if (seenPendingRef.current.size > 0) {
-        // try once more shortly
-        scheduleFlushSeen();
+      if (!ws || ws.readyState !== WebSocket.OPEN) {
+        dlog("[WS SEND blocked] ws not open", { state: stateName });
+        return false;
       }
-    }, 250);
-  }, [flushSeen]);
+
+      try {
+        ws.send(JSON.stringify(payload));
+        dlog("[WS SEND ok]", payload);
+        return true;
+      } catch (e) {
+        console.error("[WS SEND failed]", e);
+        return false;
+      }
+    },
+    [dlog]
+  );
+
+  // =========================
+  // Seen tracking (real-time / one-by-one)
+  // =========================
+  const messagesViewportRef = useRef(null);
+
+  const seenSentRef = useRef(new Set());
+  const pendingReadIdsRef = useRef(new Set());
 
   const handleMountMessagesViewport = useCallback((el) => {
     messagesViewportRef.current = el;
-  }, []);
+    dlog("[Viewport mounted from OpenConv]", { ok: !!el });
+  }, [dlog]);
 
-  // reset seen tracking when switching chats
   useEffect(() => {
     seenSentRef.current = new Set();
-    seenPendingRef.current = new Set();
-  }, [selectedChatId]);
+    pendingReadIdsRef.current = new Set();
+    dlog("[Seen reset] selectedChatId:", selectedChatId);
+  }, [selectedChatId, dlog]);
 
+  const applyLocalSeenUpdate = useCallback(
+    (chatId, ids) => {
+      if (!chatId || !Array.isArray(ids) || ids.length === 0) return;
+
+      const idSet = new Set(ids.map((id) => String(id)));
+      dlog("[applyLocalSeenUpdate]", { chatId, ids: Array.from(idSet) });
+
+      setChats((prev) => {
+        const list = Array.isArray(prev) ? [...prev] : [];
+
+        return list.map((c) => {
+          if (String(c.id) !== String(chatId)) return c;
+
+          const last = c.last_message;
+          const lastNeedsUpdate = last?.id && idSet.has(String(last.id));
+          const currentUnread = typeof c.unread_count === "number" ? c.unread_count : 0;
+          const nextUnread = Math.max(0, currentUnread - idSet.size);
+
+          dlog("[unread_count optimistic]", {
+            chatId,
+            before: currentUnread,
+            after: nextUnread,
+            decBy: idSet.size,
+          });
+
+          return {
+            ...c,
+            unread_count: nextUnread,
+            last_message: lastNeedsUpdate ? { ...last, is_read: true } : last,
+          };
+        });
+      });
+    },
+    [dlog]
+  );
+
+  const applyReadUpdate = useCallback(
+    ({ chatIdMaybeNull, ids, unreadCountMaybe }) => {
+      if (!Array.isArray(ids) || ids.length === 0) return;
+
+      const chatId = chatIdMaybeNull ?? selectedChatIdRef.current;
+      if (!chatId) return;
+
+      const idSet = new Set(ids.map(String));
+      dlog("[applyReadUpdate] server authoritative", {
+        chatId,
+        ids: Array.from(idSet),
+        unreadCountMaybe,
+      });
+
+      if (String(chatId) === String(selectedChatIdRef.current)) {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m?.id != null && idSet.has(String(m.id)) ? { ...m, is_read: true } : m
+          )
+        );
+      }
+
+      setChats((prev) => {
+        const list = Array.isArray(prev) ? [...prev] : [];
+        return list.map((c) => {
+          if (String(c.id) !== String(chatId)) return c;
+
+          const last = c.last_message;
+          const lastNeedsUpdate = last?.id && idSet.has(String(last.id));
+
+          const nextUnread =
+            typeof unreadCountMaybe === "number"
+              ? unreadCountMaybe
+              : typeof c.unread_count === "number"
+              ? c.unread_count
+              : 0;
+
+          return {
+            ...c,
+            unread_count: nextUnread,
+            last_message: lastNeedsUpdate ? { ...last, is_read: true } : last,
+          };
+        });
+      });
+    },
+    [dlog]
+  );
+
+  const sendMarkReadOne = useCallback(
+    (chatId, messageId) => {
+      if (!chatId || !messageId) return false;
+
+      const ws = wsRef.current;
+      if (!ws || ws.readyState !== WebSocket.OPEN) {
+        pendingReadIdsRef.current.add(Number(messageId));
+        dlog("[mark_read queued] ws not open", { chatId, messageId });
+        return false;
+      }
+
+      const payload = {
+        action: "mark_read",
+        chat_id: chatId,
+        message_ids: [Number(messageId)],
+      };
+
+      const ok = wsSend(payload);
+      if (!ok) {
+        pendingReadIdsRef.current.add(Number(messageId));
+        dlog("[mark_read queued] send failed", { chatId, messageId });
+      } else {
+        dlog("[mark_read sent]", payload);
+      }
+      return ok;
+    },
+    [wsSend, dlog]
+  );
+
+  const flushPendingReadIds = useCallback(() => {
+    const chatId = selectedChatIdRef.current;
+    const ws = wsRef.current;
+    if (!chatId) return;
+    if (!ws || ws.readyState !== WebSocket.OPEN) return;
+    if (pendingReadIdsRef.current.size === 0) return;
+
+    const ids = Array.from(pendingReadIdsRef.current);
+    pendingReadIdsRef.current.clear();
+
+    dlog("[flushPendingReadIds]", { chatId, count: ids.length, ids });
+
+    for (const id of ids) sendMarkReadOne(chatId, id);
+  }, [sendMarkReadOne, dlog]);
+
+  const markMessagesSeen = useCallback(
+    (msgs) => {
+      const chatId = selectedChatIdRef.current;
+      const me = currentUserIdRef.current;
+
+      dlog("[markMessagesSeen] called", {
+        chatId,
+        me,
+        msgsCount: Array.isArray(msgs) ? msgs.length : 0,
+        ids: (msgs || []).map((x) => x?.id),
+      });
+
+      if (!Array.isArray(msgs) || msgs.length === 0) return;
+      if (!chatId || me == null) return;
+
+      const newlyReadIds = [];
+
+      for (const msg of msgs) {
+        if (!msg?.id) {
+          dlog("[markMessagesSeen] skip: no id", msg);
+          continue;
+        }
+
+        const messageChatId = msg.chat_id ?? chatId;
+        if (String(messageChatId) !== String(chatId)) {
+          dlog("[markMessagesSeen] skip: different chat", {
+            msgId: msg.id,
+            messageChatId,
+            chatId,
+          });
+          continue;
+        }
+
+        const senderId = msg.sender_id ?? msg.sender;
+        const isMine = senderId != null && String(senderId) === String(me);
+        if (isMine) {
+          dlog("[markMessagesSeen] skip: mine", { msgId: msg.id, senderId, me });
+          continue;
+        }
+
+        if (msg.is_read) {
+          dlog("[markMessagesSeen] skip: already read", { msgId: msg.id });
+          continue;
+        }
+
+        const idStr = String(msg.id);
+        if (seenSentRef.current.has(idStr)) {
+          dlog("[markMessagesSeen] skip: already sent", { msgId: msg.id });
+          continue;
+        }
+
+        dlog("[markMessagesSeen] WILL MARK", { msgId: msg.id });
+
+        seenSentRef.current.add(idStr);
+        newlyReadIds.push(Number(msg.id));
+
+        // ✅ realtime / one-by-one send
+        sendMarkReadOne(chatId, msg.id);
+      }
+
+      dlog("[markMessagesSeen] newlyReadIds", newlyReadIds);
+
+      if (!newlyReadIds.length) return;
+
+      const idsSet = new Set(newlyReadIds);
+
+      // optimistic message update
+      setMessages((prev) =>
+        prev.map((m) =>
+          m?.id != null && idsSet.has(Number(m.id)) ? { ...m, is_read: true } : m
+        )
+      );
+
+      // optimistic sidebar update
+      applyLocalSeenUpdate(chatId, newlyReadIds);
+    },
+    [applyLocalSeenUpdate, sendMarkReadOne, dlog]
+  );
+
+  const markVisibleUnreadNow = useCallback(() => {
+    const viewport = messagesViewportRef.current;
+    const chatId = selectedChatIdRef.current;
+    if (!viewport || !chatId) {
+      dlog("[SEEN scan] missing viewport/chat", { viewport: !!viewport, chatId });
+      return;
+    }
+
+    const viewportRect = viewport.getBoundingClientRect();
+    const nodes = viewport.querySelectorAll("[data-msgid]");
+    dlog("[SEEN scan] DOM nodes", { chatId, nodes: nodes.length });
+
+    if (!nodes || nodes.length === 0) return;
+
+    const currentMessages = messagesRef.current || [];
+    const visibleMessages = [];
+
+    nodes.forEach((n) => {
+      const msgId = n.getAttribute("data-msgid");
+      if (!msgId) return;
+
+      const rect = n.getBoundingClientRect();
+      const visibleHeight =
+        Math.min(rect.bottom, viewportRect.bottom) - Math.max(rect.top, viewportRect.top);
+
+      if (visibleHeight <= 0) return;
+
+      const ratio = visibleHeight / (rect.height || 1);
+      if (ratio < 0.15) return;
+
+      const msg = currentMessages.find(
+        (x) => x?.id != null && String(x.id) === String(msgId)
+      );
+      if (msg) visibleMessages.push(msg);
+    });
+
+    dlog("[SEEN scan result]", { chatId, visibleIds: visibleMessages.map((m) => m.id) });
+
+    if (visibleMessages.length) markMessagesSeen(visibleMessages);
+  }, [markMessagesSeen, dlog]);
+
+  // ✅ ALWAYS WORKS: scan on scroll + resize
+  useEffect(() => {
+    const viewport = messagesViewportRef.current;
+    if (!viewport || !selectedChatId) {
+      dlog("[SCROLL-SEEN] no viewport or no chat", { viewport: !!viewport, selectedChatId });
+      return;
+    }
+
+    dlog("[SCROLL-SEEN] attach listeners", { selectedChatId });
+
+    const onScroll = () => {
+      dlog("[SCROLL-SEEN] scroll event", { top: viewport.scrollTop });
+      markVisibleUnreadNow();
+    };
+
+    viewport.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    // run once after render
+    setTimeout(() => markVisibleUnreadNow(), 0);
+
+    return () => {
+      dlog("[SCROLL-SEEN] detach listeners", { selectedChatId });
+      viewport.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [selectedChatId, markVisibleUnreadNow, dlog]);
+
+  // =========================
   // Upsert chat & sort
+  // =========================
   const upsertChatAndSort = useCallback((incomingChatOrId, maybeLastMessage, unreadCountOverride) => {
     setChats((prev) => {
       const list = Array.isArray(prev) ? [...prev] : [];
 
       const chatId =
-        typeof incomingChatOrId === "object"
-          ? incomingChatOrId?.id
-          : incomingChatOrId;
-
+        typeof incomingChatOrId === "object" ? incomingChatOrId?.id : incomingChatOrId;
       if (!chatId) return list;
 
-      const incomingChat =
-        typeof incomingChatOrId === "object" ? incomingChatOrId : null;
+      const incomingChat = typeof incomingChatOrId === "object" ? incomingChatOrId : null;
       const idx = list.findIndex((c) => String(c.id) === String(chatId));
 
       const lastMsg =
@@ -215,180 +504,69 @@ export default function ChatPage() {
       setSelectedChatId(chat.id);
 
       const other = chat?.other_participant;
-      if (other?.id) {
-        setRecipient({ id: other.id, username: other.username || "Unknown" });
-      }
+      if (other?.id) setRecipient({ id: other.id, username: other.username || "Unknown" });
 
       return chat.id;
     },
     [upsertChatAndSort]
   );
 
-  // ✅ Apply read updates to UI (authoritative for read state + unread_count if provided)
-  const applyReadUpdate = useCallback(({ chatIdMaybeNull, ids, unreadCountMaybe }) => {
-    if (!Array.isArray(ids) || ids.length === 0) return;
-
-    const chatId = chatIdMaybeNull ?? selectedChatIdRef.current;
-    if (!chatId) return;
-
-    const idSet = new Set(ids.map(String));
-
-    // update messages when this chat is open
-    if (String(chatId) === String(selectedChatIdRef.current)) {
-      setMessages((prev) =>
-        prev.map((m) =>
-          m?.id != null && idSet.has(String(m.id)) ? { ...m, is_read: true } : m
-        )
-      );
-    }
-
-    // update sidebar unread_count + last_message is_read
-    setChats((prev) => {
-      const list = Array.isArray(prev) ? [...prev] : [];
-      let found = false;
-
-      const updated = list.map((c) => {
-        if (String(c.id) !== String(chatId)) return c;
-        found = true;
-
-        const last = c.last_message;
-        const lastNeedsUpdate = last?.id && idSet.has(String(last.id));
-
-        const nextUnread =
-          typeof unreadCountMaybe === "number"
-            ? unreadCountMaybe
-            : typeof c.unread_count === "number"
-            ? c.unread_count
-            : 0;
-
-        return {
-          ...c,
-          unread_count: nextUnread,
-          last_message: lastNeedsUpdate ? { ...last, is_read: true } : last,
-        };
-      });
-
-      if (!found) {
-        updated.push({
-          id: chatId,
-          unread_count: typeof unreadCountMaybe === "number" ? unreadCountMaybe : 0,
-          last_message: null,
-        });
-      }
-
-      return updated;
-    });
-  }, []);
-
-  // ✅ helper: mark all unread incoming (loaded) messages as read (best UX when opening chat)
-  const markAllUnreadInOpenChatNow = useCallback(() => {
-    const chatId = selectedChatIdRef.current;
-    const me = currentUserIdRef.current;
-    if (!chatId || me == null) return;
-
-    const arr = messagesRef.current || [];
-    if (!Array.isArray(arr) || arr.length === 0) return;
-
-    const idsToRead = [];
-    for (const msg of arr) {
-      if (!msg?.id) continue;
-      const senderId = msg.sender_id ?? msg.sender;
-      const isMine = senderId != null && String(senderId) === String(me);
-      if (isMine) continue;
-      if (msg.is_read) continue;
-      if (seenSentRef.current.has(String(msg.id))) continue;
-
-      seenSentRef.current.add(String(msg.id));
-      seenPendingRef.current.add(Number(msg.id));
-      idsToRead.push(Number(msg.id));
-    }
-
-    if (idsToRead.length) {
-      // optimistic UI
-      setMessages((prev) =>
-        prev.map((m) =>
-          m?.id != null && idsToRead.includes(Number(m.id)) ? { ...m, is_read: true } : m
-        )
-      );
-      scheduleFlushSeen();
-    }
-  }, [scheduleFlushSeen]);
-
-  // ✅ helper: scan visible DOM and mark unread incoming as read (fallback)
-  const markVisibleUnreadNow = useCallback(() => {
-    const viewport = messagesViewportRef.current;
-    const chatId = selectedChatIdRef.current;
-    const me = currentUserIdRef.current;
-    if (!viewport || !chatId || me == null) return;
-
-    const nodes = viewport.querySelectorAll("[data-msgid]");
-    if (!nodes || nodes.length === 0) return;
-
-    const currentMessages = messagesRef.current || [];
-    const idsToRead = [];
-
-    for (const n of nodes) {
-      const msgId = n.getAttribute("data-msgid");
-      if (!msgId) continue;
-
-      const msg = currentMessages.find((x) => x?.id != null && String(x.id) === String(msgId));
-      if (!msg) continue;
-
-      const senderId = msg.sender_id ?? msg.sender;
-      const isMine = senderId != null && String(senderId) === String(me);
-
-      if (isMine) continue;
-      if (msg.is_read) continue;
-      if (seenSentRef.current.has(String(msgId))) continue;
-
-      seenSentRef.current.add(String(msgId));
-      seenPendingRef.current.add(Number(msgId));
-      idsToRead.push(Number(msgId));
-    }
-
-    if (idsToRead.length) {
-      setMessages((prev) =>
-        prev.map((m) =>
-          m?.id != null && idsToRead.includes(Number(m.id)) ? { ...m, is_read: true } : m
-        )
-      );
-      scheduleFlushSeen();
-    }
-  }, [scheduleFlushSeen]);
-
+  // =========================
   // WS connect
+  // =========================
   useEffect(() => {
     const url = buildChatWsUrl();
-    if (!url) return;
+    if (!url) {
+      dlog("[WS] buildChatWsUrl returned empty!");
+      return;
+    }
+
+    dlog("[WS] connecting to", url);
 
     const ws = new WebSocket(url);
     wsRef.current = ws;
 
-    ws.onopen = () => {};
+    ws.onopen = () => {
+      dlog("[WS] OPEN");
+      flushPendingReadIds();
+      setTimeout(() => markVisibleUnreadNow(), 0);
+    };
 
     ws.onmessage = (event) => {
       let data;
       try {
         data = JSON.parse(event.data);
       } catch {
-        console.log("WS message:", event.data);
+        console.log("[WS RECV raw]", event.data);
         return;
       }
 
-      // ✅ message_sent (server ack)
+      dlog("[WS RECV]", data);
+
+      if (data?.type === "read_update" && data?.chat?.id) {
+        const chat = data.chat;
+        applyReadUpdate({
+          chatIdMaybeNull: chat.id ?? chat.chat_id ?? null,
+          ids: chat.updated_ids || [],
+          unreadCountMaybe: chat.unread_count,
+        });
+        return;
+      }
+
+      if (data?.type === "marked_read" && Array.isArray(data?.message_ids)) {
+        applyReadUpdate({
+          chatIdMaybeNull: null,
+          ids: data.message_ids,
+          unreadCountMaybe: undefined,
+        });
+        return;
+      }
+
       if (data?.type === "message_sent" && data?.chat_id && data?.message) {
         const chatId = data.chat_id;
         const serverMsg = data.message;
 
-        // If server provides unread_count in this payload (some APIs do), trust it.
-        const serverUnread =
-          typeof data?.unread_count === "number"
-            ? data.unread_count
-            : typeof data?.chat?.unread_count === "number"
-            ? data.chat.unread_count
-            : undefined;
-
-        upsertChatAndSort(chatId, serverMsg, typeof serverUnread === "number" ? serverUnread : 0);
+        upsertChatAndSort(chatId, serverMsg, 0);
 
         if (String(chatId) === String(selectedChatIdRef.current)) {
           setMessages((prev) => {
@@ -416,12 +594,7 @@ export default function ChatPage() {
 
             if (replaceIndex !== -1) {
               const prevMsg = copy[replaceIndex];
-              copy[replaceIndex] = {
-                ...prevMsg,
-                ...serverMsg,
-                reply_to: serverMsg.reply_to ?? prevMsg.reply_to ?? null,
-                _optimistic: false,
-              };
+              copy[replaceIndex] = { ...prevMsg, ...serverMsg, _optimistic: false };
               return copy;
             }
 
@@ -431,12 +604,13 @@ export default function ChatPage() {
 
             return [...copy, serverMsg];
           });
+
+          setTimeout(() => markVisibleUnreadNow(), 0);
         }
 
         return;
       }
 
-      // ✅ chat_list_update/message_update
       if (
         (data?.type === "chat_list_update" || data?.type === "message_update") &&
         data?.chat?.id
@@ -445,7 +619,6 @@ export default function ChatPage() {
         const chatId = chat.id;
         const msg = chat.last_message;
 
-        // ✅ Always trust server unread_count if present
         upsertChatAndSort(chat);
 
         if (msg && String(chatId) === String(selectedChatIdRef.current)) {
@@ -454,64 +627,28 @@ export default function ChatPage() {
             return [...prev, msg];
           });
 
-          // If we are currently viewing this chat, mark unread incoming as read quickly
-          // (server may still count as unread until mark_read is processed)
-          setTimeout(() => {
-            markVisibleUnreadNow();
-          }, 0);
+          setTimeout(() => markVisibleUnreadNow(), 0);
         }
-
-        // ❌ Removed client-side "+1" unread bump to avoid desync.
-        // Server should be source of truth for unread_count.
-
-        return;
       }
-
-      // ✅ broadcast update (double tick + unread_count) — authoritative for read state
-      if (data?.type === "read_update" && data?.chat?.id) {
-        const chat = data.chat;
-        applyReadUpdate({
-          chatIdMaybeNull: chat.id ?? chat.chat_id ?? null,
-          ids: chat.updated_ids || [],
-          unreadCountMaybe: chat.unread_count,
-        });
-        return;
-      }
-
-      // ✅ server confirms MY mark_read request (fallback if read_update is delayed/missing)
-      if (data?.type === "marked_read" && Array.isArray(data?.message_ids)) {
-        applyReadUpdate({
-          chatIdMaybeNull: null,
-          ids: data.message_ids,
-          unreadCountMaybe: undefined,
-        });
-        return;
-      }
-
-      console.log("WS JSON:", data);
     };
 
-    ws.onerror = (e) => console.error("WebSocket error:", e);
-    ws.onclose = () => console.log("WebSocket closed");
+    ws.onerror = (e) => console.error("[WS] error", e);
+    ws.onclose = () => dlog("[WS] CLOSED");
 
     return () => {
-      try {
-        flushSeen();
-      } catch {}
       try {
         ws.close();
       } catch {}
       wsRef.current = null;
     };
-  }, [upsertChatAndSort, flushSeen, applyReadUpdate, markVisibleUnreadNow]);
+  }, [applyReadUpdate, flushPendingReadIds, markVisibleUnreadNow, upsertChatAndSort, dlog]);
 
   // Load chat list
   useEffect(() => {
     const loadChats = async () => {
       const res = await getChatList();
-      if (res.success) {
-        setChats(Array.isArray(res.data) ? res.data : []);
-      } else {
+      if (res.success) setChats(Array.isArray(res.data) ? res.data : []);
+      else {
         setChats([]);
         alert(res.message || "خطا در دریافت لیست گفتگوها");
       }
@@ -534,6 +671,8 @@ export default function ChatPage() {
       if (res.success) {
         const arr = Array.isArray(res.data) ? res.data : [];
         setMessages(arr.slice().reverse());
+        dlog("[Messages loaded] count:", arr.length);
+        dlog("[Messages loaded] sample 3:", arr.slice(0, 3));
       } else {
         setMessages([]);
         alert(res.message || "خطا در دریافت پیام‌ها");
@@ -541,34 +680,12 @@ export default function ChatPage() {
     };
 
     loadMessages();
-  }, [selectedChatId]);
-
-  // ✅ after messages load/open:
-  // 1) mark all unread incoming as read (loaded)
-  // 2) also run visible scan (in case DOM nodes are ready a bit later)
-  useEffect(() => {
-    if (!selectedChatId) return;
-    if (loadingMessages) return;
-
-    const t1 = setTimeout(() => {
-      markAllUnreadInOpenChatNow();
-    }, 0);
-
-    const t2 = setTimeout(() => {
-      markVisibleUnreadNow();
-    }, 50);
-
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
-  }, [selectedChatId, loadingMessages, messages.length, markAllUnreadInOpenChatNow, markVisibleUnreadNow]);
+  }, [selectedChatId, dlog]);
 
   // Select chat
   const handleSelectChat = useCallback(
     (chatId) => {
-      flushSeen();
-
+      dlog("[Select chat]", chatId);
       setSelectedChatId(chatId);
 
       const chatObj = (Array.isArray(chats) ? chats : []).find(
@@ -578,15 +695,8 @@ export default function ChatPage() {
 
       if (other?.id) setRecipient({ id: other.id, username: other.username || "Unknown" });
       else setRecipient(null);
-
-      // ✅ optimistic reset unread for opened chat (server should later confirm)
-      setChats((prev) =>
-        (Array.isArray(prev) ? prev : []).map((c) =>
-          String(c.id) === String(chatId) ? { ...c, unread_count: 0 } : c
-        )
-      );
     },
-    [chats, flushSeen]
+    [chats, dlog]
   );
 
   // Sidebar items
@@ -625,7 +735,7 @@ export default function ChatPage() {
     return { id: c.id, title, subtitle: "", avatar: c.avatar };
   }, [selectedChatId, convItems, recipient]);
 
-  // Messages mapping (double tick status)
+  // Messages mapping (keep is_read!!)
   const openMessages = useMemo(() => {
     const safe = Array.isArray(messages) ? messages : [];
 
@@ -635,14 +745,7 @@ export default function ChatPage() {
 
       const rt = m?.reply_to && typeof m.reply_to === "object" ? m.reply_to : null;
       const replyTo =
-        rt?.id != null
-          ? {
-              id: rt.id,
-              sender_id: rt.sender_id ?? rt.sender,
-              sender_name: rt.sender_name,
-              content: rt.content,
-            }
-          : null;
+        rt?.id != null ? { id: rt.id, sender_name: rt.sender_name, content: rt.content } : null;
 
       return {
         id: m.id,
@@ -662,71 +765,6 @@ export default function ChatPage() {
     });
   }, [messages, currentUserId]);
 
-  // Observe visible messages => send mark_read to backend
-  useEffect(() => {
-    if (observerRef.current) {
-      observerRef.current.disconnect();
-      observerRef.current = null;
-    }
-
-    const viewport = messagesViewportRef.current;
-    if (!viewport) return;
-    if (!selectedChatId) return;
-
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        const chatId = selectedChatIdRef.current;
-        const me = currentUserIdRef.current;
-        if (!chatId || me == null) return;
-
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-
-          const msgId = entry.target?.getAttribute("data-msgid");
-          if (!msgId) continue;
-
-          const msg = (messagesRef.current || []).find(
-            (x) => x?.id != null && String(x.id) === String(msgId)
-          );
-          if (!msg) continue;
-
-          // ensure still same chat
-          if (String(msg.chat_id) !== String(chatId)) continue;
-
-          const senderId = msg.sender_id ?? msg.sender;
-          const isMine = senderId != null && String(senderId) === String(me);
-          if (isMine) continue;
-
-          if (msg.is_read) continue;
-          if (seenSentRef.current.has(String(msgId))) continue;
-
-          seenSentRef.current.add(String(msgId));
-          seenPendingRef.current.add(Number(msgId));
-          scheduleFlushSeen();
-
-          setMessages((prev) =>
-            prev.map((mm) =>
-              mm?.id && String(mm.id) === String(msgId) ? { ...mm, is_read: true } : mm
-            )
-          );
-        }
-      },
-      {
-        root: viewport,
-        threshold: 0.15,
-        rootMargin: "120px 0px 120px 0px",
-      }
-    );
-
-    const nodes = viewport.querySelectorAll("[data-msgid]");
-    nodes.forEach((n) => observerRef.current.observe(n));
-
-    return () => {
-      if (observerRef.current) observerRef.current.disconnect();
-      observerRef.current = null;
-    };
-  }, [selectedChatId, currentUserId, scheduleFlushSeen]);
-
   // Send message
   const handleSend = useCallback(
     async (replyTarget) => {
@@ -739,7 +777,6 @@ export default function ChatPage() {
         return;
       }
 
-      // Ensure chat exists
       let chatId = selectedChatIdRef.current;
       if (!chatId) {
         const r = recipientRef.current;
@@ -762,7 +799,7 @@ export default function ChatPage() {
         id: null,
         client_temp_id: clientId,
         chat_id: chatId,
-        sender: currentUserId, // backend uses sender
+        sender: currentUserId,
         sender_name: "You",
         content: text,
         timestamp: nowIso,
@@ -793,7 +830,6 @@ export default function ChatPage() {
         );
         alert("ارسال پیام ناموفق بود.");
       } else {
-        // optimistic sidebar update; unread_count should remain 0 for my own sent message
         upsertChatAndSort(
           chatId,
           { content: text, timestamp: nowIso, sender: currentUserId, is_read: false },
@@ -825,6 +861,7 @@ export default function ChatPage() {
                     time: "",
                     status: undefined,
                     attachments: [],
+                    is_read: true,
                   },
                 ]
               : openMessages

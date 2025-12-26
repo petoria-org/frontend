@@ -17,7 +17,6 @@ function MessageBubble({ m, onReply, chatTitle, onJumpToMessage }) {
   return (
     <div
       className={`msgRow ${isMine ? "msgRow--out" : "msgRow--in"}`}
-      // ✅ observe only real server messages
       data-msgid={m.id != null ? String(m.id) : ""}
     >
       <div className={`msg ${isMine ? "msg--out" : ""}`}>
@@ -145,6 +144,7 @@ export default function OpenConv({
   const bottomRef = useRef(null);
   const attachBtnRef = useRef(null);
   const messagesViewportRef = useRef(null);
+
   const pendingScrollOnSendRef = useRef(false);
   const prevMessageCountRef = useRef(Array.isArray(messages) ? messages.length : 0);
   const initialScrollDoneRef = useRef(false);
@@ -152,9 +152,30 @@ export default function OpenConv({
   const [attachOpen, setAttachOpen] = useState(false);
   const [replyTarget, setReplyTarget] = useState(null);
 
+  // ✅ callback ref: ensures parent gets element reliably
+  const setViewportEl = useCallback(
+    (el) => {
+      messagesViewportRef.current = el || null;
+      console.log("[OpenConv] setViewportEl called:", { hasEl: !!el, chatId: chat?.id });
+      onMountMessagesViewport?.(el || null);
+    },
+    [onMountMessagesViewport, chat?.id]
+  );
+
+  // debug: ensure nodes exist
   useEffect(() => {
-    onMountMessagesViewport?.(messagesViewportRef.current);
-  }, [onMountMessagesViewport]);
+    const vp = messagesViewportRef.current;
+    if (!vp) return;
+    const nodes = vp.querySelectorAll("[data-msgid]");
+    console.log("[OpenConv] render:", {
+      chatId: chat?.id,
+      messagesPropCount: Array.isArray(messages) ? messages.length : 0,
+      domMsgNodes: nodes.length,
+      scrollTop: vp.scrollTop,
+      clientHeight: vp.clientHeight,
+      scrollHeight: vp.scrollHeight,
+    });
+  }, [chat?.id, messages]);
 
   useEffect(() => {
     const prevCount = prevMessageCountRef.current;
@@ -165,9 +186,7 @@ export default function OpenConv({
 
     if (pendingScrollOnSendRef.current && hasNewOutgoing) {
       const viewport = messagesViewportRef.current;
-      if (viewport) {
-        viewport.scrollTo({ top: viewport.scrollHeight, behavior: "smooth" });
-      }
+      if (viewport) viewport.scrollTo({ top: viewport.scrollHeight, behavior: "smooth" });
       pendingScrollOnSendRef.current = false;
     }
 
@@ -194,24 +213,20 @@ export default function OpenConv({
     const isLoadingPlaceholder = messages.length === 1 && messages[0]?.id === "loading";
     if (isLoadingPlaceholder) return;
 
-    const firstUnread = messages.find(
-      (m) => m && m.side !== "out" && !m.is_read && m.id != null
-    );
+    const firstUnread = messages.find((m) => m && m.side !== "out" && !m.is_read && m.id != null);
 
     if (firstUnread) {
       const target = viewport.querySelector(`[data-msgid="${firstUnread.id}"]`);
       if (target) {
-        const top = Math.max(target.offsetTop - 8, 0); // slight offset from top
+        const top = Math.max(target.offsetTop - 8, 0);
         viewport.scrollTo({ top, behavior: "auto" });
         initialScrollDoneRef.current = true;
         return;
       }
     }
 
-    if (viewport) {
-      viewport.scrollTo({ top: viewport.scrollHeight, behavior: "auto" });
-      initialScrollDoneRef.current = true;
-    }
+    viewport.scrollTo({ top: viewport.scrollHeight, behavior: "auto" });
+    initialScrollDoneRef.current = true;
   }, [messages]);
 
   const handleSendClick = useCallback(() => {
@@ -277,18 +292,13 @@ export default function OpenConv({
         </div>
 
         <div
-          ref={messagesViewportRef}
+          ref={setViewportEl}
           className="open__messages"
-          style={{
-            flex: 1,
-            minHeight: 0,
-            overflowY: "auto",
-            position: "relative",
-          }}
+          style={{ flex: 1, minHeight: 0, overflowY: "auto", position: "relative" }}
         >
           {messages.map((m) => (
             <MessageBubble
-              key={m.id ?? m.client_temp_id ?? `${m.time}_${Math.random()}`}
+              key={m.id ?? m.client_temp_id ?? `${m.time}_${m.side}`}
               m={m}
               onReply={handleReplyPick}
               chatTitle={chat.title}
@@ -318,13 +328,7 @@ export default function OpenConv({
         )}
 
         <div className="open__composer" style={{ flex: "0 0 auto" }}>
-          <button
-            className="sendBtn"
-            type="button"
-            onClick={handleSendClick}
-            aria-label="send"
-            disabled={!chat}
-          >
+          <button className="sendBtn" type="button" onClick={handleSendClick} aria-label="send">
             ➤
           </button>
 
@@ -341,7 +345,6 @@ export default function OpenConv({
 
           <div className="attachWrap">
             <button
-              ref={attachBtnRef}
               className="iconBtn"
               type="button"
               aria-label="attach"
