@@ -1,3 +1,4 @@
+// OpenConv.jsx
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
 
@@ -15,7 +16,10 @@ function MessageBubble({ m, onReply, chatTitle, onJumpToMessage }) {
     : null;
 
   return (
-    <div className={`msgRow ${isMine ? "msgRow--out" : "msgRow--in"}`} data-msgid={m.id != null ? String(m.id) : ""}>
+    <div
+      className={`msgRow ${isMine ? "msgRow--out" : "msgRow--in"}`}
+      data-msgid={m.id != null ? String(m.id) : ""}
+    >
       <div className={`msg ${isMine ? "msg--out" : ""}`}>
         {reply && (
           <div
@@ -135,67 +139,55 @@ export default function OpenConv({
   onAttach,
   onMountMessagesViewport,
 }) {
-  const bottomRef = useRef(null);
   const attachBtnRef = useRef(null);
   const messagesViewportRef = useRef(null);
 
+  // when I send, scroll down after it appears
   const pendingScrollOnSendRef = useRef(false);
+
+  // message count tracking
   const prevMessageCountRef = useRef(Array.isArray(messages) ? messages.length : 0);
+
+  // initial scroll done for this chat
   const initialScrollDoneRef = useRef(false);
+
+  // live typing window: if I sent recently, treat as "we are chatting"
+  const lastOutgoingAtRef = useRef(0);
+  const LIVE_WINDOW_MS = 60000; // 20s window of "active texting"
 
   const [attachOpen, setAttachOpen] = useState(false);
   const [replyTarget, setReplyTarget] = useState(null);
 
-  // ✅ callback ref so parent ALWAYS receives the DOM element
   const setViewportEl = useCallback(
     (el) => {
       messagesViewportRef.current = el || null;
-      console.log("[OpenConv] setViewportEl:", { hasEl: !!el, chatId: chat?.id });
       onMountMessagesViewport?.(el || null);
     },
-    [onMountMessagesViewport, chat?.id]
+    [onMountMessagesViewport]
   );
 
-  // debug
-  useEffect(() => {
+  const isNearBottom = useCallback(() => {
     const vp = messagesViewportRef.current;
-    if (!vp) return;
-    const nodes = vp.querySelectorAll("[data-msgid]");
-    console.log("[OpenConv] render:", {
-      chatId: chat?.id,
-      messagesPropCount: Array.isArray(messages) ? messages.length : 0,
-      domMsgNodes: nodes.length,
-      scrollTop: vp.scrollTop,
-      clientHeight: vp.clientHeight,
-      scrollHeight: vp.scrollHeight,
-    });
-  }, [chat?.id, messages]);
+    if (!vp) return false;
+    const threshold = 140; // px
+    const distance = vp.scrollHeight - (vp.scrollTop + vp.clientHeight);
+    return distance <= threshold;
+  }, []);
 
-  useEffect(() => {
-    const prevCount = prevMessageCountRef.current;
-    const nextCount = Array.isArray(messages) ? messages.length : 0;
-    const newMessages = nextCount > prevCount ? messages.slice(prevCount, nextCount) : [];
-    const hasNewOutgoing = newMessages.some((msg) => msg?.side === "out");
-
-    if (pendingScrollOnSendRef.current && hasNewOutgoing) {
-      const viewport = messagesViewportRef.current;
-      if (viewport) viewport.scrollTo({ top: viewport.scrollHeight, behavior: "smooth" });
-      pendingScrollOnSendRef.current = false;
-    }
-
-    prevMessageCountRef.current = nextCount;
-  }, [messages]);
-
+  // reset reply on chat change
   useEffect(() => {
     setReplyTarget(null);
   }, [chat?.id]);
 
+  // reset scroll state on chat change
   useEffect(() => {
     pendingScrollOnSendRef.current = false;
     initialScrollDoneRef.current = false;
     prevMessageCountRef.current = 0;
+    lastOutgoingAtRef.current = 0;
   }, [chat?.id]);
 
+  // ✅ initial scroll: first unread else bottom
   useEffect(() => {
     if (initialScrollDoneRef.current) return;
 
@@ -206,7 +198,9 @@ export default function OpenConv({
     const isLoadingPlaceholder = messages.length === 1 && messages[0]?.id === "loading";
     if (isLoadingPlaceholder) return;
 
-    const firstUnread = messages.find((m) => m && m.side !== "out" && !m.is_read && m.id != null);
+    const firstUnread = messages.find(
+      (m) => m && m.side !== "out" && !m.is_read && m.id != null
+    );
 
     if (firstUnread) {
       const target = viewport.querySelector(`[data-msgid="${firstUnread.id}"]`);
@@ -221,9 +215,67 @@ export default function OpenConv({
     initialScrollDoneRef.current = true;
   }, [messages]);
 
+  // ✅ auto-scroll logic (incoming only in "live mode")
+  useEffect(() => {
+    const prevCount = prevMessageCountRef.current;
+    const nextCount = Array.isArray(messages) ? messages.length : 0;
+
+    if (nextCount <= prevCount) {
+      prevMessageCountRef.current = nextCount;
+      return;
+    }
+
+    const isLoadingPlaceholder = nextCount === 1 && messages[0]?.id === "loading";
+    if (isLoadingPlaceholder) {
+      prevMessageCountRef.current = nextCount;
+      return;
+    }
+
+    const viewport = messagesViewportRef.current;
+    if (!viewport) {
+      prevMessageCountRef.current = nextCount;
+      return;
+    }
+
+    // IMPORTANT: never auto-scroll during initial positioning (first unread jump)
+    if (!initialScrollDoneRef.current) {
+      prevMessageCountRef.current = nextCount;
+      return;
+    }
+
+    const newMessages = messages.slice(prevCount, nextCount);
+    const hasNewOutgoing = newMessages.some((msg) => msg?.side === "out");
+    const hasNewIncoming = newMessages.some((msg) => msg?.side !== "out");
+
+    // if I sent something and it appeared => scroll down
+    if (pendingScrollOnSendRef.current && hasNewOutgoing) {
+      viewport.scrollTo({ top: viewport.scrollHeight, behavior: "smooth" });
+      pendingScrollOnSendRef.current = false;
+    }
+
+    if (hasNewIncoming) {
+      const now = Date.now();
+      const recentlyTyping = now - (lastOutgoingAtRef.current || 0) <= LIVE_WINDOW_MS;
+
+      // ✅ if we are actively texting, ALWAYS follow each incoming message
+      if (recentlyTyping) {
+        viewport.scrollTo({ top: viewport.scrollHeight, behavior: "smooth" });
+      } else if (isNearBottom()) {
+        // ✅ otherwise only follow if user is already near bottom
+        viewport.scrollTo({ top: viewport.scrollHeight, behavior: "smooth" });
+      }
+    }
+
+    prevMessageCountRef.current = nextCount;
+  }, [messages, isNearBottom]);
+
   const handleSendClick = useCallback(() => {
     if (!chat) return;
     if (!inputValue.trim()) return;
+
+    // mark that we're in "live typing" mode
+    lastOutgoingAtRef.current = Date.now();
+
     pendingScrollOnSendRef.current = true;
     onSend?.(replyTarget);
     setReplyTarget(null);
@@ -292,7 +344,6 @@ export default function OpenConv({
               onJumpToMessage={jumpToMessage}
             />
           ))}
-          <div ref={bottomRef} />
         </div>
 
         {replyTarget && (
