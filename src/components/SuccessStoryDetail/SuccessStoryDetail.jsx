@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/SuccessStoryDetail.css";
 import { useOutletContext } from "react-router-dom";
+import { getSuccessStoryDetail } from "../../Services/successStoryService";
 
 export const SuccessStoryDetail = ({ story, onClose }) => {
   const [selectedImage, setSelectedImage] = useState(story.images && story.images.length > 0 ? story.images[0] : story.image);
