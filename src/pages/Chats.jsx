@@ -41,6 +41,24 @@ function getChatSortTime(chat) {
   );
 }
 
+function sortMessagesOldestFirst(arr) {
+  const safe = Array.isArray(arr) ? [...arr] : [];
+  const getTs = (m) => m?.timestamp || m?.created_at || m?.time || m?.createdAt || 0;
+
+  safe.sort((a, b) => {
+    const aTs = new Date(getTs(a) || 0).getTime();
+    const bTs = new Date(getTs(b) || 0).getTime();
+    if (aTs !== bTs) return aTs - bTs;
+
+    // Tie-breaker for identical timestamps
+    const aId = Number(a?.id) || 0;
+    const bId = Number(b?.id) || 0;
+    return aId - bId;
+  });
+
+  return safe;
+}
+
 export default function ChatPage() {
   const [chats, setChats] = useState([]);
   const [selectedChatId, setSelectedChatId] = useState(null);
@@ -465,7 +483,7 @@ export default function ChatPage() {
           const res = await getChatMessages(chatId);
           if (res?.success) {
             const arr = Array.isArray(res.data) ? res.data : [];
-            setMessages(arr.slice().reverse());
+            setMessages(sortMessagesOldestFirst(arr));
             setTimeout(() => markVisibleUnreadNow(), 0);
           }
         } finally {
@@ -647,7 +665,7 @@ export default function ChatPage() {
 
       if (res.success) {
         const arr = Array.isArray(res.data) ? res.data : [];
-        setMessages(arr.slice().reverse());
+        setMessages(sortMessagesOldestFirst(arr));
       } else {
         setMessages([]);
         alert(res.message || "Error fetching messages");
