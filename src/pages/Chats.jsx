@@ -862,7 +862,7 @@ export default function ChatPage() {
   );
 
   const handleSendAttachments = useCallback(
-    async (type, files) => {
+    async (type, files, meta = {}) => {
       if (!files || !files.length) return;
 
       const ws = wsRef.current;
@@ -902,7 +902,9 @@ export default function ChatPage() {
         .map((a) => (a && a.id != null ? Number(a.id) : null))
         .filter((id) => id != null);
 
-      const text = (inputValue || "").trim();
+      const trimmedText = (meta?.text || "").trim();
+      const replyTo = meta?.replyTo || null;
+      const replyToId = replyTo?.id ?? null;
       const clientId = `tmp_att_${Date.now()}_${Math.random().toString(16).slice(2)}`;
       const nowIso = new Date().toISOString();
 
@@ -912,11 +914,14 @@ export default function ChatPage() {
         chat_id: chatId,
         sender: currentUserId,
         sender_name: "You",
-        content: text,
+        content: trimmedText,
         timestamp: nowIso,
         is_read: false,
         attachments: uploaded,
         _optimistic: true,
+        reply_to: replyToId
+          ? { id: replyToId, sender_name: replyTo.senderName, content: replyTo.text }
+          : null,
       };
 
       setMessages((prev) => [...prev, optimisticMsg]);
@@ -925,8 +930,8 @@ export default function ChatPage() {
       const payload = {
         action: "send_message",
         chat_id: chatId,
-        message: text,
-        reply_to_id: null,
+        message: trimmedText,
+        reply_to_id: replyToId,
         attachment_ids: ids,
       };
 
@@ -938,7 +943,7 @@ export default function ChatPage() {
         );
         alert("Send failed.");
       } else {
-        const previewContent = text || "[Attachment]";
+        const previewContent = trimmedText || "[Attachment]";
         upsertChatAndSort(
           chatId,
           { content: previewContent, timestamp: nowIso, sender: currentUserId, attachments: uploaded },
@@ -946,7 +951,7 @@ export default function ChatPage() {
         );
       }
     },
-    [currentUserId, ensureChatIdForRecipient, inputValue, uploadAttachments, wsSend, upsertChatAndSort]
+    [currentUserId, ensureChatIdForRecipient, uploadAttachments, wsSend, upsertChatAndSort]
   );
 
   return (

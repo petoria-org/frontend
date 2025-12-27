@@ -6,18 +6,20 @@ import api from "../Services/api";
 const ABS_URL_RE = /^https?:\/\//i;
 
 const makeAbsoluteUrl = (path) => {
-  if (!path) return "";
-  if (ABS_URL_RE.test(path)) return path;
+  if (!path) return null;
+  const pathStr = String(path).trim();
+  if (!pathStr) return null;
+  if (ABS_URL_RE.test(pathStr)) return pathStr;
   const base = (config?.BACKEND_URL || "").replace(/\/$/, "");
-  const normalized = path.startsWith("/") ? path : `/${path}`;
-  return `${base}${normalized}`;
+  const normalized = pathStr.startsWith("/") ? pathStr : `/${pathStr}`;
+  return `${base}${normalized}` || null;
 };
 
 const buildDownloadUrl = (att) => {
-  if (!att) return "";
+  if (!att) return null;
   if (att.download_url) return makeAbsoluteUrl(att.download_url);
   if (att.id != null) return makeAbsoluteUrl(`/api/chat/attachments/${att.id}/download/`);
-  return "";
+  return null;
 };
 
 const getAttachmentLabel = (att, hrefFallback = "") => {
@@ -74,11 +76,8 @@ function MessageBubble({ m, onReply, chatTitle, onJumpToMessage }) {
     const type = (att?.type || att?.content_type || "").toLowerCase();
     const urlLower = (viewUrl || "").toLowerCase();
     const isImage =
-      type.startsWith("image") ||
-      /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(urlLower);
-    const isVideo =
-      type.startsWith("video") ||
-      /\.(mp4|webm|ogg|mov)$/i.test(urlLower);
+      type.startsWith("image") || /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(urlLower);
+    const isVideo = type.startsWith("video") || /\.(mp4|webm|ogg|mov)$/i.test(urlLower);
     const fileTag = (type.split("/")[0] || "file").toUpperCase();
 
     return (
@@ -101,18 +100,8 @@ function MessageBubble({ m, onReply, chatTitle, onJumpToMessage }) {
           )}
 
           {isImage && viewUrl ? (
-            <a
-              className="msg__attachmentThumbLink"
-              href={viewUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <img
-                className="msg__attachmentThumb"
-                src={viewUrl}
-                alt={label}
-                loading="lazy"
-              />
+            <a className="msg__attachmentThumbLink" href={viewUrl} target="_blank" rel="noopener noreferrer">
+              <img className="msg__attachmentThumb" src={viewUrl} alt={label} loading="lazy" />
             </a>
           ) : isVideo && viewUrl ? (
             <video className="msg__attachmentVideo" src={viewUrl} controls />
@@ -133,10 +122,7 @@ function MessageBubble({ m, onReply, chatTitle, onJumpToMessage }) {
   };
 
   return (
-    <div
-      className={`msgRow ${isMine ? "msgRow--out" : "msgRow--in"}`}
-      data-msgid={m.id != null ? String(m.id) : ""}
-    >
+    <div className={`msgRow ${isMine ? "msgRow--out" : "msgRow--in"}`} data-msgid={m.id != null ? String(m.id) : ""}>
       <div className={`msg ${isMine ? "msg--out" : ""}`}>
         {reply && (
           <div
@@ -167,20 +153,12 @@ function MessageBubble({ m, onReply, chatTitle, onJumpToMessage }) {
           {"\u21a9"}
         </button>
 
+        {attachments.length > 0 && <div className="msg__attachments">{attachments.map((att, idx) => renderAttachment(att, idx))}</div>}
         {!!safeText && <div className="msg__text">{safeText}</div>}
-        {attachments.length > 0 && (
-          <div className="msg__attachments">
-            {attachments.map((att, idx) => renderAttachment(att, idx))}
-          </div>
-        )}
 
         <div className="msg__meta">
           <span className="msg__time">{m.time}</span>
-          {isMine && (
-            <span className={`msg__tick msg__tick--${m.status || "sent"}`}>
-              {m.status === "seen" ? "✓✓" : "✓"}
-            </span>
-          )}
+          {isMine && <span className={`msg__tick msg__tick--${m.status || "sent"}`}>{m.status === "seen" ? "✓✓" : "✓"}</span>}
         </div>
       </div>
     </div>
@@ -193,28 +171,34 @@ function SimpleAttachMenu({ open, anchorEl, onClose, onPick }) {
 
   useEffect(() => {
     if (!open) return;
-    
+
     const handleClickOutside = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target) && 
-          anchorEl && !anchorEl.contains(e.target)) {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(e.target) &&
+        anchorEl &&
+        !anchorEl.contains(e.target)
+      ) {
         onClose();
       }
     };
-    
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open, anchorEl, onClose]);
 
   if (!open) return null;
 
   const rect = anchorEl?.getBoundingClientRect();
-  const style = rect ? {
-    position: 'fixed',
-    top: `${rect.top - 100}px`,
-    left: `${rect.left - 40}px`,
-    zIndex: 1000,
-    transform: 'translateY(-10px)'
-  } : { display: 'none' };
+  const style = rect
+    ? {
+        position: "fixed",
+        top: `${rect.top - 100}px`,
+        left: `${rect.left - 40}px`,
+        zIndex: 1000,
+        transform: "translateY(-10px)",
+      }
+    : { display: "none" };
 
   return (
     <div ref={menuRef} className="modernAttachMenu" style={style}>
@@ -246,14 +230,7 @@ function SimpleAttachMenu({ open, anchorEl, onClose, onPick }) {
 }
 
 // Crop Controls Component
-function CropControls({ 
-  zoom, 
-  onZoomChange, 
-  onCropToggle, 
-  isCropping, 
-  onCropComplete, 
-  onCancelCrop 
-}) {
+function CropControls({ zoom, onZoomChange, onCropToggle, isCropping, onCropComplete, onCancelCrop }) {
   return (
     <div className="cropControls">
       <div className="cropControls__zoom">
@@ -269,33 +246,23 @@ function CropControls({
         />
         <span className="cropControls__zoomValue">{zoom.toFixed(1)}x</span>
       </div>
-      
+
       <div className="cropControls__buttons">
         <button
           type="button"
-          className={`cropControls__btn cropControls__btn--crop ${isCropping ? 'cropControls__btn--active' : ''}`}
+          className={`cropControls__btn cropControls__btn--crop ${isCropping ? "cropControls__btn--active" : ""}`}
           onClick={onCropToggle}
           title={isCropping ? "خروج از حالت کراپ" : "کراپ تصویر"}
         >
-          {isCropping ? '✂️' : '✂️'}
+          ✂️
         </button>
-        
+
         {isCropping && (
           <>
-            <button
-              type="button"
-              className="cropControls__btn cropControls__btn--check"
-              onClick={onCropComplete}
-              title="اعمال کراپ"
-            >
+            <button type="button" className="cropControls__btn cropControls__btn--check" onClick={onCropComplete} title="اعمال کراپ">
               ✓
             </button>
-            <button
-              type="button"
-              className="cropControls__btn cropControls__btn--close"
-              onClick={onCancelCrop}
-              title="انصراف از کراپ"
-            >
+            <button type="button" className="cropControls__btn cropControls__btn--close" onClick={onCancelCrop} title="انصراف از کراپ">
               ✕
             </button>
           </>
@@ -315,26 +282,22 @@ function AttachmentModal({ isOpen, type, onClose, onSend }) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
-  
+
+  // ✅ null instead of ""
+  const [currentPreviewUrl, setCurrentPreviewUrl] = useState(null);
+
   const fileInputRef = useRef(null);
   const previewContainerRef = useRef(null);
   const imageRef = useRef(null);
   const cropOverlayRef = useRef(null);
 
-  // جلوگیری از اسکرول صفحه زیرین
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    
+    document.body.style.overflow = isOpen ? "hidden" : "unset";
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [isOpen]);
 
-  // ریست موقعیت تصویر هنگام تغییر فایل
   useEffect(() => {
     setZoom(1);
     setImagePosition({ x: 0, y: 0 });
@@ -342,58 +305,64 @@ function AttachmentModal({ isOpen, type, onClose, onSend }) {
     setCropArea(null);
   }, [currentFileIndex]);
 
-  // هندلینگ کشیدن تصویر زوم شده
+  const currentFile = selectedFiles[currentFileIndex];
+
+  // Create + revoke preview URL for current file (prevents memory leaks)
+  useEffect(() => {
+    if (!currentFile) {
+      setCurrentPreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(currentFile);
+    setCurrentPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [currentFile]);
+
   useEffect(() => {
     if (!previewContainerRef.current || !imageRef.current) return;
-    
+
     const container = previewContainerRef.current;
     const image = imageRef.current;
-    
+
     const handleMouseDown = (e) => {
       if (zoom <= 1) return;
       setIsDragging(true);
       setDragStart({
         x: e.clientX - imagePosition.x,
-        y: e.clientY - imagePosition.y
+        y: e.clientY - imagePosition.y,
       });
-      
       e.preventDefault();
     };
 
     const handleMouseMove = (e) => {
       if (!isDragging || zoom <= 1) return;
-      
+
       const newX = e.clientX - dragStart.x;
       const newY = e.clientY - dragStart.y;
-      
-      // محدود کردن حرکت تصویر به داخل کانتینر
+
       const maxX = Math.max(0, (image.width * zoom - container.clientWidth) / 2);
       const maxY = Math.max(0, (image.height * zoom - container.clientHeight) / 2);
-      
+
       const clampedX = Math.max(-maxX, Math.min(maxX, newX));
       const clampedY = Math.max(-maxY, Math.min(maxY, newY));
-      
+
       setImagePosition({ x: clampedX, y: clampedY });
-      
       e.preventDefault();
     };
 
-    const handleMouseUp = () => {
-      setIsDragging(false);
-    };
+    const handleMouseUp = () => setIsDragging(false);
 
-    container.addEventListener('mousedown', handleMouseDown);
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    container.addEventListener("mousedown", handleMouseDown);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
 
     return () => {
-      container.removeEventListener('mousedown', handleMouseDown);
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      container.removeEventListener("mousedown", handleMouseDown);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
     };
   }, [isDragging, dragStart, imagePosition, zoom]);
 
-  // هندلینگ کشیدن برای کراپ
   useEffect(() => {
     if (!isCropping || !previewContainerRef.current) return;
 
@@ -403,92 +372,75 @@ function AttachmentModal({ isOpen, type, onClose, onSend }) {
 
     const getRelativeCoordinates = (e) => {
       const rect = container.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      return { x, y };
+      return { x: e.clientX - rect.left, y: e.clientY - rect.top };
     };
 
     const createCropOverlay = () => {
-      if (cropOverlayRef.current) {
-        cropOverlayRef.current.remove();
-      }
-      
-      const overlay = document.createElement('div');
-      overlay.className = 'cropOverlay';
-      overlay.style.position = 'absolute';
-      overlay.style.left = '0';
-      overlay.style.top = '0';
-      overlay.style.width = '100%';
-      overlay.style.height = '100%';
-      overlay.style.cursor = 'crosshair';
-      overlay.style.zIndex = '10';
-      overlay.style.pointerEvents = 'auto';
+      if (cropOverlayRef.current) cropOverlayRef.current.remove();
+
+      const overlay = document.createElement("div");
+      overlay.className = "cropOverlay";
+      overlay.style.position = "absolute";
+      overlay.style.left = "0";
+      overlay.style.top = "0";
+      overlay.style.width = "100%";
+      overlay.style.height = "100%";
+      overlay.style.cursor = "crosshair";
+      overlay.style.zIndex = "10";
+      overlay.style.pointerEvents = "auto";
       container.appendChild(overlay);
       cropOverlayRef.current = overlay;
-      
-      return overlay;
     };
 
     const updateCropDisplay = (rect) => {
       if (!cropOverlayRef.current || !rect) return;
-      
       cropOverlayRef.current.innerHTML = `
-        <div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3);"></div>
-        <div style="position: absolute; left: ${rect.x}px; top: ${rect.y}px; width: ${rect.width}px; height: ${rect.height}px; 
-              background: transparent; border: 2px solid #4dabf7; box-shadow: 0 0 0 9999px rgba(0,0,0,0.4); pointer-events: none;"></div>
-        <div style="position: absolute; left: ${rect.x + rect.width/2 - 30}px; top: ${rect.y + rect.height/2 - 15}px; 
-              background: rgba(77, 171, 247, 0.9); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; pointer-events: none;">
-              ${Math.round(rect.width)}×${Math.round(rect.height)}
+        <div style="position:absolute;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.3);"></div>
+        <div style="position:absolute;left:${rect.x}px;top:${rect.y}px;width:${rect.width}px;height:${rect.height}px;
+             background:transparent;border:2px solid #4dabf7;box-shadow:0 0 0 9999px rgba(0,0,0,0.4);pointer-events:none;"></div>
+        <div style="position:absolute;left:${rect.x + rect.width / 2 - 30}px;top:${rect.y + rect.height / 2 - 15}px;
+             background:rgba(77,171,247,0.9);color:white;padding:4px 8px;border-radius:4px;font-size:12px;pointer-events:none;">
+             ${Math.round(rect.width)}×${Math.round(rect.height)}
         </div>
       `;
     };
 
     const handleMouseDown = (e) => {
-      const pos = getRelativeCoordinates(e);
-      cropStart = pos;
+      cropStart = getRelativeCoordinates(e);
       createCropOverlay();
     };
 
     const handleMouseMove = (e) => {
       if (!cropStart) return;
-      
+
       const pos = getRelativeCoordinates(e);
       const minX = Math.max(0, Math.min(cropStart.x, pos.x));
       const minY = Math.max(0, Math.min(cropStart.y, pos.y));
       const maxX = Math.min(container.clientWidth, Math.max(cropStart.x, pos.x));
       const maxY = Math.min(container.clientHeight, Math.max(cropStart.y, pos.y));
-      
-      currentCropRect = {
-        x: minX,
-        y: minY,
-        width: maxX - minX,
-        height: maxY - minY
-      };
-      
+
+      currentCropRect = { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
       updateCropDisplay(currentCropRect);
     };
 
     const handleMouseUp = () => {
       if (currentCropRect && currentCropRect.width > 10 && currentCropRect.height > 10) {
         setCropArea(currentCropRect);
-      } else {
-        if (cropOverlayRef.current) {
-          cropOverlayRef.current.remove();
-          cropOverlayRef.current = null;
-        }
+      } else if (cropOverlayRef.current) {
+        cropOverlayRef.current.remove();
+        cropOverlayRef.current = null;
       }
       cropStart = null;
     };
 
-    container.addEventListener('mousedown', handleMouseDown);
-    container.addEventListener('mousemove', handleMouseMove);
-    container.addEventListener('mouseup', handleMouseUp);
+    container.addEventListener("mousedown", handleMouseDown);
+    container.addEventListener("mousemove", handleMouseMove);
+    container.addEventListener("mouseup", handleMouseUp);
 
     return () => {
-      container.removeEventListener('mousedown', handleMouseDown);
-      container.removeEventListener('mousemove', handleMouseMove);
-      container.removeEventListener('mouseup', handleMouseUp);
-      
+      container.removeEventListener("mousedown", handleMouseDown);
+      container.removeEventListener("mousemove", handleMouseMove);
+      container.removeEventListener("mouseup", handleMouseUp);
       if (cropOverlayRef.current) {
         cropOverlayRef.current.remove();
         cropOverlayRef.current = null;
@@ -497,36 +449,25 @@ function AttachmentModal({ isOpen, type, onClose, onSend }) {
   }, [isCropping]);
 
   const handleFileSelect = (e) => {
-    const files = Array.from(e.target.files);
+    const files = Array.from(e.target.files || []);
     const filteredFiles = files.filter((file) => {
-      if (type === "image") {
-        return file.type.startsWith("image/");
-      } else if (type === "video") {
-        return file.type.startsWith("video/");
-      }
+      if (type === "image") return file.type.startsWith("image/");
+      if (type === "video") return file.type.startsWith("video/");
       return false;
     });
 
     setSelectedFiles((prev) => [...prev, ...filteredFiles]);
-    if (filteredFiles.length > 0 && selectedFiles.length === 0) {
-      setCurrentFileIndex(0);
-    }
+    if (filteredFiles.length > 0 && selectedFiles.length === 0) setCurrentFileIndex(0);
   };
 
-  const handleAddMoreClick = () => {
-    fileInputRef.current?.click();
-  };
+  const handleAddMoreClick = () => fileInputRef.current?.click();
 
   const handleRemoveFile = (index) => {
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
-    if (index === currentFileIndex && index > 0) {
-      setCurrentFileIndex(index - 1);
-    }
+    if (index === currentFileIndex && index > 0) setCurrentFileIndex(index - 1);
   };
 
-  const handleSelectFile = (index) => {
-    setCurrentFileIndex(index);
-  };
+  const handleSelectFile = (index) => setCurrentFileIndex(index);
 
   const handleZoomChange = (newZoom) => {
     setZoom(newZoom);
@@ -535,10 +476,9 @@ function AttachmentModal({ isOpen, type, onClose, onSend }) {
 
   const handleToggleCrop = () => {
     if (type === "video") return;
-    const newCroppingState = !isCropping;
-    setIsCropping(newCroppingState);
-    
-    if (!newCroppingState) {
+    const next = !isCropping;
+    setIsCropping(next);
+    if (!next) {
       setCropArea(null);
       if (cropOverlayRef.current) {
         cropOverlayRef.current.remove();
@@ -550,7 +490,7 @@ function AttachmentModal({ isOpen, type, onClose, onSend }) {
   const handleCropComplete = () => {
     if (cropArea) {
       alert(`کراپ اعمال شد: ${Math.round(cropArea.width)}×${Math.round(cropArea.height)} پیکسل`);
-      // در اینجا منطق کراپ واقعی اجرا می‌شود
+      // TODO: apply real crop logic
     }
     setIsCropping(false);
     setCropArea(null);
@@ -570,9 +510,7 @@ function AttachmentModal({ isOpen, type, onClose, onSend }) {
   };
 
   const handleSend = () => {
-    if (selectedFiles.length > 0) {
-      onSend?.(selectedFiles);
-    }
+    if (selectedFiles.length > 0) onSend?.(selectedFiles);
     handleClose();
   };
 
@@ -590,8 +528,6 @@ function AttachmentModal({ isOpen, type, onClose, onSend }) {
     onClose?.();
   };
 
-  const currentFile = selectedFiles[currentFileIndex];
-
   if (!isOpen) return null;
 
   return (
@@ -602,10 +538,7 @@ function AttachmentModal({ isOpen, type, onClose, onSend }) {
             {type === "image" ? "🖼️ انتخاب تصاویر" : "🎥 انتخاب ویدیوها"}
             {selectedFiles.length > 0 && ` (${selectedFiles.length} انتخاب شده)`}
           </h3>
-          <button 
-            className="modernModal__closeBtn" 
-            onClick={handleClose}
-          >
+          <button className="modernModal__closeBtn" onClick={handleClose}>
             ✕
           </button>
         </div>
@@ -616,17 +549,15 @@ function AttachmentModal({ isOpen, type, onClose, onSend }) {
               {selectedFiles.map((file, index) => (
                 <div
                   key={`${file.name}-${index}`}
-                  className={`modernFileItem ${index === currentFileIndex ? 'modernFileItem--active' : ''}`}
+                  className={`modernFileItem ${index === currentFileIndex ? "modernFileItem--active" : ""}`}
                   onClick={() => handleSelectFile(index)}
                 >
                   <div className="modernFileItem__name">
-                    {file.name.length > 20 
-                      ? `${file.name.substring(0, 17)}...${file.name.substring(file.name.lastIndexOf('.'))}`
+                    {file.name.length > 20
+                      ? `${file.name.substring(0, 17)}...${file.name.substring(file.name.lastIndexOf("."))}`
                       : file.name}
                   </div>
-                  <div className="modernFileItem__size">
-                    {(file.size / 1024 / 1024).toFixed(2)} MB
-                  </div>
+                  <div className="modernFileItem__size">{(file.size / 1024 / 1024).toFixed(2)} MB</div>
                   <button
                     className="modernFileItem__remove"
                     onClick={(e) => {
@@ -639,11 +570,8 @@ function AttachmentModal({ isOpen, type, onClose, onSend }) {
                 </div>
               ))}
             </div>
-            
-            <button 
-              className="modernAddMoreBtn"
-              onClick={handleAddMoreClick}
-            >
+
+            <button className="modernAddMoreBtn" onClick={handleAddMoreClick}>
               + اضافه کردن {type === "image" ? "تصاویر بیشتر" : "ویدیوهای بیشتر"}
             </button>
           </div>
@@ -651,7 +579,6 @@ function AttachmentModal({ isOpen, type, onClose, onSend }) {
           <div className="modernModal__preview">
             {currentFile ? (
               <>
-                {/* کنترل‌های کراپ و زوم */}
                 {currentFile.type.startsWith("image/") && (
                   <div className="previewControls">
                     <CropControls
@@ -664,60 +591,84 @@ function AttachmentModal({ isOpen, type, onClose, onSend }) {
                     />
                   </div>
                 )}
-                
-                <div 
+
+                <div
                   ref={previewContainerRef}
-                  className={`modernPreviewContainer ${isCropping ? 'modernPreviewContainer--cropping' : ''} ${zoom > 1 ? 'modernPreviewContainer--zoomed' : ''}`}
-                  style={{ 
-                    cursor: isCropping ? 'crosshair' : (zoom > 1 ? 'grab' : 'default'),
-                    overflow: 'hidden'
+                  className={`modernPreviewContainer ${isCropping ? "modernPreviewContainer--cropping" : ""} ${
+                    zoom > 1 ? "modernPreviewContainer--zoomed" : ""
+                  }`}
+                  style={{
+                    cursor: isCropping ? "crosshair" : zoom > 1 ? "grab" : "default",
+                    overflow: "hidden",
+                    height: 320,
+                    maxHeight: 320,
+                    borderRadius: 12,
+                    position: "relative",
                   }}
                 >
+                  {/* ✅ Don’t render if preview url is null */}
                   {currentFile.type.startsWith("image/") ? (
-                    <img 
-                      ref={imageRef}
-                      src={URL.createObjectURL(currentFile)} 
-                      alt="Preview" 
-                      className="modernPreviewImage"
+                    currentPreviewUrl ? (
+                      <img
+                        ref={imageRef}
+                        src={currentPreviewUrl}
+                        alt="Preview"
+                        className="modernPreviewImage"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          maxHeight: 320,
+                          objectFit: "contain",
+                          transform: `scale(${zoom}) translate(${imagePosition.x}px, ${imagePosition.y}px)`,
+                          transformOrigin: "center center",
+                          transition: isDragging ? "none" : "transform 0.2s ease",
+                        }}
+                      />
+                    ) : null
+                  ) : currentPreviewUrl ? (
+                    <video
+                      src={currentPreviewUrl}
+                      controls
+                      className="modernPreviewVideo"
                       style={{
-                        transform: `scale(${zoom}) translate(${imagePosition.x}px, ${imagePosition.y}px)`,
-                        transformOrigin: 'center center',
-                        transition: isDragging ? 'none' : 'transform 0.2s ease'
+                        width: "100%",
+                        height: "100%",
+                        maxHeight: 320,
+                        objectFit: "contain",
                       }}
                     />
-                  ) : (
-                    <video 
-                      src={URL.createObjectURL(currentFile)} 
-                      controls 
-                      className="modernPreviewVideo"
-                    />
-                  )}
+                  ) : null}
                 </div>
-                
+
                 <div className="modernFileInfo">
-                  <p><strong>نام:</strong> {currentFile.name}</p>
-                  <p><strong>اندازه:</strong> {(currentFile.size / 1024 / 1024).toFixed(2)} مگابایت</p>
-                  <p><strong>نوع:</strong> {currentFile.type}</p>
+                  <p>
+                    <strong>نام:</strong> {currentFile.name}
+                  </p>
+                  <p>
+                    <strong>اندازه:</strong> {(currentFile.size / 1024 / 1024).toFixed(2)} مگابایت
+                  </p>
+                  <p>
+                    <strong>نوع:</strong> {currentFile.type}
+                  </p>
                   {cropArea && (
-                    <p><strong>اندازه کراپ:</strong> {Math.round(cropArea.width)}×{Math.round(cropArea.height)} پیکسل</p>
+                    <p>
+                      <strong>اندازه کراپ:</strong> {Math.round(cropArea.width)}×{Math.round(cropArea.height)} پیکسل
+                    </p>
                   )}
                   {zoom > 1 && (
-                    <p><strong>زوم:</strong> {zoom.toFixed(1)}x</p>
+                    <p>
+                      <strong>زوم:</strong> {zoom.toFixed(1)}x
+                    </p>
                   )}
                 </div>
               </>
             ) : (
               <div className="modernEmptyPreview">
-                <div className="modernEmptyPreview__icon">
-                  {type === "image" ? "🖼️" : "🎥"}
-                </div>
+                <div className="modernEmptyPreview__icon">{type === "image" ? "🖼️" : "🎥"}</div>
                 <p className="modernEmptyPreview__text">
                   {type === "image" ? "تصویری انتخاب نشده" : "ویدیویی انتخاب نشده"}
                 </p>
-                <button 
-                  className="modernEmptyPreview__btn"
-                  onClick={handleAddMoreClick}
-                >
+                <button className="modernEmptyPreview__btn" onClick={handleAddMoreClick}>
                   کلیک برای انتخاب {type === "image" ? "تصویر" : "ویدیو"}
                 </button>
               </div>
@@ -727,18 +678,15 @@ function AttachmentModal({ isOpen, type, onClose, onSend }) {
 
         <div className="modernModal__footer">
           <div className="modernModal__actions">
-            <button 
-              className="modernActionBtn modernActionBtn--secondary"
-              onClick={handleClose}
-            >
+            <button className="modernActionBtn modernActionBtn--secondary" onClick={handleClose}>
               لغو
             </button>
-            <button 
+            <button
               className="modernActionBtn modernActionBtn--primary"
               onClick={handleSend}
               disabled={selectedFiles.length === 0}
             >
-              ارسال ({selectedFiles.length})
+              انتخاب ({selectedFiles.length})
             </button>
           </div>
         </div>
@@ -767,6 +715,7 @@ export default function OpenConv({
 }) {
   const attachBtnRef = useRef(null);
   const messagesViewportRef = useRef(null);
+  const avatarSrc = chat?.avatar ? makeAbsoluteUrl(chat.avatar) || chat.avatar || null : null;
 
   const pendingScrollOnSendRef = useRef(false);
   const prevMessageCountRef = useRef(Array.isArray(messages) ? messages.length : 0);
@@ -778,6 +727,36 @@ export default function OpenConv({
   const [attachmentModalOpen, setAttachmentModalOpen] = useState(false);
   const [attachmentModalType, setAttachmentModalType] = useState("image");
   const [replyTarget, setReplyTarget] = useState(null);
+
+  const [pendingAttachments, setPendingAttachments] = useState(null);
+
+  const [pendingPreviewUrls, setPendingPreviewUrls] = useState([]);
+
+  useEffect(() => {
+    if (!pendingAttachments?.files?.length) {
+      // revoke any existing urls (defensive)
+      setPendingPreviewUrls((prev) => {
+        prev.forEach((it) => it?.url && URL.revokeObjectURL(it.url));
+        return [];
+      });
+      return;
+    }
+
+    const items = pendingAttachments.files.map((file) => ({
+      url: URL.createObjectURL(file),
+      type: file.type || "",
+      name: file.name || "",
+      size: file.size || 0,
+    }));
+
+    setPendingPreviewUrls(items);
+
+    return () => {
+      items.forEach((it) => it?.url && URL.revokeObjectURL(it.url));
+    };
+  }, [pendingAttachments]);
+
+  const hasPendingUpload = !!pendingAttachments?.files?.length;
 
   const setViewportEl = useCallback(
     (el) => {
@@ -797,6 +776,7 @@ export default function OpenConv({
 
   useEffect(() => {
     setReplyTarget(null);
+    setPendingAttachments(null);
   }, [chat?.id]);
 
   useEffect(() => {
@@ -816,9 +796,7 @@ export default function OpenConv({
     const isLoadingPlaceholder = messages.length === 1 && messages[0]?.id === "loading";
     if (isLoadingPlaceholder) return;
 
-    const firstUnread = messages.find(
-      (m) => m && m.side !== "out" && !m.is_read && m.id != null
-    );
+    const firstUnread = messages.find((m) => m && m.side !== "out" && !m.is_read && m.id != null);
 
     if (firstUnread) {
       const target = viewport.querySelector(`[data-msgid="${firstUnread.id}"]`);
@@ -872,11 +850,8 @@ export default function OpenConv({
       const now = Date.now();
       const recentlyTyping = now - (lastOutgoingAtRef.current || 0) <= LIVE_WINDOW_MS;
 
-      if (recentlyTyping) {
-        viewport.scrollTo({ top: viewport.scrollHeight, behavior: "smooth" });
-      } else if (isNearBottom()) {
-        viewport.scrollTo({ top: viewport.scrollHeight, behavior: "smooth" });
-      }
+      if (recentlyTyping) viewport.scrollTo({ top: viewport.scrollHeight, behavior: "smooth" });
+      else if (isNearBottom()) viewport.scrollTo({ top: viewport.scrollHeight, behavior: "smooth" });
     }
 
     prevMessageCountRef.current = nextCount;
@@ -884,13 +859,30 @@ export default function OpenConv({
 
   const handleSendClick = useCallback(() => {
     if (!chat) return;
+
+    // Upload attachments + include text + replyTo
+    if (hasPendingUpload) {
+      lastOutgoingAtRef.current = Date.now();
+      pendingScrollOnSendRef.current = true;
+
+      onAttach?.(pendingAttachments.type, pendingAttachments.files, {
+        text: (inputValue || "").trim(),
+        replyTo: replyTarget,
+      });
+
+      setPendingAttachments(null);
+      setReplyTarget(null);
+      onInputChange?.("");
+      return;
+    }
+
     if (!inputValue.trim()) return;
 
     lastOutgoingAtRef.current = Date.now();
     pendingScrollOnSendRef.current = true;
     onSend?.(replyTarget);
     setReplyTarget(null);
-  }, [chat, inputValue, onSend, replyTarget]);
+  }, [chat, hasPendingUpload, pendingAttachments, inputValue, replyTarget, onAttach, onSend, onInputChange]);
 
   const handleReplyPick = useCallback(
     (msg) => {
@@ -911,11 +903,13 @@ export default function OpenConv({
     setAttachOpen(false);
   }, []);
 
-  const handleSendAttachments = useCallback((files) => {
-    console.log(`Sending ${files.length} ${attachmentModalType}(s):`, files);
-    onAttach?.(attachmentModalType, files);
-    setAttachmentModalOpen(false);
-  }, [attachmentModalType, onAttach]);
+  const handleSendAttachments = useCallback(
+    (files) => {
+      setPendingAttachments({ type: attachmentModalType, files });
+      setAttachmentModalOpen(false);
+    },
+    [attachmentModalType]
+  );
 
   const jumpToMessage = useCallback((msgId) => {
     const viewport = messagesViewportRef.current;
@@ -936,28 +930,31 @@ export default function OpenConv({
 
   return (
     <section className="open">
-      <div
-        className="open__col"
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          width: "100%",
-          height: "100%",
-          minHeight: 0,
-        }}
-      >
+      <div className="open__col" style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%", minHeight: 0 }}>
         <div className="open__top">
           <div className="open__profile">
-            <img className="open__avatar" src={chat.avatar} alt={chat.title} />
+            {avatarSrc ? (
+              <img className="open__avatar" src={avatarSrc} alt={chat.title} />
+            ) : (
+              <div
+                className="open__avatar"
+                aria-hidden="true"
+                style={{
+                  display: "grid",
+                  placeItems: "center",
+                  background: "rgba(0,0,0,0.06)",
+                  color: "#555",
+                  fontWeight: 600,
+                }}
+              >
+                {chat.title?.[0] ?? "?"}
+              </div>
+            )}
             <div className="open__name">{chat.title}</div>
           </div>
         </div>
 
-        <div
-          ref={setViewportEl}
-          className="open__messages"
-          style={{ flex: 1, minHeight: 0, overflowY: "auto", position: "relative" }}
-        >
+        <div ref={setViewportEl} className="open__messages" style={{ flex: 1, minHeight: 0, overflowY: "auto", position: "relative" }}>
           {messages.map((m) => (
             <MessageBubble
               key={m.id ?? m.client_temp_id ?? `${m.time}_${m.side}`}
@@ -969,6 +966,7 @@ export default function OpenConv({
           ))}
         </div>
 
+        {/* ✅ Reply ABOVE attachments */}
         {replyTarget && (
           <div className="replyComposer" style={{ flex: "0 0 auto" }}>
             <div className="replyComposer__bar" />
@@ -982,6 +980,64 @@ export default function OpenConv({
               aria-label="cancel reply"
               onClick={() => setReplyTarget(null)}
               title="Cancel reply"
+            >
+              ×
+            </button>
+          </div>
+        )}
+
+        {hasPendingUpload && (
+          <div className="attachComposer" style={{ flex: "0 0 auto" }}>
+            <div className="attachComposer__bar" />
+
+            <div className="attachComposer__text" style={{ flex: 1, minWidth: 0 }}>
+              <div className="attachComposer__name">
+                {pendingAttachments.type === "image" ? "فایل تصویر انتخاب شد" : "فایل ویدیو انتخاب شد"} (
+                {pendingAttachments.files.length})
+              </div>
+
+              <div className="attachComposer__thumbs" style={{ display: "flex", gap: 6, marginTop: 6, overflowX: "auto", paddingBottom: 2 }}>
+                {pendingPreviewUrls.map((it, idx) => {
+                  const isImg = (it.type || "").startsWith("image/");
+                  const isVid = (it.type || "").startsWith("video/");
+                  const mb = ((it.size || 0) / 1024 / 1024).toFixed(2);
+                  if (!it.url) return null;
+
+                  return (
+                    <div
+                      key={`${it.name || "file"}_${idx}`}
+                      title={`${it.name || "file"} — ${mb} MB`}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        flex: "0 0 auto",
+                        borderRadius: 8,
+                        overflow: "hidden",
+                        border: "1px solid rgba(0,0,0,0.12)",
+                        background: "rgba(0,0,0,0.04)",
+                        display: "grid",
+                        placeItems: "center",
+                      }}
+                    >
+                      {isImg ? (
+                        <img src={it.url} alt={it.name || "preview"} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />
+                      ) : isVid ? (
+                        <video src={it.url} style={{ width: "100%", height: "100%", objectFit: "cover" }} muted playsInline />
+                      ) : (
+                        <span style={{ fontSize: 10, opacity: 0.7 }}>FILE</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className="attachComposer__close"
+              aria-label="cancel upload"
+              onClick={() => setPendingAttachments(null)}
+              title="Cancel upload"
             >
               ×
             </button>
@@ -1018,19 +1074,9 @@ export default function OpenConv({
         </div>
       </div>
 
-      <SimpleAttachMenu
-        open={attachOpen}
-        anchorEl={attachBtnRef.current}
-        onClose={() => setAttachOpen(false)}
-        onPick={handleAttachPick}
-      />
+      <SimpleAttachMenu open={attachOpen} anchorEl={attachBtnRef.current} onClose={() => setAttachOpen(false)} onPick={handleAttachPick} />
 
-      <AttachmentModal
-        isOpen={attachmentModalOpen}
-        type={attachmentModalType}
-        onClose={() => setAttachmentModalOpen(false)}
-        onSend={handleSendAttachments}
-      />
+      <AttachmentModal isOpen={attachmentModalOpen} type={attachmentModalType} onClose={() => setAttachmentModalOpen(false)} onSend={handleSendAttachments} />
     </section>
   );
 }
