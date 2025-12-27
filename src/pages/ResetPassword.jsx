@@ -1,4 +1,4 @@
-import "../styles/ResetPassword.css";
+import "../styles/resetPassword.css";
 import "../styles/AuthCommon.css";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";

@@ -1,4 +1,4 @@
-import "../styles/ForgotPassword.css";
+import "../styles/forgotPassword.css";
 import "../styles/AuthCommon.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
