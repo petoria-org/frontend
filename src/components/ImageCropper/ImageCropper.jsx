@@ -38,13 +38,11 @@ const ImageCropper = ({
     startCropY: 0,
   });
 
-  const calculatedCropSize = useMemo(() => {
-    if (cropSize) return cropSize;
-    
-    const baseSize = 300;
-    const height = Math.round(baseSize / aspect);
-    return { width: baseSize, height };
-  }, [aspect, cropSize]);
+  const calculatedCropSize = useMemo(() => ({
+  width: 420,
+  height: 250,
+}), []);
+
 
 useEffect(() => {
   const initializeCropper = () => {
@@ -194,97 +192,79 @@ useEffect(() => {
     }
   };
 
-const getCroppedImage = useCallback(async () => {
+  const getCroppedImage = useCallback(() => {
   return new Promise((resolve, reject) => {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d", { alpha: true });
-
-    canvas.width = calculatedCropSize.width;
-    canvas.height = calculatedCropSize.height;
-
-    // پاک کردن canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     const img = new Image();
     img.crossOrigin = "anonymous";
+
     img.onload = () => {
-      try {
-        // محاسبه ابعاد تصویر بعد از scale
-        const scaledWidth = img.width * scale;
-        const scaledHeight = img.height * scale;
-        
-        // محاسبه موقعیت تصویر در کادر
-        const imageX = crop.x - imagePosition.x;
-        const imageY = crop.y - imagePosition.y;
-        
-        // تنظیم transform برای rotation
-        ctx.save();
-        ctx.translate(canvas.width / 2, canvas.height / 2);
+      const pixelRatio = window.devicePixelRatio || 1;
+
+      const imageRect = imageRef.current.getBoundingClientRect();
+
+      // نسبت تصویر اصلی به نمایشی
+      const scaleX = img.naturalWidth / imageRect.width;
+      const scaleY = img.naturalHeight / imageRect.height;
+
+      // مختصات واقعی کراپ روی تصویر اصلی
+      const sx = (crop.x - imagePosition.x) * scaleX;
+      const sy = (crop.y - imagePosition.y) * scaleY;
+      const sw = calculatedCropSize.width * scaleX;
+      const sh = calculatedCropSize.height * scaleY;
+
+      // canvas با رزولوشن واقعی
+      const canvas = document.createElement("canvas");
+      canvas.width = sw * pixelRatio;
+      canvas.height = sh * pixelRatio;
+
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      ctx.imageSmoothingQuality = "high";
+
+      ctx.save();
+
+      if (rotation !== 0) {
+        ctx.translate(sw / 2, sh / 2);
         ctx.rotate((rotation * Math.PI) / 180);
-        
-        // اگر تصویر از کادر کوچکتر است، وسط‌چین بدون برش
-        if (scaledWidth <= canvas.width && scaledHeight <= canvas.height) {
-          ctx.translate(-scaledWidth / 2, -scaledHeight / 2);
-          ctx.scale(scale, scale);
-          ctx.drawImage(img, 0, 0);
-        } 
-        // تصویر بزرگتر است - برش بزن
-        else {
-          ctx.translate(-canvas.width / 2, -canvas.height / 2);
-          ctx.scale(scale, scale);
-          
-          // محاسبه مختصات برش
-          const sourceX = Math.max(0, imageX / scale);
-          const sourceY = Math.max(0, imageY / scale);
-          
-          // محاسبه ابعاد قابل برش
-          const maxSourceWidth = img.width - sourceX;
-          const maxSourceHeight = img.height - sourceY;
-          const targetWidth = canvas.width / scale;
-          const targetHeight = canvas.height / scale;
-          
-          const sourceWidth = Math.min(maxSourceWidth, targetWidth);
-          const sourceHeight = Math.min(maxSourceHeight, targetHeight);
-          
-          ctx.drawImage(
-            img,
-            sourceX,
-            sourceY,
-            sourceWidth,
-            sourceHeight,
-            0,
-            0,
-            canvas.width / scale,
-            canvas.height / scale
-          );
-        }
-        
-        ctx.restore();
-        
-        canvas.toBlob(
-          (blob) => {
-            if (blob) {
-              resolve(blob);
-            } else {
-              reject(new Error("Failed to create blob"));
-            }
-          },
-          `image/${format}`,
-          format === "jpeg" ? quality : 1
-        );
-        
-      } catch (error) {
-        reject(error);
+        ctx.translate(-sw / 2, -sh / 2);
       }
+
+      ctx.drawImage(
+        img,
+        sx,
+        sy,
+        sw,
+        sh,
+        0,
+        0,
+        sw,
+        sh
+      );
+
+      ctx.restore();
+
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) reject(new Error("Blob failed"));
+          resolve(blob);
+        },
+        `image/${format}`,
+        format === "jpeg" ? quality : 1
+      );
     };
-    
-    img.onerror = () => {
-      reject(new Error("Failed to load image"));
-    };
-    
+
+    img.onerror = reject;
     img.src = image;
   });
-}, [image, crop, scale, rotation, calculatedCropSize, format, quality, imagePosition]);
+}, [
+  image,
+  crop,
+  imagePosition,
+  calculatedCropSize,
+  rotation,
+  format,
+  quality,
+]);
 
 const handleCrop = async () => {
   try {

@@ -16,7 +16,6 @@ import { config } from "../../config";
 
 const toJalaliDate = (dateString) => {
   if (!dateString) return "";
-
   return new Intl.DateTimeFormat("fa-IR", {
     year: "numeric",
     month: "long",  
@@ -60,6 +59,25 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, petName }) => {
   );
 };
 
+const getPetType = (type) => {
+  switch (type) {
+    case "cat":
+      return "گربه";
+    case "dog":
+      return "سگ";
+    case "bird":
+      return "پرنده";
+    case "rabbit":
+      return "خرگوش";
+    case "hamster":
+      return "همستر";
+    case "other":
+      return "سایر";
+    default:
+      return "نامشخص";
+  }
+};
+
 export const UserProfile = ({ onEditClick, refreshKey }) => {
   const [allAds, setAllAds] = useState([]);
   const [user, setUser] = useState(null);
@@ -80,7 +98,6 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
     const fetchData = async () => {
       try {
         setLoading(true);
-
         const profile = await getUserProfile();
         setUser(profile);
 
@@ -93,9 +110,10 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
         const mappedAds = [
           ...lost.map(p => ({
             id: p.id,
+            globalId: `lost-${p.id}`,
             name: p.title,
             breed: p.breed || "",
-            type: p.pet_type === "cat" ? "گربه" : "سگ",
+            type: getPetType(p.pet_type),
             status: "lost",
             statusLabel: "گم شده",
             image: p.thumbnail ? `${BACKEND_URL}${p.thumbnail}` : "/src/assets/images/default-pet.png",
@@ -108,9 +126,10 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
 
           ...found.map(p => ({
             id: p.id,
+            globalId: `found-${p.id}`,
             name: p.title,
             breed: p.breed || "",
-            type: p.pet_type === "cat" ? "گربه" : "سگ",
+            type: getPetType(p.pet_type),
             status: "found",
             statusLabel: "پیدا شده",
             image: p.thumbnail ? `${BACKEND_URL}${p.thumbnail}` : "/src/assets/images/default-pet.png",
@@ -123,9 +142,10 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
 
           ...surrender.map(p => ({
             id: p.id,
+            globalId: `adoption-${p.id}`,
             name: p.title,
             breed: p.breed || "",
-            type: p.pet_type === "cat" ? "گربه" : "سگ",
+            type: getPetType(p.pet_type),
             status: "adoption",
             statusLabel: "سرپرستی",
             image: p.thumbnail ? `${BACKEND_URL}${p.thumbnail}` : "/src/assets/images/default-pet.png",
@@ -138,6 +158,8 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
         ];
 
         setAllAds(mappedAds);
+
+
       } catch (err) {
         console.error("Profile fetch error:", err);
       } finally {
@@ -156,8 +178,8 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
   const [petToDelete, setPetToDelete] = useState(null);
   const itemsPerPage = 6;
 
-  const handleMarkAsResolved = (petId) => {
-    const pet = allAds.find(ad => ad.id === petId);
+  const handleMarkAsResolved = (globalId) => {
+    const pet = allAds.find(ad => ad.id === globalId);
     setSelectedPetForStory(pet);
     setShowSuccessStoryModal(true);
   };
@@ -195,7 +217,10 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
         await deleteSurrenderPost(petToDelete.id);
       }
 
-      setAllAds((prev) => prev.filter((item) => item.id !== petToDelete.id));
+      setAllAds(prev =>
+        prev.filter(item => item.globalId !== petToDelete.globalId)
+      );
+
       setCurrentPage(1);
       
     } catch (err) {
@@ -322,6 +347,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
     src="src/assets/icons/email.svg"
     width="18"
     hight="18"
+    alt="ایمیل"
     />
   );
 
@@ -477,7 +503,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
 
             <div className="pet-listings-grid">
               {currentAds.map((pet) => (
-                <div key={pet.id} className={`pet-listing-card ${pet.resolved ? 'resolved' : ''}`}>
+                <div key={pet.globalId} className={`pet-listing-card ${pet.resolved ? 'resolved' : ''}`}>
                   <div className="pet-listing-image-container">
                     <img
                       src={pet.image}
@@ -495,7 +521,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                         <div className="action-buttons-wrapper">
                           <button 
                             className="action-button story-button"
-                            onClick={() => handleMarkAsResolved(pet.id)}
+                            onClick={() => handleMarkAsResolved(pet.globalId)}
                             title={pet.resolved ? "مشاهده/ویرایش داستان موفقیت" : "ثبت داستان موفقیت"}
                           >
                             <StoryIcon hasSuccessStory={pet.resolved} />

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdvancedFilters from "../AdvancedFilters";
 import SortFilters from "../SortFilters";
+import { Pagination } from "../Pagination/Pagination";
 import "../../styles/AllPosts.css";
 import { config } from "../../config";
 
@@ -35,10 +36,30 @@ const calculateRelativeTime = (isoDate) => {
   return `${Math.floor(diffInSeconds / 31536000)} سال پیش`;
 };
 
+const LocationIcon = () => (
+  <img 
+    src="/src/icons/location.svg" 
+    alt="location"
+    width="16" 
+    height="16"
+    className="icon-img-all-posts"
+  />
+);
+
+const CalendarIcon = () => (
+  <img 
+    src="/src/icons/calendar-2.svg" 
+    alt="calendar"
+    width="16" 
+    height="16"
+    className="icon-img-all-posts"
+  />
+);
+
 export default function AllPosts() {
   const navigate = useNavigate();
   
-  const [activeFilter, setActiveFilter] = useState("all");
+  const [activeFilter, setActiveFilter] = useState("همه");
   const [posts, setPosts] = useState([]);
   const [pagination, setPagination] = useState({
     next: null,
@@ -52,24 +73,24 @@ export default function AllPosts() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   
-  const [filterAnimal, setFilterAnimal] = useState("all");
-  const [filterSex, setFilterSex] = useState("all");
-  const [filterCity, setFilterCity] = useState("all");
-  const [filterAge, setFilterAge] = useState("all");
-  const [filterHasCertificate, setFilterHasCertificate] = useState("all");
-  const [filterIsVaccinated, setFilterIsVaccinated] = useState("all");
-  const [filterIsSterilized, setFilterIsSterilized] = useState("all");
+  const [filterAnimal, setFilterAnimal] = useState("همه");
+  const [filterSex, setFilterSex] = useState("همه");
+  const [filterCity, setFilterCity] = useState("همه");
+  const [filterAge, setFilterAge] = useState("همه");
+  const [filterHasCertificate, setFilterHasCertificate] = useState("همه");
+  const [filterIsVaccinated, setFilterIsVaccinated] = useState("همه");
+  const [filterIsSterilized, setFilterIsSterilized] = useState("همه");
   
   const [sortOrder, setSortOrder] = useState("");
 
   const activeFiltersCount = [
-    filterAnimal !== "all",
-    filterSex !== "all",
-    filterCity !== "all",
-    filterAge !== "all",
-    filterHasCertificate !== "all",
-    filterIsVaccinated !== "all",
-    filterIsSterilized !== "all",
+    filterAnimal !== "همه",
+    filterSex !== "همه",
+    filterCity !== "همه",
+    filterAge !== "همه",
+    filterHasCertificate !== "همه",
+    filterIsVaccinated !== "همه",
+    filterIsSterilized !== "همه",
   ].filter(Boolean).length;
 
   const fetchPosts = async (url, page = 1) => {
@@ -127,30 +148,42 @@ export default function AllPosts() {
 
   const normalizedPosts = useMemo(() => {
     return posts.map((p) => {
-      let status = "active";
+      let status = "فعال";
       let statusLabel = "فعال";
 
       if (activeFilter === "گم شده") {
         status = "گم شده";
         statusLabel = "گم شده";
-      } else if (activeFilter === "پیدا شده") {
+      } 
+      
+      else if (activeFilter === "پیدا شده") {
         status = "پیدا شده";
         statusLabel = "پیدا شده";
-      } else if (activeFilter === "سرپرستی") {
+      } 
+      
+      else if (activeFilter === "سرپرستی") {
         status = "سرپرستی";
         statusLabel = "سرپرستی";
-      } else {
+      } 
+      
+      else {
         if (p.type === "found" || p.found_time) {
           status = "پیدا شده";
           statusLabel = "پیدا شده";
-        } else if (p.type === "lost" || p.lost_time) {
+        } 
+        
+        else if (p.type === "lost" || p.lost_time) {
           status = "گم شده";
           statusLabel = "گم شده";
-        } else if (p.type === "surrender") {
+        } 
+        
+        else if (p.type === "surrender") {
           status = "سرپرستی";
           statusLabel = "سرپرستی";
-        } else {
-          status = p.status || "active";
+        } 
+        
+        else {
+          status = p.status || "فعال";
           statusLabel = "فعال";
         }
       }
@@ -256,31 +289,31 @@ export default function AllPosts() {
         ad.location.toLowerCase().includes(term) ||
         (ad.category && ad.category.toLowerCase().includes(term));
 
-      const matchAnimal = filterAnimal === "all" || ad.category === filterAnimal;
-      const matchSex = filterSex === "all" || ad.sex === filterSex;
-      const matchCity = filterCity === "all" || ad.city === filterCity;
+      const matchAnimal = filterAnimal === "همه" || ad.category === filterAnimal;
+      const matchSex = filterSex === "همه" || ad.sex === filterSex;
+      const matchCity = filterCity === "همه" || ad.city === filterCity;
       
       let matchAge = true;
-      if (filterAge !== "all" && ad.age) {
+      if (filterAge !== "همه" && ad.age) {
         const ageInYears = parseAgeToYears(ad.age);
         
         switch (filterAge) {
-          case "under-1":
+          case "زیر 1 سال":
             matchAge = ageInYears < 1;
             break;
-          case "1-2":
+          case "1-2 سال":
             matchAge = ageInYears >= 1 && ageInYears < 2;
             break;
-          case "2-3":
+          case "2-3 سال":
             matchAge = ageInYears >= 2 && ageInYears < 3;
             break;
-          case "3-5":
+          case "3-5 سال":
             matchAge = ageInYears >= 3 && ageInYears < 5;
             break;
-          case "5-7":
+          case "5-7 سال":
             matchAge = ageInYears >= 5 && ageInYears < 7;
             break;
-          case "over-7":
+          case "بالای 7 سال":
             matchAge = ageInYears >= 7;
             break;
           default:
@@ -293,19 +326,19 @@ export default function AllPosts() {
       let matchSterilization = true;
       
       if (activeFilter === "سرپرستی" || ad.type === "surrender") {
-        if (filterHasCertificate !== "all") {
+        if (filterHasCertificate !== "همه") {
           const hasCert = ad.hasBirthCertificate || ad.originalData?.has_birth_certificate || false;
-          matchCertificate = filterHasCertificate === "yes" ? hasCert : !hasCert;
+          matchCertificate = filterHasCertificate === "دارد" ? hasCert : !hasCert;
         }
         
-        if (filterIsVaccinated !== "all") {
+        if (filterIsVaccinated !== "همه") {
           const isVacc = ad.isVaccinated || ad.originalData?.vaccination || false;
-          matchVaccination = filterIsVaccinated === "yes" ? isVacc : !isVacc;
+          matchVaccination = filterIsVaccinated === "دارد" ? isVacc : !isVacc;
         }
         
-        if (filterIsSterilized !== "all") {
+        if (filterIsSterilized !== "همه") {
           const isSteril = ad.isSterilized || ad.originalData?.steriliz || false;
-          matchSterilization = filterIsSterilized === "yes" ? isSteril : !isSteril;
+          matchSterilization = filterIsSterilized === "دارد" ? isSteril : !isSteril;
         }
       }
 
@@ -320,13 +353,13 @@ export default function AllPosts() {
       filterHasCertificate, filterIsVaccinated, filterIsSterilized, activeFilter, sortOrder]);
 
   const clearAllFilters = () => {
-    setFilterAnimal("all");
-    setFilterSex("all");
-    setFilterCity("all");
-    setFilterAge("all");
-    setFilterHasCertificate("all");
-    setFilterIsVaccinated("all");
-    setFilterIsSterilized("all");
+    setFilterAnimal("همه");
+    setFilterSex("همه");
+    setFilterCity("همه");
+    setFilterAge("همه");
+    setFilterHasCertificate("همه");
+    setFilterIsVaccinated("همه");
+    setFilterIsSterilized("همه");
     setSortOrder("");
     setSearch("");
     setCurrentPage(1);
@@ -368,59 +401,86 @@ export default function AllPosts() {
     setCurrentPage(pageNumber);
   };
 
-  const ChevronRightIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M9 18l6-6-6-6"/>
-    </svg>
-  );
-
-  const ChevronLeftIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M15 18l-6-6 6-6"/>
-    </svg>
-  );
+  const filters = [
+    { label: "همه", count: normalizedPosts.length },
+    {
+      label: "پیدا شده",
+      count: normalizedPosts.filter((a) => a.status === "پیدا شده").length,
+    },
+    {
+      label: "گم شده",
+      count: normalizedPosts.filter((a) => a.status === "گم شده").length,
+    },
+    {
+      label: "سرپرستی",
+      count: normalizedPosts.filter((a) => a.status === "سرپرستی").length,
+    },
+  ];
 
   return (
     <div className="new-post-container-all-posts">
-      <h2 className="section-title-all-posts">آگهی‌ها</h2>
+      <header className="posts-header-all-posts">
+        <h1 className="posts-title-all-posts">مرور آگهی‌ها</h1>
+        <p className="posts-subtitle-all-posts">جستجو و فیلتر آگهی‌های حیوانات</p>
+      </header>
 
-      <div className="filter-tabs-all-posts">
-        <div
-          className={`filter-button ${activeFilter === "all" ? "active" : ""}`}
-          onClick={() => setActiveFilter("all")}
-        >
-          همه
-        </div>
-        <div
-          className={`filter-button ${activeFilter === "پیدا شده" ? "active" : ""}`}
-          onClick={() => setActiveFilter("پیدا شده")}
-        >
-          پیدا شده
-        </div>
-        <div
-          className={`filter-button ${activeFilter === "گم شده" ? "active" : ""}`}
-          onClick={() => setActiveFilter("گم شده")}
-        >
-          گم شده
-        </div>
-        <div
-          className={`filter-button ${activeFilter === "سرپرستی" ? "active" : ""}`}
-          onClick={() => setActiveFilter("سرپرستی")}
-        >
-          سرپرستی
+      <div className="posts-categories-tabs-all-posts">
+        <div className="posts-categories-list-all-posts">
+          {filters.map((filter) => (
+            <button
+              key={filter.label}
+              className={`posts-category-tab-all-posts ${activeFilter === filter.label ? "active-all-posts" : ""}`}
+              onClick={() => setActiveFilter(filter.label)}
+            >
+              <div className="posts-category-content-all-posts">
+                <span className="posts-category-label-all-posts">{filter.label}</span>
+                <div className="posts-category-count-all-posts">
+                  <span>{filter.count}</span>
+                </div>
+              </div>
+            </button>
+          ))}
         </div>
       </div>
 
-      <div className="search-container-all-posts">
-        <div className="search-box-all-posts">
-          <input
-            type="text"
-            placeholder="جستجو بر اساس نام، نژاد یا مکان..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-      </div>
+            <div className="search-wrapper">
+              <div className="search-box-inner" onClick={() => document.querySelector('.search-input-container-landing input')?.focus()}>
+                
+                <div className="search-input-container">
+                  <div className="search-icon-box">
+                    <img 
+                      src="/src/assets/icons/search-normal.svg" 
+                      alt="search"
+                      width="20"
+                      height="20"
+                      className="search-icon-img"
+                    />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="جستجو در آگهی‌ها..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="search-input"
+                  />
+                  
+                  {search && (
+                    <button 
+                      className="search-clear-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSearch('');
+                      }}
+                      type="button"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
 
       <AdvancedFilters
         activeFilter={activeFilter}
@@ -470,94 +530,83 @@ export default function AllPosts() {
           </div>
         )}
 
-        {filteredAds.map((ad) => (
-          <div className="ad-card-all-posts" key={ad.id}>
-            <img
-              className="pet-image-all-posts"
-              src={ad.image}
-              alt={ad.name}
-            />
-            <div className="status-badge-all-posts">
-              <div
-                className={`status-background-all-posts ${
-                  ad.status === "پیدا شده"
-                    ? "status-found-all-posts"
-                    : ad.status === "سرپرستی"
-                    ? "status-adoption-all-posts"
-                    : "status-missing-all-posts"
-                }`}
-              >
-                {ad.statusLabel}
-              </div>
-            </div>
+        {filteredAds.map((ad) => {
+          const getStatusClass = () => {
+            if (ad.status === 'پیدا شده') return 'found-all-posts';
+            if (ad.status === 'گم شده') return 'lost-all-posts';
+            if (ad.status === 'سرپرستی') return 'adoption-all-posts';
+            return 'active-all-posts';
+          };
 
-            <div className="ad-content-all-posts">
-              <div className="top-row-all-posts">
-                <div className="pet-name-all-posts">{ad.name}</div>
-                <div className="category-badge-all-posts">{ad.category}</div>
+          const statusClass = getStatusClass();
+          
+          return (
+            <div className="ad-card-all-posts" key={ad.id}>
+              <div className="pet-image-container-all-posts">
+                <img className="pet-image-all-posts" src={ad.image} alt={ad.name} />
+                
+                <div className={`pet-listing-status-all-posts ${statusClass}`}>
+                  <span className="status-label-all-posts">{ad.statusLabel}</span>
+                  <div className="status-pulse-all-posts"></div>
+                </div>
               </div>
-              <p className="pet-description-all-posts">{ad.desc}</p>
-              <div className="location-container-all-posts">
-                <div>{ad.location}</div>
-                <img
-                  className="location-icon-all-posts"
-                  alt="location"
-                  src="/src/icons/location.svg"
-                />
-              </div>
-              <div className="calender-container-all-posts">
-                <div>{ad.time}</div>
-                <img
-                  className="calendar-icon-all-posts"
-                  alt="calendar"
-                  src="/src/icons/calendar-2.svg"
-                />
-              </div>
-            </div>
 
-            <div className="action-buttons-all-posts">
-              <div
-                className="view-details-btn-all-posts"
-                onClick={() => handleViewDetails(ad)}
-              >
-                مشاهده جزئیات
+              <div className="ad-content-all-posts">
+                <div className="top-row-all-posts">
+                  <div className="pet-info-all-posts">
+                    <h3 className="pet-name-all-posts">{ad.name}</h3>
+                    <p className="pet-subtitle-all-posts">{ad.category}</p>
+                  </div>
+                  <div className="category-badge-all-posts">
+                    {ad.category}
+                  </div>
+                </div>
+
+                <p className="pet-description-all-posts">{ad.desc}</p>
+
+                <div className="post-details-container-all-posts">
+                  <div className="post-detail-all-posts">
+                    <div className="detail-icon-all-posts">
+                      <LocationIcon />
+                    </div>
+                    <span className="post-detail-text-all-posts">{ad.location}</span>
+                  </div>
+
+                  <div className="post-detail-all-posts">
+                    <div className="detail-icon-all-posts">
+                      <CalendarIcon />
+                    </div>
+                    <span className="post-detail-text-all-posts">{ad.time}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="action-buttons-all-posts">
+                <button
+                  className="view-details-btn-all-posts"
+                  onClick={() => handleViewDetails(ad)}
+                >
+                  <span className="btn-glow-all-posts"></span>
+                  <span className="border-animation-all-posts"></span>
+                  مشاهده جزئیات
+                  <svg className="btn-icon-all-posts" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {!loading && filteredAds.length > 0 && totalPages > 1 && (
-        <div className="pagination-all-posts">
-          <button
-            className="pagination-button-all-posts"
-            onClick={handlePreviousPage}
-            disabled={currentPage === 1 || loading}
-          >
-            <ChevronRightIcon />
-          </button>
-
-          <div className="pagination-pages-all-posts">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                className={`pagination-page-button-all-posts ${currentPage === page ? 'active' : ''}`}
-                onClick={() => handlePageClick(page)}
-                disabled={loading}
-              >
-                {page}
-              </button>
-            ))}
-          </div>
-
-          <button
-            className="pagination-button-all-posts"
-            onClick={handleNextPage}
-            disabled={currentPage === totalPages || loading}
-          >
-            <ChevronLeftIcon />
-          </button>
-        </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageClick}
+          onPrevious={handlePreviousPage}
+          onNext={handleNextPage}
+        />
       )}
     </div>
   );

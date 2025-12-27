@@ -85,3 +85,5 @@ export const createFoundPost = (data) => {
 export const createSurrenderPost = (data) => {
   return api.post("/posts/surrender-posts/", data);
 };
+
+
