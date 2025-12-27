@@ -56,6 +56,16 @@ const CalendarIcon = () => (
   />
 );
 
+const ClockIcon = () => (
+  <img 
+    src="/src/icons/clock.svg" 
+    alt="time"
+    width="16" 
+    height="16"
+    className="icon-img-all-posts"
+  />
+);
+
 export default function AllPosts() {
   const navigate = useNavigate();
   
@@ -196,6 +206,7 @@ export default function AllPosts() {
         hamster: "همستر",
         bird: "پرنده",
       };
+
 
       const sex = p.sex || (p.pet_sex === "male" ? "نر" : p.pet_sex === "female" ? "ماده" : null);
       
@@ -545,6 +556,18 @@ export default function AllPosts() {
               <div className="pet-image-container-all-posts">
                 <img className="pet-image-all-posts" src={ad.image} alt={ad.name} />
                 
+                <div className="image-glass-overlay-all-posts">
+                  <button
+                    className="image-glass-btn-all-posts"
+                    onClick={() => handleViewDetails(ad)}
+                  >
+                    <span className="image-glass-text-all-posts">مشاهده جزئیات</span>
+                    <svg className="image-glass-icon-all-posts" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                </div>
+                
                 <div className={`pet-listing-status-all-posts ${statusClass}`}>
                   <span className="status-label-all-posts">{ad.statusLabel}</span>
                   <div className="status-pulse-all-posts"></div>
@@ -579,20 +602,6 @@ export default function AllPosts() {
                     <span className="post-detail-text-all-posts">{ad.time}</span>
                   </div>
                 </div>
-              </div>
-
-              <div className="action-buttons-all-posts">
-                <button
-                  className="view-details-btn-all-posts"
-                  onClick={() => handleViewDetails(ad)}
-                >
-                  <span className="btn-glow-all-posts"></span>
-                  <span className="border-animation-all-posts"></span>
-                  مشاهده جزئیات
-                  <svg className="btn-icon-all-posts" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </button>
               </div>
             </div>
           );
