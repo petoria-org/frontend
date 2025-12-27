@@ -1,3 +1,167 @@
+.header-content-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  padding: 0 20px;
+}
+
+.header-title-section {
+  flex: 1;
+  position: relative;
+}
+
+.title-icon-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.title-icon-heart {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #ff6b8b 0%, #ff8e53 100%);
+  border-radius: 14px;
+  color: white;
+  box-shadow: 0 8px 20px rgba(255, 107, 139, 0.3);
+  animation: heartbeat 2s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.posts-title-all-posts {
+  font-family: 'Inter', Helvetica;
+  font-weight: 800;
+  color: #2c3e50;
+  font-size: 32px;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+  direction: rtl;
+  margin: 0;
+  position: relative;
+  display: inline-block;
+}
+
+.title-gradient-line {
+  position: absolute;
+  bottom: -8px;
+  right: 0;
+  width: 120px;
+  height: 4px;
+  background: linear-gradient(90deg, #ff6b8b, #ff8e53);
+  border-radius: 2px;
+  animation: lineExpand 1.2s ease-out;
+}
+
+@keyframes lineExpand {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 120px;
+    opacity: 1;
+  }
+}
+
+.posts-subtitle-all-posts {
+  color: #6b7280;
+  font-size: 18px;
+  font-family: 'Inter', Helvetica;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.6;
+  direction: rtl;
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.subtitle-dots {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.dot {
+  animation: dotBlink 1.4s infinite;
+  color: #ff6b8b;
+}
+
+.dot:nth-child(1) { animation-delay: 0s; }
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dotBlink {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+.header-decoration-simple {
+  position: relative;
+  height: 2px;
+  margin: 32px 20px 40px;
+}
+
+.decoration-line-main {
+  position: absolute;
+  height: 2px;
+  width: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 107, 139, 0.6), transparent);
+  border-radius: 1px;
+  animation: lineFlow 3s ease-in-out infinite;
+}
+
+@keyframes lineFlow {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scaleX(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+.decoration-dots-container {
+  position: absolute;
+  top: -4px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.decoration-dot-simple {
+  width: 8px;
+  height: 8px;
+  background: #ff6b8b;
+  border-radius: 50%;
+  animation: dotMove 2s ease-in-out infinite;
+}
+
+@keyframes dotMove {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
+}
+
 .new-post-container-all-posts {
   width: 100%;
   display: flex;
@@ -28,33 +192,6 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.posts-header-all-posts {
-  margin-bottom: 32px;
-  text-align: center;
-}
-
-.posts-title-all-posts {
-  font-family: 'Inter', Helvetica;
-  font-weight: 700;
-  color: #1c7bd1;
-  font-size: 26px;
-  letter-spacing: 0;
-  line-height: normal;
-  direction: rtl;
-  margin-bottom: 8px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.posts-subtitle-all-posts {
-  color: rgba(0, 0, 0, 0.5);
-  font-size: 20px;
-  font-family: 'Inter', Helvetica;
-  font-weight: 400;
-  letter-spacing: 0;
-  line-height: normal;
-  direction: rtl;
 }
 
 .posts-categories-tabs-all-posts {
@@ -745,11 +882,29 @@
   .pet-listings-grid-all-posts {
     grid-template-columns: repeat(2, 1fr);
   }
+  
+  .header-content-wrapper {
+    flex-direction: column;
+    gap: 24px;
+  }
 }
 
 @media (max-width: 768px) {
   .new-post-container-all-posts {
     padding: 24px;
+  }
+  
+  .posts-title-all-posts {
+    font-size: 26px;
+  }
+  
+  .posts-subtitle-all-posts {
+    font-size: 16px;
+  }
+  
+  .title-icon-heart {
+    width: 40px;
+    height: 40px;
   }
   
   .posts-categories-list-all-posts {
@@ -787,7 +942,12 @@
   }
   
   .posts-subtitle-all-posts {
-    font-size: 16px;
+    font-size: 15px;
+  }
+  
+  .title-icon-heart {
+    width: 36px;
+    height: 36px;
   }
   
   .posts-category-label-all-posts {

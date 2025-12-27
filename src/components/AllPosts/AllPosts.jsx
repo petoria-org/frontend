@@ -115,6 +115,12 @@ const ClockIcon = () => (
   />
 );
 
+const HeartIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+  </svg>
+);
+
 export default function AllPosts() {
   const navigate = useNavigate();
   
@@ -574,9 +580,37 @@ export default function AllPosts() {
   return (
     <div className="new-post-container-all-posts">
       <header className="posts-header-all-posts">
-        <h1 className="posts-title-all-posts">مرور آگهی‌ها</h1>
-        <p className="posts-subtitle-all-posts">جستجو و فیلتر آگهی‌های حیوانات</p>
+        <div className="header-content-wrapper">
+          <div className="header-title-section">
+            <div className="title-icon-wrapper">
+              <div className="title-icon-heart">
+                <HeartIcon />
+              </div>
+              <h1 className="posts-title-all-posts">
+                مرور آگهی‌ها
+                <span className="title-gradient-line"></span>
+              </h1>
+            </div>
+            <p className="posts-subtitle-all-posts">
+              جستجو و فیلتر آگهی‌های حیوانات
+              <span className="subtitle-dots">
+                <span className="dot">.</span>
+                <span className="dot">.</span>
+                <span className="dot">.</span>
+              </span>
+            </p>
+          </div>
+        </div>
+        <div className="header-decoration-simple">
+          <div className="decoration-line-main"></div>
+          <div className="decoration-dots-container">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="decoration-dot-simple" style={{ animationDelay: `${i * 0.1}s` }}></div>
+            ))}
+          </div>
+        </div>
       </header>
+
 
       <div className="posts-categories-tabs-all-posts">
         <div className="posts-categories-list-all-posts">
@@ -596,7 +630,6 @@ export default function AllPosts() {
           ))}
         </div>
       </div>
-
       <div className="search-wrapper">
         <div className="search-box-inner" onClick={() => document.querySelector('.search-input-container-landing input')?.focus()}>
           <div className="search-input-container">
