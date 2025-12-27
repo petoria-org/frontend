@@ -9,6 +9,7 @@ import {
   getChatMessages,
   buildChatWsUrl,
   ensureChat,
+  uploadAttachments,
 } from "../Services/chatService";
 
 function formatTime(iso) {
@@ -39,6 +40,16 @@ function getChatSortTime(chat) {
     chat?.created_at ||
     0
   );
+}
+
+function getAttachmentTypeLabel(attachments) {
+  if (!Array.isArray(attachments) || attachments.length === 0) return "";
+  const first = attachments[0] || {};
+  const raw = first.type || first.content_type || "";
+  if (typeof raw === "string" && raw.includes("/")) {
+    return raw.split("/")[0];
+  }
+  return raw || "attachment";
 }
 
 function sortMessagesOldestFirst(arr) {
@@ -703,6 +714,12 @@ export default function ChatPage() {
     );
 
     return sorted.map((c) => {
+      const lastContent = (c.last_message?.content || "").trim();
+      const lastAttachmentType = getAttachmentTypeLabel(c.last_message?.attachments);
+      const hint =
+        lastContent ||
+        (lastAttachmentType ? `[${lastAttachmentType}]` : "");
+
       const lastSenderId = c.last_message?.sender_id ?? c.last_message?.sender;
       const isMineLast =
         currentUserId != null &&
@@ -716,7 +733,7 @@ export default function ChatPage() {
         time: c.last_message?.timestamp ? formatTime(c.last_message.timestamp) : "",
         // ✅ do NOT zero when opening; only sender-side safety
         unreadCount: isMineLast ? 0 : c.unread_count || 0,
-        hint: c.last_message?.content || "",
+        hint,
         isMineLast,
         lastIsRead: !!c.last_message?.is_read,
       };
@@ -816,6 +833,10 @@ export default function ChatPage() {
 
       setMessages((prev) => [...prev, optimisticMsg]);
       setInputValue("");
+      setTimeout(() => {
+        const vp = messagesViewportRef.current;
+        if (vp) vp.scrollTo({ top: vp.scrollHeight, behavior: "smooth" });
+      }, 0);
 
       const payload = {
         action: "send_message",
@@ -838,6 +859,94 @@ export default function ChatPage() {
       }
     },
     [inputValue, currentUserId, ensureChatIdForRecipient, wsSend, upsertChatAndSort]
+  );
+
+  const handleSendAttachments = useCallback(
+    async (type, files) => {
+      if (!files || !files.length) return;
+
+      const ws = wsRef.current;
+      if (!ws || ws.readyState !== WebSocket.OPEN) {
+        alert("WebSocket not connected. Try again.");
+        return;
+      }
+
+      let chatId = selectedChatIdRef.current;
+      if (!chatId) {
+        const r = recipientRef.current;
+        if (!r?.id) {
+          alert("Recipient is required to create chat.");
+          return;
+        }
+        try {
+          chatId = await ensureChatIdForRecipient(r.id);
+        } catch (e) {
+          alert(e?.message || "Failed to create/find chat.");
+          return;
+        }
+      }
+
+      const uploadRes = await uploadAttachments(files, type);
+      if (!uploadRes?.success) {
+        alert(uploadRes?.message || "Attachment upload failed.");
+        return;
+      }
+
+      const uploaded = Array.isArray(uploadRes.data) ? uploadRes.data : [];
+      if (!uploaded.length) {
+        alert("No attachments uploaded.");
+        return;
+      }
+
+      const ids = uploaded
+        .map((a) => (a && a.id != null ? Number(a.id) : null))
+        .filter((id) => id != null);
+
+      const text = (inputValue || "").trim();
+      const clientId = `tmp_att_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+      const nowIso = new Date().toISOString();
+
+      const optimisticMsg = {
+        id: null,
+        client_temp_id: clientId,
+        chat_id: chatId,
+        sender: currentUserId,
+        sender_name: "You",
+        content: text,
+        timestamp: nowIso,
+        is_read: false,
+        attachments: uploaded,
+        _optimistic: true,
+      };
+
+      setMessages((prev) => [...prev, optimisticMsg]);
+      setInputValue("");
+
+      const payload = {
+        action: "send_message",
+        chat_id: chatId,
+        message: text,
+        reply_to_id: null,
+        attachment_ids: ids,
+      };
+
+      const ok = wsSend(payload);
+
+      if (!ok) {
+        setMessages((prev) =>
+          prev.map((m) => (m.client_temp_id === clientId ? { ...m, _failed: true } : m))
+        );
+        alert("Send failed.");
+      } else {
+        const previewContent = text || "[Attachment]";
+        upsertChatAndSort(
+          chatId,
+          { content: previewContent, timestamp: nowIso, sender: currentUserId, attachments: uploaded },
+          0
+        );
+      }
+    },
+    [currentUserId, ensureChatIdForRecipient, inputValue, uploadAttachments, wsSend, upsertChatAndSort]
   );
 
   return (
@@ -869,7 +978,7 @@ export default function ChatPage() {
           inputValue={inputValue}
           onInputChange={setInputValue}
           onSend={handleSend}
-          onAttach={(type) => alert(`attach type: ${type}`)}
+          onAttach={handleSendAttachments}
           onMountMessagesViewport={handleMountMessagesViewport}
         />
       </div>

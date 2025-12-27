@@ -1,10 +1,63 @@
 // OpenConv.jsx
 import React, { useEffect, useRef, useState, useCallback } from "react";
+import { config } from "../config";
+import api from "../Services/api";
+
+const ABS_URL_RE = /^https?:\/\//i;
+
+const makeAbsoluteUrl = (path) => {
+  if (!path) return "";
+  if (ABS_URL_RE.test(path)) return path;
+  const base = (config?.BACKEND_URL || "").replace(/\/$/, "");
+  const normalized = path.startsWith("/") ? path : `/${path}`;
+  return `${base}${normalized}`;
+};
+
+const buildDownloadUrl = (att) => {
+  if (!att) return "";
+  if (att.download_url) return makeAbsoluteUrl(att.download_url);
+  if (att.id != null) return makeAbsoluteUrl(`/api/chat/attachments/${att.id}/download/`);
+  return "";
+};
+
+const getAttachmentLabel = (att, hrefFallback = "") => {
+  const fromName =
+    att?.name ||
+    att?.filename ||
+    att?.file_name ||
+    att?.original_filename ||
+    att?.original_name;
+  if (fromName) return fromName;
+  if (att?.id != null) return `Attachment #${att.id}`;
+  if (hrefFallback) return hrefFallback.split("/").pop() || "Attachment";
+  return "Attachment";
+};
+
+const downloadAttachment = async (att) => {
+  const downloadUrl = buildDownloadUrl(att);
+  if (!downloadUrl) return;
+
+  try {
+    const res = await api.get(downloadUrl, { responseType: "blob" });
+    const blobUrl = window.URL.createObjectURL(res.data);
+    const link = document.createElement("a");
+    link.href = blobUrl;
+    link.download = getAttachmentLabel(att, downloadUrl);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(blobUrl);
+  } catch (e) {
+    console.error("Attachment download failed", e);
+    alert("Download failed. Please try again.");
+  }
+};
 
 function MessageBubble({ m, onReply, chatTitle, onJumpToMessage }) {
   const isMine = m.side === "out";
   const safeText = m.text || "";
   const senderName = m.senderName || (isMine ? "You" : chatTitle || "Sender");
+  const attachments = Array.isArray(m.attachments) ? m.attachments : [];
 
   const reply = m.replyTo?.id
     ? {
@@ -13,6 +66,71 @@ function MessageBubble({ m, onReply, chatTitle, onJumpToMessage }) {
         text: m.replyTo.content || "",
       }
     : null;
+
+  const renderAttachment = (att, idx) => {
+    const viewUrl = makeAbsoluteUrl(att?.url || att?.file_url);
+    const downloadUrl = buildDownloadUrl(att);
+    const label = getAttachmentLabel(att, viewUrl || downloadUrl);
+    const type = (att?.type || att?.content_type || "").toLowerCase();
+    const urlLower = (viewUrl || "").toLowerCase();
+    const isImage =
+      type.startsWith("image") ||
+      /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(urlLower);
+    const isVideo =
+      type.startsWith("video") ||
+      /\.(mp4|webm|ogg|mov)$/i.test(urlLower);
+    const fileTag = (type.split("/")[0] || "file").toUpperCase();
+
+    return (
+      <div className="msg__attachment" key={att?.id ?? `${m.id ?? "msg"}_att_${idx}`}>
+        <div className="msg__attachmentCard">
+          {downloadUrl && (
+            <button
+              type="button"
+              className="msg__attachmentDlBtn"
+              aria-label="download attachment"
+              title="Download"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                downloadAttachment(att);
+              }}
+            >
+              ⬇
+            </button>
+          )}
+
+          {isImage && viewUrl ? (
+            <a
+              className="msg__attachmentThumbLink"
+              href={viewUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                className="msg__attachmentThumb"
+                src={viewUrl}
+                alt={label}
+                loading="lazy"
+              />
+            </a>
+          ) : isVideo && viewUrl ? (
+            <video className="msg__attachmentVideo" src={viewUrl} controls />
+          ) : (
+            <a
+              className="msg__attachmentFileCard"
+              href={viewUrl || downloadUrl || "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span className="msg__attachmentFileIcon">{fileTag}</span>
+              <span className="msg__attachmentFileName">{label}</span>
+            </a>
+          )}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div
@@ -50,6 +168,11 @@ function MessageBubble({ m, onReply, chatTitle, onJumpToMessage }) {
         </button>
 
         {!!safeText && <div className="msg__text">{safeText}</div>}
+        {attachments.length > 0 && (
+          <div className="msg__attachments">
+            {attachments.map((att, idx) => renderAttachment(att, idx))}
+          </div>
+        )}
 
         <div className="msg__meta">
           <span className="msg__time">{m.time}</span>

@@ -52,6 +52,43 @@ export const getChatMessages = async (chatId) => {
   }
 };
 
+export const uploadAttachments = async (files, type = null) => {
+  try {
+    const fd = new FormData();
+    const list = Array.isArray(files) ? files : [];
+
+    if (list.length === 1) {
+      fd.append("file", list[0]);
+    } else {
+      list.forEach((file) => fd.append("files", file));
+    }
+
+    if (type) fd.append("type", type);
+
+    const res = await api.post("/chat/attachments/upload/", fd, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    const payload = Array.isArray(res.data)
+      ? res.data
+      : Array.isArray(res.data?.results)
+      ? res.data.results
+      : res.data
+      ? [res.data]
+      : [];
+
+    return {
+      success: true,
+      data: payload,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: parseError(error, "Attachment upload failed."),
+    };
+  }
+};
+
 // ✅ get-or-create chat for recipient
 // Backend should implement: POST /chat/ensure/ { recipient_id } -> returns chat object {id,...}
 export const ensureChat = async (recipientId) => {
