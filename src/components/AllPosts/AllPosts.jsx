@@ -7,6 +7,7 @@ import "../../styles/AllPosts.css";
 import { config } from "../../config";
 
 const API_BASE_URL = config.API_BASE_URL;
+const BACKEND_URL = config.BACKEND_URL;
 const API_ENDPOINTS = {
   all: `${API_BASE_URL}/posts/all/`,
   lost: `${API_BASE_URL}/posts/lost-posts/`,
@@ -14,9 +15,18 @@ const API_ENDPOINTS = {
   adoption: `${API_BASE_URL}/posts/surrender-posts/`,
 };
 
-const PLACEHOLDER_IMAGE = "/images/placeholder.jpg";
+const DEFAULT_PET_IMAGE = "/src/assets/images/default-pet.png";
 
 const ITEMS_PER_PAGE = 6;
+
+const toJalaliDate = (dateString) => {
+  if (!dateString) return "";
+  return new Intl.DateTimeFormat("fa-IR", {
+    year: "numeric",
+    month: "long",  
+    day: "numeric",
+  }).format(new Date(dateString));
+};
 
 const calculateRelativeTime = (isoDate) => {
   if (!isoDate) return "تاریخ نامشخص";
@@ -34,6 +44,45 @@ const calculateRelativeTime = (isoDate) => {
   if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} روز پیش`;
   if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)} ماه پیش`;
   return `${Math.floor(diffInSeconds / 31536000)} سال پیش`;
+};
+
+const getPetType = (type) => {
+  switch (type) {
+    case "cat":
+      return "گربه";
+    case "dog":
+      return "سگ";
+    case "bird":
+      return "پرنده";
+    case "rabbit":
+      return "خرگوش";
+    case "hamster":
+      return "همستر";
+    case "other":
+      return "سایر";
+    default:
+      return "نامشخص";
+  }
+};
+
+const getPostType = (type) => {
+  if (!type) return "نامشخص";
+  
+  const typeStr = String(type).toLowerCase().trim();
+  
+  switch (typeStr) {
+    case "lost":
+    case "گم شده":
+      return "گم شده";
+    case "found":
+    case "پیدا شده":
+      return "پیدا شده";
+    case "surrender":
+    case "سرپرستی":
+      return "سرپرستی";
+    default:
+      return "نامشخص";
+  }
 };
 
 const LocationIcon = () => (
@@ -60,8 +109,8 @@ const ClockIcon = () => (
   <img 
     src="/src/icons/clock.svg" 
     alt="time"
-    width="16" 
-    height="16"
+    width="12" 
+    height="12"
     className="icon-img-all-posts"
   />
 );
@@ -71,6 +120,7 @@ export default function AllPosts() {
   
   const [activeFilter, setActiveFilter] = useState("همه");
   const [posts, setPosts] = useState([]);
+  const [allPosts, setAllPosts] = useState([]);
   const [pagination, setPagination] = useState({
     next: null,
     previous: null,
@@ -103,6 +153,21 @@ export default function AllPosts() {
     filterIsSterilized !== "همه",
   ].filter(Boolean).length;
 
+  const fetchAllPosts = async (url) => {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`دریافت داده با خطا مواجه شد: ${res.status}`);
+
+      const data = await res.json();
+      const results = Array.isArray(data) ? data : data.results || [];
+      
+      return results;
+    } catch (err) {
+      console.error("خطا در دریافت تمام آگهی‌ها:", err);
+      return [];
+    }
+  };
+
   const fetchPosts = async (url, page = 1) => {
     setLoading(true);
     setError("");
@@ -129,6 +194,29 @@ export default function AllPosts() {
       });
       
       setTotalPages(calculatedTotalPages);
+
+      if (currentPage === 1) {
+        let allResults = results;
+        let nextUrl = data.next;
+        
+        while (nextUrl) {
+          try {
+            const nextRes = await fetch(nextUrl);
+            if (!nextRes.ok) break;
+            
+            const nextData = await nextRes.json();
+            const nextResults = nextData.results || [];
+            
+            allResults = [...allResults, ...nextResults];
+            nextUrl = nextData.next;
+          } catch (err) {
+            console.error("خطا در دریافت صفحه بعد:", err);
+            break;
+          }
+        }
+        
+        setAllPosts(allResults);
+      }
     } catch (err) {
       console.error("خطا در دریافت آگهی‌ها:", err);
       setError("بارگذاری آگهی‌ها موفقیت‌آمیز نبود.");
@@ -156,8 +244,12 @@ export default function AllPosts() {
     setCurrentPage(1);
   }, [activeFilter]);
 
-  const normalizedPosts = useMemo(() => {
-    return posts.map((p) => {
+  const normalizedAllPosts = useMemo(() => {
+    return allPosts.map((p) => {
+      const postType = p.type || "generic";
+      const petType = getPetType(p.pet_type);
+      const postTypeLabel = getPostType(postType);
+      
       let status = "فعال";
       let statusLabel = "فعال";
 
@@ -177,17 +269,17 @@ export default function AllPosts() {
       } 
       
       else {
-        if (p.type === "found" || p.found_time) {
+        if (postType === "found" || p.found_time) {
           status = "پیدا شده";
           statusLabel = "پیدا شده";
         } 
         
-        else if (p.type === "lost" || p.lost_time) {
+        else if (postType === "lost" || p.lost_time) {
           status = "گم شده";
           statusLabel = "گم شده";
         } 
         
-        else if (p.type === "surrender") {
+        else if (postType === "surrender") {
           status = "سرپرستی";
           statusLabel = "سرپرستی";
         } 
@@ -198,50 +290,100 @@ export default function AllPosts() {
         }
       }
 
-      const categoryMap = {
-        dog: "سگ",
-        cat: "گربه",
-        other: "سایر",
-        rabbit: "خرگوش",
-        hamster: "همستر",
-        bird: "پرنده",
+      return {
+        id: `${postType}-${p.id}`,
+        postTypeLabel: postTypeLabel,
       };
+    });
+  }, [allPosts, activeFilter]);
 
+  const normalizedPosts = useMemo(() => {
+    return posts.map((p) => {
+      const postType = p.type || "generic";
+      const petType = getPetType(p.pet_type);
+      const postTypeLabel = getPostType(postType);
+      
+      let status = "فعال";
+      let statusLabel = "فعال";
 
-      const sex = p.sex || (p.pet_sex === "male" ? "نر" : p.pet_sex === "female" ? "ماده" : null);
+      if (activeFilter === "گم شده") {
+        status = "گم شده";
+        statusLabel = "گم شده";
+      } 
       
-      const age = p.age || p.pet_age || null;
+      else if (activeFilter === "پیدا شده") {
+        status = "پیدا شده";
+        statusLabel = "پیدا شده";
+      } 
       
+      else if (activeFilter === "سرپرستی") {
+        status = "سرپرستی";
+        statusLabel = "سرپرستی";
+      } 
+      
+      else {
+        if (postType === "found" || p.found_time) {
+          status = "پیدا شده";
+          statusLabel = "پیدا شده";
+        } 
+        
+        else if (postType === "lost" || p.lost_time) {
+          status = "گم شده";
+          statusLabel = "گم شده";
+        } 
+        
+        else if (postType === "surrender") {
+          status = "سرپرستی";
+          statusLabel = "سرپرستی";
+        } 
+        
+        else {
+          status = p.status || "فعال";
+          statusLabel = "فعال";
+        }
+      }
+
+      const breed = p.breed || "";
       const locationText = p.location?.readable || p.location || "موقعیت نامشخص";
+      const imageUrl = p.thumbnail ? `${BACKEND_URL}${p.thumbnail}` : DEFAULT_PET_IMAGE;
       
+      const timeText = postType === "lost" ? toJalaliDate(p.lost_time) : 
+                      postType === "found" ? toJalaliDate(p.found_time) : 
+                      toJalaliDate(p.updated_at);
+      
+      const postTimeText = toJalaliDate(p.updated_at);
+
       const createdAt = p.created_at ? new Date(p.created_at) : new Date();
       const updatedAt = p.updated_at ? new Date(p.updated_at) : createdAt;
-      
       const eventDate = p.lost_time || p.found_time || p.surrender_date || p.created_at;
       const eventDateTime = eventDate ? new Date(eventDate) : createdAt;
 
       return {
-        id: `${p.type || "generic"}-${p.id}`,
+        id: `${postType}-${p.id}`,
         rawId: p.id,
         name: p.pet_name || p.title || "بدون نام",
-        desc: p.description || "",
-        category: categoryMap[p.pet_type] || p.pet_type || "سایر",
-        status,
-        statusLabel,
+        breed: breed,
+        type: petType,
+        postType: postType,
+        postTypeLabel: postTypeLabel,
+        status: status,
+        statusLabel: statusLabel,
+        image: imageUrl,
+        time: timeText,
         location: locationText,
-        city: locationText,
-        time: calculateRelativeTime(p.created_at || p.updated_at),
-        image: p.image_url || PLACEHOLDER_IMAGE,
-        type: p.type || "generic",
-        sex: sex,
-        age: age,
-        hasBirthCertificate: p.has_birth_certificate || false,
-        isVaccinated: p.vaccination || false,
-        isSterilized: p.steriliz || false,
-        createdAt,
-        updatedAt,
-        eventDateTime,
+        desc: p.description || "",
+        postTime: postTimeText,
+        relativeTime: calculateRelativeTime(p.updated_at),
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+        eventDateTime: eventDateTime,
         originalData: p,
+        pet_type: p.pet_type,
+        sex: p.sex || (p.pet_sex === "male" ? "نر" : p.pet_sex === "female" ? "ماده" : null),
+        age: p.age || p.pet_age || null,
+        hasBirthCertificate: p.has_birth_certificate || false,
+        vaccination: p.vaccination || false,
+        steriliz: p.steriliz || false,
       };
     });
   }, [posts, activeFilter]);
@@ -298,11 +440,11 @@ export default function AllPosts() {
         ad.name.toLowerCase().includes(term) ||
         ad.desc.toLowerCase().includes(term) ||
         ad.location.toLowerCase().includes(term) ||
-        (ad.category && ad.category.toLowerCase().includes(term));
+        (ad.type && ad.type.toLowerCase().includes(term));
 
-      const matchAnimal = filterAnimal === "همه" || ad.category === filterAnimal;
+      const matchAnimal = filterAnimal === "همه" || ad.type === filterAnimal;
       const matchSex = filterSex === "همه" || ad.sex === filterSex;
-      const matchCity = filterCity === "همه" || ad.city === filterCity;
+      const matchCity = filterCity === "همه" || ad.location === filterCity;
       
       let matchAge = true;
       if (filterAge !== "همه" && ad.age) {
@@ -336,19 +478,19 @@ export default function AllPosts() {
       let matchVaccination = true;
       let matchSterilization = true;
       
-      if (activeFilter === "سرپرستی" || ad.type === "surrender") {
+      if (activeFilter === "سرپرستی" || ad.postType === "surrender") {
         if (filterHasCertificate !== "همه") {
           const hasCert = ad.hasBirthCertificate || ad.originalData?.has_birth_certificate || false;
           matchCertificate = filterHasCertificate === "دارد" ? hasCert : !hasCert;
         }
         
         if (filterIsVaccinated !== "همه") {
-          const isVacc = ad.isVaccinated || ad.originalData?.vaccination || false;
+          const isVacc = ad.vaccination || ad.originalData?.vaccination || false;
           matchVaccination = filterIsVaccinated === "دارد" ? isVacc : !isVacc;
         }
         
         if (filterIsSterilized !== "همه") {
-          const isSteril = ad.isSterilized || ad.originalData?.steriliz || false;
+          const isSteril = ad.steriliz || ad.originalData?.steriliz || false;
           matchSterilization = filterIsSterilized === "دارد" ? isSteril : !isSteril;
         }
       }
@@ -377,9 +519,7 @@ export default function AllPosts() {
   };
 
   const handleViewDetails = (ad) => {
-    console.log("مشاهده جزئیات برای آگهی:", ad);
-
-    const postType = ad.type || ad.originalData?.type || "generic";
+    const postType = ad.postType || "generic";
 
     navigate('/post-details', { 
       state: { 
@@ -413,18 +553,21 @@ export default function AllPosts() {
   };
 
   const filters = [
-    { label: "همه", count: normalizedPosts.length },
+    { 
+      label: "همه", 
+      count: allPosts.length 
+    },
     {
       label: "پیدا شده",
-      count: normalizedPosts.filter((a) => a.status === "پیدا شده").length,
+      count: normalizedAllPosts.filter((a) => a.postTypeLabel === "پیدا شده").length,
     },
     {
       label: "گم شده",
-      count: normalizedPosts.filter((a) => a.status === "گم شده").length,
+      count: normalizedAllPosts.filter((a) => a.postTypeLabel === "گم شده").length,
     },
     {
       label: "سرپرستی",
-      count: normalizedPosts.filter((a) => a.status === "سرپرستی").length,
+      count: normalizedAllPosts.filter((a) => a.postTypeLabel === "سرپرستی").length,
     },
   ];
 
@@ -454,44 +597,43 @@ export default function AllPosts() {
         </div>
       </div>
 
-            <div className="search-wrapper">
-              <div className="search-box-inner" onClick={() => document.querySelector('.search-input-container-landing input')?.focus()}>
-                
-                <div className="search-input-container">
-                  <div className="search-icon-box">
-                    <img 
-                      src="/src/assets/icons/search-normal.svg" 
-                      alt="search"
-                      width="20"
-                      height="20"
-                      className="search-icon-img"
-                    />
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="جستجو در آگهی‌ها..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="search-input"
-                  />
-                  
-                  {search && (
-                    <button 
-                      className="search-clear-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSearch('');
-                      }}
-                      type="button"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </button>
-                  )}
-                </div>
-              </div>
+      <div className="search-wrapper">
+        <div className="search-box-inner" onClick={() => document.querySelector('.search-input-container-landing input')?.focus()}>
+          <div className="search-input-container">
+            <div className="search-icon-box">
+              <img 
+                src="/src/assets/icons/search-normal.svg" 
+                alt="search"
+                width="20"
+                height="20"
+                className="search-icon-img"
+              />
             </div>
+            <input
+              type="text"
+              placeholder="جستجو در آگهی‌ها..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="search-input"
+            />
+            
+            {search && (
+              <button 
+                className="search-clear-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSearch('');
+                }}
+                type="button"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
 
       <AdvancedFilters
         activeFilter={activeFilter}
@@ -521,7 +663,7 @@ export default function AllPosts() {
       {error && <div className="error-message-all-posts">{error}</div>}
       {loading && <div className="loading-message-all-posts">در حال بارگذاری...</div>}
 
-      <div className="ads-grid-all-posts">
+      <div className="pet-listings-grid-all-posts">
         {!loading && filteredAds.length === 0 && (
           <div className="no-results-container-all-posts">
             <div className="no-results-icon-all-posts">
@@ -541,66 +683,77 @@ export default function AllPosts() {
           </div>
         )}
 
-        {filteredAds.map((ad) => {
+        {filteredAds.map((pet) => {
           const getStatusClass = () => {
-            if (ad.status === 'پیدا شده') return 'found-all-posts';
-            if (ad.status === 'گم شده') return 'lost-all-posts';
-            if (ad.status === 'سرپرستی') return 'adoption-all-posts';
+            if (pet.status === 'پیدا شده') return 'found-all-posts';
+            if (pet.status === 'گم شده') return 'lost-all-posts';
+            if (pet.status === 'سرپرستی') return 'adoption-all-posts';
             return 'active-all-posts';
           };
 
           const statusClass = getStatusClass();
           
           return (
-            <div className="ad-card-all-posts" key={ad.id}>
-              <div className="pet-image-container-all-posts">
-                <img className="pet-image-all-posts" src={ad.image} alt={ad.name} />
+            <div className="pet-listing-card-all-posts" key={pet.id}>
+              <div className="pet-listing-image-container-all-posts">
+                <img
+                  src={pet.image}
+                  alt={pet.name}
+                  className="pet-listing-image-all-posts"
+                />
                 
-                <div className="image-glass-overlay-all-posts">
+                <div className={`pet-listing-status-all-posts ${statusClass}`}>
+                  <span className="status-label-all-posts">{pet.statusLabel}</span>
+                  <div className="status-pulse-all-posts"></div>
+                </div>
+                
+                <div className="image-hover-glass-overlay-all-posts">
                   <button
-                    className="image-glass-btn-all-posts"
-                    onClick={() => handleViewDetails(ad)}
+                    className="image-glass-view-btn-all-posts"
+                    onClick={() => handleViewDetails(pet)}
                   >
-                    <span className="image-glass-text-all-posts">مشاهده جزئیات</span>
-                    <svg className="image-glass-icon-all-posts" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <span className="image-glass-btn-text-all-posts">مشاهده جزئیات</span>
+                    <svg className="image-glass-btn-icon-all-posts" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   </button>
                 </div>
-                
-                <div className={`pet-listing-status-all-posts ${statusClass}`}>
-                  <span className="status-label-all-posts">{ad.statusLabel}</span>
-                  <div className="status-pulse-all-posts"></div>
-                </div>
               </div>
 
-              <div className="ad-content-all-posts">
-                <div className="top-row-all-posts">
-                  <div className="pet-info-all-posts">
-                    <h3 className="pet-name-all-posts">{ad.name}</h3>
-                    <p className="pet-subtitle-all-posts">{ad.category}</p>
+              <div className="pet-listing-content-all-posts">
+                <div className="pet-listing-header-all-posts">
+                  <div className="pet-listing-info-all-posts">
+                    <h3 className="pet-listing-name-all-posts">{pet.name}</h3>
+                    <p className="pet-listing-subtitle-all-posts">{pet.breed || "نامشخص"}</p>
                   </div>
-                  <div className="category-badge-all-posts">
-                    {ad.category}
+                  <div className="pet-listing-type-all-posts">
+                    {pet.type}
                   </div>
                 </div>
 
-                <p className="pet-description-all-posts">{ad.desc}</p>
+                <p className="pet-listing-description-all-posts">{pet.desc}</p>
 
-                <div className="post-details-container-all-posts">
-                  <div className="post-detail-all-posts">
+                <div className="pet-details-container-all-posts">
+                  <div className="pet-listing-detail-all-posts">
                     <div className="detail-icon-all-posts">
                       <LocationIcon />
                     </div>
-                    <span className="post-detail-text-all-posts">{ad.location}</span>
+                    <span className="pet-listing-detail-text-all-posts">{pet.location}</span>
                   </div>
 
-                  <div className="post-detail-all-posts">
+                  <div className="pet-listing-detail-all-posts">
                     <div className="detail-icon-all-posts">
                       <CalendarIcon />
                     </div>
-                    <span className="post-detail-text-all-posts">{ad.time}</span>
+                    <span className="pet-listing-detail-text-all-posts">{pet.time}</span>
                   </div>
+                </div>
+
+                <div className="pet-listing-time-all-posts">
+                  <div className="time-icon-all-posts">
+                    <ClockIcon />
+                  </div>
+                  <span className="pet-listing-time-text-all-posts">{pet.postTime}</span>
                 </div>
               </div>
             </div>
