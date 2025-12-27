@@ -13,6 +13,20 @@ import { config } from "../../config";
 
 const API_BASE_URL = config.API_BASE_URL;
 
+const getPetAgeText = (petAge) => {
+  if (!petAge) return "";
+  if (typeof petAge === "object") {
+    return petAge.display || petAge.value || "";
+  }
+  return String(petAge);
+};
+
+const formatPetAge = (petAge) => {
+  const ageText = getPetAgeText(petAge);
+  if (!ageText) return "";
+  return ageText.includes("سال") ? ageText : `${ageText} سال`;
+};
+
 const HealthToggle = ({ checked, disabled = false, label }) => {
   return (
     <button
@@ -92,8 +106,9 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
       },
       {
         label: "سن",
-        value: data.pet_age ? `${data.pet_age} سال` : 
-               data.originalData?.pet_age ? `${data.originalData.pet_age} سال` : "نامشخص",
+        value: formatPetAge(data.pet_age) || 
+               formatPetAge(data.originalData?.pet_age) || 
+               "نامشخص",
         icon: AgeIcon,
       },
       {

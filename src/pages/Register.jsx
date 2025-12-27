@@ -1,4 +1,4 @@
-import "../styles/Register.css";
+import "../styles/register.css";
 import "../styles/AuthCommon.css";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
