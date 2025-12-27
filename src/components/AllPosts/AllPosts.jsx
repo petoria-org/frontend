@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import AdvancedFilters from "../AdvancedFilters";
 import SortFilters from "../SortFilters";
 import { Pagination } from "../Pagination/Pagination";
+import LoadingScreen from "../LoadingScreen/LoadingScreen"; 
 import "../../styles/AllPosts.css";
 import { config } from "../../config";
 
@@ -579,6 +580,9 @@ export default function AllPosts() {
 
   return (
     <div className="new-post-container-all-posts">
+      
+      {loading && <LoadingScreen />}
+      
       <header className="posts-header-all-posts">
         <div className="header-content-wrapper">
           <div className="header-title-section">
@@ -587,18 +591,10 @@ export default function AllPosts() {
                 <HeartIcon />
               </div>
               <h1 className="posts-title-all-posts">
-                مرور آگهی‌ها
+                آگهی‌ها
                 <span className="title-gradient-line"></span>
               </h1>
             </div>
-            <p className="posts-subtitle-all-posts">
-              جستجو و فیلتر آگهی‌های حیوانات
-              <span className="subtitle-dots">
-                <span className="dot">.</span>
-                <span className="dot">.</span>
-                <span className="dot">.</span>
-              </span>
-            </p>
           </div>
         </div>
         <div className="header-decoration-simple">
@@ -610,7 +606,6 @@ export default function AllPosts() {
           </div>
         </div>
       </header>
-
 
       <div className="posts-categories-tabs-all-posts">
         <div className="posts-categories-list-all-posts">
@@ -630,6 +625,7 @@ export default function AllPosts() {
           ))}
         </div>
       </div>
+      
       <div className="search-wrapper">
         <div className="search-box-inner" onClick={() => document.querySelector('.search-input-container-landing input')?.focus()}>
           <div className="search-input-container">
@@ -694,7 +690,9 @@ export default function AllPosts() {
       />
 
       {error && <div className="error-message-all-posts">{error}</div>}
-      {loading && <div className="loading-message-all-posts">در حال بارگذاری...</div>}
+      
+      {/* حذف لودینگ ساده قبلی */}
+      {/* {loading && <div className="loading-message-all-posts">در حال بارگذاری...</div>} */}
 
       <div className="pet-listings-grid-all-posts">
         {!loading && filteredAds.length === 0 && (

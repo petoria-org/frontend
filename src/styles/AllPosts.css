@@ -1,3 +1,4 @@
+/* استایل‌های جدید برای هدر ساده */
 .header-content-wrapper {
   display: flex;
   justify-content: space-between;
@@ -24,10 +25,10 @@
   justify-content: center;
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #ff6b8b 0%, #ff8e53 100%);
+  background: linear-gradient(135deg, #7ab3e0 0%, #5a9bc9 100%);
   border-radius: 14px;
   color: white;
-  box-shadow: 0 8px 20px rgba(255, 107, 139, 0.3);
+  box-shadow: 0 8px 20px rgba(122, 179, 224, 0.3);
   animation: heartbeat 2s ease-in-out infinite;
 }
 
@@ -59,7 +60,7 @@
   right: 0;
   width: 120px;
   height: 4px;
-  background: linear-gradient(90deg, #ff6b8b, #ff8e53);
+  background: linear-gradient(90deg, #7ab3e0, #5a9bc9);
   border-radius: 2px;
   animation: lineExpand 1.2s ease-out;
 }
@@ -96,7 +97,7 @@
 
 .dot {
   animation: dotBlink 1.4s infinite;
-  color: #ff6b8b;
+  color: #7ab3e0;
 }
 
 .dot:nth-child(1) { animation-delay: 0s; }
@@ -118,7 +119,7 @@
   position: absolute;
   height: 2px;
   width: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 107, 139, 0.6), transparent);
+  background: linear-gradient(90deg, transparent, rgba(122, 179, 224, 0.6), transparent);
   border-radius: 1px;
   animation: lineFlow 3s ease-in-out infinite;
 }
@@ -146,7 +147,7 @@
 .decoration-dot-simple {
   width: 8px;
   height: 8px;
-  background: #ff6b8b;
+  background: #7ab3e0;
   border-radius: 50%;
   animation: dotMove 2s ease-in-out infinite;
 }
@@ -162,6 +163,7 @@
   }
 }
 
+/* استایل‌های قبلی باقی می‌مانند */
 .new-post-container-all-posts {
   width: 100%;
   display: flex;
