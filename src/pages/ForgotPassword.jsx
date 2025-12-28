@@ -46,7 +46,7 @@ const ForgotPassword = () => {
 
   return (
     <div className="auth-page forgot-password-page">
-      {/* <div className="paw pawA p1"></div>
+      <div className="paw pawA p1"></div>
       <div className="paw pawA p2"></div>
       <div className="paw pawA p3"></div>
       <div className="paw pawA p4"></div>
@@ -56,7 +56,7 @@ const ForgotPassword = () => {
       <div className="paw pawB p7"></div>
       <div className="paw pawB p8"></div>
       <div className="paw pawB p9"></div>
-      <div className="paw pawB p10"></div> */}
+      <div className="paw pawB p10"></div>
 
       <div className="forgot-password-main">
         <h2 className="auth-title">بازیابی رمز عبور</h2>

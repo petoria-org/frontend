@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import "../../styles/SuccessStoryCreation.css";
 import { useOutletContext } from "react-router-dom";
+import { createSuccessStory } from "../../Services/successStoryService";
 
 export const SuccessStoryCreation = ({ pet, onSave, onCancel, onRemove }) => {
   const [images, setImages] = useState([]);
@@ -153,25 +154,59 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onRemove }) => {
     });
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!storyText.trim()) {
       alert("لطفا متن داستان موفقیت را وارد کنید");
       return;
     }
 
-    const successData = {
-      petId: pet?.id,
-      action: "save", 
-      storyText: storyText.trim(),
-      images: images.map(img => img.url),
-      createdAt: new Date().toISOString()
-    };
+    try {
+      const payload = {
+        title: `داستان ${pet?.name || "موفقیت"}`,
+        story: storyText.trim(),
+        story_type: pet?.status, // lost | found | adoption
+        images: images
+          .filter(img => img.file)
+          .map(img => img.file),
+      };
 
-    onSave?.(successData);
+      const createdStory = await createSuccessStory(payload);
 
-    setStoryText("");
-    setImages([]);
-    setActiveImageIndex(0);
+      onSave?.({
+        id: createdStory.id,
+        title: createdStory.title,
+        author: createdStory.user_name,
+        date: new Intl.DateTimeFormat("fa-IR", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        }).format(new Date(createdStory.created_at)),
+        status:
+          createdStory.story_type === "lost"
+            ? "بازگشت به خانه"
+            : createdStory.story_type === "found"
+            ? "به خانواده بازگشت"
+            : "فرزندخوانده شد",
+        statusColor: "rgba(122, 238, 151, 0.15)",
+        statusTextColor: "#0f7228",
+        image:
+          createdStory.images?.length > 0
+            ? createdStory.images[0].image
+            : "/src/assets/images/default-pet.png",
+        images: createdStory.images
+          ? createdStory.images.map(img => img.image)
+          : [],
+        content: createdStory.story,
+      });
+
+      setStoryText("");
+      setImages([]);
+      setActiveImageIndex(0);
+
+    } catch (err) {
+      console.error(err);
+      alert("خطا در ثبت داستان موفقیت");
+    }
   };
 
   const handleCancel = () => {

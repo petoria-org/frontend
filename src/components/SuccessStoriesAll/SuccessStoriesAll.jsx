@@ -20,7 +20,7 @@ const storyTypeMap = {
 };
 
 const SuccessStoriesAll = () => {
-  const [stories, setStories] = useState([]); // مهم
+  const [stories, setStories] = useState([]); 
   const [selectedStory, setSelectedStory] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -57,7 +57,7 @@ const SuccessStoriesAll = () => {
             ? [`${BACKEND_URL}${story.image}`]
             : [],
 
-          content: story.story, // ✅ متن داستان (خیلی مهم)
+          content: story.story, 
         }));
 
         setStories(mapped);
