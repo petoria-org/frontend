@@ -52,22 +52,119 @@ function getAttachmentTypeLabel(attachments) {
   return raw || "attachment";
 }
 
+function getMessageOrderTs(msg) {
+  if (!msg) return 0;
+
+  // Prefer stable creation time; fall back to anything usable
+  const candidates = [
+    msg.created_at,
+    msg.createdAt,
+    msg.updated_at,
+    msg.timestamp,
+    msg.time,
+  ];
+
+  let best = null;
+  for (const c of candidates) {
+    if (!c) continue;
+    const t = new Date(c).getTime();
+    if (!Number.isFinite(t)) continue;
+    best = best == null ? t : Math.min(best, t);
+  }
+
+  return best ?? 0;
+}
+
 function sortMessagesOldestFirst(arr) {
   const safe = Array.isArray(arr) ? [...arr] : [];
-  const getTs = (m) => m?.timestamp || m?.created_at || m?.time || m?.createdAt || 0;
 
   safe.sort((a, b) => {
-    const aTs = new Date(getTs(a) || 0).getTime();
-    const bTs = new Date(getTs(b) || 0).getTime();
+    const aTs = Number.isFinite(a?._order_ts) ? a._order_ts : getMessageOrderTs(a);
+    const bTs = Number.isFinite(b?._order_ts) ? b._order_ts : getMessageOrderTs(b);
     if (aTs !== bTs) return aTs - bTs;
 
     // Tie-breaker for identical timestamps
     const aId = Number(a?.id) || 0;
     const bId = Number(b?.id) || 0;
-    return aId - bId;
+    if (aId !== bId) return aId - bId;
+
+    const aTmp = a?.client_temp_id || "";
+    const bTmp = b?.client_temp_id || "";
+    return aTmp.localeCompare(bTmp);
   });
 
   return safe;
+}
+
+function mergeMessages(prevList, incomingList = []) {
+  const prevArr = Array.isArray(prevList) ? prevList : [];
+  const incomingArr = Array.isArray(incomingList) ? incomingList : [incomingList];
+
+  const byId = new Map();
+  const byTempId = new Map();
+  const merged = [];
+
+  const makeChatKey = (msg) =>
+    msg?.chat_id ?? msg?.chatId ?? msg?.chat ?? msg?.chatID ?? null;
+
+  const makeIdKey = (msg) => {
+    if (!msg || msg.id == null) return null;
+    const chatKey = makeChatKey(msg);
+    return chatKey != null ? `${chatKey}::${msg.id}` : `global::${msg.id}`;
+  };
+
+  const makeTempKey = (msg) => {
+    if (!msg || !msg.client_temp_id) return null;
+    const chatKey = makeChatKey(msg);
+    return chatKey != null
+      ? `${chatKey}::${msg.client_temp_id}`
+      : `global::${msg.client_temp_id}`;
+  };
+
+  const push = (msg) => {
+    if (!msg) return;
+
+    const baseTs = Number.isFinite(msg?._order_ts) ? msg._order_ts : getMessageOrderTs(msg);
+    const idKey = makeIdKey(msg);
+    const tempKey = makeTempKey(msg);
+
+    if (idKey) {
+      if (byId.has(idKey)) {
+        const idx = byId.get(idKey);
+        const existing = merged[idx];
+        const preservedTs = Number.isFinite(existing?._order_ts)
+          ? existing._order_ts
+          : getMessageOrderTs(existing);
+        merged[idx] = { ...existing, ...msg, _order_ts: preservedTs };
+      } else {
+        byId.set(idKey, merged.length);
+        merged.push({ ...msg, _order_ts: baseTs });
+      }
+      return;
+    }
+
+    if (tempKey) {
+      if (byTempId.has(tempKey)) {
+        const idx = byTempId.get(tempKey);
+        const existing = merged[idx];
+        const preservedTs = Number.isFinite(existing?._order_ts)
+          ? existing._order_ts
+          : getMessageOrderTs(existing);
+        merged[idx] = { ...existing, ...msg, _order_ts: preservedTs };
+      } else {
+        byTempId.set(tempKey, merged.length);
+        merged.push({ ...msg, _order_ts: baseTs });
+      }
+      return;
+    }
+
+    merged.push({ ...msg, _order_ts: baseTs });
+  };
+
+  prevArr.forEach(push);
+  incomingArr.forEach(push);
+
+  return sortMessagesOldestFirst(merged);
 }
 
 export default function ChatPage() {
@@ -460,13 +557,8 @@ export default function ChatPage() {
       if (!chatId || !msgObj) return;
       if (String(chatId) !== String(selectedChatIdRef.current)) return;
 
-      setMessages((prev) => {
-        const id = msgObj?.id;
-        if (id != null && prev.some((m) => m?.id != null && String(m.id) === String(id))) {
-          return prev;
-        }
-        return [...prev, msgObj];
-      });
+      const withChat = msgObj?.chat_id ? msgObj : { ...msgObj, chat_id: chatId };
+      setMessages((prev) => mergeMessages(prev, [withChat]));
 
       setTimeout(() => markVisibleUnreadNow(), 0);
     },
@@ -494,7 +586,10 @@ export default function ChatPage() {
           const res = await getChatMessages(chatId);
           if (res?.success) {
             const arr = Array.isArray(res.data) ? res.data : [];
-            setMessages(sortMessagesOldestFirst(arr));
+            const normalized = arr.map((m) =>
+              m?.chat_id ? m : { ...m, chat_id: chatId }
+            );
+            setMessages((prev) => mergeMessages(prev, normalized));
             setTimeout(() => markVisibleUnreadNow(), 0);
           }
         } finally {
@@ -587,6 +682,9 @@ export default function ChatPage() {
           setMessages((prev) => {
             const me = currentUserIdRef.current;
             const content = String(serverMsg.content ?? "");
+            const normalizedServerMsg = serverMsg?.chat_id
+              ? serverMsg
+              : { ...serverMsg, chat_id: chatId };
 
             const copy = [...prev];
             let replaceIndex = -1;
@@ -609,15 +707,11 @@ export default function ChatPage() {
 
             if (replaceIndex !== -1) {
               const prevMsg = copy[replaceIndex];
-              copy[replaceIndex] = { ...prevMsg, ...serverMsg, _optimistic: false };
-              return copy;
+              copy[replaceIndex] = { ...prevMsg, ...normalizedServerMsg, _optimistic: false };
+              return mergeMessages(copy, []);
             }
 
-            if (serverMsg.id && copy.some((m) => m?.id && String(m.id) === String(serverMsg.id))) {
-              return copy;
-            }
-
-            return [...copy, serverMsg];
+            return mergeMessages(prev, [normalizedServerMsg]);
           });
 
           setTimeout(() => markVisibleUnreadNow(), 0);
@@ -669,6 +763,9 @@ export default function ChatPage() {
       return;
     }
 
+    // Clear previous chat's messages before loading the new thread
+    setMessages([]);
+
     const loadMessages = async () => {
       setLoadingMessages(true);
       const res = await getChatMessages(selectedChatId);
@@ -676,7 +773,10 @@ export default function ChatPage() {
 
       if (res.success) {
         const arr = Array.isArray(res.data) ? res.data : [];
-        setMessages(sortMessagesOldestFirst(arr));
+        const normalized = arr.map((m) =>
+          m?.chat_id ? m : { ...m, chat_id: selectedChatId }
+        );
+        setMessages(() => mergeMessages([], normalized));
       } else {
         setMessages([]);
         alert(res.message || "Error fetching messages");
@@ -831,7 +931,7 @@ export default function ChatPage() {
           : null,
       };
 
-      setMessages((prev) => [...prev, optimisticMsg]);
+      setMessages((prev) => mergeMessages(prev, [optimisticMsg]));
       setInputValue("");
       setTimeout(() => {
         const vp = messagesViewportRef.current;
@@ -924,7 +1024,7 @@ export default function ChatPage() {
           : null,
       };
 
-      setMessages((prev) => [...prev, optimisticMsg]);
+      setMessages((prev) => mergeMessages(prev, [optimisticMsg]));
       setInputValue("");
 
       const payload = {
