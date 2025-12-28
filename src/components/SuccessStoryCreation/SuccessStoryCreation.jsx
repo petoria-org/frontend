@@ -160,11 +160,17 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onRemove }) => {
       return;
     }
 
+    if (pet?.hasSuccessStory && !pet.successStory) {
+      alert("برای این پست قبلاً داستان موفق ثبت شده است. نمی‌توانید داستان جدیدی ثبت کنید.");
+      return;
+    }
+
     try {
       const payload = {
         title: `داستان ${pet?.name || "موفقیت"}`,
         story: storyText.trim(),
-        story_type: pet?.status, // lost | found | adoption
+        story_type: pet?.status === "adoption" ? "surrender" : pet?.status,
+        pet_id: pet?.id, 
         images: images
           .filter(img => img.file)
           .map(img => img.file),
@@ -197,6 +203,7 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onRemove }) => {
           ? createdStory.images.map(img => img.image)
           : [],
         content: createdStory.story,
+        pet_id: pet?.id, 
       });
 
       setStoryText("");
@@ -205,7 +212,14 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onRemove }) => {
 
     } catch (err) {
       console.error(err);
-      alert("خطا در ثبت داستان موفقیت");
+
+      if (err.response?.status === 400 && err.response?.data?.error?.includes("already has a success story")) {
+        alert("برای این پست قبلاً داستان موفق ثبت شده است.");
+      } 
+      
+      else {
+        alert("خطا در ثبت داستان موفقیت");
+      }
     }
   };
 
@@ -223,7 +237,8 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onRemove }) => {
         petId: pet?.id,
         action: "remove",
         storyText: "",
-        images: []
+        images: [],
+        hasSuccessStory: false 
       };
       
       onSave?.(removeData);
@@ -305,11 +320,13 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onRemove }) => {
             </div>
             <div className="header-text">
               <h2 className="success-story-title">
-                {pet?.successStory ? "ویرایش داستان موفقیت" : "ثبت داستان موفقیت"}
+                {pet?.hasSuccessStory || pet?.successStory ? 
+                  (pet?.successStory ? "ویرایش داستان موفقیت" : "مشاهده داستان موفقیت") : 
+                  "ثبت داستان موفقیت"}
               </h2>
               <p className="success-story-subtitle">
-                {pet?.successStory 
-                  ? `داستان موفقیت ${pet?.name || "پت"} را ویرایش کنید`
+                {pet?.hasSuccessStory || pet?.successStory 
+                  ? `داستان موفقیت ${pet?.name || "پت"} را مشاهده یا ویرایش کنید`
                   : `داستان خود را از پیدا کردن ${pet?.name || "پت خود"} به اشتراک بگذارید`}
               </p>
             </div>
@@ -549,10 +566,14 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onRemove }) => {
           <button 
             className="save-btn" 
             onClick={handleSave}
-            disabled={!storyText.trim()}
+            disabled={!storyText.trim() || (pet?.hasSuccessStory && !pet?.successStory)}
           >
             <SparkleIcon />
-            <span>{pet?.successStory ? "بروزرسانی داستان" : "انتشار داستان موفقیت"}</span>
+            <span>
+              {pet?.hasSuccessStory || pet?.successStory 
+                ? (pet?.successStory ? "بروزرسانی داستان" : "مشاهده داستان") 
+                : "انتشار داستان موفقیت"}
+            </span>
           </button>
         </div>
       </div>

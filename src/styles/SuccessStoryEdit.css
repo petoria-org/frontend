@@ -66,7 +66,7 @@
 }
 
 .story-edit-header {
-  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+  background: linear-gradient(135deg, #7ab3e0 0%, #94c5e3 100%);
   padding: 48px 32px;
   display: flex;
   align-items: center;
@@ -653,7 +653,7 @@
 }
 
 .story-edit-modal::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #f59e0b 0%, #fbbf24 50%, #f59e0b 100%);
+  background: linear-gradient(180deg, #7ab3e0 0%, #94c5e3 50%, #7ab3e0 100%);
   border-radius: 10px;
   border: 2px solid #f0f7ff;
   box-shadow: 
@@ -664,7 +664,7 @@
 }
 
 .story-edit-modal::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #d97706 0%, #f59e0b 50%, #d97706 100%);
+  background: linear-gradient(180deg, #5a9bc9 0%, #7ab3e0 50%, #5a9bc9 100%);
   box-shadow: 
     0 0 15px rgba(245, 158, 11, 0.5),
     inset 0 2px 4px rgba(255, 255, 255, 0.7);
@@ -672,7 +672,7 @@
 }
 
 .story-edit-modal::-webkit-scrollbar-thumb:active {
-  background: linear-gradient(180deg, #b45309 0%, #d97706 50%, #b45309 100%);
+  background: linear-gradient(180deg, #4a8bb8 0%, #5a9bc9 50%, #4a8bb8 100%);
 }
 
 .story-edit-modal::-webkit-scrollbar-button {

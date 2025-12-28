@@ -397,16 +397,6 @@ export const SuccessStoryEdit = ({
               </button>
               
               <button 
-                type="button" 
-                className="delete-btn"
-                onClick={handleDelete}
-                disabled={loading}
-              >
-                <DeleteIcon />
-                <span>حذف داستان</span>
-              </button>
-              
-              <button 
                 type="submit" 
                 className="save-btn"
                 disabled={loading}

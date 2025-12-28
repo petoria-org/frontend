@@ -16,12 +16,40 @@ export const getUserSuccessStories = async () => {
   return res.data.results; 
 };
 
+export const getPetSuccessStoriesStatus = async () => {
+  try {
+    const res = await api.get("/SuccessStory/user/pets-with-stories/");
+    return res.data; 
+  } catch (error) {
+    console.error("Error getting pet stories status:", error);
+    return {};
+  }
+};
+
+
+export const getSuccessStoryByPetId = async (petId) => {
+  try {
+    const res = await api.get(`/SuccessStory/pet/${petId}/story/`);
+    return res.data;
+  } catch (error) {
+   
+    if (error.response?.status === 404) {
+      return null;
+    }
+    throw error;
+  }
+};
+
 export const createSuccessStory = async (data) => {
   const formData = new FormData();
 
   formData.append("title", data.title);
   formData.append("story", data.story);
   formData.append("story_type", data.story_type);
+  
+  if (data.pet_id) {
+    formData.append("pet_id", data.pet_id);
+  }
 
   if (data.images && data.images.length > 0) {
     data.images.forEach((file) => {
