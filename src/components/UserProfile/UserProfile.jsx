@@ -927,8 +927,9 @@ const handleDeleteConfirm = async () => {
                 </header>
 
                 {userSuccessStories.length > 0 ? (
+                  <>
                   <div className="user-stories-list">
-                    {userSuccessStories.map((story, index) => (
+                    {currentStories.map((story, index) => (
                       <div
                         key={story.id}
                         className="user-story-card"
@@ -999,7 +1000,16 @@ const handleDeleteConfirm = async () => {
                       </div>
                     ))}
                   </div>
-                  
+                  {currentStories.length > 0 && (
+                    <Pagination
+                      currentPage={currentStoryPage}
+                      totalPages={storyTotalPages}
+                      onPageChange={handleStoryPageClick}
+                      onPrevious={handleStoryPreviousPage}
+                      onNext={handleStoryNextPage}
+                    />
+                  )}
+                </>            
                 ) : (
                   <div className="no-data-message">
                     <div className="no-data-icon">

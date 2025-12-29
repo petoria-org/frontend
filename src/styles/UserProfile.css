@@ -3793,3 +3793,74 @@
   }
 }
 
+
+/* استایل‌های Pagination در بخش داستان‌های موفق */
+.user-stories-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.user-stories-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  margin-bottom: 40px; /* فاصله با Pagination */
+  flex: 1; /* این باعث می‌شود لیست فضای باقیمانده را پر کند */
+}
+
+.user-success-stories-section .pagination {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(28, 123, 209, 0.1);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* استایل‌های سفارشی برای Pagination در بخش داستان‌ها */
+.user-stories-pagination {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(28, 123, 209, 0.1);
+}
+
+/* تنظیمات برای نمایش در موبایل */
+@media (max-width: 768px) {
+  .user-stories-list {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .user-success-stories-section .pagination {
+    margin-top: 15px;
+    padding-top: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-stories-list {
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .user-success-stories-section .pagination {
+    margin-top: 10px;
+    padding-top: 10px;
+  }
+  
+  .user-success-stories-section .pagination-page-button {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+  
+  .user-success-stories-section .pagination-button {
+    width: 36px;
+    height: 36px;
+  }
+}
