@@ -588,8 +588,11 @@ return (
             <div className="Three-d-layer-border"></div>
             <div className="Three-d-layer-content">
               <div className="Three-d-layer-pattern"></div>
-              <div className="loading-center-container">
-                <LoadingScreen />
+              <div className="loading-center-container-posts">
+                <LoadingScreen
+                title="در حال بارگذاری آگهی‌ها" 
+                subtitle="آگهی‌های مرتبط در حال آماده‌سازی هستند..."
+                />
               </div>
             </div>
           </div>

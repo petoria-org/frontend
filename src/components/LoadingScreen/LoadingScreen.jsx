@@ -1,7 +1,11 @@
 import React from "react";
 import "../../styles/LoadingScreen.css";
 
-const LoadingScreen = () => {
+const LoadingScreen = ({ 
+  title = "در حال بارگذاری", 
+  subtitle = "لطفا چند لحظه صبر کنید...",
+  showPaws = true
+}) => {
   return (
     <div className="loading-overlay">
       <div className="loading-container">
@@ -29,24 +33,26 @@ const LoadingScreen = () => {
           </div>
           
           <div className="loading-text-container">
-            <h3 className="loading-title">در حال بارگذاری آگهی‌ها</h3>
-            <p className="loading-subtitle">لطفا چند لحظه صبر کنید...</p>
+            <h3 className="loading-title">{title}</h3>
+            <p className="loading-subtitle">{subtitle}</p>
           </div>
           
-          <div className="loading-paws">
-            <div className="paw-icon">
-              <img src="src/assets/icons/paw.svg" alt="Paw" className="paw-svg" />
+          {showPaws && (
+            <div className="loading-paws">
+              <div className="paw-icon">
+                <img src="/src/assets/icons/paw.svg" alt="Paw" className="paw-svg" />
+              </div>
+              <div className="paw-icon">
+                <img src="/src/assets/icons/paw.svg" alt="Paw" className="paw-svg" />
+              </div>
+              <div className="paw-icon">
+                <img src="/src/assets/icons/paw.svg" alt="Paw" className="paw-svg" />
+              </div>
+              <div className="paw-icon">
+                <img src="/src/assets/icons/paw.svg" alt="Paw" className="paw-svg" />
+              </div>
             </div>
-            <div className="paw-icon">
-              <img src="src/assets/icons/paw.svg" alt="Paw" className="paw-svg" />
-            </div>
-            <div className="paw-icon">
-              <img src="src/assets/icons/paw.svg" alt="Paw" className="paw-svg" />
-            </div>
-            <div className="paw-icon">
-              <img src="src/assets/icons/paw.svg" alt="Paw" className="paw-svg" />
-            </div>
-          </div>
+          )}
           
           <div className="loading-progress">
             <div className="progress-bar">

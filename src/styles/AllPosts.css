@@ -133,11 +133,11 @@
   justify-content: center;
 }
 
-.loading-center-container {
+.loading-center-container-posts {
   position: absolute;
-  top: 50%;
+  top: 15%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -15%);
   z-index: 10;
   width: 100%;
   max-width: 500px;
@@ -178,7 +178,7 @@
   opacity: 0.6;
 }
 
-.loading-center-container .loading-overlay {
+.loading-center-container-posts .loading-overlay {
   position: relative;
   top: 0;
   left: 0;
@@ -187,11 +187,11 @@
   backdrop-filter: none;
 }
 
-.loading-center-container .loading-overlay::before {
+.loading-center-container-posts .loading-overlay::before {
   content: none;
 }
 
-.loading-center-container .loading-container {
+.loading-center-container-posts .loading-container {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border: 2px solid rgba(255, 255, 255, 0.8);

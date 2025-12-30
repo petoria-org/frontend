@@ -36,7 +36,7 @@
   text-align: center;
   position: relative;
   overflow: hidden;
-  margin-bottom: 800px;
+  margin-bottom: 100px;
   opacity: 0;
   animation: containerAppear 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -180,7 +180,7 @@
 .loading-paws {
   display: flex;
   justify-content: center;
-  gap: 4px;
+  gap: 24px;
   margin-bottom: 0;
   height: 40px;
 }

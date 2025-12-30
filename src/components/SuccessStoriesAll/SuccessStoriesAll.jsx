@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { SuccessStoryDetail } from "../SuccessStoryDetail/SuccessStoryDetail";
+import LoadingScreen from "../LoadingScreen/LoadingScreen";
 import "../../styles/SuccessStoriesAll.css";
 import { getSuccessStories } from "../../Services/successStoryService";
 import { config } from "../../config";
@@ -23,6 +24,7 @@ const SuccessStoriesAll = () => {
   const [stories, setStories] = useState([]);
   const [selectedStory, setSelectedStory] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const BACKEND_URL = config.BACKEND_URL;
 
@@ -34,9 +36,11 @@ const SuccessStoriesAll = () => {
   };
 
   useEffect(() => {
-    setIsVisible(true);
-
     const fetchStories = async () => {
+      setLoading(true);
+      
+      const startTime = Date.now();
+      
       try {
         const data = await getSuccessStories();
 
@@ -58,8 +62,20 @@ const SuccessStoriesAll = () => {
         }));
 
         setStories(mapped);
+        setIsVisible(true);
       } catch (e) {
-        console.error("SuccessStory error:", e);
+        console.error("خطا در دریافت داستان‌های موفق:", e);
+      } finally {
+        const elapsedTime = Date.now() - startTime;
+        const minLoadingTime = 1500;
+        
+        if (elapsedTime < minLoadingTime) {
+          setTimeout(() => {
+            setLoading(false);
+          }, minLoadingTime - elapsedTime);
+        } else {
+          setLoading(false);
+        }
       }
     };
 
@@ -68,9 +84,27 @@ const SuccessStoriesAll = () => {
 
   return (
     <div className="success-stories-container-all">
-      <div className="blue-waves-all"></div>
-
-      <main className="success-stories-main-all">
+  
+      {loading && (
+        <div className="loading-background-overlay">
+          <div className="white-3d-back-layer">
+            <div className="Three-d-layer-border"></div>
+            <div className="Three-d-layer-content">
+              <div className="Three-d-layer-pattern"></div>
+              <div className="loading-center-container-success-story">
+                <LoadingScreen 
+                  title="در حال بارگذاری داستان‌های موفق" 
+                  subtitle="داستان‌های زیبای بازگشت حیوانات خانگی در حال آماده‌سازی هستند..."
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      <div className={`success-stories-main-all ${loading ? 'hidden' : 'visible'}`}>
+        <div className="blue-waves-all"></div>
+        
         <div className={`stories-card-all ${isVisible ? "visible" : ""}`}>
           <div className="card-border"></div>
 
@@ -90,6 +124,14 @@ const SuccessStoriesAll = () => {
                   <h1 className="stories-title-all">
                     <span className="title-gradient-all">داستان‌های موفق</span>
                   </h1>
+                  <p className="stories-subtitle-all">
+                    داستان‌های زیبای بازگشت حیوانات خانگی به آغوش خانواده‌هایشان
+                    <span className="subtitle-dots">
+                      <span className="dot">.</span>
+                      <span className="dot">.</span>
+                      <span className="dot">.</span>
+                    </span>
+                  </p>
                 </div>
               </div>
               
@@ -104,85 +146,91 @@ const SuccessStoriesAll = () => {
             </header>
 
             <div className="stories-list-all">
-              {stories.map((story, index) => (
-                <div
-                  key={story.id}
-                  className={`story-card-all ${isVisible ? "slide-in" : ""}`}
-                  style={{ animationDelay: `${index * 0.15}s` }}
-                  onClick={() => setSelectedStory(story)}
-                >
-                  <div className="card-border-inner"></div>
-                  <div className="story-number-all">0{index + 1}</div>
+              {!loading && stories.length === 0 ? (
+                <div className="no-stories-message">
+                  <p>در حال حاضر داستان موفقیتی برای نمایش وجود ندارد.</p>
+                </div>
+              ) : (
+                stories.map((story, index) => (
+                  <div
+                    key={story.id}
+                    className={`story-card-all ${isVisible ? "slide-in" : ""}`}
+                    style={{ animationDelay: `${index * 0.15}s` }}
+                    onClick={() => setSelectedStory(story)}
+                  >
+                    <div className="card-border-inner"></div>
+                    <div className="story-number-all">0{index + 1}</div>
 
-                  <div className="story-content-wrapper-all">
-                    <div className="story-image-section-all">
-                      <div className="image-frame-all">
-                        <div className="image-border">
-                          <img
-                            className="story-image-all"
-                            src={story.image}
-                            alt={story.title}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="image-decoration-all">
-                        <div className="decoration-circle-all"></div>
-                        <div className="decoration-circle-all"></div>
-                        <div className="decoration-circle-all"></div>
-                      </div>
-                    </div>
-
-                    <div className="story-text-section-all">
-                      <div className="story-header-all">
-                        <div className="story-meta-all">
-                          <div className="title-wrapper-all">
-                            <h3 className="story-title-all">{story.title}</h3>
-                            <div className="title-line-all"></div>
-                          </div>
-
-                          <div className="author-date-all">
-                            <span className="story-author-all">{story.author}</span>
-                            <span className="date-separator-all">•</span>
-                            <span className="story-date-all">{story.date}</span>
+                    <div className="story-content-wrapper-all">
+                      <div className="story-image-section-all">
+                        <div className="image-frame-all">
+                          <div className="image-border">
+                            <img
+                              className="story-image-all"
+                              src={story.image}
+                              alt={story.title}
+                            />
                           </div>
                         </div>
 
-                        <div className="status-section-all">
-                          <div
-                            className="status-badge-all"
-                            style={{
-                              backgroundColor: story.statusColor,
-                              color: story.statusTextColor,
-                            }}
-                          >
-                            <span className="status-text-all">{story.status}</span>
-                          </div>
+                        <div className="image-decoration-all">
+                          <div className="decoration-circle-all"></div>
+                          <div className="decoration-circle-all"></div>
+                          <div className="decoration-circle-all"></div>
                         </div>
                       </div>
 
-                      <div className="story-content-box-all">
-                        <p className="story-content">
-                          {truncateText(story.content)}
-                        </p>
-                      </div>
+                      <div className="story-text-section-all">
+                        <div className="story-header-all">
+                          <div className="story-meta-all">
+                            <div className="title-wrapper-all">
+                              <h3 className="story-title-all">{story.title}</h3>
+                              <div className="title-line-all"></div>
+                            </div>
 
-                      <div className="story-footer-all">
-                        <button className="read-more-btn-all">
-                          <span>خواندن ادامه داستان</span>
-                          <div className="btn-arrow-all">
-                            →
+                            <div className="author-date-all">
+                              <span className="story-author-all">{story.author}</span>
+                              <span className="date-separator-all">•</span>
+                              <span className="story-date-all">{story.date}</span>
+                            </div>
                           </div>
-                        </button>
+
+                          <div className="status-section-all">
+                            <div
+                              className="status-badge-all"
+                              style={{
+                                backgroundColor: story.statusColor,
+                                color: story.statusTextColor,
+                              }}
+                            >
+                              <span className="status-text-all">{story.status}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="story-content-box-all">
+                          <p className="story-content">
+                            {truncateText(story.content)}
+                          </p>
+                        </div>
+
+                        <div className="story-footer-all">
+                          <button className="read-more-btn-all">
+                            <span>خواندن ادامه داستان</span>
+                            <div className="btn-arrow-all">
+                              →
+                            </div>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </div>
-      </main>
+      </div>
 
       {selectedStory && (
         <SuccessStoryDetail
