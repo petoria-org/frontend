@@ -17,6 +17,11 @@ export const SuccessStoryEdit = ({
   const [images, setImages] = useState(story.images || []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [notification, setNotification] = useState(null);
+  
+  const showNotification = (message, type = "success") => {
+    setNotification({ message, type });
+  };
 
   useEffect(() => {
     if (story) {
@@ -78,9 +83,10 @@ export const SuccessStoryEdit = ({
         }).format(new Date(updatedStory.updated_at || updatedStory.created_at)),
       });
 
+      showNotification("داستان با موفقیت ویرایش شد", "success");
+
     } catch (err) {
-      setError(err.message || "خطا در به‌روزرسانی داستان");
-      console.error("Update story error:", err);
+      showNotification("خطا در به‌روزرسانی داستان", "error");
     } finally {
       setLoading(false);
     }
@@ -97,10 +103,10 @@ export const SuccessStoryEdit = ({
     try {
       await deleteSuccessStory(story.id);
       onDelete(story.id);
+      showNotification("داستان با موفقیت حذف شد", "success");
 
     } catch (err) {
-      setError(err.message || "خطا در حذف داستان");
-      console.error("Delete story error:", err);
+      showNotification("خطا در حذف داستان", "error");
     } finally {
       setLoading(false);
     }

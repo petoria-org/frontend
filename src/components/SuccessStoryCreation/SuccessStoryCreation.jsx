@@ -2,17 +2,24 @@ import React, { useState, useRef, useEffect } from "react";
 import "../../styles/SuccessStoryCreation.css";
 import { useOutletContext } from "react-router-dom";
 import { createSuccessStory } from "../../Services/successStoryService";
+import { deleteLostPost, deleteFoundPost, deleteSurrenderPost } from "../../Services/userService";
 
-export const SuccessStoryCreation = ({ pet, onSave, onCancel, onRemove }) => {
+export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => { 
   const [images, setImages] = useState([]);
   const [storyText, setStoryText] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({});
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [loading, setLoading] = useState(false);
   const fileInputRef = useRef(null);
   const dropZoneRef = useRef(null);
   const { setHideNavbar, setHideFooter } = useOutletContext();
+  const [notification, setNotification] = useState(null);
 
+  const showNotification = (message, type = "success") => {
+    setNotification({ message, type });
+  };
+  
   useEffect(() => {
     const originalOverflow = document.body.style.overflow;
 
@@ -165,6 +172,8 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onRemove }) => {
       return;
     }
 
+    setLoading(true);
+
     try {
       const payload = {
         title: `داستان ${pet?.name || "موفقیت"}`,
@@ -175,8 +184,25 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onRemove }) => {
           .filter(img => img.file)
           .map(img => img.file),
       };
-
+      
+      showNotification("داستان موفق با موفقیت ثبت شد و آگهی بسته شد", "success");
       const createdStory = await createSuccessStory(payload);
+
+      if (pet) {
+        try {
+          let deleteResponse;
+          if (pet.status === "lost") {
+            deleteResponse = await deleteLostPost(pet.id);
+          } else if (pet.status === "found") {
+            deleteResponse = await deleteFoundPost(pet.id);
+          } else if (pet.status === "adoption") {
+            deleteResponse = await deleteSurrenderPost(pet.id);
+          }
+          console.log("Post deleted after story creation:", deleteResponse);
+        } catch (deleteError) {
+          console.error("Error deleting post:", deleteError);
+        }
+      }
 
       onSave?.({
         id: createdStory.id,
@@ -210,15 +236,50 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onRemove }) => {
       setImages([]);
       setActiveImageIndex(0);
 
+      alert("داستان موفق با موفقیت ثبت شد و آگهی بسته شد.");
+
     } catch (err) {
       console.error(err);
 
       if (err.response?.status === 400 && err.response?.data?.error?.includes("already has a success story")) {
-        alert("برای این پست قبلاً داستان موفق ثبت شده است.");
+         showNotification("برای این پست قبلاً داستان موفق ثبت شده است", "warning");
       } 
       
       else {
-        alert("خطا در ثبت داستان موفقیت");
+        showNotification("خطا در ثبت داستان موفقیت", "error");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSkipAndDelete = async () => {
+    if (window.confirm("آیا مطمئن هستید که می‌خواهید این آگهی را حذف کنید؟")) {
+      setLoading(true);
+      
+      try {
+        if (pet) {
+          let deleteResponse;
+          if (pet.status === "lost") {
+            deleteResponse = await deleteLostPost(pet.id);
+          } else if (pet.status === "found") {
+            deleteResponse = await deleteFoundPost(pet.id);
+          } else if (pet.status === "adoption") {
+            deleteResponse = await deleteSurrenderPost(pet.id);
+          }
+          console.log("Post deleted without story:", deleteResponse);
+        }
+
+        if (onSkip) {
+          onSkip(pet?.globalId || pet?.id); 
+        }
+
+        showNotification("آگهی با موفقیت حذف شد", "success");
+        
+      } catch (error) {
+        showNotification('خطا در حذف آگهی. لطفاً دوباره تلاش کنید', "error");
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -229,24 +290,6 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onRemove }) => {
     setActiveImageIndex(0);
 
     onCancel?.();
-  };
-
-  const handleRemoveStory = () => {
-    if (window.confirm("آیا از حذف داستان موفقیت مطمئن هستید؟")) {
-      const removeData = {
-        petId: pet?.id,
-        action: "remove",
-        storyText: "",
-        images: [],
-        hasSuccessStory: false 
-      };
-      
-      onSave?.(removeData);
-
-      setStoryText("");
-      setImages([]);
-      setActiveImageIndex(0);
-    }
   };
 
   const handleClose = () => {
@@ -307,6 +350,13 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onRemove }) => {
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <path d="M3 6h18" />
       <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+    </svg>
+  );
+
+  const SkipIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M19 12H5" />
+      <path d="M12 19l-7-7 7-7" />
     </svg>
   );
 
@@ -545,34 +595,39 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onRemove }) => {
         </div>
 
         <div className="success-story-footer">
-          {pet?.successStory && (
-            <button 
-              className="cancel-btn" 
-              onClick={handleRemoveStory}
-              style={{ 
-                background: '#fee2e2',
-                color: '#dc2626',
-                borderColor: '#fca5a5'
-              }}
-            >
-              <TrashIcon />
-              <span>حذف داستان</span>
-            </button>
-          )}
+          <button 
+            className="skip-btn" 
+            onClick={handleSkipAndDelete}
+            disabled={loading}
+            style={{ 
+              background: '#ff9800',
+              color: 'white',
+              borderColor: '#ff9800'
+            }}
+          >
+            <SkipIcon />
+            <span>فقط حذف آگهی</span>
+          </button>
           
-          <button className="cancel-btn" onClick={handleCancel}>
+          <button 
+            className="cancel-btn" 
+            onClick={handleCancel}
+            disabled={loading}
+          >
             انصراف
           </button>
+          
           <button 
             className="save-btn" 
             onClick={handleSave}
-            disabled={!storyText.trim() || (pet?.hasSuccessStory && !pet?.successStory)}
+            disabled={!storyText.trim() || (pet?.hasSuccessStory && !pet?.successStory) || loading}
           >
             <SparkleIcon />
             <span>
-              {pet?.hasSuccessStory || pet?.successStory 
+              {loading ? 'در حال ثبت...' : 
+               pet?.hasSuccessStory || pet?.successStory 
                 ? (pet?.successStory ? "بروزرسانی داستان" : "مشاهده داستان") 
-                : "انتشار داستان موفقیت"}
+                : "ثبت داستان و حذف آگهی"}
             </span>
           </button>
         </div>

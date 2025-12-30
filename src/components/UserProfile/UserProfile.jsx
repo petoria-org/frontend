@@ -15,6 +15,7 @@ import {
 import { getUserSuccessStories, deleteSuccessStory  } from "../../Services/successStoryService";
 import { config } from "../../config";
 import { SuccessStoryEdit } from "../SuccessStoryEdit/SuccessStoryEdit";
+import { NotificationToast } from "../NotificationToast/NotificationToast";
 
 const toJalaliDate = (dateString) => {
   if (!dateString) return "";
@@ -174,6 +175,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const { logout } = useAuth();
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("access");
@@ -292,11 +294,18 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
   
   const itemsPerPage = 6;
 
-  const handleMarkAsResolved = (globalId) => {
+  const showNotification = (message, type = "success") => {
+    setNotification({ message, type });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
+  };
+
+  const handleResolvePost = (globalId) => {
     const pet = allAds.find(ad => ad.globalId === globalId);
     
     if (pet?.hasSuccessStory) {
-      alert("برای این آگهی قبلاً داستان موفق ثبت شده است. ابتدا داستان قبلی را حذف کنید.");
+      alert("برای این آگهی قبلاً داستان موفق ثبت شده است.");
       return;
     }
     
@@ -304,61 +313,79 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
     setShowSuccessStoryModal(true);
   };
 
+
   const handleSuccessStorySave = (newStory) => {
     setUserSuccessStories(prev => [newStory, ...prev]);
+
     if (selectedPetForStory) {
-      setAllAds(prevAds => prevAds.map(ad => 
-        ad.globalId === selectedPetForStory.globalId 
-          ? { 
-              ...ad, 
-              hasSuccessStory: true,
-              resolved: true 
-            }
-          : ad
-      ));
+      setAllAds(prevAds => 
+        prevAds.filter(ad => ad.globalId !== selectedPetForStory.globalId)
+      );
     }
     
     setShowSuccessStoryModal(false);
     setSelectedPetForStory(null);
+    setCurrentPage(1);
+    
+    showNotification("داستان موفق با موفقیت ثبت شد", "success");
   };
+
+  const handleSuccessStoryCancel = async () => {
+  if (selectedPetForStory) {
+    if (window.confirm("آیا مطمئن هستید که می‌خواهید این آگهی را حذف کنید؟")) {
+      try {
+        
+        setCurrentPage(1);
+        showNotification("آگهی با موفقیت حذف شد", "success");
+        
+      } catch (err) {
+        console.error("Delete error details:", err);
+        showNotification("خطا در حذف آگهی. لطفاً دوباره تلاش کنید", "error");
+      }
+    }
+  }
+  
+  setShowSuccessStoryModal(false);
+  setSelectedPetForStory(null);
+};
 
   const handleDeleteClick = (ad) => {
     setPetToDelete(ad);
     setDeleteModalOpen(true);
   };
 
-const handleDeleteConfirm = async () => {
-  if (!petToDelete) return;
+  const handleDeleteConfirm = async () => {
+    if (!petToDelete) return;
 
-  try {
-    console.log(`Deleting ${petToDelete.status} post with ID:`, petToDelete.id);
-    
-    let response;
-    if (petToDelete.status === "lost") {
-      response = await deleteLostPost(petToDelete.id);
-    } else if (petToDelete.status === "found") {
-      response = await deleteFoundPost(petToDelete.id);
-    } else if (petToDelete.status === "adoption") {
-      response = await deleteSurrenderPost(petToDelete.id);
+    try {
+      console.log(`Deleting ${petToDelete.status} post with ID:`, petToDelete.id);
+      
+      let response;
+      if (petToDelete.status === "lost") {
+        response = await deleteLostPost(petToDelete.id);
+      } else if (petToDelete.status === "found") {
+        response = await deleteFoundPost(petToDelete.id);
+      } else if (petToDelete.status === "adoption") {
+        response = await deleteSurrenderPost(petToDelete.id);
+      }
+
+      console.log("Delete response:", response);
+
+      setAllAds(prev =>
+        prev.filter(item => item.globalId !== petToDelete.globalId)
+      );
+
+      setCurrentPage(1);
+      setDeleteModalOpen(false);
+      setPetToDelete(null);
+ 
+      showNotification("آگهی با موفقیت حذف شد", "success");
+      
+    } catch (err) {
+      console.error("Delete error details:", err);
+      showNotification("خطا در حذف آگهی. لطفاً دوباره تلاش کنید", "error");
     }
-
-    console.log("Delete response:", response);
-
-    setAllAds(prev =>
-      prev.filter(item => item.globalId !== petToDelete.globalId)
-    );
-
-    setCurrentPage(1);
-    setDeleteModalOpen(false);
-    setPetToDelete(null);
-    
-    alert("آگهی با موفقیت حذف شد");
-    
-  } catch (err) {
-    console.error("Delete error details:", err);
-    alert("خطا در حذف آگهی. لطفاً دوباره تلاش کنید.");
-  }
-};
+  };
 
   const handleRemoveSuccessStory = (petId) => {
     if (window.confirm("آیا از حذف داستان موفقیت مطمئن هستید؟")) {
@@ -386,10 +413,10 @@ const handleDeleteConfirm = async () => {
       )
     );
     setEditingStory(null);
+    showNotification("داستان با موفقیت ویرایش شد", "success");
   };
 
   const handleStoryDelete = async (storyId) => {
-    if (!window.confirm("آیا از حذف این داستان مطمئن هستید؟")) return;
 
     try {
       await deleteSuccessStory(storyId);
@@ -401,11 +428,11 @@ const handleDeleteConfirm = async () => {
       }
 
       setEditingStory(null);
-      alert("داستان موفق با موفقیت حذف شد");
+      showNotification("داستان موفق با موفقیت حذف شد", "success");
 
     } catch (err) {
       console.error("Delete story error:", err);
-      alert("خطا در حذف داستان موفق");
+      showNotification("خطا در حذف داستان موفق", "error");
     }
   };
 
@@ -536,10 +563,21 @@ const handleDeleteConfirm = async () => {
 
   const EditIcon = () => (
     <div className="action-icon-container">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="#5CDC87" strokeWidth="2"/>
-        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="#5CDC87" strokeWidth="2"/>
-      </svg>
+      <div className="edit-icon-wrapper">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <path 
+            d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" 
+            stroke="#1c7bd1" 
+            strokeWidth="2"
+          />
+          <path 
+            d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" 
+            stroke="#1c7bd1" 
+            strokeWidth="2"
+          />
+        </svg>
+        <div className="edit-icon-glow"></div>
+      </div>
     </div>
   );
 
@@ -576,6 +614,14 @@ const handleDeleteConfirm = async () => {
     />
   );
 
+  const TickIcon = () => (
+    <div className="tick-icon-container">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    </div>
+  );
+  
   const truncateText = (text, maxLength = 110) => {
     if (!text) return "";
     return text.length > maxLength
@@ -604,6 +650,15 @@ const handleDeleteConfirm = async () => {
                   </span>
                 </div>
               </div>
+
+                  {notification && (
+                    <NotificationToast
+                      message={notification.message}
+                      type={notification.type}
+                      onClose={() => setNotification(null)}
+                      position="top-center"
+                    />
+                  )}
 
               <div className="avatar-container">
                 <div className="avatar-border" />
@@ -762,12 +817,12 @@ const handleDeleteConfirm = async () => {
                               <div className="glass-card">
                                 <div className="action-buttons-wrapper">
                                   <button 
-                                    className="action-button story-button"
-                                    onClick={() => handleMarkAsResolved(pet.globalId)}
-                                    title={pet.hasSuccessStory ? "داستان موفق ثبت شده" : "ثبت داستان موفقیت"}
+                                    className="action-button tick-button"
+                                    onClick={() => handleResolvePost (pet.globalId)}
+                                    title="حل کردن آگهی (ثبت داستان موفق یا حذف آگهی)"
                                     disabled={pet.hasSuccessStory} 
                                   >
-                                    <StoryIcon hasSuccessStory={pet.hasSuccessStory} />
+                                    <TickIcon />
                                   </button>
                                   
                                   <button 
@@ -777,22 +832,7 @@ const handleDeleteConfirm = async () => {
                                   >
                                     <EditIcon />
                                   </button>
-                                  
-                                  <button 
-                                    className="action-button delete-button"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      if (window.confirm(`آیا از حذف آگهی "${pet.name}" مطمئن هستید؟`)) {
-                                        handleDeleteClick(pet);
-                                      }
-                                    }}
-                                    title="حذف آگهی"
-                                  >
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                                      <path d="M3 6h18" stroke="#F44336" strokeWidth="2" strokeLinecap="round"/>
-                                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="#F44336" strokeWidth="2"/>
-                                    </svg>
-                                  </button>
+                                
                                 </div>
                               </div>
                             </div>
@@ -1035,11 +1075,8 @@ const handleDeleteConfirm = async () => {
       <SuccessStoryCreation
         pet={selectedPetForStory}
         onSave={handleSuccessStorySave}
-        onCancel={() => {
-          setShowSuccessStoryModal(false);
-          setSelectedPetForStory(null);
-        }}
-        onRemove={handleRemoveSuccessStory}
+        onCancel={handleSuccessStoryCancel}
+        onSkip={handleSuccessStoryCancel} 
       />
     )}
 
