@@ -3501,7 +3501,7 @@
   }
 }
 
-.option-icon {
+.option-icon-edit {
   width: 20px;
   height: 20px;
   display: flex;
@@ -3512,7 +3512,7 @@
   flex-shrink: 0;
 }
 
-.option-icon svg {
+.option-icon-edit svg {
   width: 18px;
   height: 18px;
   stroke: #5a6c7d;
@@ -3520,15 +3520,15 @@
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.switch-option:hover .option-icon {
+.switch-option:hover .option-icon-edit {
   transform: scale(1.1) rotate(5deg);
 }
 
-.switch-option.active .option-icon {
+.switch-option.active .option-icon-edit {
   transform: scale(1.15) rotate(0deg);
 }
 
-.switch-option.active .option-icon svg {
+.switch-option.active .option-icon-edit svg {
   stroke: #1c7bd1;
   filter: drop-shadow(0 2px 4px rgba(28, 123, 209, 0.3));
 }
@@ -3766,7 +3766,7 @@
     gap: 8px;
   }
   
-  .option-icon svg {
+  .option-icon-edit svg {
     width: 18px;
     height: 18px;
   }

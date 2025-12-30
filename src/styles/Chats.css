@@ -139,7 +139,7 @@ body{
    OPEN PANEL (radius stays)
 ======================= */
 
-.open{
+.chats .open {
   position: relative;
   height: 100%;
   min-height: 0;
@@ -152,7 +152,7 @@ body{
 }
 
 /* divider line */
-.open::after{
+.chats .open::after{
   content: "";
   position: absolute;
   top: 0;
@@ -532,7 +532,7 @@ body{
   }
 
   .conv{ height: 45vh; }
-  .open{ height: calc(55vh - var(--page-pad)); }
+  .chats .open{ height: calc(55vh - var(--page-pad)); }
 
   .conv__list, .open__messages{ overflow-y: auto; }
 }

@@ -745,7 +745,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                           style={{ order: 2 }}
                         >
                           <div className="option-icon">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                               <rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="2"/>
                               <path d="M7 21h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                               <path d="M10 17h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
@@ -761,7 +761,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                           style={{ order: 1 }}
                         >
                           <div className="option-icon">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                               <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" 
                                 stroke="currentColor" 
                                 strokeWidth="2"
