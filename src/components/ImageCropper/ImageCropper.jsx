@@ -272,7 +272,9 @@ const handleCrop = async () => {
 
     const blob = await getCroppedImage();
 
-    const result = await uploadPostImage(blob);
+    const arr = await uploadPostImage(blob);
+    const result = arr[0]
+    console.log(result)
 
     const BACKEND_URL = config.BACKEND_URL;
     let fullImageUrl;

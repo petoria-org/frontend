@@ -53,7 +53,7 @@ export const updateSurrenderPost = (id, data) =>
 // ---------- UPLOAD post image ----------
 export const uploadPostImage = async (file) => {
   const formData = new FormData();
-  formData.append("image", file);
+  formData.append("file", file);
 
   const res = await api.post(
     "/posts/images/upload/",
