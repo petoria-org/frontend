@@ -5,6 +5,8 @@ const LoadingScreen = () => {
   return (
     <div className="loading-overlay">
       <div className="loading-container">
+        <div className="card-border-loading"></div>
+        
         <div className="loading-content">
           <div className="loading-heart-wrapper">
             <div className="loading-heart">

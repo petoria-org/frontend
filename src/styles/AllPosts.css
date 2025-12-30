@@ -1,4 +1,206 @@
-/* استایل‌های جدید برای هدر ساده */
+.main-content-wrapper {
+  position: relative;
+  min-height: 800px;
+  width: 100%;
+}
+
+.loading-background-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.loading-background-overlay .white-3d-back-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 101;
+}
+
+.posts-main-content-layer {
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.posts-main-content-layer.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(30px);
+}
+
+.posts-main-content-layer.visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+  animation: contentSlideUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes contentSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  70% {
+    opacity: 0.7;
+    transform: translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pet-listing-card-all-posts {
+  animation: cardAppear-all-posts 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes cardAppear-all-posts {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.pet-listings-grid-all-posts > .pet-listing-card-all-posts:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.pet-listings-grid-all-posts > .pet-listing-card-all-posts:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.pet-listings-grid-all-posts > .pet-listing-card-all-posts:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.pet-listings-grid-all-posts > .pet-listing-card-all-posts:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.pet-listings-grid-all-posts > .pet-listing-card-all-posts:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+.pet-listings-grid-all-posts > .pet-listing-card-all-posts:nth-child(6) {
+  animation-delay: 0.6s;
+}
+
+.white-3d-back-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(250, 250, 255, 0.98) 50%,
+    rgba(245, 248, 255, 0.98) 100%
+  );
+  border-radius: 32px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 
+    0 25px 50px -12px rgba(28, 123, 209, 0.08),
+    0 8px 16px -4px rgba(28, 123, 209, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 0 0 1px rgba(0, 0, 0, 0.02);
+  backdrop-filter: blur(10px);
+  z-index: 1;
+  overflow: hidden;
+}
+
+.Three-d-layer-content {
+  position: absolute;
+  inset: 0;
+  border-radius: 32px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-center-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  width: 100%;
+  max-width: 500px;
+}
+
+.posts-main-content-layer {
+  position: relative;
+  width: 100%;
+  z-index: 2;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.loaded-mode .posts-main-content-layer {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.loading-mode .posts-main-content-layer {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.new-post-container-all-posts {
+  position: relative;
+  min-height: 800px;
+}
+
+.Three-d-layer-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(122, 179, 224, 0.03) 2px, transparent 2px),
+    radial-gradient(circle at 75% 75%, rgba(122, 179, 224, 0.03) 2px, transparent 2px);
+  background-size: 50px 50px;
+  opacity: 0.6;
+}
+
+.loading-center-container .loading-overlay {
+  position: relative;
+  top: 0;
+  left: 0;
+  transform: none;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+.loading-center-container .loading-overlay::before {
+  content: none;
+}
+
+.loading-center-container .loading-container {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 
+    0 30px 60px -15px rgba(28, 123, 209, 0.2),
+    0 15px 30px -10px rgba(28, 123, 209, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
 .header-content-wrapper {
   display: flex;
   justify-content: space-between;
@@ -163,26 +365,73 @@
   }
 }
 
-/* استایل‌های قبلی باقی می‌مانند */
 .new-post-container-all-posts {
   width: 100%;
   display: flex;
   flex-direction: column;
-  background-image: 
-    radial-gradient(at 40% 20%, rgba(255, 255, 255, 0.1) 0px, transparent 50%),
-    radial-gradient(at 80% 0%, rgba(255, 255, 255, 0.1) 0px, transparent 50%),
-    radial-gradient(at 0% 50%, rgba(255, 255, 255, 0.1) 0px, transparent 50%);
-  padding: 30px 40px;
-  margin: 0 auto;
-  background: rgba(251, 251, 251, 0.95);
-  border-radius: 20px;
-  box-sizing: border-box;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  background: white;
+  border-radius: 32px;
   box-shadow: 
-    0 20px 60px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    0 25px 50px -12px rgba(28, 123, 209, 0.15),
+    0 8px 16px -4px rgba(28, 123, 209, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  padding: 50px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
   animation: containerEntrance-all-posts 0.6s ease-out;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.new-post-container-all-posts::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px solid rgba(28, 123, 209, 0.2);
+  border-radius: 32px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+@keyframes containerEntrance-all-posts {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.new-post-container-all-posts::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(28, 123, 209, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(74, 159, 227, 0.05) 0%, transparent 50%);
+  z-index: 0;
+  animation: waveMove 20s linear infinite;
+}
+
+@keyframes waveMove {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate(50px, 50px) rotate(360deg);
+  }
+}
+
+.new-post-container-all-posts > * {
+  position: relative;
+  z-index: 2;
 }
 
 @keyframes containerEntrance-all-posts {

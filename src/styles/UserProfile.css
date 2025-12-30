@@ -1997,7 +1997,6 @@
     inset 0 4px 8px rgba(255, 255, 255, 0.4);
   position: relative;
   overflow: hidden;
-  transform: rotate(-5deg);
     transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   border: 2px solid rgba(255, 255, 255, 0.8);
 }

@@ -135,7 +135,7 @@ export default function AllPosts() {
   });
   
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -578,229 +578,244 @@ export default function AllPosts() {
     },
   ];
 
-  return (
-    <div className="new-post-container-all-posts">
+return (
+  <div className="new-post-container-all-posts">
+    <div className="main-content-wrapper">
       
-      {loading && <LoadingScreen />}
-      
-      <header className="posts-header-all-posts">
-        <div className="header-content-wrapper">
-          <div className="header-title-section">
-            <div className="title-icon-wrapper">
-              <div className="title-icon-heart">
-                <HeartIcon />
+      {loading && (
+        <div className="loading-background-overlay">
+          <div className="white-3d-back-layer">
+            <div className="Three-d-layer-border"></div>
+            <div className="Three-d-layer-content">
+              <div className="Three-d-layer-pattern"></div>
+              <div className="loading-center-container">
+                <LoadingScreen />
               </div>
-              <h1 className="posts-title-all-posts">
-                آگهی‌ها
-                <span className="title-gradient-line"></span>
-              </h1>
             </div>
           </div>
         </div>
-        <div className="header-decoration-simple">
-          <div className="decoration-line-main"></div>
-          <div className="decoration-dots-container">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="decoration-dot-simple" style={{ animationDelay: `${i * 0.1}s` }}></div>
+      )}
+      
+      <div className={`posts-main-content-layer ${loading ? 'hidden' : 'visible'}`}>
+        <header className="posts-header-all-posts">
+          <div className="header-content-wrapper">
+            <div className="header-title-section">
+              <div className="title-icon-wrapper">
+                <div className="title-icon-heart">
+                  <HeartIcon />
+                </div>
+                <h1 className="posts-title-all-posts">
+                  آگهی‌ها
+                  <span className="title-gradient-line"></span>
+                </h1>
+              </div>
+            </div>
+          </div>
+          <div className="header-decoration-simple">
+            <div className="decoration-line-main"></div>
+            <div className="decoration-dots-container">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="decoration-dot-simple" style={{ animationDelay: `${i * 0.1}s` }}></div>
+              ))}
+            </div>
+          </div>
+        </header>
+
+        <div className="posts-categories-tabs-all-posts">
+          <div className="posts-categories-list-all-posts">
+            {filters.map((filter) => (
+              <button
+                key={filter.label}
+                className={`posts-category-tab-all-posts ${activeFilter === filter.label ? "active-all-posts" : ""}`}
+                onClick={() => setActiveFilter(filter.label)}
+              >
+                <div className="posts-category-content-all-posts">
+                  <span className="posts-category-label-all-posts">{filter.label}</span>
+                  <div className="posts-category-count-all-posts">
+                    <span>{filter.count}</span>
+                  </div>
+                </div>
+              </button>
             ))}
           </div>
         </div>
-      </header>
-
-      <div className="posts-categories-tabs-all-posts">
-        <div className="posts-categories-list-all-posts">
-          {filters.map((filter) => (
-            <button
-              key={filter.label}
-              className={`posts-category-tab-all-posts ${activeFilter === filter.label ? "active-all-posts" : ""}`}
-              onClick={() => setActiveFilter(filter.label)}
-            >
-              <div className="posts-category-content-all-posts">
-                <span className="posts-category-label-all-posts">{filter.label}</span>
-                <div className="posts-category-count-all-posts">
-                  <span>{filter.count}</span>
-                </div>
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-      
-      <div className="search-wrapper">
-        <div className="search-box-inner" onClick={() => document.querySelector('.search-input-container-landing input')?.focus()}>
-          <div className="search-input-container">
-            <div className="search-icon-box">
-              <img 
-                src="/src/assets/icons/search-normal.svg" 
-                alt="search"
-                width="20"
-                height="20"
-                className="search-icon-img"
-              />
-            </div>
-            <input
-              type="text"
-              placeholder="جستجو در آگهی‌ها..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="search-input"
-            />
-            
-            {search && (
-              <button 
-                className="search-clear-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSearch('');
-                }}
-                type="button"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <AdvancedFilters
-        activeFilter={activeFilter}
-        filterAnimal={filterAnimal}
-        setFilterAnimal={setFilterAnimal}
-        filterSex={filterSex}
-        setFilterSex={setFilterSex}
-        filterCity={filterCity}
-        setFilterCity={setFilterCity}
-        filterAge={filterAge}
-        setFilterAge={setFilterAge}
-        filterHasCertificate={filterHasCertificate}
-        setFilterHasCertificate={setFilterHasCertificate}
-        filterIsVaccinated={filterIsVaccinated}
-        setFilterIsVaccinated={setFilterIsVaccinated}
-        filterIsSterilized={filterIsSterilized}
-        setFilterIsSterilized={setFilterIsSterilized}
-        clearAllFilters={clearAllFilters}
-        activeFiltersCount={activeFiltersCount}
-      />
-
-      <SortFilters
-        sortOrder={sortOrder}
-        setSortOrder={setSortOrder}
-      />
-
-      {error && <div className="error-message-all-posts">{error}</div>}
-      
-      {/* حذف لودینگ ساده قبلی */}
-      {/* {loading && <div className="loading-message-all-posts">در حال بارگذاری...</div>} */}
-
-      <div className="pet-listings-grid-all-posts">
-        {!loading && filteredAds.length === 0 && (
-          <div className="no-results-container-all-posts">
-            <div className="no-results-icon-all-posts">
-              <img src="/src/assets/icons/search-n.svg" alt="no results" />
-            </div>
-            <h3>هیچ آگهی‌ای یافت نشد</h3>
-            <p className="no-results-text-all-posts">
-              با فیلترهای انتخاب شده، آگهی مناسبی پیدا نشد. لطفا فیلترهای دیگری را امتحان کنید.
-            </p>
-            <button
-              onClick={clearAllFilters}
-              className="clear-filters-btn-no-results-all-posts"
-            >
-              <img src="/src/assets/icons/close.svg" alt="clear" className="clear-icon-all-posts" />
-              پاک کردن همه فیلترها
-            </button>
-          </div>
-        )}
-
-        {filteredAds.map((pet) => {
-          const getStatusClass = () => {
-            if (pet.status === 'پیدا شده') return 'found-all-posts';
-            if (pet.status === 'گم شده') return 'lost-all-posts';
-            if (pet.status === 'سرپرستی') return 'adoption-all-posts';
-            return 'active-all-posts';
-          };
-
-          const statusClass = getStatusClass();
-          
-          return (
-            <div className="pet-listing-card-all-posts" key={pet.id}>
-              <div className="pet-listing-image-container-all-posts">
-                <img
-                  src={pet.image}
-                  alt={pet.name}
-                  className="pet-listing-image-all-posts"
+        
+        <div className="search-wrapper">
+          <div className="search-box-inner" onClick={() => document.querySelector('.search-input-container-landing input')?.focus()}>
+            <div className="search-input-container">
+              <div className="search-icon-box">
+                <img 
+                  src="/src/assets/icons/search-normal.svg" 
+                  alt="search"
+                  width="20"
+                  height="20"
+                  className="search-icon-img"
                 />
-                
-                <div className={`pet-listing-status-all-posts ${statusClass}`}>
-                  <span className="status-label-all-posts">{pet.statusLabel}</span>
-                  <div className="status-pulse-all-posts"></div>
-                </div>
-                
-                <div className="image-hover-glass-overlay-all-posts">
-                  <button
-                    className="image-glass-view-btn-all-posts"
-                    onClick={() => handleViewDetails(pet)}
-                  >
-                    <span className="image-glass-btn-text-all-posts">مشاهده جزئیات</span>
-                    <svg className="image-glass-btn-icon-all-posts" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
-                </div>
               </div>
-
-              <div className="pet-listing-content-all-posts">
-                <div className="pet-listing-header-all-posts">
-                  <div className="pet-listing-info-all-posts">
-                    <h3 className="pet-listing-name-all-posts">{pet.name}</h3>
-                    <p className="pet-listing-subtitle-all-posts">{pet.breed || "نامشخص"}</p>
-                  </div>
-                  <div className="pet-listing-type-all-posts">
-                    {pet.type}
-                  </div>
-                </div>
-
-                <p className="pet-listing-description-all-posts">{pet.desc}</p>
-
-                <div className="pet-details-container-all-posts">
-                  <div className="pet-listing-detail-all-posts">
-                    <div className="detail-icon-all-posts">
-                      <LocationIcon />
-                    </div>
-                    <span className="pet-listing-detail-text-all-posts">{pet.location}</span>
-                  </div>
-
-                  <div className="pet-listing-detail-all-posts">
-                    <div className="detail-icon-all-posts">
-                      <CalendarIcon />
-                    </div>
-                    <span className="pet-listing-detail-text-all-posts">{pet.time}</span>
-                  </div>
-                </div>
-
-                <div className="pet-listing-time-all-posts">
-                  <div className="time-icon-all-posts">
-                    <ClockIcon />
-                  </div>
-                  <span className="pet-listing-time-text-all-posts">{pet.postTime}</span>
-                </div>
-              </div>
+              <input
+                type="text"
+                placeholder="جستجو در آگهی‌ها..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="search-input"
+              />
+              
+              {search && (
+                <button 
+                  className="search-clear-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSearch('');
+                  }}
+                  type="button"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+              )}
             </div>
-          );
-        })}
-      </div>
+          </div>
+        </div>
 
-      {!loading && filteredAds.length > 0 && totalPages > 1 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageClick}
-          onPrevious={handlePreviousPage}
-          onNext={handleNextPage}
+        <AdvancedFilters
+          activeFilter={activeFilter}
+          filterAnimal={filterAnimal}
+          setFilterAnimal={setFilterAnimal}
+          filterSex={filterSex}
+          setFilterSex={setFilterSex}
+          filterCity={filterCity}
+          setFilterCity={setFilterCity}
+          filterAge={filterAge}
+          setFilterAge={setFilterAge}
+          filterHasCertificate={filterHasCertificate}
+          setFilterHasCertificate={setFilterHasCertificate}
+          filterIsVaccinated={filterIsVaccinated}
+          setFilterIsVaccinated={setFilterIsVaccinated}
+          filterIsSterilized={filterIsSterilized}
+          setFilterIsSterilized={setFilterIsSterilized}
+          clearAllFilters={clearAllFilters}
+          activeFiltersCount={activeFiltersCount}
         />
-      )}
+
+        <SortFilters
+          sortOrder={sortOrder}
+          setSortOrder={setSortOrder}
+        />
+
+        {error && <div className="error-message-all-posts">{error}</div>}
+
+        <div className="pet-listings-grid-all-posts">
+          {filteredAds.length === 0 && !loading && (
+            <div className="no-results-container-all-posts">
+              <div className="no-results-icon-all-posts">
+                <img src="/src/assets/icons/search-n.svg" alt="no results" />
+              </div>
+              <h3>هیچ آگهی‌ای یافت نشد</h3>
+              <p className="no-results-text-all-posts">
+                با فیلترهای انتخاب شده، آگهی مناسبی پیدا نشد. لطفا فیلترهای دیگری را امتحان کنید.
+              </p>
+              <button
+                onClick={clearAllFilters}
+                className="clear-filters-btn-no-results-all-posts"
+              >
+                <img src="/src/assets/icons/close.svg" alt="clear" className="clear-icon-all-posts" />
+                پاک کردن همه فیلترها
+              </button>
+            </div>
+          )}
+
+          {filteredAds.map((pet) => {
+            const getStatusClass = () => {
+              if (pet.status === 'پیدا شده') return 'found-all-posts';
+              if (pet.status === 'گم شده') return 'lost-all-posts';
+              if (pet.status === 'سرپرستی') return 'adoption-all-posts';
+              return 'active-all-posts';
+            };
+
+            const statusClass = getStatusClass();
+            
+            return (
+              <div className="pet-listing-card-all-posts" key={pet.id}>
+                <div className="pet-listing-image-container-all-posts">
+                  <img
+                    src={pet.image}
+                    alt={pet.name}
+                    className="pet-listing-image-all-posts"
+                  />
+                  
+                  <div className={`pet-listing-status-all-posts ${statusClass}`}>
+                    <span className="status-label-all-posts">{pet.statusLabel}</span>
+                    <div className="status-pulse-all-posts"></div>
+                  </div>
+                  
+                  <div className="image-hover-glass-overlay-all-posts">
+                    <button
+                      className="image-glass-view-btn-all-posts"
+                      onClick={() => handleViewDetails(pet)}
+                    >
+                      <span className="image-glass-btn-text-all-posts">مشاهده جزئیات</span>
+                      <svg className="image-glass-btn-icon-all-posts" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="pet-listing-content-all-posts">
+                  <div className="pet-listing-header-all-posts">
+                    <div className="pet-listing-info-all-posts">
+                      <h3 className="pet-listing-name-all-posts">{pet.name}</h3>
+                      <p className="pet-listing-subtitle-all-posts">{pet.breed || "نامشخص"}</p>
+                    </div>
+                    <div className="pet-listing-type-all-posts">
+                      {pet.type}
+                    </div>
+                  </div>
+
+                  <p className="pet-listing-description-all-posts">{pet.desc}</p>
+
+                  <div className="pet-details-container-all-posts">
+                    <div className="pet-listing-detail-all-posts">
+                      <div className="detail-icon-all-posts">
+                        <LocationIcon />
+                      </div>
+                      <span className="pet-listing-detail-text-all-posts">{pet.location}</span>
+                    </div>
+
+                    <div className="pet-listing-detail-all-posts">
+                      <div className="detail-icon-all-posts">
+                        <CalendarIcon />
+                      </div>
+                      <span className="pet-listing-detail-text-all-posts">{pet.time}</span>
+                    </div>
+                  </div>
+
+                  <div className="pet-listing-time-all-posts">
+                    <div className="time-icon-all-posts">
+                      <ClockIcon />
+                    </div>
+                    <span className="pet-listing-time-text-all-posts">{pet.postTime}</span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {filteredAds.length > 0 && totalPages > 1 && !loading && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageClick}
+            onPrevious={handlePreviousPage}
+            onNext={handleNextPage}
+          />
+        )}
+        
+      </div>
+      
     </div>
-  );
+  </div>
+);
 }

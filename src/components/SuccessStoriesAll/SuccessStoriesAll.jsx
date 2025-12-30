@@ -20,7 +20,7 @@ const storyTypeMap = {
 };
 
 const SuccessStoriesAll = () => {
-  const [stories, setStories] = useState([]); 
+  const [stories, setStories] = useState([]);
   const [selectedStory, setSelectedStory] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -48,16 +48,13 @@ const SuccessStoriesAll = () => {
           status: storyTypeMap[story.story_type],
           statusColor: "rgba(122, 238, 151, 0.15)",
           statusTextColor: "#0f7228",
-
           image: story.image
             ? `${BACKEND_URL}${story.image}`
             : "/src/assets/images/default-pet.png",
-
           images: story.image
             ? [`${BACKEND_URL}${story.image}`]
             : [],
-
-          content: story.story, 
+          content: story.story,
         }));
 
         setStories(mapped);
@@ -81,13 +78,9 @@ const SuccessStoriesAll = () => {
             <header className="stories-header-all">
               <div className="title-container-all">
                 <div className="icon-circle-all">
-                  <svg className="heart-icon-all" width="32" height="32" viewBox="0 0 24 24">
+                  <svg className="heart-icon-all" width="24" height="24" viewBox="0 0 24 24">
                     <path
-                      d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 
-                      2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 
-                      4.5 2.09C13.09 3.81 14.76 3 
-                      16.5 3 19.58 3 22 5.42 
-                      22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                      d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
                       fill="currentColor"
                     />
                   </svg>
@@ -95,11 +88,17 @@ const SuccessStoriesAll = () => {
 
                 <div className="title-text-content-all">
                   <h1 className="stories-title-all">
-                    <span className="title-gradient-all">داستان های موفق</span>
+                    <span className="title-gradient-all">داستان‌های موفق</span>
                   </h1>
-                  <p className="stories-subtitle-all">
-                    جشن گرفتن بازگشت های موفق و فرزندخواندگی ها! این داستان های دلگرم کننده قدرت جامعه ما را نشان می دهند.
-                  </p>
+                </div>
+              </div>
+              
+              <div className="header-decoration-all">
+                <div className="decoration-line-main-all"></div>
+                <div className="decoration-dots-container-all">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="decoration-dot-simple-all" style={{ animationDelay: `${i * 0.1}s` }}></div>
+                  ))}
                 </div>
               </div>
             </header>
@@ -181,7 +180,6 @@ const SuccessStoriesAll = () => {
                 </div>
               ))}
             </div>
-
           </div>
         </div>
       </main>
