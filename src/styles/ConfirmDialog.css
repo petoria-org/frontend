@@ -1,0 +1,289 @@
+/* ConfirmDialog.css */
+.confirm-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.confirm-dialog {
+  width: 90%;
+  max-width: 440px;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(248, 251, 255, 0.98) 100%);
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 
+    0 30px 60px rgba(0, 0, 0, 0.2),
+    0 15px 35px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  direction: rtl;
+  position: relative;
+  overflow: hidden;
+}
+
+.confirm-dialog::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #1c7bd1 0%, #5a9bc9 100%);
+  border-radius: 24px 24px 0 0;
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.confirm-dialog-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.confirm-dialog-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  animation: iconPulse 2s infinite;
+}
+
+.confirm-dialog-icon.warning {
+  background: rgba(245, 158, 11, 0.1);
+  border: 3px solid rgba(245, 158, 11, 0.2);
+}
+
+.confirm-dialog-icon.danger {
+  background: rgba(244, 67, 54, 0.1);
+  border: 3px solid rgba(244, 67, 54, 0.2);
+}
+
+.confirm-dialog-icon.success {
+  background: rgba(16, 185, 129, 0.1);
+  border: 3px solid rgba(16, 185, 129, 0.2);
+}
+
+.confirm-dialog-icon.info {
+  background: rgba(59, 130, 246, 0.1);
+  border: 3px solid rgba(59, 130, 246, 0.2);
+}
+
+@keyframes iconPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+  }
+}
+
+.confirm-dialog-title {
+  font-family: 'Inter', Helvetica;
+  font-weight: 700;
+  color: #2c3e50;
+  font-size: 24px;
+  margin: 0 0 12px;
+  direction: rtl;
+  line-height: 1.4;
+}
+
+.confirm-dialog-subtitle {
+  color: #5a6c7d;
+  font-size: 16px;
+  font-family: 'Inter', Helvetica;
+  line-height: 1.6;
+  direction: rtl;
+  margin: 0;
+  padding: 0 12px;
+}
+
+.confirm-dialog-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.confirm-dialog-cancel-btn,
+.confirm-dialog-confirm-btn {
+  padding: 14px 32px;
+  border-radius: 16px;
+  font-family: 'Inter', Helvetica;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid transparent;
+  min-width: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.confirm-dialog-cancel-btn {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(245, 249, 255, 0.9) 100%);
+  color: #4a5568;
+  border-color: rgba(122, 179, 224, 0.3);
+  box-shadow: 
+    0 6px 20px rgba(0, 0, 0, 0.08),
+    0 3px 8px rgba(0, 0, 0, 0.05);
+}
+
+.confirm-dialog-cancel-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 1) 0%,
+    rgba(240, 247, 255, 1) 100%);
+  transform: translateY(-2px);
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.12),
+    0 5px 15px rgba(0, 0, 0, 0.08);
+  border-color: rgba(122, 179, 224, 0.5);
+  color: #1c7bd1;
+}
+
+.confirm-dialog-cancel-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.confirm-dialog-confirm-btn {
+  color: white;
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.2),
+    0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.confirm-dialog-confirm-btn.warning {
+  background: linear-gradient(135deg, 
+    #F59E0B 0%,
+    #D97706 100%);
+}
+
+.confirm-dialog-confirm-btn.danger {
+  background: linear-gradient(135deg, 
+    #f44336 0%,
+    #d32f2f 100%);
+}
+
+.confirm-dialog-confirm-btn.success {
+  background: linear-gradient(135deg, 
+    #10B981 0%,
+    #059669 100%);
+}
+
+.confirm-dialog-confirm-btn.info {
+  background: linear-gradient(135deg, 
+    #3B82F6 0%,
+    #2563EB 100%);
+}
+
+.confirm-dialog-confirm-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 12px 35px rgba(0, 0, 0, 0.25),
+    0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.confirm-dialog-confirm-btn.danger:hover:not(:disabled) {
+  background: linear-gradient(135deg, 
+    #d32f2f 0%,
+    #b71c1c 100%);
+}
+
+.confirm-dialog-confirm-btn.warning:hover:not(:disabled) {
+  background: linear-gradient(135deg, 
+    #D97706 0%,
+    #B45309 100%);
+}
+
+.confirm-dialog-confirm-btn.success:hover:not(:disabled) {
+  background: linear-gradient(135deg, 
+    #059669 0%,
+    #047857 100%);
+}
+
+.confirm-dialog-confirm-btn.info:hover:not(:disabled) {
+  background: linear-gradient(135deg, 
+    #2563EB 0%,
+    #1D4ED8 100%);
+}
+
+.confirm-dialog-confirm-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.confirm-loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: confirmSpin 0.8s linear infinite;
+}
+
+@keyframes confirmSpin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .confirm-dialog {
+    padding: 24px;
+    margin: 16px;
+    width: calc(100% - 32px);
+  }
+  
+  .confirm-dialog-title {
+    font-size: 20px;
+  }
+  
+  .confirm-dialog-subtitle {
+    font-size: 14px;
+    padding: 0;
+  }
+  
+  .confirm-dialog-actions {
+    flex-direction: column;
+  }
+  
+  .confirm-dialog-cancel-btn,
+  .confirm-dialog-confirm-btn {
+    width: 100%;
+    min-width: auto;
+  }
+}

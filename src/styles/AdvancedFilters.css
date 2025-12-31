@@ -16,7 +16,6 @@
 }
 
 .advanced-filters-container {
-  margin: 24px 0 32px 0;
   position: relative;
   animation: fadeInUp 0.6s ease-out 0.1s both;
 }
@@ -92,6 +91,7 @@
   background: #ffffff;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   animation: contentPulse 3s ease-in-out infinite;
+  
 }
 
 @keyframes contentPulse {
