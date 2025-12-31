@@ -91,12 +91,12 @@ const ResetPassword = () => {
 
 
             {/* Reset password button */}
-            <button type="submit" className="reset-password-btn" disabled={isLoading}>
+            <button type="submit" className="form-btn form-btn-submit" disabled={isLoading}>
             تغییر رمز عبور
           </button>
         </form>
         <p className="reset-password">
-          <Link className="reset-password-link" to="/login">
+          <Link className="interactive-link" to="/login">
             بازگشت به ورود
           </Link>
         </p>
