@@ -16,6 +16,25 @@ const API_ENDPOINTS = {
   adoption: `${API_BASE_URL}/posts/surrender-posts/`,
 };
 
+const PET_DEFAULT_IMAGES = {
+  dog: "/src/assets/images/dog.png",
+  cat: "/src/assets/images/cat.png",
+  bird: "/src/assets/images/bird.png",
+  rabbit: "/src/assets/images/rabbit.png",
+  hamster: "/src/assets/images/hamester.png",
+  other: "/src/assets/images/other.png",
+};
+
+const getPostImage = (post) => {
+  if (post.thumbnail) {
+    return `${BACKEND_URL}${post.thumbnail}`;
+  }
+
+  const petType = (post.pet_type || "").toLowerCase();
+
+  return PET_DEFAULT_IMAGES[petType] || PET_DEFAULT_IMAGES.other;
+};
+
 const DEFAULT_PET_IMAGE = "/src/assets/images/default-pet.png";
 
 const ITEMS_PER_PAGE = 6;
@@ -352,7 +371,7 @@ export default function AllPosts() {
 
       const breed = p.breed || "";
       const locationText = p.location?.readable || p.location || "موقعیت نامشخص";
-      const imageUrl = p.thumbnail ? `${BACKEND_URL}${p.thumbnail}` : DEFAULT_PET_IMAGE;
+      const imageUrl = getPostImage(p);
       
       const timeText = postType === "lost" ? toJalaliDate(p.lost_time) : 
                       postType === "found" ? toJalaliDate(p.found_time) : 

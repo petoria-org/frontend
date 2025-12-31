@@ -17,6 +17,25 @@ import { config } from "../../config";
 import { SuccessStoryEdit } from "../SuccessStoryEdit/SuccessStoryEdit";
 import { NotificationToast } from "../NotificationToast/NotificationToast";
 
+
+const PET_DEFAULT_IMAGES = {
+  dog: "/src/assets/images/dog.png",
+  cat: "/src/assets/images/cat.png",
+  bird: "/src/assets/images/bird.png",
+  rabbit: "/src/assets/images/rabbit.png",
+  hamster: "/src/assets/images/hamester.png",
+  other: "/src/assets/images/other.png",
+};
+
+const getPostImage = (post, BACKEND_URL) => {
+  if (post.thumbnail) {
+    return `${BACKEND_URL}${post.thumbnail}`;
+  }
+
+  const petType = (post.pet_type || "").toLowerCase();
+  return PET_DEFAULT_IMAGES[petType] || PET_DEFAULT_IMAGES.other;
+};
+
 const toJalaliDate = (dateString) => {
   if (!dateString) return "";
   return new Intl.DateTimeFormat("fa-IR", {
@@ -210,7 +229,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
             type: getPetType(p.pet_type),
             status: "lost",
             statusLabel: "گم شده",
-            image: p.thumbnail ? `${BACKEND_URL}${p.thumbnail}` : "/src/assets/images/default-pet.png",
+            image: getPostImage(p, BACKEND_URL),
             time: toJalaliDate(p.lost_time),
             location: p.location?.readable || "",
             desc: p.description || "",
@@ -226,7 +245,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
             type: getPetType(p.pet_type),
             status: "found",
             statusLabel: "پیدا شده",
-            image: p.thumbnail ? `${BACKEND_URL}${p.thumbnail}` : "/src/assets/images/default-pet.png",
+            image: getPostImage(p, BACKEND_URL),
             time: toJalaliDate(p.found_time),
             location: p.location?.readable || "",
             desc: p.description || "",
@@ -242,7 +261,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
             type: getPetType(p.pet_type),
             status: "adoption",
             statusLabel: "سرپرستی",
-            image: p.thumbnail ? `${BACKEND_URL}${p.thumbnail}` : "/src/assets/images/default-pet.png",
+            image: getPostImage(p, BACKEND_URL),
             time: toJalaliDate(p.updated_at),
             location: p.location?.readable || "",
             desc: p.description || "",
@@ -509,7 +528,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
 
   const LocationIcon = () => (
     <img 
-      src="src/assets/icons/location.svg" 
+      src="src/assets/images/location.svg" 
       alt="مکان"
       width="16" 
       height="16"
@@ -519,7 +538,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
 
   const CalendarIcon = () => (
     <img 
-      src="src/assets/icons/calendar-2.svg" 
+      src="src/assets/images/calendar-2.svg" 
       alt="تاریخ"
       width="16" 
       height="16"
@@ -529,7 +548,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
 
   const ClockIcon = () => (
     <img 
-      src="src/assets/icons/clock.svg" 
+      src="src/assets/images/clock.svg" 
       alt="زمان"
       width="12" 
       height="12"
@@ -547,7 +566,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
 
   const EmailIcon = () => (
     <img
-    src="src/assets/icons/email.svg"
+    src="src/assets/images/email.svg"
     width="18"
     height="18"
     alt="ایمیل"
@@ -606,7 +625,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
 
   const PawIcon = () => (
     <img 
-      src="src/assets/icons/pet.svg" 
+      src="src/assets/images/pet.svg" 
       alt="پنجه حیوان"
       width="85"
       height="85"
@@ -665,7 +684,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                 <img 
                   className="avatar-image" 
                   alt="User"
-                  src="src/assets/icons/avator.svg" 
+                  src="src/assets/images/avator.svg" 
                 />
                 <button className="edit-profile-button">
                   <Edit3Icon />
@@ -698,7 +717,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                   <div className="user-title-container">
                     <div className="user-icon-circle">
                       <img 
-                        src="src/assets/icons/Advertisements.svg" 
+                        src="src/assets/images/Advertisements.svg" 
                         alt="آیکن آگهی"
                         width="32"
                         height="32"
