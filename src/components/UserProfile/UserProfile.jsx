@@ -528,7 +528,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
 
   const LocationIcon = () => (
     <img 
-      src="src/assets/images/location.svg" 
+      src="src/assets/icons/location.svg" 
       alt="مکان"
       width="16" 
       height="16"
@@ -538,7 +538,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
 
   const CalendarIcon = () => (
     <img 
-      src="src/assets/images/calendar-2.svg" 
+      src="src/assets/icons/calendar-2.svg" 
       alt="تاریخ"
       width="16" 
       height="16"
@@ -548,7 +548,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
 
   const ClockIcon = () => (
     <img 
-      src="src/assets/images/clock.svg" 
+      src="src/assets/icons/clock.svg" 
       alt="زمان"
       width="12" 
       height="12"
@@ -566,7 +566,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
 
   const EmailIcon = () => (
     <img
-    src="src/assets/images/email.svg"
+    src="src/assets/icons/email.svg"
     width="18"
     height="18"
     alt="ایمیل"
@@ -625,7 +625,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
 
   const PawIcon = () => (
     <img 
-      src="src/assets/images/pet.svg" 
+      src="src/assets/icons/pet.svg" 
       alt="پنجه حیوان"
       width="85"
       height="85"
@@ -684,7 +684,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                 <img 
                   className="avatar-image" 
                   alt="User"
-                  src="src/assets/images/avator.svg" 
+                  src="src/assets/icons/avator.svg" 
                 />
                 <button className="edit-profile-button">
                   <Edit3Icon />
@@ -717,7 +717,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                   <div className="user-title-container">
                     <div className="user-icon-circle">
                       <img 
-                        src="src/assets/images/Advertisements.svg" 
+                        src="src/assets/icons/Advertisements.svg" 
                         alt="آیکن آگهی"
                         width="32"
                         height="32"
