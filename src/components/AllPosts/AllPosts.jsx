@@ -47,7 +47,7 @@ const calculateRelativeTime = (isoDate) => {
   return `${Math.floor(diffInSeconds / 31536000)} سال پیش`;
 };
 
-const getPetType = (type) => {
+export const getPetType = (type) => {
   switch (type) {
     case "cat":
       return "گربه";
@@ -253,7 +253,7 @@ export default function AllPosts() {
 
   const normalizedAllPosts = useMemo(() => {
     return allPosts.map((p) => {
-      const postType = p.type || "generic";
+      const postType = p.post_type || "generic";
       const petType = getPetType(p.pet_type);
       const postTypeLabel = getPostType(postType);
       
@@ -306,7 +306,7 @@ export default function AllPosts() {
 
   const normalizedPosts = useMemo(() => {
     return posts.map((p) => {
-      const postType = p.type || "generic";
+      const postType = p.post_type || "generic";
       const petType = getPetType(p.pet_type);
       const postTypeLabel = getPostType(postType);
       

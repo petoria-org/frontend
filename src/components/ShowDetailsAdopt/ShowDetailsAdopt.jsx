@@ -9,6 +9,7 @@ import BackIcon from "../../assets/icons/arrow-left.svg";
 import ContactInfoIcon from "../../assets/icons/stickynote.svg";
 import "../../styles/ShowDetailsAdopt.css";
 import { config } from "../../config";
+import {getPetType} from "../AllPosts/AllPosts"
 
 const API_BASE_URL = config.API_BASE_URL;
 const BACKEND_URL = config.BACKEND_URL;
@@ -282,8 +283,7 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
     const details = [
       {
         label: "نوع حیوان",
-        value: data.pet_type === "dog" ? "سگ" : 
-               data.pet_type === "cat" ? "گربه" : "سایر",
+        value: getPetType(data.pet_type),
         icon: PetIcon,
       },
       {
@@ -553,16 +553,31 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
                 />
               </div>
 
-              <section className="section">
-                <h2 className="section-title-show-details">
-                  بیماری ها
-                </h2>
-                <div className="diseases-content">
-                  {postData?.diseases || 
-                   postData?.originalData?.diseases ||
-                   "این حیوان هیچ بیماری خاصی ندارد."}
-                </div>
-              </section>
+              {isAdoptionPost &&(
+                <section className="section">
+                  <h2 className="section-title-show-details">
+                    بیماری ها
+                  </h2>
+                  <div className="diseases-content">
+                    {postData?.diseases || 
+                     postData?.originalData?.diseases ||
+                     "این حیوان هیچ بیماری خاصی ندارد."}
+                  </div>
+                </section>
+              )}
+
+              {postData?.type=="lost" || postData?.type == "found" &&(
+                <section className="section">
+                  <h2 className="section-title-show-details">
+                    علائم خاص
+                  </h2>
+                  <div className="diseases-content">
+                    {postData?.Specific_symptoms || 
+                     postData?.originalData?.Specific_symptoms ||
+                     "این حیوان هیچ علامت خاصی ندارد."}
+                  </div>
+                </section>
+              )}
 
               {isAdoptionPost && (
                 <section className="section">
