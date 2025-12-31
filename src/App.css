@@ -7,3 +7,7 @@
     direction: rtl;
     font-family: 'Inter', Helvetica, sans-serif;
 }
+
+#root {
+    overflow: auto;
+}

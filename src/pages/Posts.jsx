@@ -3,8 +3,6 @@ import AllPosts from '../components/AllPosts/AllPosts';
 
 export default function posts() {
   return (
-    <div>
         <AllPosts />
-    </div>
   )
 }
