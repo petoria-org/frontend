@@ -7,6 +7,18 @@ import LoadingScreen from "../LoadingScreen/LoadingScreen";
 import "../../styles/AllPosts.css";
 import { config } from "../../config";
 import { getPostImage } from "../../utils/postImages";
+import { getPetType } from "../../utils/petTypes";
+import {
+  AGE_TO_BACKEND,
+  AGE_VALUES,
+  ANIMAL_TO_BACKEND,
+  PET_TYPE_VALUES,
+  SEX_TO_BACKEND,
+  SEX_VALUES,
+  SORT_TO_BACKEND,
+  YES_NO_TO_BACKEND,
+  YES_NO_VALUES,
+} from "../../utils/postFilters";
 
 const API_BASE_URL = config.API_BASE_URL;
 const API_ENDPOINTS = {
@@ -17,72 +29,6 @@ const API_ENDPOINTS = {
 };
 
 const ITEMS_PER_PAGE = 6;
-
-const SORT_TO_BACKEND = {
-  "newest-post": "-created_at",
-  "oldest-post": "created_at",
-  "newest-event": "-event",
-  "oldest-event": "event",
-  "recently-updated": "-updated_at",
-};
-
-const ANIMAL_TO_BACKEND = {
-  "سگ": "dog",
-  "گربه": "cat",
-  "پرنده": "bird",
-  "خرگوش": "rabbit",
-  "همستر": "hamster",
-  "سایر": "other",
-  dog: "dog",
-  cat: "cat",
-  bird: "bird",
-  rabbit: "rabbit",
-  hamster: "hamster",
-  other: "other",
-};
-
-const PET_TYPE_VALUES = ["dog", "cat", "bird", "rabbit", "hamster", "other"];
-
-const SEX_TO_BACKEND = {
-  "نر": "male",
-  "ماده": "female",
-  male: "male",
-  female: "female",
-};
-
-const SEX_VALUES = ["male", "female"];
-
-const AGE_TO_BACKEND = {
-  "under-1": "under_1",
-  "1-2": "1_2",
-  "2-3": "2_3",
-  "3-5": "3_5",
-  "5-7": "5_7",
-  "over-7": "over_7",
-  "زیر 1 سال": "under_1",
-  "1-2 سال": "1_2",
-  "2-3 سال": "2_3",
-  "3-5 سال": "3_5",
-  "5-7 سال": "5_7",
-  "بالای 7 سال": "over_7",
-};
-
-const AGE_VALUES = ["under_1", "1_2", "2_3", "3_5", "5_7", "over_7"];
-
-const YES_NO_TO_BACKEND = {
-  yes: "yes",
-  no: "no",
-  true: "true",
-  false: "false",
-  "1": "1",
-  "0": "0",
-  "دارد": "yes",
-  "ندارد": "no",
-  "انجام شده": "yes",
-  "انجام نشده": "no",
-};
-
-const YES_NO_VALUES = ["yes", "no", "true", "false", "1", "0"];
 
 const POST_TYPE_TO_BACKEND = {
   lost: "lost",
@@ -187,25 +133,6 @@ const calculateRelativeTime = (isoDate) => {
   if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} روز پیش`;
   if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)} ماه پیش`;
   return `${Math.floor(diffInSeconds / 31536000)} سال پیش`;
-};
-
-export const getPetType = (type) => {
-  switch (type) {
-    case "cat":
-      return "گربه";
-    case "dog":
-      return "سگ";
-    case "bird":
-      return "پرنده";
-    case "rabbit":
-      return "خرگوش";
-    case "hamster":
-      return "همستر";
-    case "other":
-      return "سایر";
-    default:
-      return "نامشخص";
-  }
 };
 
 const getPostType = (type) => {

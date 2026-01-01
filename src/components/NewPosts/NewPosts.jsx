@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../../styles/NewPosts.css";
 import api from "../../Services/api";
 import { getPostImage } from "../../utils/postImages";
+import { getPetType } from "../../utils/petTypes";
 
 const API_ENDPOINTS = {
   all: "posts/all/",
@@ -128,15 +129,6 @@ export default function NewPosts() {
         }
       }
 
-      const categoryMap = {
-        dog: "سگ",
-        cat: "گربه",
-        bird: "پرنده",
-        rabbit: "خرگوش",
-        hamster: "همستر",
-        other: "سایر",
-      };
-
       const sex = p.sex || (p.pet_sex === "male" ? "نر" : p.pet_sex === "female" ? "ماده" : null);
       const age = p.age || p.pet_age || null;
       const locationText = p.location?.readable || p.location || "موقعیت نامشخص";
@@ -150,7 +142,7 @@ export default function NewPosts() {
         rawId: p.id,
         name: p.pet_name || p.title || "بدون نام",
         desc: p.description || "",
-        category: categoryMap[p.pet_type] || "سایر",
+        category: getPetType(p.pet_type, "سایر"),
         status,
         statusLabel,
         location: locationText,

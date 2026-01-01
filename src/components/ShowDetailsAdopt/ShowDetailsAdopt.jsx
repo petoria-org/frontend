@@ -10,7 +10,7 @@ import ContactInfoIcon from "../../assets/icons/stickynote.svg";
 import "../../styles/ShowDetailsAdopt.css";
 import { config } from "../../config";
 import { getFallbackPetImage } from "../../utils/postImages";
-import {getPetType} from "../AllPosts/AllPosts"
+import { getPetType } from "../../utils/petTypes";
 
 const API_BASE_URL = config.API_BASE_URL;
 const BACKEND_URL = config.BACKEND_URL;
