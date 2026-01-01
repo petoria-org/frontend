@@ -14,6 +14,28 @@ import {getPetType} from "../AllPosts/AllPosts"
 const API_BASE_URL = config.API_BASE_URL;
 const BACKEND_URL = config.BACKEND_URL;
 
+const PET_DEFAULT_IMAGES = {
+  dog: "/src/assets/images/dog.png",
+  cat: "/src/assets/images/cat.png",
+  bird: "/src/assets/images/bird.png",
+  rabbit: "/src/assets/images/rabbit.png",
+  hamster: "/src/assets/images/hamester.png",
+  other: "/src/assets/images/other.png",
+};
+
+const getFallbackPetImage = (data) => {
+  const rawType =
+    data?.pet_type?.value ||
+    data?.pet_type ||
+    data?.originalData?.pet_type?.value ||
+    data?.originalData?.pet_type ||
+    "";
+
+  const typeKey = String(rawType).toLowerCase().trim();
+  return PET_DEFAULT_IMAGES[typeKey] || PET_DEFAULT_IMAGES.other;
+};
+
+
 const getPetAgeText = (petAge) => {
   if (!petAge) return "";
   if (typeof petAge === "object") {
@@ -67,7 +89,6 @@ const getFullImageUrl = (imagePath) => {
     if (pathString === "null" || pathString === "" || pathString === "undefined") {
       return null;
     }
-    
     if (pathString.startsWith('http://') || pathString.startsWith('https://')) {
       return pathString;
     }
@@ -92,6 +113,7 @@ const extractPetImages = (data) => {
     'pet_image',
     'thumbnail',
     'image',
+    'image_url',
     'images',
     'photo',
     'photos',
@@ -255,19 +277,18 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
     console.log("داده‌های دریافتی:", stateData);
     console.log("آدرس بک‌اند:", BACKEND_URL);
     
+    if (resolvedId) {
+      fetchPostDetails(resolvedId, stateType, true);
+      return;
+    }
+
     if (stateData) {
       setPostData(stateData);
       initializeData(stateData);
-    }
-    
-    if (resolvedId) {
-      fetchPostDetails(resolvedId, stateType, !stateData);
       return;
     }
-    
-    if (!stateData) {
-      setLoading(false);
-    }
+
+    setLoading(false);
   }, [propPostData, propPostId, propPostType, location]);
   
 
@@ -346,7 +367,22 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
     });
 
 
-    const images = extractPetImages(data);
+    let images = extractPetImages(data);
+
+    if (images.length === 0) {
+      const fallbackImage = getFallbackPetImage(data);
+      if (fallbackImage) {
+        images = [
+          {
+            id: "fallback",
+            src: fallbackImage,
+            alt: "تصویر پیش‌فرض حیوان",
+            field: "fallback",
+          },
+        ];
+      }
+    }
+
     console.log("تصاویر استخراج شده:", images);
     setPetImages(images);
     
