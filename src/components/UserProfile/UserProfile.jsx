@@ -17,6 +17,25 @@ import { config } from "../../config";
 import { SuccessStoryEdit } from "../SuccessStoryEdit/SuccessStoryEdit";
 import { NotificationToast } from "../NotificationToast/NotificationToast";
 
+
+const PET_DEFAULT_IMAGES = {
+  dog: "/src/assets/images/dog.png",
+  cat: "/src/assets/images/cat.png",
+  bird: "/src/assets/images/bird.png",
+  rabbit: "/src/assets/images/rabbit.png",
+  hamster: "/src/assets/images/hamester.png",
+  other: "/src/assets/images/other.png",
+};
+
+const getPostImage = (post, BACKEND_URL) => {
+  if (post.thumbnail) {
+    return `${BACKEND_URL}${post.thumbnail}`;
+  }
+
+  const petType = (post.pet_type || "").toLowerCase();
+  return PET_DEFAULT_IMAGES[petType] || PET_DEFAULT_IMAGES.other;
+};
+
 const toJalaliDate = (dateString) => {
   if (!dateString) return "";
   return new Intl.DateTimeFormat("fa-IR", {
@@ -210,7 +229,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
             type: getPetType(p.pet_type),
             status: "lost",
             statusLabel: "گم شده",
-            image: p.thumbnail ? `${BACKEND_URL}${p.thumbnail}` : "/src/assets/images/default-pet.png",
+            image: getPostImage(p, BACKEND_URL),
             time: toJalaliDate(p.lost_time),
             location: p.location?.readable || "",
             desc: p.description || "",
@@ -226,7 +245,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
             type: getPetType(p.pet_type),
             status: "found",
             statusLabel: "پیدا شده",
-            image: p.thumbnail ? `${BACKEND_URL}${p.thumbnail}` : "/src/assets/images/default-pet.png",
+            image: getPostImage(p, BACKEND_URL),
             time: toJalaliDate(p.found_time),
             location: p.location?.readable || "",
             desc: p.description || "",
@@ -242,7 +261,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
             type: getPetType(p.pet_type),
             status: "adoption",
             statusLabel: "سرپرستی",
-            image: p.thumbnail ? `${BACKEND_URL}${p.thumbnail}` : "/src/assets/images/default-pet.png",
+            image: getPostImage(p, BACKEND_URL),
             time: toJalaliDate(p.updated_at),
             location: p.location?.readable || "",
             desc: p.description || "",

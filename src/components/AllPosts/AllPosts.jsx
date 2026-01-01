@@ -6,9 +6,9 @@ import { Pagination } from "../Pagination/Pagination";
 import LoadingScreen from "../LoadingScreen/LoadingScreen"; 
 import "../../styles/AllPosts.css";
 import { config } from "../../config";
+import { getPostImage } from "../../utils/postImages";
 
 const API_BASE_URL = config.API_BASE_URL;
-const BACKEND_URL = config.BACKEND_URL;
 const API_ENDPOINTS = {
   all: `${API_BASE_URL}/posts/all/`,
   lost: `${API_BASE_URL}/posts/lost-posts/`,
@@ -47,7 +47,7 @@ const calculateRelativeTime = (isoDate) => {
   return `${Math.floor(diffInSeconds / 31536000)} سال پیش`;
 };
 
-const getPetType = (type) => {
+export const getPetType = (type) => {
   switch (type) {
     case "cat":
       return "گربه";
@@ -253,7 +253,7 @@ export default function AllPosts() {
 
   const normalizedAllPosts = useMemo(() => {
     return allPosts.map((p) => {
-      const postType = p.type || "generic";
+      const postType = p.post_type || "generic";
       const petType = getPetType(p.pet_type);
       const postTypeLabel = getPostType(postType);
       
@@ -306,7 +306,7 @@ export default function AllPosts() {
 
   const normalizedPosts = useMemo(() => {
     return posts.map((p) => {
-      const postType = p.type || "generic";
+      const postType = p.post_type || "generic";
       const petType = getPetType(p.pet_type);
       const postTypeLabel = getPostType(postType);
       
@@ -352,7 +352,7 @@ export default function AllPosts() {
 
       const breed = p.breed || "";
       const locationText = p.location?.readable || p.location || "موقعیت نامشخص";
-      const imageUrl = p.thumbnail ? `${BACKEND_URL}${p.thumbnail}` : DEFAULT_PET_IMAGE;
+      const imageUrl = getPostImage(p);
       
       const timeText = postType === "lost" ? toJalaliDate(p.lost_time) : 
                       postType === "found" ? toJalaliDate(p.found_time) : 

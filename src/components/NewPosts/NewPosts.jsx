@@ -137,13 +137,13 @@ export default function NewPosts() {
         status = "سرپرستی";
         statusLabel = "سرپرستی";
       } else {
-        if (p.type === "found" || p.found_time) {
+        if (p.post_type === "found" || p.found_time) {
           status = "پیدا شده";
           statusLabel = "پیدا شده";
-        } else if (p.type === "lost" || p.lost_time) {
+        } else if (p.psot_type === "lost" || p.lost_time) {
           status = "گم شده";
           statusLabel = "گم شده";
-        } else if (p.type === "surrender") {
+        } else if (p.post_type === "surrender") {
           status = "سرپرستی";
           statusLabel = "سرپرستی";
         } else {
@@ -170,7 +170,7 @@ export default function NewPosts() {
       const eventDateTime = eventDate ? new Date(eventDate) : createdAt;
 
       return {
-        id: `${p.type || "generic"}-${p.id}`,
+        id: `${p.post_type || "generic"}-${p.id}`,
         rawId: p.id,
         name: p.pet_name || p.title || "بدون نام",
         desc: p.description || "",
@@ -181,7 +181,7 @@ export default function NewPosts() {
         city: locationText,
         time: calculateRelativeTime(p.created_at || p.updated_at),
         image: p.image_url || PLACEHOLDER_IMAGE,
-        type: p.type || "generic",
+        type: p.post_type || "generic",
         sex: sex,
         age: age,
         hasBirthCertificate: p.has_birth_certificate || false,
