@@ -6,33 +6,14 @@ import { Pagination } from "../Pagination/Pagination";
 import LoadingScreen from "../LoadingScreen/LoadingScreen"; 
 import "../../styles/AllPosts.css";
 import { config } from "../../config";
+import { getPostImage } from "../../utils/postImages";
 
 const API_BASE_URL = config.API_BASE_URL;
-const BACKEND_URL = config.BACKEND_URL;
 const API_ENDPOINTS = {
   all: `${API_BASE_URL}/posts/all/`,
   lost: `${API_BASE_URL}/posts/lost-posts/`,
   found: `${API_BASE_URL}/posts/found-posts/`,
   adoption: `${API_BASE_URL}/posts/surrender-posts/`,
-};
-
-const PET_DEFAULT_IMAGES = {
-  dog: "/src/assets/images/dog.png",
-  cat: "/src/assets/images/cat.png",
-  bird: "/src/assets/images/bird.png",
-  rabbit: "/src/assets/images/rabbit.png",
-  hamster: "/src/assets/images/hamester.png",
-  other: "/src/assets/images/other.png",
-};
-
-const getPostImage = (post) => {
-  if (post.thumbnail) {
-    return `${BACKEND_URL}${post.thumbnail}`;
-  }
-
-  const petType = (post.pet_type || "").toLowerCase();
-
-  return PET_DEFAULT_IMAGES[petType] || PET_DEFAULT_IMAGES.other;
 };
 
 const DEFAULT_PET_IMAGE = "/src/assets/images/default-pet.png";

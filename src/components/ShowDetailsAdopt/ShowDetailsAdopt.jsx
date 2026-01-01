@@ -9,32 +9,11 @@ import BackIcon from "../../assets/icons/arrow-left.svg";
 import ContactInfoIcon from "../../assets/icons/stickynote.svg";
 import "../../styles/ShowDetailsAdopt.css";
 import { config } from "../../config";
+import { getFallbackPetImage } from "../../utils/postImages";
 import {getPetType} from "../AllPosts/AllPosts"
 
 const API_BASE_URL = config.API_BASE_URL;
 const BACKEND_URL = config.BACKEND_URL;
-
-const PET_DEFAULT_IMAGES = {
-  dog: "/src/assets/images/dog.png",
-  cat: "/src/assets/images/cat.png",
-  bird: "/src/assets/images/bird.png",
-  rabbit: "/src/assets/images/rabbit.png",
-  hamster: "/src/assets/images/hamester.png",
-  other: "/src/assets/images/other.png",
-};
-
-const getFallbackPetImage = (data) => {
-  const rawType =
-    data?.pet_type?.value ||
-    data?.pet_type ||
-    data?.originalData?.pet_type?.value ||
-    data?.originalData?.pet_type ||
-    "";
-
-  const typeKey = String(rawType).toLowerCase().trim();
-  return PET_DEFAULT_IMAGES[typeKey] || PET_DEFAULT_IMAGES.other;
-};
-
 
 const getPetAgeText = (petAge) => {
   if (!petAge) return "";
