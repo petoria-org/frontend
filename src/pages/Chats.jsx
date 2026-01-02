@@ -79,15 +79,19 @@ function sortMessagesOldestFirst(arr) {
   const safe = Array.isArray(arr) ? [...arr] : [];
 
   safe.sort((a, b) => {
-    const aTs = Number.isFinite(a?._order_ts) ? a._order_ts : getMessageOrderTs(a);
-    const bTs = Number.isFinite(b?._order_ts) ? b._order_ts : getMessageOrderTs(b);
-    if (aTs !== bTs) return aTs - bTs;
+    const aId = Number(a?.id);
+    const bId = Number(b?.id);
 
-    // Tie-breaker for identical timestamps
-    const aId = Number(a?.id) || 0;
-    const bId = Number(b?.id) || 0;
-    if (aId !== bId) return aId - bId;
+    const aHasId = Number.isFinite(aId);
+    const bHasId = Number.isFinite(bId);
 
+    if (aHasId && bHasId) return aId - bId;
+
+    // 2️⃣ only one has server id → server message first
+    if (aHasId && !bHasId) return -1;
+    if (!aHasId && bHasId) return 1;
+
+    // 3️⃣ neither has id (optimistic messages)
     const aTmp = a?.client_temp_id || "";
     const bTmp = b?.client_temp_id || "";
     return aTmp.localeCompare(bTmp);
@@ -95,6 +99,7 @@ function sortMessagesOldestFirst(arr) {
 
   return safe;
 }
+
 
 function mergeMessages(prevList, incomingList = []) {
   const prevArr = Array.isArray(prevList) ? prevList : [];
@@ -124,7 +129,7 @@ function mergeMessages(prevList, incomingList = []) {
   const push = (msg) => {
     if (!msg) return;
 
-    const baseTs = Number.isFinite(msg?._order_ts) ? msg._order_ts : getMessageOrderTs(msg);
+    const baseTs = msg?._order_ts ?? 0;
     const idKey = makeIdKey(msg);
     const tempKey = makeTempKey(msg);
 
@@ -628,7 +633,19 @@ export default function ChatPage() {
       } catch {
         return;
       }
-
+  console.log("[WS IN]", {
+    type: data?.type,
+    chatId: data?.chat?.id ?? data?.chat_id ?? null,
+    msgId:
+      data?.message?.id ??
+      data?.chat?.last_message?.id ??
+      null,
+    ts:
+      data?.message?.timestamp ??
+      data?.chat?.last_message?.timestamp ??
+      null,
+    raw: data,
+  });
       // read updates
       if (data?.type === "read_update" && data?.chat?.id) {
         const chat = data.chat;
