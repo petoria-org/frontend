@@ -1072,7 +1072,7 @@ export default function ChatPage() {
   );
 
   return (
-    <div className="chatShell">
+    <div className="chatShell chats">
       <div className="chatMain">
         <Conversations
           items={convItems}
