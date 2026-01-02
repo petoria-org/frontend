@@ -1,33 +1,6 @@
 import React, { useState } from "react";
 import "../../styles/SortFilters.css";
-
-const sortOptions = [
-  { 
-    value: "newest-post", 
-    label: "جدیدترین پست",
-    description: "مرتب‌سازی بر اساس تاریخ انتشار آگهی (جدید به قدیم)"
-  },
-  { 
-    value: "oldest-post", 
-    label: "قدیمی‌ترین پست",
-    description: "مرتب‌سازی بر اساس تاریخ انتشار آگهی (قدیم به جدید)"
-  },
-  { 
-    value: "newest-event", 
-    label: "جدیدترین رویداد",
-    description: "مرتب‌سازی بر اساس تاریخ وقوع رویداد (جدید به قدیم)"
-  },
-  { 
-    value: "oldest-event", 
-    label: "قدیمی‌ترین رویداد",
-    description: "مرتب‌سازی بر اساس تاریخ وقوع رویداد (قدیم به جدید)"
-  },
-  { 
-    value: "recently-updated", 
-    label: "آخرین بروزرسانی",
-    description: "مرتب‌سازی بر اساس تاریخ آخرین ویرایش آگهی"
-  }
-];
+import { SORT_OPTIONS as sortOptions } from "../../utils/postFilters";
 
 export default function SortFilters({
   sortOrder,

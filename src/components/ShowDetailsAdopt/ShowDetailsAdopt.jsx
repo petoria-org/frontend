@@ -9,7 +9,8 @@ import BackIcon from "../../assets/icons/arrow-left.svg";
 import ContactInfoIcon from "../../assets/icons/stickynote.svg";
 import "../../styles/ShowDetailsAdopt.css";
 import { config } from "../../config";
-import {getPetType} from "../AllPosts/AllPosts"
+import { getFallbackPetImage } from "../../utils/postImages";
+import { getPetType } from "../../utils/petTypes";
 
 const API_BASE_URL = config.API_BASE_URL;
 const BACKEND_URL = config.BACKEND_URL;
@@ -67,7 +68,6 @@ const getFullImageUrl = (imagePath) => {
     if (pathString === "null" || pathString === "" || pathString === "undefined") {
       return null;
     }
-    
     if (pathString.startsWith('http://') || pathString.startsWith('https://')) {
       return pathString;
     }
@@ -92,6 +92,7 @@ const extractPetImages = (data) => {
     'pet_image',
     'thumbnail',
     'image',
+    'image_url',
     'images',
     'photo',
     'photos',
@@ -255,19 +256,18 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
     console.log("داده‌های دریافتی:", stateData);
     console.log("آدرس بک‌اند:", BACKEND_URL);
     
+    if (resolvedId) {
+      fetchPostDetails(resolvedId, stateType, true);
+      return;
+    }
+
     if (stateData) {
       setPostData(stateData);
       initializeData(stateData);
-    }
-    
-    if (resolvedId) {
-      fetchPostDetails(resolvedId, stateType, !stateData);
       return;
     }
-    
-    if (!stateData) {
-      setLoading(false);
-    }
+
+    setLoading(false);
   }, [propPostData, propPostId, propPostType, location]);
   
 
@@ -346,7 +346,22 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
     });
 
 
-    const images = extractPetImages(data);
+    let images = extractPetImages(data);
+
+    if (images.length === 0) {
+      const fallbackImage = getFallbackPetImage(data);
+      if (fallbackImage) {
+        images = [
+          {
+            id: "fallback",
+            src: fallbackImage,
+            alt: "تصویر پیش‌فرض حیوان",
+            field: "fallback",
+          },
+        ];
+      }
+    }
+
     console.log("تصاویر استخراج شده:", images);
     setPetImages(images);
     

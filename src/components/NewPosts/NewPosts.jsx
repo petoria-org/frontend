@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AdvancedFilters from "../AdvancedFilters";
-import SortFilters from "../SortFilters";
 import "../../styles/NewPosts.css";
 import api from "../../Services/api";
+import { getPostImage } from "../../utils/postImages";
+import { getPetType } from "../../utils/petTypes";
 
 const API_ENDPOINTS = {
   all: "posts/all/",
@@ -11,8 +11,6 @@ const API_ENDPOINTS = {
   found: "posts/found-posts/",
   adoption: "posts/surrender-posts/",
 };
-
-const PLACEHOLDER_IMAGE = "/images/placeholder.jpg";
 
 const calculateRelativeTime = (isoDate) => {
   if (!isoDate) return "تاریخ نامشخص";
@@ -63,31 +61,10 @@ export default function NewPosts() {
 
   const [activeFilter, setActiveFilter] = useState("همه");
   const [posts, setPosts] = useState([]);
-  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const [filterAnimal, setFilterAnimal] = useState("همه");
-  const [filterSex, setFilterSex] = useState("همه");
-  const [filterCity, setFilterCity] = useState("همه");
-  const [filterAge, setFilterAge] = useState("همه");
-  
-  const [filterHasCertificate, setFilterHasCertificate] = useState("همه");
-  const [filterIsVaccinated, setFilterIsVaccinated] = useState("همه");
-  const [filterIsSterilized, setFilterIsSterilized] = useState("همه");
-  
-  const [sortOrder, setSortOrder] = useState("");
-  const [isSortEnabled, setIsSortEnabled] = useState(true);
-
-  const activeFiltersCount = [
-    filterAnimal !== "همه",
-    filterSex !== "همه",
-    filterCity !== "همه",
-    filterAge !== "همه",
-    filterHasCertificate !== "همه",
-    filterIsVaccinated !== "همه",
-    filterIsSterilized !== "همه",
-  ].filter(Boolean).length;
+    
 
   const fetchPosts = async (url) => {
     setLoading(true);
@@ -152,15 +129,6 @@ export default function NewPosts() {
         }
       }
 
-      const categoryMap = {
-        dog: "سگ",
-        cat: "گربه",
-        bird: "پرنده",
-        rabbit: "خرگوش",
-        hamster: "همستر",
-        other: "سایر",
-      };
-
       const sex = p.sex || (p.pet_sex === "male" ? "نر" : p.pet_sex === "female" ? "ماده" : null);
       const age = p.age || p.pet_age || null;
       const locationText = p.location?.readable || p.location || "موقعیت نامشخص";
@@ -174,13 +142,13 @@ export default function NewPosts() {
         rawId: p.id,
         name: p.pet_name || p.title || "بدون نام",
         desc: p.description || "",
-        category: categoryMap[p.pet_type] || "سایر",
+        category: getPetType(p.pet_type, "سایر"),
         status,
         statusLabel,
         location: locationText,
         city: locationText,
         time: calculateRelativeTime(p.created_at || p.updated_at),
-        image: p.image_url || PLACEHOLDER_IMAGE,
+        image: getPostImage(p),
         type: p.post_type || "generic",
         sex: sex,
         age: age,
@@ -195,148 +163,9 @@ export default function NewPosts() {
     });
   }, [posts, activeFilter]);
 
-  const parseAgeToYears = (ageString) => {
-    if (!ageString) return 0;
-    
-    if (typeof ageString === 'number') return ageString;
-    
-    const str = String(ageString);
-    
-    const yearMatch = str.match(/(\d+)\s*سال/);
-    if (yearMatch) return parseInt(yearMatch[1]);
-    
-    const monthMatch = str.match(/(\d+)\s*ماه/);
-    if (monthMatch) return parseInt(monthMatch[1]) / 12;
-    
-    const num = parseInt(str);
-    if (!isNaN(num)) return num;
-    
-    return 0;
-  };
-
-  const sortAds = (ads) => {
-    if (!sortOrder) {
-      return ads;
-    }
-    
-    switch (sortOrder) {
-      case "newest-post":
-        return [...ads].sort((a, b) => b.createdAt - a.createdAt);
-      
-      case "oldest-post":
-        return [...ads].sort((a, b) => a.createdAt - b.createdAt);
-      
-      case "newest-event":
-        return [...ads].sort((a, b) => b.eventDateTime - a.eventDateTime);
-      
-      case "oldest-event":
-        return [...ads].sort((a, b) => a.eventDateTime - b.eventDateTime);
-      
-      case "recently-updated":
-        return [...ads].sort((a, b) => b.updatedAt - a.updatedAt);
-      
-      default:
-        return ads;
-    }
-  };
-
-  const filteredAds = useMemo(() => {
-    const base = normalizedPosts.filter((ad) => {
-      const term = search.trim().toLowerCase();
-      const matchSearch = !term ||
-        ad.name.toLowerCase().includes(term) ||
-        ad.desc.toLowerCase().includes(term) ||
-        ad.location.toLowerCase().includes(term) ||
-        (ad.category && ad.category.toLowerCase().includes(term));
-
-      const matchAnimal = filterAnimal === "همه" || ad.category === filterAnimal;
-      const matchSex = filterSex === "همه" || ad.sex === filterSex;
-      const matchCity = filterCity === "همه" || ad.city === filterCity;
-      
-      let matchAge = true;
-      if (filterAge !== "همه" && ad.age) {
-        const ageInYears = parseAgeToYears(ad.age);
-        
-        switch (filterAge) {
-          case "زیر 1 سال":
-            matchAge = ageInYears < 1;
-            break;
-          case "1-2 سال":
-            matchAge = ageInYears >= 1 && ageInYears < 2;
-            break;
-          case "2-3 سال":
-            matchAge = ageInYears >= 2 && ageInYears < 3;
-            break;
-          case "3-5 سال":
-            matchAge = ageInYears >= 3 && ageInYears < 5;
-            break;
-          case "5-7 سال":
-            matchAge = ageInYears >= 5 && ageInYears < 7;
-            break;
-          case "بالای 7 سال":
-            matchAge = ageInYears >= 7;
-            break;
-          default:
-            matchAge = true;
-        }
-      }
-
-      let matchCertificate = true;
-      let matchVaccination = true;
-      let matchSterilization = true;
-      
-      if (activeFilter === "سرپرستی" || ad.type === "surrender") {
-        if (filterHasCertificate !== "همه") {
-          const hasCert = ad.hasBirthCertificate || ad.originalData?.has_birth_certificate || false;
-          matchCertificate = filterHasCertificate === "دارد" ? hasCert : !hasCert;
-        }
-        
-        if (filterIsVaccinated !== "همه") {
-          const isVacc = ad.isVaccinated || ad.originalData?.vaccination || false;
-          matchVaccination = filterIsVaccinated === "دارد" ? isVacc : !isVacc;
-        }
-        
-        if (filterIsSterilized !== "همه") {
-          const isSteril = ad.isSterilized || ad.originalData?.steriliz || false;
-          matchSterilization = filterIsSterilized === "دارد" ? isSteril : !isSteril;
-        }
-      }
-
-      return matchSearch && matchAnimal && matchSex && matchCity && matchAge && 
-             matchCertificate && matchVaccination && matchSterilization;
-    });
-
-    const sortedAds = sortAds(base);
-    
-    return sortedAds.slice(0, 6);
-  }, [normalizedPosts, search, filterAnimal, filterSex, filterCity, filterAge, 
-      filterHasCertificate, filterIsVaccinated, filterIsSterilized, activeFilter, sortOrder, isSortEnabled]);
-
-  const clearAllFilters = () => {
-    setFilterAnimal("همه");
-    setFilterSex("همه");
-    setFilterCity("همه");
-    setFilterAge("همه");
-    setFilterHasCertificate("همه");
-    setFilterIsVaccinated("همه");
-    setFilterIsSterilized("همه");
-    setSortOrder(""); 
-    setSearch("");
-  };
-
-  const handleSortChange = (newSortOrder) => {
-    setSortOrder(newSortOrder);
-    if (newSortOrder !== "none") {
-      setIsSortEnabled(true);
-    }
-  };
-
-  const toggleSortEnabled = () => {
-    setIsSortEnabled(!isSortEnabled);
-    if (!isSortEnabled) {
-      setSortOrder("newest-post"); 
-    }
-  };
+  const displayedAds = useMemo(() => {
+    return normalizedPosts.slice(0, 6);
+  }, [normalizedPosts]);
 
   const handleViewDetails = (ad) => {
     console.log("مشاهده جزئیات برای آگهی (NewPosts):", ad);
@@ -391,7 +220,7 @@ export default function NewPosts() {
           <div className="posts-container-landing">
             <header className="posts-header-landing">
               <h1 className="posts-title-landing">مرور آگهی‌ها</h1>
-              <p className="posts-subtitle-landing">جستجو و فیلتر آگهی‌های حیوانات</p>
+              <p className="posts-subtitle-landing">مرور آگهی‌های حیوانات</p>
             </header>
 
             <div className="posts-categories-tabs-landing">
@@ -413,94 +242,23 @@ export default function NewPosts() {
               </div>
             </div>
 
-            <div className="search-wrapper">
-              <div className="search-box-inner" onClick={() => document.querySelector('.search-input-container-landing input')?.focus()}>
-                
-                <div className="search-input-container">
-                  <div className="search-icon-box">
-                    <img 
-                      src="/src/assets/icons/search-normal.svg" 
-                      alt="search"
-                      width="20"
-                      height="20"
-                      className="search-icon-img"
-                    />
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="جستجو در آگهی‌ها..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="search-input"
-                  />
-                  
-                  {search && (
-                    <button 
-                      className="search-clear-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSearch('');
-                      }}
-                      type="button"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <AdvancedFilters
-              activeFilter={activeFilter}
-              filterAnimal={filterAnimal}
-              setFilterAnimal={setFilterAnimal}
-              filterSex={filterSex}
-              setFilterSex={setFilterSex}
-              filterCity={filterCity}
-              setFilterCity={setFilterCity}
-              filterAge={filterAge}
-              setFilterAge={setFilterAge}
-              filterHasCertificate={filterHasCertificate}
-              setFilterHasCertificate={setFilterHasCertificate}
-              filterIsVaccinated={filterIsVaccinated}
-              setFilterIsVaccinated={setFilterIsVaccinated}
-              filterIsSterilized={filterIsSterilized}
-              setFilterIsSterilized={setFilterIsSterilized}
-              clearAllFilters={clearAllFilters}
-              activeFiltersCount={activeFiltersCount}
-            />
-
-            <SortFilters
-              sortOrder={sortOrder}
-              setSortOrder={setSortOrder}
-            />
-
             {error && <div className="error-message-landing">{error}</div>}
             {loading && <div className="loading-message-landing">در حال بارگذاری...</div>}
 
             <div className="posts-grid-landing">
-              {!loading && filteredAds.length === 0 && (
+              {!loading && displayedAds.length === 0 && (
                 <div className="no-results-container-landing">
                   <div className="no-results-icon-landing">
                     <img src="/src/assets/icons/search-n.svg" alt="no results" />
                   </div>
                   <h3>هیچ آگهی‌ای یافت نشد</h3>
                   <p className="no-results-text-landing">
-                    با فیلترهای انتخاب شده، آگهی مناسبی پیدا نشد. لطفا فیلترهای دیگری را امتحان کنید.
+                    در حال حاضر آگهی‌ای برای نمایش وجود ندارد.
                   </p>
-                  <button
-                    onClick={clearAllFilters}
-                    className="clear-filters-btn-landing"
-                  >
-                    <img src="/src/assets/icons/close.svg" alt="clear" className="clear-icon-landing" />
-                    پاک کردن همه فیلترها
-                  </button>
                 </div>
               )}
 
-              {filteredAds.map((ad) => {
+              {displayedAds.map((ad) => {
                 const getStatusClass = () => {
                   if (ad.status === 'پیدا شده') return 'found-landing';
                   if (ad.status === 'گم شده') return 'lost-landing';

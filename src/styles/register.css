@@ -55,12 +55,6 @@ width: 100%;
   color: rgba(0, 0, 0, 0.7);
 }
 
-.register-footer-link {
-  text-decoration: none;
-  color: #006BCB;
-  font-weight: 600;
-}
-
 /* responsive */
 @media screen and (max-width: 900px) {
   .register-page {

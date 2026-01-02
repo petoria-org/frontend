@@ -16,6 +16,7 @@ export default function Conversations({
       <div className="conv__list">
         {items.map((c) => {
           const active = c.id === selectedChatId;
+          const tick = c.isMineLast ? (c.lastIsRead ? "✓✓" : "✓") : "";
           return (
             <button
               key={c.id}
@@ -34,7 +35,10 @@ export default function Conversations({
               </div>
 
               <div className="time_unread_container">
-                <div className="convItem__timeCol">{c.time}</div>
+                <div className="convItem__timeCol">
+                  {tick ? `${tick} ` : ""}
+                  {c.time}
+                </div>
                 {c.unreadCount > 0 && (
                   <span className="convItem__unread">{c.unreadCount}</span>
                 )}

@@ -86,7 +86,7 @@ const Login = () => {
             </Link>
 
             <button
-              className="login-btn"
+              className="form-btn form-btn-submit"
               type="submit"
               disabled={isSubmitting}
             >
@@ -114,7 +114,7 @@ const Login = () => {
 
           <p className="signup-text">
             حساب کاربری ندارید؟{" "}
-            <Link className="signup-link" to="/register">
+            <Link className="interactive-link" to="/register">
               ثبت نام کنید
             </Link>
           </p>

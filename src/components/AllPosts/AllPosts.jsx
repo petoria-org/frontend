@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdvancedFilters from "../AdvancedFilters";
 import SortFilters from "../SortFilters";
@@ -6,9 +6,21 @@ import { Pagination } from "../Pagination/Pagination";
 import LoadingScreen from "../LoadingScreen/LoadingScreen"; 
 import "../../styles/AllPosts.css";
 import { config } from "../../config";
+import { getPostImage } from "../../utils/postImages";
+import { getPetType } from "../../utils/petTypes";
+import {
+  AGE_TO_BACKEND,
+  AGE_VALUES,
+  ANIMAL_TO_BACKEND,
+  PET_TYPE_VALUES,
+  SEX_TO_BACKEND,
+  SEX_VALUES,
+  SORT_TO_BACKEND,
+  YES_NO_TO_BACKEND,
+  YES_NO_VALUES,
+} from "../../utils/postFilters";
 
 const API_BASE_URL = config.API_BASE_URL;
-const BACKEND_URL = config.BACKEND_URL;
 const API_ENDPOINTS = {
   all: `${API_BASE_URL}/posts/all/`,
   lost: `${API_BASE_URL}/posts/lost-posts/`,
@@ -16,28 +28,85 @@ const API_ENDPOINTS = {
   adoption: `${API_BASE_URL}/posts/surrender-posts/`,
 };
 
-const PET_DEFAULT_IMAGES = {
-  dog: "/src/assets/images/dog.png",
-  cat: "/src/assets/images/cat.png",
-  bird: "/src/assets/images/bird.png",
-  rabbit: "/src/assets/images/rabbit.png",
-  hamster: "/src/assets/images/hamester.png",
-  other: "/src/assets/images/other.png",
+const ITEMS_PER_PAGE = 6;
+
+const POST_TYPE_TO_BACKEND = {
+  lost: "lost",
+  "گم شده": "lost",
+  found: "found",
+  "پیدا شده": "found",
+  surrender: "surrender",
+  "سرپرستی": "surrender",
+  adoption: "surrender",
 };
 
-const getPostImage = (post) => {
-  if (post.thumbnail) {
-    return `${BACKEND_URL}${post.thumbnail}`;
+const normalizePostTypeValue = (value) => {
+  if (!value) {
+    return "";
   }
 
-  const petType = (post.pet_type || "").toLowerCase();
-
-  return PET_DEFAULT_IMAGES[petType] || PET_DEFAULT_IMAGES.other;
+  const normalized = String(value).trim().toLowerCase();
+  return POST_TYPE_TO_BACKEND[normalized] || normalized;
 };
 
-const DEFAULT_PET_IMAGE = "/src/assets/images/default-pet.png";
+const resolvePostType = (post) => {
+  if (!post) {
+    return "generic";
+  }
 
-const ITEMS_PER_PAGE = 6;
+  const explicit = normalizePostTypeValue(post.post_type || post.type);
+  if (explicit === "lost" || explicit === "found" || explicit === "surrender") {
+    return explicit;
+  }
+
+  if (post.found_time) {
+    return "found";
+  }
+
+  if (post.lost_time) {
+    return "lost";
+  }
+
+  if (post.surrender_date || post.has_birth_certificate || post.vaccination || post.steriliz) {
+    return "surrender";
+  }
+
+  return "generic";
+};
+
+const isAllValue = (value) => {
+  if (value == null) {
+    return true;
+  }
+
+  const normalized = String(value).trim().toLowerCase();
+  return normalized === "" || normalized === "all" || normalized === "همه";
+};
+
+const splitFilterValues = (value) => {
+  if (isAllValue(value)) {
+    return [];
+  }
+
+  return String(value)
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+};
+
+const mapFilterValues = (value, mapping, allowedValues = null) => {
+  const mapped = splitFilterValues(value).map((item) => {
+    const normalized = item.trim();
+    const lower = normalized.toLowerCase();
+    return mapping[normalized] || mapping[lower] || normalized;
+  });
+
+  if (!allowedValues) {
+    return mapped.filter(Boolean);
+  }
+
+  return mapped.filter((item) => allowedValues.includes(item));
+};
 
 const toJalaliDate = (dateString) => {
   if (!dateString) return "";
@@ -64,25 +133,6 @@ const calculateRelativeTime = (isoDate) => {
   if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} روز پیش`;
   if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)} ماه پیش`;
   return `${Math.floor(diffInSeconds / 31536000)} سال پیش`;
-};
-
-export const getPetType = (type) => {
-  switch (type) {
-    case "cat":
-      return "گربه";
-    case "dog":
-      return "سگ";
-    case "bird":
-      return "پرنده";
-    case "rabbit":
-      return "خرگوش";
-    case "hamster":
-      return "همستر";
-    case "other":
-      return "سایر";
-    default:
-      return "نامشخص";
-  }
 };
 
 const getPostType = (type) => {
@@ -170,38 +220,125 @@ export default function AllPosts() {
   const [sortOrder, setSortOrder] = useState("");
 
   const activeFiltersCount = [
-    filterAnimal !== "همه",
-    filterSex !== "همه",
-    filterCity !== "همه",
-    filterAge !== "همه",
-    filterHasCertificate !== "همه",
-    filterIsVaccinated !== "همه",
-    filterIsSterilized !== "همه",
+    !isAllValue(filterAnimal),
+    !isAllValue(filterSex),
+    !isAllValue(filterCity),
+    !isAllValue(filterAge),
+    !isAllValue(filterHasCertificate),
+    !isAllValue(filterIsVaccinated),
+    !isAllValue(filterIsSterilized),
   ].filter(Boolean).length;
 
-  const fetchAllPosts = async (url) => {
-    try {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`دریافت داده با خطا مواجه شد: ${res.status}`);
+  const lastQueryRef = useRef("");
 
-      const data = await res.json();
-      const results = Array.isArray(data) ? data : data.results || [];
-      
-      return results;
-    } catch (err) {
-      console.error("خطا در دریافت تمام آگهی‌ها:", err);
-      return [];
+  const activeEndpoint = useMemo(() => {
+    if (activeFilter === "گم شده") {
+      return API_ENDPOINTS.lost;
     }
-  };
+    if (activeFilter === "پیدا شده") {
+      return API_ENDPOINTS.found;
+    }
+    if (activeFilter === "سرپرستی") {
+      return API_ENDPOINTS.adoption;
+    }
+    return API_ENDPOINTS.all;
+  }, [activeFilter]);
 
-  const fetchPosts = async (url, page = 1) => {
+  const queryString = useMemo(() => {
+    const params = new URLSearchParams();
+    const term = search.trim();
+
+    if (term) {
+      params.set("q", term);
+    }
+
+    const sortParam = SORT_TO_BACKEND[sortOrder];
+    if (sortParam) {
+      params.set("sort", sortParam);
+    }
+
+    const petTypes = mapFilterValues(
+      filterAnimal,
+      ANIMAL_TO_BACKEND,
+      PET_TYPE_VALUES
+    );
+    if (petTypes.length) {
+      params.set("pet_type", petTypes.join(","));
+    }
+
+    const petSexes = mapFilterValues(filterSex, SEX_TO_BACKEND, SEX_VALUES);
+    if (petSexes.length) {
+      params.set("pet_sex", petSexes.join(","));
+    }
+
+    const cities = splitFilterValues(filterCity);
+    if (cities.length) {
+      params.set("city", cities.join(","));
+    }
+
+    const ageRanges = mapFilterValues(filterAge, AGE_TO_BACKEND, AGE_VALUES);
+    if (ageRanges.length) {
+      params.set("pet_age_range", ageRanges.join(","));
+    }
+
+    if (activeFilter === "سرپرستی") {
+      const certificates = mapFilterValues(
+        filterHasCertificate,
+        YES_NO_TO_BACKEND,
+        YES_NO_VALUES
+      );
+      if (certificates.length) {
+        params.set("has_birth_certificate", certificates.join(","));
+      }
+
+      const vaccinations = mapFilterValues(
+        filterIsVaccinated,
+        YES_NO_TO_BACKEND,
+        YES_NO_VALUES
+      );
+      if (vaccinations.length) {
+        params.set("vaccination", vaccinations.join(","));
+      }
+
+      const sterilizations = mapFilterValues(
+        filterIsSterilized,
+        YES_NO_TO_BACKEND,
+        YES_NO_VALUES
+      );
+      if (sterilizations.length) {
+        params.set("steriliz", sterilizations.join(","));
+      }
+    }
+
+    return params.toString();
+  }, [
+    search,
+    sortOrder,
+    filterAnimal,
+    filterSex,
+    filterCity,
+    filterAge,
+    filterHasCertificate,
+    filterIsVaccinated,
+    filterIsSterilized,
+    activeFilter,
+  ]);
+
+  const fetchPosts = async (url, page = 1, query = "") => {
     setLoading(true);
     setError("");
 
     try {
-      const urlWithPage = page > 1 ? `${url}?page=${page}` : url;
+      const params = new URLSearchParams(query);
+      if (page > 1) {
+        params.set("page", page);
+      }
+
+      const urlWithParams = params.toString()
+        ? `${url}?${params.toString()}`
+        : url;
       
-      const res = await fetch(urlWithPage);
+      const res = await fetch(urlWithParams);
       if (!res.ok) throw new Error(`دریافت داده با خطا مواجه شد: ${res.status}`);
 
       const data = await res.json();
@@ -221,7 +358,7 @@ export default function AllPosts() {
       
       setTotalPages(calculatedTotalPages);
 
-      if (currentPage === 1) {
+      if (page === 1) {
         let allResults = results;
         let nextUrl = data.next;
         
@@ -252,28 +389,20 @@ export default function AllPosts() {
   };
 
   useEffect(() => {
-    let url;
-    if (activeFilter === "گم شده") {
-      url = API_ENDPOINTS.lost;
-    } else if (activeFilter === "پیدا شده") {
-      url = API_ENDPOINTS.found;
-    } else if (activeFilter === "سرپرستی") {
-      url = API_ENDPOINTS.adoption;
-    } else {
-      url = API_ENDPOINTS.all;
+    const queryKey = `${activeEndpoint}|${queryString}`;
+
+    if (queryKey !== lastQueryRef.current && currentPage !== 1) {
+      setCurrentPage(1);
+      return;
     }
 
-    fetchPosts(url, currentPage);
-  }, [activeFilter, currentPage]);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [activeFilter]);
+    lastQueryRef.current = queryKey;
+    fetchPosts(activeEndpoint, currentPage, queryString);
+  }, [activeEndpoint, currentPage, queryString]);
 
   const normalizedAllPosts = useMemo(() => {
     return allPosts.map((p) => {
-      const postType = p.post_type || "generic";
-      const petType = getPetType(p.pet_type);
+      const postType = resolvePostType(p);
       const postTypeLabel = getPostType(postType);
       
       let status = "فعال";
@@ -325,7 +454,7 @@ export default function AllPosts() {
 
   const normalizedPosts = useMemo(() => {
     return posts.map((p) => {
-      const postType = p.post_type || "generic";
+      const postType = resolvePostType(p);
       const petType = getPetType(p.pet_type);
       const postTypeLabel = getPostType(postType);
       
@@ -414,122 +543,7 @@ export default function AllPosts() {
     });
   }, [posts, activeFilter]);
 
-  const parseAgeToYears = (ageString) => {
-    if (!ageString) return 0;
-    
-    if (typeof ageString === 'number') return ageString;
-    
-    const str = String(ageString);
-    
-    const yearMatch = str.match(/(\d+)\s*سال/);
-    if (yearMatch) return parseInt(yearMatch[1]);
-    
-    const monthMatch = str.match(/(\d+)\s*ماه/);
-    if (monthMatch) return parseInt(monthMatch[1]) / 12;
-    
-    const num = parseInt(str);
-    if (!isNaN(num)) return num;
-    
-    return 0;
-  };
-
-  const sortAds = (ads) => {
-    if (!sortOrder) {
-      return ads;
-    }
-    
-    switch (sortOrder) {
-      case "newest-post":
-        return [...ads].sort((a, b) => b.createdAt - a.createdAt);
-      
-      case "oldest-post":
-        return [...ads].sort((a, b) => a.createdAt - b.createdAt);
-      
-      case "newest-event":
-        return [...ads].sort((a, b) => b.eventDateTime - a.eventDateTime);
-      
-      case "oldest-event":
-        return [...ads].sort((a, b) => a.eventDateTime - b.eventDateTime);
-      
-      case "recently-updated":
-        return [...ads].sort((a, b) => b.updatedAt - a.updatedAt);
-      
-      default:
-        return ads;
-    }
-  };
-
-  const filteredAds = useMemo(() => {
-    const base = normalizedPosts.filter((ad) => {
-      const term = search.trim().toLowerCase();
-      const matchSearch = !term ||
-        ad.name.toLowerCase().includes(term) ||
-        ad.desc.toLowerCase().includes(term) ||
-        ad.location.toLowerCase().includes(term) ||
-        (ad.type && ad.type.toLowerCase().includes(term));
-
-      const matchAnimal = filterAnimal === "همه" || ad.type === filterAnimal;
-      const matchSex = filterSex === "همه" || ad.sex === filterSex;
-      const matchCity = filterCity === "همه" || ad.location === filterCity;
-      
-      let matchAge = true;
-      if (filterAge !== "همه" && ad.age) {
-        const ageInYears = parseAgeToYears(ad.age);
-        
-        switch (filterAge) {
-          case "زیر 1 سال":
-            matchAge = ageInYears < 1;
-            break;
-          case "1-2 سال":
-            matchAge = ageInYears >= 1 && ageInYears < 2;
-            break;
-          case "2-3 سال":
-            matchAge = ageInYears >= 2 && ageInYears < 3;
-            break;
-          case "3-5 سال":
-            matchAge = ageInYears >= 3 && ageInYears < 5;
-            break;
-          case "5-7 سال":
-            matchAge = ageInYears >= 5 && ageInYears < 7;
-            break;
-          case "بالای 7 سال":
-            matchAge = ageInYears >= 7;
-            break;
-          default:
-            matchAge = true;
-        }
-      }
-
-      let matchCertificate = true;
-      let matchVaccination = true;
-      let matchSterilization = true;
-      
-      if (activeFilter === "سرپرستی" || ad.postType === "surrender") {
-        if (filterHasCertificate !== "همه") {
-          const hasCert = ad.hasBirthCertificate || ad.originalData?.has_birth_certificate || false;
-          matchCertificate = filterHasCertificate === "دارد" ? hasCert : !hasCert;
-        }
-        
-        if (filterIsVaccinated !== "همه") {
-          const isVacc = ad.vaccination || ad.originalData?.vaccination || false;
-          matchVaccination = filterIsVaccinated === "دارد" ? isVacc : !isVacc;
-        }
-        
-        if (filterIsSterilized !== "همه") {
-          const isSteril = ad.steriliz || ad.originalData?.steriliz || false;
-          matchSterilization = filterIsSterilized === "دارد" ? isSteril : !isSteril;
-        }
-      }
-
-      return matchSearch && matchAnimal && matchSex && matchCity && matchAge && 
-             matchCertificate && matchVaccination && matchSterilization;
-    });
-
-    const sortedAds = sortAds(base);
-    
-    return sortedAds;
-  }, [normalizedPosts, search, filterAnimal, filterSex, filterCity, filterAge, 
-      filterHasCertificate, filterIsVaccinated, filterIsSterilized, activeFilter, sortOrder]);
+  const displayedAds = normalizedPosts;
 
   const clearAllFilters = () => {
     setFilterAnimal("همه");
@@ -545,7 +559,10 @@ export default function AllPosts() {
   };
 
   const handleViewDetails = (ad) => {
-    const postType = ad.postType || "generic";
+    const postType =
+      ad.postType && ad.postType !== "generic"
+        ? ad.postType
+        : resolvePostType(ad.originalData);
 
     navigate('/post-details', { 
       state: { 
@@ -728,7 +745,7 @@ return (
         {error && <div className="error-message-all-posts">{error}</div>}
 
         <div className="pet-listings-grid-all-posts">
-          {filteredAds.length === 0 && !loading && (
+          {displayedAds.length === 0 && !loading && (
             <div className="no-results-container-all-posts">
               <div className="no-results-icon-all-posts">
                 <img src="/src/assets/icons/search-n.svg" alt="no results" />
@@ -747,7 +764,7 @@ return (
             </div>
           )}
 
-          {filteredAds.map((pet) => {
+          {displayedAds.map((pet) => {
             const getStatusClass = () => {
               if (pet.status === 'پیدا شده') return 'found-all-posts';
               if (pet.status === 'گم شده') return 'lost-all-posts';
@@ -825,7 +842,7 @@ return (
           })}
         </div>
 
-        {filteredAds.length > 0 && totalPages > 1 && !loading && (
+        {displayedAds.length > 0 && totalPages > 1 && !loading && (
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}

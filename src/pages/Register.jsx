@@ -183,7 +183,7 @@ const Register = () => {
             <p className="error">{errors.confirmPassword?.message}</p>
 
             {/* Register button */}
-            <button className="register-btn" disabled={loading}>
+            <button className="form-btn form-btn-submit" disabled={loading}>
               <span>{loading ? "در حال ارسال..." : "ثبت نام"}</span>
               <img className="arrow" src="/src/icons/arrow-right.svg" alt="arrow-right" />
             </button>
@@ -205,7 +205,7 @@ const Register = () => {
           {/* Already have account */}
           <p className="register-footer">
             قبلاً ثبت نام کرده‌اید؟{" "}
-            <Link className="register-footer-link" to={"/login"}>وارد شوید</Link>
+            <Link className="interactive-link" to={"/login"}>وارد شوید</Link>
           </p>
         </div>
         <div className="register-img">
