@@ -1,21 +1,38 @@
 import React, { useState, useRef, useEffect } from "react";
 import "../../styles/SuccessStoryCreation.css";
+import { useOutletContext } from "react-router-dom";
+import { createSuccessStory } from "../../Services/successStoryService";
+import { deleteLostPost, deleteFoundPost, deleteSurrenderPost } from "../../Services/userService";
 
-export const SuccessStoryCreation = ({ pet, onSave, onCancel, onRemove }) => {
+export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => { 
   const [images, setImages] = useState([]);
   const [storyText, setStoryText] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({});
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [loading, setLoading] = useState(false);
   const fileInputRef = useRef(null);
   const dropZoneRef = useRef(null);
+  const { setHideNavbar, setHideFooter } = useOutletContext();
+  const [notification, setNotification] = useState(null);
 
+  const showNotification = (message, type = "success") => {
+    setNotification({ message, type });
+  };
+  
   useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+
+    setHideNavbar(true);
+    setHideFooter(true);
     document.body.style.overflow = "hidden";
+
     return () => {
-      document.body.style.overflow = "";
+      setHideNavbar(false);
+      setHideFooter(false);
+      document.body.style.overflow = originalOverflow;
     };
-  }, []);
+  }, [setHideNavbar, setHideFooter]);
 
   useEffect(() => {
     if (pet?.successStory) {
@@ -144,25 +161,127 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onRemove }) => {
     });
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!storyText.trim()) {
       alert("لطفا متن داستان موفقیت را وارد کنید");
       return;
     }
 
-    const successData = {
-      petId: pet?.id,
-      action: "save", 
-      storyText: storyText.trim(),
-      images: images.map(img => img.url),
-      createdAt: new Date().toISOString()
-    };
+    if (pet?.hasSuccessStory && !pet.successStory) {
+      alert("برای این پست قبلاً داستان موفق ثبت شده است. نمی‌توانید داستان جدیدی ثبت کنید.");
+      return;
+    }
 
-    onSave?.(successData);
+    setLoading(true);
 
-    setStoryText("");
-    setImages([]);
-    setActiveImageIndex(0);
+    try {
+      const payload = {
+        title: `داستان ${pet?.name || "موفقیت"}`,
+        story: storyText.trim(),
+        story_type: pet?.status === "adoption" ? "surrender" : pet?.status,
+        pet_id: pet?.id, 
+        images: images
+          .filter(img => img.file)
+          .map(img => img.file),
+      };
+      
+      showNotification("داستان موفق با موفقیت ثبت شد و آگهی بسته شد", "success");
+      const createdStory = await createSuccessStory(payload);
+
+      if (pet) {
+        try {
+          let deleteResponse;
+          if (pet.status === "lost") {
+            deleteResponse = await deleteLostPost(pet.id);
+          } else if (pet.status === "found") {
+            deleteResponse = await deleteFoundPost(pet.id);
+          } else if (pet.status === "adoption") {
+            deleteResponse = await deleteSurrenderPost(pet.id);
+          }
+          console.log("Post deleted after story creation:", deleteResponse);
+        } catch (deleteError) {
+          console.error("Error deleting post:", deleteError);
+        }
+      }
+
+      onSave?.({
+        id: createdStory.id,
+        title: createdStory.title,
+        author: createdStory.user_name,
+        date: new Intl.DateTimeFormat("fa-IR", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        }).format(new Date(createdStory.created_at)),
+        status:
+          createdStory.story_type === "lost"
+            ? "بازگشت به خانه"
+            : createdStory.story_type === "found"
+            ? "به خانواده بازگشت"
+            : "فرزندخوانده شد",
+        statusColor: "rgba(122, 238, 151, 0.15)",
+        statusTextColor: "#0f7228",
+        image:
+          createdStory.images?.length > 0
+            ? createdStory.images[0].image
+            : "/src/assets/images/default-pet.png",
+        images: createdStory.images
+          ? createdStory.images.map(img => img.image)
+          : [],
+        content: createdStory.story,
+        pet_id: pet?.id, 
+      });
+
+      setStoryText("");
+      setImages([]);
+      setActiveImageIndex(0);
+
+      alert("داستان موفق با موفقیت ثبت شد و آگهی بسته شد.");
+
+    } catch (err) {
+      console.error(err);
+
+      if (err.response?.status === 400 && err.response?.data?.error?.includes("already has a success story")) {
+         showNotification("برای این پست قبلاً داستان موفق ثبت شده است", "warning");
+      } 
+      
+      else {
+        showNotification("خطا در ثبت داستان موفقیت", "error");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSkipAndDelete = async () => {
+    if (window.confirm("آیا مطمئن هستید که می‌خواهید این آگهی را حذف کنید؟")) {
+      setLoading(true);
+      
+      try {
+        if (pet) {
+          let deleteResponse;
+          if (pet.status === "lost") {
+            deleteResponse = await deleteLostPost(pet.id);
+          } else if (pet.status === "found") {
+            deleteResponse = await deleteFoundPost(pet.id);
+          } else if (pet.status === "adoption") {
+            deleteResponse = await deleteSurrenderPost(pet.id);
+          }
+          console.log("Post deleted without story:", deleteResponse);
+        }
+
+        if (onSkip) {
+          onSkip(pet?.globalId || pet?.id); 
+        }
+
+        showNotification("آگهی با موفقیت حذف شد", "success");
+        
+      } catch (error) {
+        showNotification('خطا در حذف آگهی. لطفاً دوباره تلاش کنید', "error");
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   const handleCancel = () => {
@@ -171,23 +290,6 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onRemove }) => {
     setActiveImageIndex(0);
 
     onCancel?.();
-  };
-
-  const handleRemoveStory = () => {
-    if (window.confirm("آیا از حذف داستان موفقیت مطمئن هستید؟")) {
-      const removeData = {
-        petId: pet?.id,
-        action: "remove",
-        storyText: "",
-        images: []
-      };
-      
-      onSave?.(removeData);
-
-      setStoryText("");
-      setImages([]);
-      setActiveImageIndex(0);
-    }
   };
 
   const handleClose = () => {
@@ -251,6 +353,13 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onRemove }) => {
     </svg>
   );
 
+  const SkipIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M19 12H5" />
+      <path d="M12 19l-7-7 7-7" />
+    </svg>
+  );
+
   return (
     <div className="success-story-creation-overlay" onClick={handleClose}>
       <div className="success-story-creation-modal" onClick={(e) => e.stopPropagation()}>
@@ -261,11 +370,13 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onRemove }) => {
             </div>
             <div className="header-text">
               <h2 className="success-story-title">
-                {pet?.successStory ? "ویرایش داستان موفقیت" : "ثبت داستان موفقیت"}
+                {pet?.hasSuccessStory || pet?.successStory ? 
+                  (pet?.successStory ? "ویرایش داستان موفقیت" : "مشاهده داستان موفقیت") : 
+                  "ثبت داستان موفقیت"}
               </h2>
               <p className="success-story-subtitle">
-                {pet?.successStory 
-                  ? `داستان موفقیت ${pet?.name || "پت"} را ویرایش کنید`
+                {pet?.hasSuccessStory || pet?.successStory 
+                  ? `داستان موفقیت ${pet?.name || "پت"} را مشاهده یا ویرایش کنید`
                   : `داستان خود را از پیدا کردن ${pet?.name || "پت خود"} به اشتراک بگذارید`}
               </p>
             </div>
@@ -484,31 +595,40 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onRemove }) => {
         </div>
 
         <div className="success-story-footer">
-          {pet?.successStory && (
-            <button 
-              className="cancel-btn" 
-              onClick={handleRemoveStory}
-              style={{ 
-                background: '#fee2e2',
-                color: '#dc2626',
-                borderColor: '#fca5a5'
-              }}
-            >
-              <TrashIcon />
-              <span>حذف داستان</span>
-            </button>
-          )}
+          <button 
+            className="skip-btn" 
+            onClick={handleSkipAndDelete}
+            disabled={loading}
+            style={{ 
+              background: '#ff9800',
+              color: 'white',
+              borderColor: '#ff9800'
+            }}
+          >
+            <SkipIcon />
+            <span>فقط حذف آگهی</span>
+          </button>
           
-          <button className="cancel-btn" onClick={handleCancel}>
+          <button 
+            className="cancel-btn" 
+            onClick={handleCancel}
+            disabled={loading}
+          >
             انصراف
           </button>
+          
           <button 
             className="save-btn" 
             onClick={handleSave}
-            disabled={!storyText.trim()}
+            disabled={!storyText.trim() || (pet?.hasSuccessStory && !pet?.successStory) || loading}
           >
             <SparkleIcon />
-            <span>{pet?.successStory ? "بروزرسانی داستان" : "انتشار داستان موفقیت"}</span>
+            <span>
+              {loading ? 'در حال ثبت...' : 
+               pet?.hasSuccessStory || pet?.successStory 
+                ? (pet?.successStory ? "بروزرسانی داستان" : "مشاهده داستان") 
+                : "ثبت داستان و حذف آگهی"}
+            </span>
           </button>
         </div>
       </div>

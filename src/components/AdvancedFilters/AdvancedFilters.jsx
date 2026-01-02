@@ -1,6 +1,13 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import "../../styles/AdvancedFilters.css";
+import {
+  AGE_OPTIONS as ageOptions,
+  ANIMAL_OPTIONS as animals,
+  SEX_OPTIONS as sexes,
+  STATUS_OPTIONS as statusOptions,
+  STATUS_YES_NO_OPTIONS as statusYesNoOptions,
+} from "../../utils/postFilters";
 
 const AdvancedFilters = ({
   activeFilter,
@@ -65,29 +72,6 @@ const AdvancedFilters = ({
     "بجنورد", "آمل", "قائم‌شهر", "ورامین", "اسلامشهر", "دزفول",
     "سبزوار", "نجف‌آباد", "خوی", "ملارد", "آباده", "نوشهر"
   ].sort();
-
-  const animals = ["سگ", "گربه", "خرگوش", "همستر", "پرنده", "سایر"];
-
-  const sexes = ["نر", "ماده"];
-
-  const ageOptions = [
-    { value: "under-1", label: "زیر 1 سال" },
-    { value: "1-2", label: "1 تا 2 سال" },
-    { value: "2-3", label: "2 تا 3 سال" },
-    { value: "3-5", label: "3 تا 5 سال" },
-    { value: "5-7", label: "5 تا 7 سال" },
-    { value: "over-7", label: "بالای 7 سال" }
-  ];
-
-  const statusOptions = [
-    { value: "yes", label: "دارد" },
-    { value: "no", label: "ندارد" }
-  ];
-
-  const statusYesNoOptions = [
-    { value: "yes", label: "انجام شده" },
-    { value: "no", label: "انجام نشده" }
-  ];
 
   const filteredCities = cities.filter(city =>
     city.includes(citySearchTerm)

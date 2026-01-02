@@ -53,7 +53,7 @@ export const updateSurrenderPost = (id, data) =>
 // ---------- UPLOAD post image ----------
 export const uploadPostImage = async (file) => {
   const formData = new FormData();
-  formData.append("image", file);
+  formData.append("file", file);
 
   const res = await api.post(
     "/posts/images/upload/",
@@ -72,3 +72,18 @@ export const deletePostImage = async (imageId) => {
   const res = await api.delete(`/posts/images/${imageId}/`);
   return res.data;
 };
+
+// ---------- CREATE POSTS ----------
+export const createLostPost = (data) => {
+  return api.post("/posts/lost-posts/", data);
+};
+
+export const createFoundPost = (data) => {
+  return api.post("/posts/found-posts/", data);
+};
+
+export const createSurrenderPost = (data) => {
+  return api.post("/posts/surrender-posts/", data);
+};
+
+

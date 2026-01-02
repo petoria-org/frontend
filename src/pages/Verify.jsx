@@ -97,62 +97,58 @@ const Verify = () => {
   };
 
   return (
-    <div className="verify-page">
-      <div className="verify-container">
-        <div className="verify-main">
-
-          <div className="verify-icon">
-            <img src="/src/icons/verify.svg" alt="verify" />
-          </div>
-
-          <p className="verify-subtitle">کد تأیید ارسال شده را وارد کنید</p>
-
-          {email && (
-            <p className="verify-email-text">
-              یک کد ۶ رقمی به ایمیل <span>{email}</span> ارسال شد
-            </p>
-          )}
-
-          {/* OTP Inputs */}
-          <div className="verify-code-box">
-            {code.map((digit, i) => (
-              <input
-                key={i}
-                id={`code-${i}`}
-                className="verify-code-input"
-                maxLength="1"
-                value={digit}
-                onChange={(e) => handleChange(e.target.value, i)}
-              />
-            ))}
-          </div>
-
-          {/* Timer */}
-          <p className="verify-timer">
-            زمان باقی‌مانده:{" "}
-            <span>00:{timer < 10 ? `0${timer}` : timer}</span>
-          </p>
-
-          {/* Resend link */}
-          <div
-            className={`verify-resend-link ${canResend ? "active" : ""}`}
-            onClick={canResend ? handleResend : null}
-          >
-            <img src="/src/icons/resend.svg" alt="resend" />
-            <span>ارسال مجدد کد</span>
-          </div>
-
-          {/* Continue */}
-         <button
-            className="verify-submit-btn"
-            onClick={handleSubmit}
-            disabled={loading}
-          >
-            <span>{loading ? "در حال بررسی..." : "تأیید و ادامه"}</span>
-            <img className="arrow" src="/src/icons/arrow-right.svg" alt="arrow-right" />
-         </button>
-
+    <div className="auth-page">
+      <div className="verify-main">
+        <div className="verify-icon">
+          <img src="/src/icons/verify.svg" alt="verify" />
         </div>
+
+        <p className="auth-subtitle">کد تأیید ارسال شده را وارد کنید</p>
+
+        {email && (
+          <p className="verify-email-text">
+            یک کد ۶ رقمی به ایمیل <span>{email}</span> ارسال شد
+          </p>
+        )}
+
+        {/* OTP Inputs */}
+        <div className="verify-code-box">
+          {code.map((digit, i) => (
+            <input
+              key={i}
+              id={`code-${i}`}
+              className="verify-code-input"
+              maxLength="1"
+              value={digit}
+              onChange={(e) => handleChange(e.target.value, i)}
+            />
+          ))}
+        </div>
+
+        {/* Timer */}
+        <p className="verify-timer">
+          زمان باقی‌مانده:{" "}
+          <span>00:{timer < 10 ? `0${timer}` : timer}</span>
+        </p>
+
+        {/* Resend link */}
+        <div
+          className={`verify-resend-link ${canResend ? "active" : ""}`}
+          onClick={canResend ? handleResend : null}
+        >
+          <img src="/src/icons/resend.svg" alt="resend" />
+          <span>ارسال مجدد کد</span>
+        </div>
+
+        {/* Continue */}
+        <button
+          className="form-btn form-btn-submit"
+          onClick={handleSubmit}
+          disabled={loading}
+        >
+          <span>{loading ? "در حال بررسی..." : "تأیید و ادامه"}</span>
+          <img className="arrow" src="/src/icons/arrow-right.svg" alt="arrow-right" />
+        </button>
       </div>
     </div>
   );

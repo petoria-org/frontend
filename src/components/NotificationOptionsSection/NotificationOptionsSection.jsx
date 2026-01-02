@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import "../../styles/NotificationOptionsSection.css";
 import searchIcon from '../../assets/icons/Search.svg';
 import checkmarkIcon from '../../assets/icons/Checkmark Color.svg';
@@ -21,17 +22,21 @@ import {
   updateLostPost,
   updateFoundPost,
   updateSurrenderPost,
+  createLostPost,
+  createFoundPost,
+  createSurrenderPost,
   deletePostImage
 } from "../../Services/userService";
 import moment from 'jalali-moment';
 import fa from 'date-fns/locale/fa-IR';
 import DatePickerModule from "react-multi-date-picker";
-const DatePicker = DatePickerModule.default || DatePickerModule;
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
+import { useOutletContext } from "react-router-dom";
 import "../../styles/DatePickerCustom.css";
 import DeleteConfirmationModal from '../DeleteConfirmationModal/DeleteConfirmationModal';
 
+const DatePicker = DatePickerModule.default || DatePickerModule;
 
 const toInputDateTime = (iso) => {
   if (!iso) return "";
@@ -43,190 +48,29 @@ const toISO = (value) => {
   return new Date(value).toISOString();
 };
 
-const TimeInput = ({ value, onChange, disabled }) => {
-  const [hours, setHours] = useState("00");
-  const [minutes, setMinutes] = useState("00");
-  
-  useEffect(() => {
-    if (value instanceof Date) {
-      setHours(String(value.getHours()).padStart(2, '0'));
-      setMinutes(String(value.getMinutes()).padStart(2, '0'));
-    } else {
-      setHours("00");
-      setMinutes("00");
-    }
-  }, [value]);
+const parseDateKeepClock = (value) => {
+  if (!value) return null;
+  if (value instanceof Date) return new Date(value);
 
-  const handleHourChange = (e) => {
-    const newHour = e.target.value;
-    if (/^\d{0,2}$/.test(newHour)) {
-      let hourNum = parseInt(newHour) || 0;
-      if (hourNum > 23) hourNum = 23;
-      const newHours = String(hourNum).padStart(2, '0');
-      setHours(newHours);
-      
-      const newDate = value ? new Date(value) : new Date();
-      newDate.setHours(hourNum);
-      if (!value) {
-        newDate.setMinutes(parseInt(minutes) || 0);
-      }
-      onChange(newDate);
-    }
-  };
+  const str = typeof value === "string" ? value : String(value);
+  const exactParts = str.match(/(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/);
 
-  const handleMinuteChange = (e) => {
-    const newMinute = e.target.value;
-    if (/^\d{0,2}$/.test(newMinute)) {
-      let minuteNum = parseInt(newMinute) || 0;
-      if (minuteNum > 59) minuteNum = 59;
-      const newMinutes = String(minuteNum).padStart(2, '0');
-      setMinutes(newMinutes);
-      
-      const newDate = value ? new Date(value) : new Date();
-      newDate.setMinutes(minuteNum);
-      if (!value) {
-        newDate.setHours(parseInt(hours) || 0);
-      }
-      onChange(newDate);
-    }
-  };
+  if (exactParts) {
+    const [, y, m, d, h, min] = exactParts;
+    return new Date(
+      Number(y),
+      Number(m) - 1,
+      Number(d),
+      Number(h),
+      Number(min),
+      0,
+      0
+    );
+  }
 
-  const incrementHour = () => {
-    let hourNum = parseInt(hours) || 0;
-    hourNum = (hourNum + 1) % 24;
-    const newHours = String(hourNum).padStart(2, '0');
-    setHours(newHours);
-    
-    const newDate = value ? new Date(value) : new Date();
-    newDate.setHours(hourNum);
-    if (!value) {
-      newDate.setMinutes(parseInt(minutes) || 0);
-    }
-    onChange(newDate);
-  };
-
-  const decrementHour = () => {
-    let hourNum = parseInt(hours) || 0;
-    hourNum = hourNum - 1;
-    if (hourNum < 0) hourNum = 23;
-    const newHours = String(hourNum).padStart(2, '0');
-    setHours(newHours);
-    
-    const newDate = value ? new Date(value) : new Date();
-    newDate.setHours(hourNum);
-    if (!value) {
-      newDate.setMinutes(parseInt(minutes) || 0);
-    }
-    onChange(newDate);
-  };
-
-  const incrementMinute = () => {
-    let minuteNum = parseInt(minutes) || 0;
-    let hourNum = parseInt(hours) || 0;
-    
-    minuteNum = minuteNum + 1;
-    
-    if (minuteNum > 59) {
-      minuteNum = 0;
-      hourNum = (hourNum + 1) % 24;
-      setHours(String(hourNum).padStart(2, '0'));
-    }
-    
-    const newMinutes = String(minuteNum).padStart(2, '0');
-    setMinutes(newMinutes);
-    
-    const newDate = value ? new Date(value) : new Date();
-    newDate.setHours(hourNum);
-    newDate.setMinutes(minuteNum);
-    
-    onChange(newDate);
-  };
-
-  const decrementMinute = () => {
-    let minuteNum = parseInt(minutes) || 0;
-    let hourNum = parseInt(hours) || 0;
-    
-    minuteNum = minuteNum - 1;
-    
-    if (minuteNum < 0) {
-      minuteNum = 59;
-      hourNum = hourNum - 1;
-      if (hourNum < 0) hourNum = 23;
-      setHours(String(hourNum).padStart(2, '0'));
-    }
-    
-    const newMinutes = String(minuteNum).padStart(2, '0');
-    setMinutes(newMinutes);
-    
-    const newDate = value ? new Date(value) : new Date();
-    newDate.setHours(hourNum);
-    newDate.setMinutes(minuteNum);
-    
-    onChange(newDate);
-  };
-
-  const handleWheel = (e, type) => {
-    e.preventDefault();
-    const delta = e.deltaY > 0 ? -1 : 1;
-    
-    if (type === 'hour') {
-      if (delta > 0) {
-        incrementHour();
-      } else {
-        decrementHour();
-      }
-    } else {
-      if (delta > 0) {
-        incrementMinute();
-      } else {
-        decrementMinute();
-      }
-    }
-  };
-
-  return (
-    <div className="time-selector-container">
-      <div className="time-selector-wrapper">
-        <div className="time-input-group-combined">
-          <div className="time-input-field">
-            <input
-              type="number"
-              value={hours}
-              onChange={handleHourChange}
-              className="time-input"
-              maxLength={2}
-              min="0"
-              max="23"
-              disabled={disabled}
-              inputMode="numeric"
-              pattern="[0-9]*"
-              onWheel={(e) => handleWheel(e, 'hour')}
-            />
-          </div>
-          
-          <span className="time-colon">:</span>
-          
-          <div className="time-input-field">
-            <input
-              type="number"
-              value={minutes}
-              onChange={handleMinuteChange}
-              className="time-input"
-              maxLength={2}
-              min="0"
-              max="59"
-              disabled={disabled}
-              inputMode="numeric"
-              pattern="[0-9]*"
-              onWheel={(e) => handleWheel(e, 'minute')}
-            />
-          </div>
-        </div>
-        <div className="time-unit-label-combined">ساعت و دقیقه</div>
-      </div>
-    </div>
-  );
+  return new Date(value);
 };
+
 const PersianDatePickerInput = React.forwardRef(({ value, onClick, placeholder, disabled, showTimeInput = false, onTimeChange, onChange }, ref) => (
   <div className="persian-datepicker-input-container">
     <div className="date-time-separate-inputs">
@@ -264,11 +108,105 @@ const PersianDatePickerInput = React.forwardRef(({ value, onClick, placeholder, 
 
 PersianDatePickerInput.displayName = 'PersianDatePickerInput';
 
-export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
-  const [formData, setFormData] = useState({
+export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) => {
+  const isEdit = mode === "edit";
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const animalOptions = [
+    {
+      value: "سگ",
+      label: "سگ",
+      hint: "حیوان خانگی وفادار",
+      icon: <img src="/src/assets/icons/dog.svg" alt="سگ" className="option-icon-img" />
+    },
+    {
+      value: "گربه",
+      label: "گربه",
+      hint: "حیوان خانگی مستقل",
+      icon: <img src="/src/assets/icons/cat.svg" alt="گربه" className="option-icon-img" />
+    },
+    {
+      value: "پرنده",
+      label: "پرنده",
+      hint: "حیوان خانگی آوازه خوان",
+      icon: <img src="/src/assets/icons/bird.svg" alt="پرنده" className="option-icon-img" />
+    },
+    {
+      value: "خرگوش",
+      label: "خرگوش",
+      hint: "حیوان خانگی آرام",
+      icon: <img src="/src/assets/icons/rabbit.svg" alt="خرگوش" className="option-icon-img" />
+    },
+    {
+      value: "همستر",
+      label: "همستر",
+      hint: "حیوان خانگی کوچک",
+      icon: <img src="/src/assets/icons/hamster.svg" alt="همستر" className="option-icon-img" />
+    },
+    {
+      value: "سایر",
+      label: "سایر",
+      hint: "سایر حیوانات خانگی",
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="option-icon-svg">
+          <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" 
+            stroke="#2c3e50" strokeWidth="1.5"/> 
+          <path d="M12 16V12M12 8H12.01" stroke="#2c3e50" strokeWidth="1.5" strokeLinecap="round"/> 
+        </svg>
+      )
+    }
+  ];
+
+  const [isGenderDropdownOpen, setIsGenderDropdownOpen] = useState(false);
+  const genderOptions = [
+    {
+      value: "نر",
+      label: "نر",
+      hint: "حیوان نر",
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="option-icon-svg">
+          <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" 
+            stroke="#1c7bd1" strokeWidth="1.5"/>
+          <path d="M12 16V8M12 8L15 11M12 8L9 11" stroke="#1c7bd1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      )
+    },
+    {
+      value: "ماده",
+      label: "ماده",
+      hint: "حیوان ماده",
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="option-icon-svg">
+          <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" 
+            stroke="#ff6b9d" strokeWidth="1.5"/>
+          <path d="M12 16V8M8 12H16" stroke="#ff6b9d" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      )
+    },
+    {
+      value: "نامشخص",
+      label: "نامشخص",
+      hint: "جنسیت تعیین نشده",
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="option-icon-svg">
+          <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" 
+            stroke="#94a3b8" strokeWidth="1.5"/>
+          <path d="M12 16V12M12 8H12.01" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round"/>
+        </svg>
+      )
+    }
+  ];
+
+  const handleGenderSelect = (gender) => {
+    setFormData(prev => ({ ...prev, gender }));
+    setIsGenderDropdownOpen(false);
+  };
+
+  const initialFormState = {
     name: "",
     type: "",
-    age: "",
     gender: "",
     location: "",
     lostTime: null,
@@ -294,7 +232,11 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
     district: "",
     state: "",
     road: ""
-  });
+  };
+
+  const [formData, setFormData] = useState(initialFormState);
+  const [ageYears, setAgeYears] = useState("");
+  const [ageMonths, setAgeMonths] = useState("");
 
   const [selectedAdType, setSelectedAdType] = useState("lost");
   const [notification, setNotification] = useState(null);
@@ -308,7 +250,540 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [imageToDelete, setImageToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  
+
+  const { setHideNavbar, setHideFooter } = useOutletContext();
+
+  const ProfessionalTimeSelector = ({ value, onChange, disabled, label }) => {
+    const [hours, setHours] = useState("00");
+    const [minutes, setMinutes] = useState("00");
+    const [isHoursFocused, setIsHoursFocused] = useState(false);
+    const [isMinutesFocused, setIsMinutesFocused] = useState(false);
+    const [showSlider, setShowSlider] = useState(false);
+    const [activeSlider, setActiveSlider] = useState(null);
+    const [isPickerOpen, setIsPickerOpen] = useState(false);
+    const triggerRef = useRef(null);
+    const [popupPosition, setPopupPosition] = useState({
+      top: 0,
+      left: 0,
+      width: 0
+    });
+
+    const updatePopupPosition = () => {
+      const target = triggerRef.current;
+      if (!target) return;
+
+      const rect = target.getBoundingClientRect();
+      setPopupPosition({
+        top: rect.bottom + window.scrollY + 8,
+        left: rect.left + window.scrollX,
+        width: rect.width
+      });
+    };
+    
+    useEffect(() => {
+      if (value instanceof Date) {
+        setHours(String(value.getHours()).padStart(2, '0'));
+        setMinutes(String(value.getMinutes()).padStart(2, '0'));
+      } else {
+        setHours("00");
+        setMinutes("00");
+      }
+    }, [value]);
+
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (
+          isPickerOpen &&
+          !event.target.closest('.professional-time-selector') &&
+          !event.target.closest('.time-picker-popup') &&
+          !event.target.closest('.time-slider-modal')
+        ) {
+          setIsPickerOpen(false);
+          setShowSlider(false);
+        }
+      };
+
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [isPickerOpen]);
+
+    useEffect(() => {
+      if (!isPickerOpen) return;
+
+      updatePopupPosition();
+      const handleReposition = () => updatePopupPosition();
+
+      window.addEventListener('resize', handleReposition);
+      window.addEventListener('scroll', handleReposition, true);
+
+      return () => {
+        window.removeEventListener('resize', handleReposition);
+        window.removeEventListener('scroll', handleReposition, true);
+      };
+    }, [isPickerOpen]);
+
+    const getTimePeriod = () => {
+      const hour = parseInt(hours);
+      if (hour < 12) return "صبح";
+      if (hour < 17) return "ظهر";
+      if (hour < 20) return "عصر";
+      return "شب";
+    };
+
+    const handleHourChange = (newHour) => {
+      let hourNum = parseInt(newHour) || 0;
+      if (hourNum > 23) hourNum = 23;
+      if (hourNum < 0) hourNum = 0;
+      const minuteNum = parseInt(minutes) || 0;
+      
+      const newHours = String(hourNum).padStart(2, '0');
+      setHours(newHours);
+      
+      const newDate = value instanceof Date ? new Date(value) : new Date();
+      newDate.setHours(hourNum);
+      newDate.setMinutes(minuteNum);
+      onChange(newDate);
+    };
+
+    const handleMinuteChange = (newMinute) => {
+      let minuteNum = parseInt(newMinute) || 0;
+      if (minuteNum > 59) minuteNum = 59;
+      if (minuteNum < 0) minuteNum = 0;
+      const hourNum = parseInt(hours) || 0;
+      
+      const newMinutes = String(minuteNum).padStart(2, '0');
+      setMinutes(newMinutes);
+      
+      const newDate = value instanceof Date ? new Date(value) : new Date();
+      newDate.setHours(hourNum);
+      newDate.setMinutes(minuteNum);
+      onChange(newDate);
+    };
+
+    const incrementHour = () => {
+      let hourNum = parseInt(hours) || 0;
+      hourNum = (hourNum + 1) % 24;
+      handleHourChange(hourNum.toString());
+    };
+
+    const decrementHour = () => {
+      let hourNum = parseInt(hours) || 0;
+      hourNum = hourNum - 1;
+      if (hourNum < 0) hourNum = 23;
+      handleHourChange(hourNum.toString());
+    };
+
+    const incrementMinute = () => {
+      let minuteNum = parseInt(minutes) || 0;
+      minuteNum = (minuteNum + 5) % 60;
+      handleMinuteChange(minuteNum.toString());
+    };
+
+    const decrementMinute = () => {
+      let minuteNum = parseInt(minutes) || 0;
+      minuteNum = minuteNum - 5;
+      if (minuteNum < 0) minuteNum = 60 + minuteNum;
+      handleMinuteChange(minuteNum.toString());
+    };
+
+    const handleHourInputChange = (e) => {
+      const newHour = e.target.value;
+      if (/^\d{0,2}$/.test(newHour)) {
+        handleHourChange(newHour);
+      }
+    };
+
+    const handleMinuteInputChange = (e) => {
+      const newMinute = e.target.value;
+      if (/^\d{0,2}$/.test(newMinute)) {
+        handleMinuteChange(newMinute);
+      }
+    };
+
+    const handleHourSliderChange = (e) => {
+      const hourValue = parseInt(e.target.value);
+      handleHourChange(hourValue.toString());
+    };
+
+    const handleMinuteSliderChange = (e) => {
+      const minuteValue = parseInt(e.target.value);
+      handleMinuteChange(minuteValue.toString());
+    };
+
+    const toggleSlider = (type) => {
+      setActiveSlider(type);
+      setShowSlider(true);
+    };
+
+    const togglePicker = () => {
+      if (!disabled) {
+        if (!isPickerOpen) {
+          updatePopupPosition();
+        }
+        setIsPickerOpen(!isPickerOpen);
+        if (isPickerOpen) {
+          setShowSlider(false);
+        }
+      }
+    };
+
+    const setCurrentTime = () => {
+      const now = new Date();
+      const hourNow = now.getHours();
+      const minuteNow = now.getMinutes();
+      
+      setHours(String(hourNow).padStart(2, '0'));
+      setMinutes(String(minuteNow).padStart(2, '0'));
+      
+      const newDate = value instanceof Date ? new Date(value) : new Date();
+      newDate.setHours(hourNow);
+      newDate.setMinutes(minuteNow);
+      onChange(newDate);
+    };
+
+    const setMidnight = () => {
+      handleHourChange('00');
+      handleMinuteChange('00');
+    };
+
+    const popupWidth = popupPosition.width || (triggerRef.current ? triggerRef.current.offsetWidth : undefined);
+
+    return (
+      <div className="professional-time-selector">
+        <label className="form-label-edit">{label}</label>
+      
+        <div className="input-container" ref={triggerRef}>
+          <div 
+            className="form-input time-picker-field"
+            onClick={togglePicker}
+            style={{ cursor: 'pointer' }}
+          >
+            <div className="time-field-display">
+              <span className="time-field-digits">
+                <span className="time-field-hours">{hours}</span>
+                <span className="time-field-colon">:</span>
+                <span className="time-field-minutes">{minutes}</span>
+              </span>
+              <span className="time-field-period">{getTimePeriod()}</span>
+            </div>
+          </div>
+          <div className="time-field-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" 
+                stroke="currentColor" strokeWidth="1.5"/>
+              <path d="M12 6V12L16 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+          </div>
+        </div>
+
+        {isPickerOpen && createPortal(
+          <>
+            <div
+              className="time-picker-overlay"
+              onClick={() => {
+                setIsPickerOpen(false);
+                setShowSlider(false);
+              }}
+            />
+            <div
+              className="time-picker-popup"
+              style={{
+                top: popupPosition.top,
+                left: popupPosition.left,
+                width: popupWidth
+              }}
+            >
+              <div className="time-picker-content">
+                <div className="time-selector-main">
+                  <div className="time-display" onClick={() => toggleSlider('hours')}>
+                    <div className="time-display-digits">
+                      <span className="time-digit-group">
+                        {hours.split('').map((digit, index) => (
+                          <span key={`hour-${index}`} className="time-digit">
+                            {digit}
+                          </span>
+                        ))}
+                      </span>
+                      <span className="time-colon-animated">
+                        <span className="colon-dot top"></span>
+                        <span className="colon-dot bottom"></span>
+                      </span>
+                      <span className="time-digit-group">
+                        {minutes.split('').map((digit, index) => (
+                          <span key={`minute-${index}`} className="time-digit">
+                            {digit}
+                          </span>
+                        ))}
+                      </span>
+                    </div>
+                    <div className="time-unit-labels">
+                      <span className="time-unit">ساعت</span>
+                      <span className="time-unit">دقیقه</span>
+                    </div>
+                  </div>
+
+                  <div className="time-controls">
+                    <div className="time-control-group">
+                      <div className="time-control-label">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                          <circle cx="12" cy="12" r="9" stroke="#1c7bd1" strokeWidth="1.5"/>
+                          <path d="M12 8V12L15 15" stroke="#1c7bd1" strokeWidth="1.5" strokeLinecap="round"/>
+                        </svg>
+                        ساعت
+                      </div>
+                      <div className="time-control-buttons">
+                        <button
+                          className="time-control-btn time-control-btn-decrement"
+                          onClick={decrementHour}
+                          disabled={disabled}
+                          type="button"
+                        >
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                            <path d="M6 12H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          </svg>
+                        </button>
+                        
+                        <div 
+                          className={`time-input-container ${isHoursFocused ? 'focused' : ''}`}
+                          onClick={() => toggleSlider('hours')}
+                        >
+                          <input
+                            type="number"
+                            value={hours}
+                            onChange={handleHourInputChange}
+                            className="time-input-digit"
+                            min="0"
+                            max="23"
+                            disabled={disabled}
+                            onFocus={() => setIsHoursFocused(true)}
+                            onBlur={() => setIsHoursFocused(false)}
+                            inputMode="numeric"
+                          />
+                          <div className="time-input-overlay">
+                            <span className="time-input-value">{hours}</span>
+                          </div>
+                        </div>
+                        
+                        <button
+                          className="time-control-btn time-control-btn-increment"
+                          onClick={incrementHour}
+                          disabled={disabled}
+                          type="button"
+                        >
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 6V18M6 12H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="time-control-group">
+                      <div className="time-control-label">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                          <circle cx="12" cy="12" r="9" stroke="#ff6b9d" strokeWidth="1.5"/>
+                          <path d="M12 8V12L15 15" stroke="#ff6b9d" strokeWidth="1.5" strokeLinecap="round"/>
+                        </svg>
+                        دقیقه
+                      </div>
+                      <div className="time-control-buttons">
+                        <button
+                          className="time-control-btn time-control-btn-decrement"
+                          onClick={decrementMinute}
+                          disabled={disabled}
+                          type="button"
+                        >
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                            <path d="M6 12H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          </svg>
+                        </button>
+                        
+                        <div 
+                          className={`time-input-container ${isMinutesFocused ? 'focused' : ''}`}
+                          onClick={() => toggleSlider('minutes')}
+                        >
+                          <input
+                            type="number"
+                            value={minutes}
+                            onChange={handleMinuteInputChange}
+                            className="time-input-digit"
+                            min="0"
+                            max="59"
+                            disabled={disabled}
+                            onFocus={() => setIsMinutesFocused(true)}
+                            onBlur={() => setIsMinutesFocused(false)}
+                            inputMode="numeric"
+                          />
+                          <div className="time-input-overlay">
+                            <span className="time-input-value">{minutes}</span>
+                          </div>
+                        </div>
+                        
+                        <button
+                          className="time-control-btn time-control-btn-increment"
+                          onClick={incrementMinute}
+                          disabled={disabled}
+                          type="button"
+                        >
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 6V18M6 12H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="time-quick-buttons">
+                    <button
+                      className="time-quick-btn"
+                      onClick={setCurrentTime}
+                      disabled={disabled}
+                      type="button"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" 
+                          stroke="currentColor" strokeWidth="1.5"/>
+                        <path d="M12 6V12L16 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                      </svg>
+                      زمان حال
+                    </button>
+                    
+                    <button
+                      className="time-quick-btn"
+                      onClick={setMidnight}
+                      disabled={disabled}
+                      type="button"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" 
+                          stroke="currentColor" strokeWidth="1.5"/>
+                        <path d="M12 6V12L8 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                      </svg>
+                      ۰۰:۰۰
+                    </button>
+                  </div>
+                </div>
+
+                {showSlider && (
+                  <div className="time-slider-modal">
+                    <div className="time-slider-backdrop" onClick={() => setShowSlider(false)}></div>
+                    <div className="time-slider-content">
+                      <div className="time-slider-header">
+                        <h3 className="time-slider-title">
+                          تنظیم {activeSlider === 'hours' ? 'ساعت' : 'دقیقه'}
+                        </h3>
+                        <button 
+                          className="time-slider-close"
+                          onClick={() => setShowSlider(false)}
+                          type="button"
+                        >
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          </svg>
+                        </button>
+                      </div>
+                      
+                      <div className="time-slider-body">
+                        {activeSlider === 'hours' ? (
+                          <>
+                            <div className="slider-value-display">
+                              <span className="slider-value">{hours}</span>
+                              <span className="slider-unit">ساعت</span>
+                            </div>
+                            <input
+                              type="range"
+                              min="0"
+                              max="23"
+                              value={hours}
+                              onChange={handleHourSliderChange}
+                              className="time-range-slider"
+                              disabled={disabled}
+                            />
+                            <div className="slider-ticks">
+                              {[0, 6, 12, 18, 23].map(tick => (
+                                <div key={tick} className="slider-tick">
+                                  <span className="tick-label">{tick}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div className="slider-value-display">
+                              <span className="slider-value">{minutes}</span>
+                              <span className="slider-unit">دقیقه</span>
+                            </div>
+                            <input
+                              type="range"
+                              min="0"
+                              max="59"
+                              value={minutes}
+                              onChange={handleMinuteSliderChange}
+                              className="time-range-slider"
+                              step="1"
+                              disabled={disabled}
+                            />
+                            <div className="slider-ticks">
+                              {[0, 15, 30, 45, 59].map(tick => (
+                                <div key={tick} className="slider-tick">
+                                  <span className="tick-label">{tick}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </>
+                        )}
+                      </div>
+                      
+                      <div className="time-slider-footer">
+                        <button 
+                          className="time-slider-preset"
+                          onClick={() => {
+                            if (activeSlider === 'hours') handleHourChange('12');
+                            else handleMinuteChange('00');
+                          }}
+                          type="button"
+                        >
+                          تنظیم پیش‌فرض
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </>,
+          document.body
+        )}
+      </div>
+    );
+  };
+
+  useEffect(() => {
+    const shouldHide =
+      mode === "edit" || showMapPicker || cropModalOpen;
+
+    if (shouldHide) {
+      setHideNavbar(true);
+      setHideFooter(true);
+      document.body.style.overflow = "hidden";
+    } else {
+      setHideNavbar(false);
+      setHideFooter(false);
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      setHideNavbar(false);
+      setHideFooter(false);
+      document.body.style.overflow = "";
+    };
+  }, [
+    mode,
+    showMapPicker,
+    cropModalOpen,
+    setHideNavbar,
+    setHideFooter
+  ]);
+    
   useEffect(() => {
     if (!adData) return;
 
@@ -350,41 +825,45 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
         let foundTime = null;
         
         if (data.lost_time) {
-          lostTime = new Date(data.lost_time);
+          lostTime = parseDateKeepClock(data.lost_time);
         }
         
         if (data.found_time) {
-          foundTime = new Date(data.found_time);
+          foundTime = parseDateKeepClock(data.found_time);
         }
 
-    const backendImages = data.images?.map(img => {
-      let imageUrl = img.image;
-      if (imageUrl && !imageUrl.startsWith("http")) {
-        if (imageUrl.startsWith("/")) {
-          imageUrl = imageUrl.substring(1);
-        }
-        
-        const BACKEND_URL = config.BACKEND_URL;
-        imageUrl = `${BACKEND_URL}/${imageUrl}`;
-      }
-      const timestamp = Date.now();
-      const finalUrl = `${imageUrl}${imageUrl.includes('?') ? '&' : '?'}t=${timestamp}`;
-      
-      return {
-        id: img.id,
-        backendId: img.id,
-        file: null,
-        isFromBackend: true,
-        preview: finalUrl,
-      };
-    }) || [];
+        const petAgeData = data.pet_age || {};
+        const years = petAgeData.years !== null ? petAgeData.years : "";
+        const months = petAgeData.months !== null ? petAgeData.months : "";
 
-  
+        setAgeYears(years.toString());
+        setAgeMonths(months.toString());
+
+        const backendImages = data.images?.map(img => {
+          let imageUrl = img.image;
+          if (imageUrl && !imageUrl.startsWith("http")) {
+            if (imageUrl.startsWith("/")) {
+              imageUrl = imageUrl.substring(1);
+            }
+            
+            const BACKEND_URL = config.BACKEND_URL;
+            imageUrl = `${BACKEND_URL}/${imageUrl}`;
+          }
+          const timestamp = Date.now();
+          const finalUrl = `${imageUrl}${imageUrl.includes('?') ? '&' : '?'}t=${timestamp}`;
+          
+          return {
+            id: img.id,
+            backendId: img.id,
+            file: null,
+            isFromBackend: true,
+            preview: finalUrl,
+          };
+        }) || [];
 
         setFormData({
           name: data.pet_name || "",
           type: data.title || "",
-          age: data.pet_age || "",
           gender: data.pet_sex === "male" ? "نر" : "ماده",
           location: locationInfo.readable || "",
           lostTime: lostTime,
@@ -423,7 +902,6 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
     fetchDetail();
   }, [adData]);
 
-
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
 
@@ -431,6 +909,34 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
       ...prev,
       [name]: type === "checkbox" ? checked : value
     }));
+  };
+
+  const handleAgeYearsChange = (e) => {
+    const value = e.target.value;
+    if (value === "" || (/^\d+$/.test(value) && value.length <= 3)) {
+      setAgeYears(value);
+    }
+  };
+
+  const handleAgeMonthsChange = (e) => {
+    const value = e.target.value;
+    if (value === "" || (/^\d+$/.test(value) && parseInt(value) <= 11)) {
+      setAgeMonths(value);
+    }
+  };
+
+  const generateAgeDisplay = (years, months) => {
+    if (!years && !months) return "";
+    
+    const parts = [];
+    if (years && parseInt(years) > 0) {
+      parts.push(`${years} سال`);
+    }
+    if (months && parseInt(months) > 0) {
+      parts.push(`${months} ماه`);
+    }
+    
+    return parts.join(" و ") || "";
   };
 
   const handleToggleChange = (name) => {
@@ -443,14 +949,14 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
   const handleTimeChangeLost = (time) => {
     setFormData(prev => ({
       ...prev,
-      lostTime: time
+      lostTime: time instanceof Date ? new Date(time) : time
     }));
   };
 
   const handleTimeChangeFound = (time) => {
     setFormData(prev => ({
       ...prev,
-      foundTime: time
+      foundTime: time instanceof Date ? new Date(time) : time
     }));
   };
 
@@ -511,21 +1017,21 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
   };
 
   const handleImageUploadWithCrop = (e) => {
-  const files = Array.from(e.target.files);
-  
-  if (files.length === 0) return;
-  
-  const file = files[0];
-  const reader = new FileReader();
-  
-  reader.onload = (e) => {
-    setImageToCrop(e.target.result);
-    setCurrentImageIndex(null); 
-    setCropModalOpen(true);
+    const files = Array.from(e.target.files);
+    
+    if (files.length === 0) return;
+    
+    const file = files[0];
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+      setImageToCrop(e.target.result);
+      setCurrentImageIndex(null); 
+      setCropModalOpen(true);
+    };
+    
+    reader.readAsDataURL(file);
   };
-  
-  reader.readAsDataURL(file);
-};
   const handleCropImageClick = (imageIndex) => {
     const image = formData.images[imageIndex];
 
@@ -536,59 +1042,59 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave }) => {
     setCropModalOpen(true);
   };
 
-const handleCropComplete = async (croppedResult) => {
-  if (!croppedResult) return;
-  
-  try {
-    const timestamp = Date.now();
-    let imageUrl = croppedResult.image;
+  const handleCropComplete = async (croppedResult) => {
+    if (!croppedResult) return;
+    
+    try {
+      const timestamp = Date.now();
+      let imageUrl = croppedResult.image;
 
-    if (!imageUrl.includes('?t=')) {
-      imageUrl = `${imageUrl.split('?')[0]}?t=${timestamp}`;
-    }
-    
-    const newImage = {
-      id: timestamp + Math.random(), 
-      file: null,
-      backendId: croppedResult.backendId || croppedResult.id,
-      isFromBackend: true,
-      preview: imageUrl, 
-      originalData: croppedResult.originalData
-    };
-    
-    setFormData(prev => {
-      if (currentImageIndex !== null) {
-        const newImages = [...prev.images];
-        newImages[currentImageIndex] = newImage;
-        return { ...prev, images: newImages };
-      } 
-      
-      else {
-        return {
-          ...prev,
-          images: [...prev.images, newImage]
-        };
+      if (!imageUrl.includes('?t=')) {
+        imageUrl = `${imageUrl.split('?')[0]}?t=${timestamp}`;
       }
-    });
-    
-    setNotification({
-      message: currentImageIndex !== null 
-        ? "عکس با موفقیت برش و ذخیره شد" 
-        : "عکس جدید با موفقیت افزوده شد",
-      type: "success"
-    });
-    
-  } catch (error) {
-    console.error("Error handling cropped image:", error);
-    setNotification({
-      message: "خطا در ذخیره‌سازی عکس",
-      type: "error"
-    });
-  } finally {
-    setCropModalOpen(false);
-    setCurrentImageIndex(null);
-  }
-};
+      
+      const newImage = {
+        id: timestamp + Math.random(), 
+        file: null,
+        backendId: croppedResult.backendId || croppedResult.id,
+        isFromBackend: true,
+        preview: imageUrl, 
+        originalData: croppedResult.originalData
+      };
+      
+      setFormData(prev => {
+        if (currentImageIndex !== null) {
+          const newImages = [...prev.images];
+          newImages[currentImageIndex] = newImage;
+          return { ...prev, images: newImages };
+        } 
+        
+        else {
+          return {
+            ...prev,
+            images: [...prev.images, newImage]
+          };
+        }
+      });
+      
+      setNotification({
+        message: currentImageIndex !== null 
+          ? "عکس با موفقیت برش و ذخیره شد" 
+          : "عکس جدید با موفقیت افزوده شد",
+        type: "success"
+      });
+      
+    } catch (error) {
+      console.error("Error handling cropped image:", error);
+      setNotification({
+        message: "خطا در ذخیره‌سازی عکس",
+        type: "error"
+      });
+    } finally {
+      setCropModalOpen(false);
+      setCurrentImageIndex(null);
+    }
+  };
 
   const handleAdTypeSelect = (type) => {
     setSelectedAdType(type);
@@ -760,8 +1266,59 @@ const handleCropComplete = async (croppedResult) => {
     setShowMapPicker(false);
   };
 
+  const resetForm = () => {
+    setFormData(initialFormState);
+    setAgeYears("");
+    setAgeMonths("");
+    setSelectedLocation(null);
+    setSelectedAdType("lost");
+    setNotification(null);
+    setShowMapPicker(false);
+    setCropModalOpen(false);
+    setImageToCrop(null);
+    setCurrentImageIndex(null);
+    setShowDeleteModal(false);
+    setImageToDelete(null);
+    setIsDeleting(false);
+    setIsLoading(false);
+  };
+
+  const handleCancel = () => {
+    if (mode === "edit") {
+      onClose?.();
+    }
+
+    if (mode === "create") {
+      resetForm();
+    }
+  };
+
+  const validateForm = () => {
+    const errors = [];
+    
+    if (ageYears && parseInt(ageYears) > 100) {
+      errors.push("سن نمی‌تواند بیشتر از ۱۰۰ سال باشد");
+    }
+    
+    if (ageMonths && parseInt(ageMonths) > 11) {
+      errors.push("ماه نمی‌تواند بیشتر از ۱۱ باشد");
+    }
+    
+    return errors;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    const validationErrors = validateForm();
+    if (validationErrors.length > 0) {
+      setNotification({
+        message: validationErrors.join(" - "),
+        type: "error"
+      });
+      return;
+    }
+    
     setIsLoading(true);
 
     const locationPayload = selectedLocation
@@ -773,7 +1330,7 @@ const handleCropComplete = async (croppedResult) => {
           road: selectedLocation.road,
           latitude: selectedLocation.lat.toString(),
           longitude: selectedLocation.lng.toString(),
-          readable: selectedLocation.readable
+          readable: selectedLocation.readable,
         }
       : null;
 
@@ -781,12 +1338,19 @@ const handleCropComplete = async (croppedResult) => {
       .filter(img => img.backendId)
       .map(img => img.backendId);
 
+    const petAgePayload = {
+      years: ageYears ? parseInt(ageYears) : null,
+      months: ageMonths ? parseInt(ageMonths) : null,
+      display: generateAgeDisplay(ageYears, ageMonths)
+    };
+
     const payload = {
       title: formData.type,
       pet_name: formData.name,
+      breed: formData.breed || "",
       pet_type: formData.animalType === "گربه" ? "cat" : "dog",
       pet_sex: formData.gender === "نر" ? "male" : "female",
-      pet_age: formData.age || null,
+      pet_age: petAgePayload,
       Specific_symptoms: formData.specialSigns || "",
       description: formData.description,
       diseases: formData.diseases || "",
@@ -794,7 +1358,7 @@ const handleCropComplete = async (croppedResult) => {
       vaccination: formData.isVaccinated,
       steriliz: formData.isSterilized,
       contact_email: formData.contact_email,
-      location: locationPayload
+      location: locationPayload,
     };
 
     if (imageIds.length > 0) {
@@ -811,31 +1375,49 @@ const handleCropComplete = async (croppedResult) => {
 
     try {
       let result;
-      if (selectedAdType === "lost") {
-        payload.lost_time = toISO(formData.lostTime);
-        result = await updateLostPost(adData.id, payload);
-      } 
-      
-      else if (selectedAdType === "found") {
-        payload.found_time = toISO(formData.foundTime);
-        result = await updateFoundPost(adData.id, payload);
-      } 
-      
-      else if (selectedAdType === "adoption") {
-        result = await updateSurrenderPost(adData.id, payload);
+
+      if (mode === "edit") {
+        if (selectedAdType === "lost") {
+          payload.lost_time = toISO(formData.lostTime);
+          result = await updateLostPost(adData.id, payload);
+        } 
+        else if (selectedAdType === "found") {
+          payload.found_time = toISO(formData.foundTime);
+          result = await updateFoundPost(adData.id, payload);
+        } 
+        else if (selectedAdType === "adoption") {
+          result = await updateSurrenderPost(adData.id, payload);
+        }
+
+        showNotification("آگهی با موفقیت ویرایش شد", "success");
       }
 
-      showNotification("آگهی با موفقیت ویرایش شد", "success");
-      
+      if (mode === "create") {
+        if (selectedAdType === "lost") {
+          payload.lost_time = toISO(formData.lostTime);
+          result = await createLostPost(payload);
+        } 
+        else if (selectedAdType === "found") {
+          payload.found_time = toISO(formData.foundTime);
+          result = await createFoundPost(payload);
+        } 
+        else if (selectedAdType === "adoption") {
+          result = await createSurrenderPost(payload);
+        }
+
+        showNotification("آگهی با موفقیت ثبت شد", "success");
+      }
+
       setTimeout(() => {
-        onSave(result || payload);
+        resetForm();
+        onSave?.(result?.data || result);
         setIsLoading(false);
-      }, 1500);
+      }, 1200);
 
     } catch (err) {
-      console.error("Update error:", err);
+      console.error("Submit error:", err);
       setIsLoading(false);
-      showNotification("خطا در ویرایش آگهی. لطفاً دوباره تلاش کنید", "error");
+      showNotification("خطا در ثبت آگهی. لطفاً دوباره تلاش کنید", "error");
     }
   };
 
@@ -921,7 +1503,7 @@ const handleCropComplete = async (croppedResult) => {
           disabled={isLoading}
         >
           <img src={mapIcon} alt="تغییر موقعیت" />
-          تغییر موقعیت
+          {selectedLocation ? "تغییر موقعیت" : "ثبت موقعیت"}
         </button>
       </div>
     );
@@ -942,72 +1524,164 @@ const handleCropComplete = async (croppedResult) => {
     }
   
     return (
-      <div className="notification-options-section">
+      <div className={`notification-options-section${isEdit ? " edit-mode" : ""}`}>
         <div className="notification-options-container">
           <div className="notification-options-content">
-            <div className="notification-options-inner">
+            <div className="notification-options-content-wrapper">
+              <div className="notification-options-inner">
               
               <div className="form-section-header">
-                <h2 className="notification-options-title">ویرایش آگهی</h2>
-                <button 
-                  onClick={onClose}
-                  className="close-button"
-                  disabled={isLoading}
-                >
-                  ×
-                </button>
+                <h2 className="notification-options-title">{isEdit ? "ویرایش آگهی" : "ثبت آگهی جدید"}</h2>
+                {isEdit && (
+                  <button
+                    onClick={onClose}
+                    className="close-button"
+                    disabled={isLoading}
+                  >
+                    ×
+                  </button>
+                )}
+
               </div>
 
               <form onSubmit={handleSubmit}>
+              
                 <div className="form-section">
                   <div className="form-vertical-fields">
                     <div className="form-field">
                       <h3 className="form-section-title">نوع آگهی</h3>
-                      <div className="ad-type-grid">
-                        <div 
-                          className={`ad-type-card ad-type-card-lost ${selectedAdType === "lost" ? "ad-type-card-active" : ""}`}
-                          onClick={() => handleAdTypeSelect("lost")}
-                        >
-                          <div className="ad-type-card-content">
-                            <img 
-                              className="ad-type-icon ad-type-icon-lost" 
-                              src={searchIcon} 
-                              alt="گم شده"
-                            />
-                            <span className={`ad-type-label ad-type-label-lost ${selectedAdType === "lost" ? "ad-type-label-active" : ""}`}>
-                              گم شده
-                            </span>
+                      
+                      <div className="professional-ad-type-selector">
+                        <div className="ad-type-grid-pro">
+                          <div
+                            className={`ad-type-card-pro ${selectedAdType === "lost" ? 'active' : ''}`}
+                            onClick={() => !isLoading && handleAdTypeSelect("lost")}
+                            style={{
+                              '--card-color': '#ea9799',
+                              '--card-gradient': 'linear-gradient(135deg, #ea9799 0%, #f8c3c4 100%)',
+                              '--icon-color': '#dc2626'
+                            }}
+                          >
+                            <div className="ad-type-card-pro-inner">
+                              <div className="ad-type-icon-wrapper">
+                                <div className="ad-type-icon-bg">
+                                  <img 
+                                    src={searchIcon} 
+                                    alt="گم شده"
+                                    className="ad-type-icon-pro"
+                                  />
+                                </div>
+                                {selectedAdType === "lost" && (
+                                  <div className="selected-badge">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                      <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                  </div>
+                                )}
+                              </div>
+                              
+                              <div className="ad-type-content">
+                                <h4 className="ad-type-title">گم شده</h4>
+                                <p className="ad-type-description">حیوان خانگی شما گم شده است</p>
+                              </div>
+                              
+                              <div className="ad-type-indicator">
+                                <div className="indicator-dot"></div>
+                              </div>
+                            </div>
+                            
+                            <div className="ad-type-wave-effect"></div>
+                          </div>
+
+                          <div
+                            className={`ad-type-card-pro ${selectedAdType === "found" ? 'active' : ''}`}
+                            onClick={() => !isLoading && handleAdTypeSelect("found")}
+                            style={{
+                              '--card-color': '#1c7bd1',
+                              '--card-gradient': 'linear-gradient(135deg, #1c7bd1 0%, #5a9bc9 100%)',
+                              '--icon-color': '#ffffff'
+                            }}
+                          >
+                            <div className="ad-type-card-pro-inner">
+                              <div className="ad-type-icon-wrapper">
+                                <div className="ad-type-icon-bg">
+                                  <img 
+                                    src={checkmarkIcon} 
+                                    alt="پیدا شده"
+                                    className="ad-type-icon-pro"
+                                  />
+                                </div>
+                                {selectedAdType === "found" && (
+                                  <div className="selected-badge">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                      <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                  </div>
+                                )}
+                              </div>
+                              
+                              <div className="ad-type-content">
+                                <h4 className="ad-type-title">پیدا شده</h4>
+                                <p className="ad-type-description">حیوان خانگی پیدا کرده‌اید</p>
+                              </div>
+                              
+                              <div className="ad-type-indicator">
+                                <div className="indicator-dot"></div>
+                              </div>
+                            </div>
+                            
+                            <div className="ad-type-wave-effect"></div>
+                          </div>
+                          <div
+                            className={`ad-type-card-pro ${selectedAdType === "adoption" ? 'active' : ''}`}
+                            onClick={() => !isLoading && handleAdTypeSelect("adoption")}
+                            style={{
+                              '--card-color': '#10b981',
+                              '--card-gradient': 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
+                              '--icon-color': '#ffffff'
+                            }}
+                          >
+                            <div className="ad-type-card-pro-inner">
+                              <div className="ad-type-icon-wrapper">
+                                <div className="ad-type-icon-bg">
+                                  <img 
+                                    src={heartIcon} 
+                                    alt="سرپرستی"
+                                    className="ad-type-icon-pro"
+                                  />
+                                </div>
+                                {selectedAdType === "adoption" && (
+                                  <div className="selected-badge">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                      <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                  </div>
+                                )}
+                              </div>
+                              
+                              <div className="ad-type-content">
+                                <h4 className="ad-type-title">سرپرستی</h4>
+                                <p className="ad-type-description">به دنبال سرپرست هستید</p>
+                              </div>
+                              
+                              <div className="ad-type-indicator">
+                                <div className="indicator-dot"></div>
+                              </div>
+                            </div>
+                            
+                            <div className="ad-type-wave-effect"></div>
                           </div>
                         </div>
-
-                        <div 
-                          className={`ad-type-card ad-type-card-found ${selectedAdType === "found" ? "ad-type-card-active" : ""}`}
-                          onClick={() => handleAdTypeSelect("found")}
-                        >
-                          <div className="ad-type-card-content">
-                            <img 
-                              className="ad-type-icon ad-type-icon-found" 
-                              src={checkmarkIcon} 
-                              alt="پیدا شده"
-                            />
-                            <span className={`ad-type-label ad-type-label-found ${selectedAdType === "found" ? "ad-type-label-active" : ""}`}>
-                              پیدا شده
-                            </span>
-                          </div>
-                        </div>
-
-                        <div 
-                          className={`ad-type-card ad-type-card-adoption ${selectedAdType === "adoption" ? "ad-type-card-active" : ""}`}
-                          onClick={() => handleAdTypeSelect("adoption")}
-                        >
-                          <div className="ad-type-card-content">
-                            <img 
-                              className="ad-type-icon ad-type-icon-adoption" 
-                              src={heartIcon} 
-                              alt="سرپرستی"
-                            />
-                            <span className={`ad-type-label ad-type-label-adoption ${selectedAdType === "adoption" ? "ad-type-label-active" : ""}`}>
-                              سرپرستی
+                        
+                        <div className="ad-type-status">
+                          <div className="status-indicator">
+                            <div className="status-dot active"></div>
+                            <span className="status-text">
+                              انتخاب شده: {
+                                selectedAdType === "lost" ? "گم شده" :
+                                selectedAdType === "found" ? "پیدا شده" :
+                                "سرپرستی"
+                              }
                             </span>
                           </div>
                         </div>
@@ -1195,50 +1869,248 @@ const handleCropComplete = async (croppedResult) => {
 
                         <div className="form-field">
                           <label className="form-label-edit">نوع حیوان</label>
-                          <div className="input-container">
-                            <input
-                              type="text"
-                              name="animalType"
-                              value={formData.animalType}
-                              onChange={handleInputChange}
-                              className="form-input"
-                              placeholder="مثال: سگ، گربه، پرنده"
-                              disabled={isLoading}
-                            />
+                          <div className="modern-glass-dropdown">
+                            <div className="dropdown-header" onClick={() => !isLoading && setIsDropdownOpen(!isDropdownOpen)}>
+                              <div className="dropdown-selected">
+                                {formData.animalType ? (
+                                  <>
+                                    <div className="selected-icon">
+                                      {formData.animalType === "سگ" && <img src="/src/assets/icons/dog.svg" alt="سگ" className="animal-icon" />}
+                                      {formData.animalType === "گربه" && <img src="/src/assets/icons/cat.svg" alt="گربه" className="animal-icon" />}
+                                      {formData.animalType === "پرنده" && <img src="/src/assets/icons/bird.svg" alt="پرنده" className="animal-icon" />}
+                                      {formData.animalType === "خرگوش" && <img src="/src/assets/icons/rabbit.svg" alt="خرگوش" className="animal-icon" />}
+                                      {formData.animalType === "همستر" && <img src="/src/assets/icons/hamster.svg" alt="همستر" className="animal-icon" />}
+                                      {formData.animalType === "سایر" && (
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="animal-icon">
+                                          <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" 
+                                            stroke="#2c3e50" strokeWidth="1.5"/> 
+                                          <path d="M12 16V12M12 8H12.01" stroke="#2c3e50" strokeWidth="1.5" strokeLinecap="round"/>
+                                        </svg>
+                                      )}
+                                    </div>
+                                    <span className="selected-text">{formData.animalType}</span>
+                                  </>
+                                ) : (
+                                  <span className="dropdown-placeholder">نوع حیوان را انتخاب کنید</span>
+                                )}
+                              </div>
+                              <div className={`dropdown-arrow ${isDropdownOpen ? 'open' : ''}`}>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                  <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                              </div>
+                            </div>
+                            
+                            {isDropdownOpen && (
+                              <div className="dropdown-menu">
+                                <div className="dropdown-content">
+                                  <div className="dropdown-search">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="search-icon">
+                                      <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                                    </svg>
+                                    <input 
+                                      type="text" 
+                                      className="search-input" 
+                                      placeholder="جستجوی نوع حیوان..."
+                                      value={searchTerm}
+                                      onChange={(e) => setSearchTerm(e.target.value)}
+                                    />
+                                  </div>
+                                  
+                                  <div className="dropdown-options">
+                                    {animalOptions
+                                      .filter(option => 
+                                        option.label.includes(searchTerm) || 
+                                        option.hint.includes(searchTerm)
+                                      )
+                                      .map((option) => (
+                                        <div
+                                          key={option.value}
+                                          className={`dropdown-option ${formData.animalType === option.value ? 'selected' : ''}`}
+                                          onClick={() => {
+                                            setFormData(prev => ({ ...prev, animalType: option.value }));
+                                            setIsDropdownOpen(false);
+                                            setSearchTerm("");
+                                          }}
+                                        >
+                                          <div className="option-icon">
+                                            {option.icon}
+                                          </div>
+                                          <div className="option-info">
+                                            <span className="option-label">{option.label}</span>
+                                            <span className="option-description">{option.hint}</span>
+                                          </div>
+                                          {formData.animalType === option.value && (
+                                            <div className="option-check">
+                                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                                <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                              </svg>
+                                            </div>
+                                          )}
+                                        </div>
+                                      ))}
+                                  </div>
+                                  
+                                  <div className="dropdown-footer">
+                                    <span className="footer-text">
+                                      {animalOptions.filter(option => 
+                                        option.label.includes(searchTerm) || 
+                                        option.hint.includes(searchTerm)
+                                      ).length} گزینه موجود
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                            
+                            <input type="hidden" name="animalType" value={formData.animalType} />
                           </div>
                         </div>
 
                         <div className="form-field">
-                          <label className="form-label-edit">سن</label>
-                          <div className="input-container">
-                            <input
-                              type="text"
-                              name="age"
-                              value={formData.age}
-                              onChange={handleInputChange}
-                              className="form-input"
-                              placeholder="مثال: 2 سال، 6 ماه"
-                              disabled={isLoading}
-                            />
+                          <label className="form-label-edit">سن حیوان</label>
+                          <div className="compact-age-input-container">
+                            <div className="compact-age-input-fields">
+                              <div className="compact-age-input-group">
+                                <div className="compact-age-input-wrapper">
+                                  <input
+                                    type="number"
+                                    value={ageYears}
+                                    onChange={handleAgeYearsChange}
+                                    className="form-input compact-age-input"
+                                    placeholder="0"
+                                    min="0"
+                                    max="100"
+                                    step="1"
+                                    disabled={isLoading}
+                                    inputMode="numeric"
+                                    pattern="[0-9]*"
+                                  />
+                                  <div className="compact-age-unit">سال</div>
+                                </div>
+                                
+                              </div>
+                              
+                              <div className="compact-age-input-group">
+                                <div className="compact-age-input-wrapper">
+                                  <input
+                                    type="number"
+                                    value={ageMonths}
+                                    onChange={handleAgeMonthsChange}
+                                    className="form-input compact-age-input"
+                                    placeholder="0"
+                                    min="0"
+                                    max="11"
+                                    step="1"
+                                    disabled={isLoading}
+                                    inputMode="numeric"
+                                    pattern="[0-9]*"
+                                  />
+                                  <div className="compact-age-unit">ماه</div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {(ageYears || ageMonths) && (
+                              <div className="compact-age-display">
+                                <span className="compact-age-display-text">
+                                  سن: <strong>{generateAgeDisplay(ageYears, ageMonths)}</strong>
+                                </span>
+                              </div>
+                            )}
                           </div>
                         </div>
 
-                        <div className="form-field">
-                          <label className="form-label-edit">جنسیت</label>
-                          <div className="input-container">
-                            <select
-                              name="gender"
-                              value={formData.gender}
-                              onChange={handleInputChange}
-                              className="form-input"
-                              disabled={isLoading}
-                            >
-                              <option value="">انتخاب جنسیت</option>
-                              <option value="نر">نر</option>
-                              <option value="ماده">ماده</option>
-                            </select>
+                      <div className="form-field">
+                        <label className="form-label-edit">جنسیت</label>
+                        <div className="modern-glass-dropdown gender-dropdown">
+                          <div 
+                            className="dropdown-header" 
+                            onClick={() => !isLoading && setIsGenderDropdownOpen(!isGenderDropdownOpen)}
+                          >
+                            <div className="dropdown-selected">
+                              {formData.gender ? (
+                                <>
+                                  <div className="selected-icon">
+                                    {formData.gender === "نر" && (
+                                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="animal-icon">
+                                        <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" 
+                                          stroke="#1c7bd1" strokeWidth="1.5"/>
+                                        <path d="M12 16V8M12 8L15 11M12 8L9 11" stroke="#1c7bd1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                      </svg>
+                                    )}
+                                    {formData.gender === "ماده" && (
+                                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="animal-icon">
+                                        <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" 
+                                          stroke="#ff6b9d" strokeWidth="1.5"/>
+                                        <path d="M12 16V8M8 12H16" stroke="#ff6b9d" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                      </svg>
+                                    )}
+                                    {formData.gender === "نامشخص" && (
+                                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="animal-icon">
+                                        <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" 
+                                          stroke="#94a3b8" strokeWidth="1.5"/>
+                                        <path d="M12 16V12M12 8H12.01" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round"/>
+                                      </svg>
+                                    )}
+                                  </div>
+                                  <span className={`selected-text ${
+                                    formData.gender === "نر" ? "gender-male" :
+                                    formData.gender === "ماده" ? "gender-female" :
+                                    "gender-unknown"
+                                  }`}>
+                                    {formData.gender}
+                                  </span>
+                                </>
+                              ) : (
+                                <span className="dropdown-placeholder">جنسیت را انتخاب کنید</span>
+                              )}
+                            </div>
+                            <div className={`dropdown-arrow ${isGenderDropdownOpen ? 'open' : ''}`}>
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </div>
                           </div>
+                          
+                          {isGenderDropdownOpen && (
+                            <div className="dropdown-menu gender-menu">
+                              <div className="dropdown-content">
+                                <div className="dropdown-options gender-options">
+                                  {genderOptions.map((option) => (
+                                    <div
+                                      key={option.value}
+                                      className={`dropdown-option gender-option ${
+                                        formData.gender === option.value ? 'selected' : ''
+                                      } ${
+                                        option.value === "نر" ? "gender-option-male" :
+                                        option.value === "ماده" ? "gender-option-female" :
+                                        "gender-option-unknown"
+                                      }`}
+                                      onClick={() => handleGenderSelect(option.value)}
+                                    >
+                                      <div className="option-icon gender-option-icon">
+                                        {option.icon}
+                                      </div>
+                                      <div className="option-info">
+                                        <span className="option-label">{option.label}</span>
+                                        <span className="option-description">{option.hint}</span>
+                                      </div>
+                                      {formData.gender === option.value && (
+                                        <div className="option-check">
+                                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                            <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                          </svg>
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          )}
                         </div>
+                      </div>
                       </div>
 
                       <div className="form-vertical-fields">
@@ -1296,14 +2168,12 @@ const handleCropComplete = async (croppedResult) => {
                             </div>
                             
                             <div className="time-input-container-main">
-                              <label className="form-label-edit form-label-time">ساعت گم شدن</label>
-                              <div className="time-input-section-main">
-                                <TimeInput 
-                                  value={formData.lostTime} 
-                                  onChange={handleTimeChangeLost} 
-                                  disabled={isLoading}
-                                />
-                              </div>
+                              <ProfessionalTimeSelector 
+                                value={formData.lostTime} 
+                                onChange={handleTimeChangeLost} 
+                                disabled={isLoading}
+                                label="ساعت گم شدن"
+                              />
                             </div>
                           </div>
                         </div>
@@ -1363,14 +2233,12 @@ const handleCropComplete = async (croppedResult) => {
                             </div>
                             
                             <div className="time-input-container-main">
-                              <label className="form-label-edit form-label-time">ساعت پیدا شدن</label>
-                              <div className="time-input-section-main">
-                                <TimeInput 
-                                  value={formData.foundTime} 
-                                  onChange={handleTimeChangeFound} 
-                                  disabled={isLoading}
-                                />
-                              </div>
+                              <ProfessionalTimeSelector 
+                                value={formData.foundTime} 
+                                onChange={handleTimeChangeFound} 
+                                disabled={isLoading}
+                                label="ساعت پیدا شدن"
+                              />
                             </div>
                           </div>
                         </div>
@@ -1556,7 +2424,7 @@ const handleCropComplete = async (croppedResult) => {
                   <button 
                     type="button" 
                     className="form-button form-button-cancel"
-                    onClick={onClose}
+                    onClick={handleCancel}
                     disabled={isLoading}
                   >
                     انصراف
@@ -1566,10 +2434,18 @@ const handleCropComplete = async (croppedResult) => {
                     className={`form-button form-button-submit ${isLoading ? 'loading' : ''}`}
                     disabled={isLoading}
                   >
-                    {isLoading ? "در حال ذخیره..." : "ذخیره تغییرات"}
+                    {isLoading
+                      ? isEdit
+                        ? "در حال ذخیره..."
+                        : "در حال ثبت..."
+                      : isEdit
+                        ? "ذخیره تغییرات"
+                        : "ثبت آگهی"
+                    }
                   </button>
                 </div>
               </form>
+            </div>
             </div>
           </div>
         </div>

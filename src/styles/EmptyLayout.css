@@ -1,0 +1,14 @@
+.empty-layout {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #D3DEE7;
+  padding: 24px;
+}
+
+@media (max-width: 768px) {
+  .empty-layout {
+    padding: 16px;
+  }
+}

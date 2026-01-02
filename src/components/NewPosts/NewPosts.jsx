@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AdvancedFilters from "../AdvancedFilters";
-import SortFilters from "../SortFilters";
 import "../../styles/NewPosts.css";
 import api from "../../Services/api";
+import { getPostImage } from "../../utils/postImages";
+import { getPetType } from "../../utils/petTypes";
 
 const API_ENDPOINTS = {
   all: "posts/all/",
@@ -11,8 +11,6 @@ const API_ENDPOINTS = {
   found: "posts/found-posts/",
   adoption: "posts/surrender-posts/",
 };
-
-const PLACEHOLDER_IMAGE = "/images/placeholder.jpg";
 
 const calculateRelativeTime = (isoDate) => {
   if (!isoDate) return "تاریخ نامشخص";
@@ -32,36 +30,41 @@ const calculateRelativeTime = (isoDate) => {
   return `${Math.floor(diffInSeconds / 31536000)} سال پیش`;
 };
 
+const LocationIcon = () => (
+  <img 
+    src="/src/icons/location.svg" 
+    alt="location"
+    width="16" 
+    height="16"
+    className="icon-img-landing"
+  />
+);
+
+const CalendarIcon = () => (
+  <img 
+    src="/src/icons/calendar-2.svg" 
+    alt="calendar"
+    width="16" 
+    height="16"
+    className="icon-img-landing"
+  />
+);
+
+const ArrowIcon = () => (
+  <svg className="arrow-icon-landing" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+    <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"/>
+  </svg>
+);
+
 export default function NewPosts() {
   const navigate = useNavigate();
 
-  const [activeFilter, setActiveFilter] = useState("all");
+  const [activeFilter, setActiveFilter] = useState("همه");
   const [posts, setPosts] = useState([]);
-  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const [filterAnimal, setFilterAnimal] = useState("all");
-  const [filterSex, setFilterSex] = useState("all");
-  const [filterCity, setFilterCity] = useState("all");
-  const [filterAge, setFilterAge] = useState("all");
-  
-  const [filterHasCertificate, setFilterHasCertificate] = useState("all");
-  const [filterIsVaccinated, setFilterIsVaccinated] = useState("all");
-  const [filterIsSterilized, setFilterIsSterilized] = useState("all");
-  
-  const [sortOrder, setSortOrder] = useState("");
-  const [isSortEnabled, setIsSortEnabled] = useState(true);
-
-  const activeFiltersCount = [
-    filterAnimal !== "all",
-    filterSex !== "all",
-    filterCity !== "all",
-    filterAge !== "all",
-    filterHasCertificate !== "all",
-    filterIsVaccinated !== "all",
-    filterIsSterilized !== "all",
-  ].filter(Boolean).length;
+    
 
   const fetchPosts = async (url) => {
     setLoading(true);
@@ -85,17 +88,11 @@ export default function NewPosts() {
     let url;
     if (activeFilter === "گم شده") {
       url = API_ENDPOINTS.lost;
-    } 
-    
-    else if (activeFilter === "پیدا شده") {
+    } else if (activeFilter === "پیدا شده") {
       url = API_ENDPOINTS.found;
-    } 
-    
-    else if (activeFilter === "سرپرستی") {
+    } else if (activeFilter === "سرپرستی") {
       url = API_ENDPOINTS.adoption;
-    } 
-    
-    else {
+    } else {
       url = API_ENDPOINTS.all;
     }
 
@@ -104,77 +101,55 @@ export default function NewPosts() {
 
   const normalizedPosts = useMemo(() => {
     return posts.map((p) => {
-      let status = "active";
+      let status = "فعال";
       let statusLabel = "فعال";
 
       if (activeFilter === "گم شده") {
         status = "گم شده";
         statusLabel = "گم شده";
-      } 
-      
-      else if (activeFilter === "پیدا شده") {
+      } else if (activeFilter === "پیدا شده") {
         status = "پیدا شده";
         statusLabel = "پیدا شده";
-      } 
-      
-      else if (activeFilter === "سرپرستی") {
+      } else if (activeFilter === "سرپرستی") {
         status = "سرپرستی";
         statusLabel = "سرپرستی";
-      } 
-      
-      else {
-        if (p.type === "found" || p.found_time) {
+      } else {
+        if (p.post_type === "found" || p.found_time) {
           status = "پیدا شده";
           statusLabel = "پیدا شده";
-        } 
-        
-        else if (p.type === "lost" || p.lost_time) {
+        } else if (p.psot_type === "lost" || p.lost_time) {
           status = "گم شده";
           statusLabel = "گم شده";
-        } 
-        
-        else if (p.type === "surrender") {
+        } else if (p.post_type === "surrender") {
           status = "سرپرستی";
           statusLabel = "سرپرستی";
-        } 
-        
-        else {
-          status = p.status || "active";
+        } else {
+          status = p.status || "فعال";
           statusLabel = "فعال";
         }
       }
 
-      const categoryMap = {
-        dog: "سگ",
-        cat: "گربه",
-        other: "سایر",
-      };
-
       const sex = p.sex || (p.pet_sex === "male" ? "نر" : p.pet_sex === "female" ? "ماده" : null);
-      
       const age = p.age || p.pet_age || null;
-      
       const locationText = p.location?.readable || p.location || "موقعیت نامشخص";
-      
       const createdAt = p.created_at ? new Date(p.created_at) : new Date();
       const updatedAt = p.updated_at ? new Date(p.updated_at) : createdAt;
-      
       const eventDate = p.lost_time || p.found_time || p.surrender_date || p.created_at;
       const eventDateTime = eventDate ? new Date(eventDate) : createdAt;
 
       return {
-        id: `${p.type || "generic"}-${p.id}`,
+        id: `${p.post_type || "generic"}-${p.id}`,
         rawId: p.id,
         name: p.pet_name || p.title || "بدون نام",
         desc: p.description || "",
-        category: categoryMap[p.pet_type] || p.pet_type || "سایر",
+        category: getPetType(p.pet_type, "سایر"),
         status,
         statusLabel,
         location: locationText,
         city: locationText,
         time: calculateRelativeTime(p.created_at || p.updated_at),
-        image: p.image_url || PLACEHOLDER_IMAGE,
-        type: p.type || "generic",
+        image: getPostImage(p),
+        type: p.post_type || "generic",
         sex: sex,
         age: age,
         hasBirthCertificate: p.has_birth_certificate || false,
@@ -188,148 +163,9 @@ export default function NewPosts() {
     });
   }, [posts, activeFilter]);
 
-  const parseAgeToYears = (ageString) => {
-    if (!ageString) return 0;
-    
-    if (typeof ageString === 'number') return ageString;
-    
-    const str = String(ageString);
-    
-    const yearMatch = str.match(/(\d+)\s*سال/);
-    if (yearMatch) return parseInt(yearMatch[1]);
-    
-    const monthMatch = str.match(/(\d+)\s*ماه/);
-    if (monthMatch) return parseInt(monthMatch[1]) / 12;
-    
-    const num = parseInt(str);
-    if (!isNaN(num)) return num;
-    
-    return 0;
-  };
-
-  const sortAds = (ads) => {
-    if (!sortOrder) {
-      return ads;
-    }
-    
-    switch (sortOrder) {
-      case "newest-post":
-        return [...ads].sort((a, b) => b.createdAt - a.createdAt);
-      
-      case "oldest-post":
-        return [...ads].sort((a, b) => a.createdAt - b.createdAt);
-      
-      case "newest-event":
-        return [...ads].sort((a, b) => b.eventDateTime - a.eventDateTime);
-      
-      case "oldest-event":
-        return [...ads].sort((a, b) => a.eventDateTime - b.eventDateTime);
-      
-      case "recently-updated":
-        return [...ads].sort((a, b) => b.updatedAt - a.updatedAt);
-      
-      default:
-        return ads;
-    }
-  };
-
-  const filteredAds = useMemo(() => {
-    const base = normalizedPosts.filter((ad) => {
-      const term = search.trim().toLowerCase();
-      const matchSearch = !term ||
-        ad.name.toLowerCase().includes(term) ||
-        ad.desc.toLowerCase().includes(term) ||
-        ad.location.toLowerCase().includes(term) ||
-        (ad.category && ad.category.toLowerCase().includes(term));
-
-      const matchAnimal = filterAnimal === "all" || ad.category === filterAnimal;
-      const matchSex = filterSex === "all" || ad.sex === filterSex;
-      const matchCity = filterCity === "all" || ad.city === filterCity;
-      
-      let matchAge = true;
-      if (filterAge !== "all" && ad.age) {
-        const ageInYears = parseAgeToYears(ad.age);
-        
-        switch (filterAge) {
-          case "under-1":
-            matchAge = ageInYears < 1;
-            break;
-          case "1-2":
-            matchAge = ageInYears >= 1 && ageInYears < 2;
-            break;
-          case "2-3":
-            matchAge = ageInYears >= 2 && ageInYears < 3;
-            break;
-          case "3-5":
-            matchAge = ageInYears >= 3 && ageInYears < 5;
-            break;
-          case "5-7":
-            matchAge = ageInYears >= 5 && ageInYears < 7;
-            break;
-          case "over-7":
-            matchAge = ageInYears >= 7;
-            break;
-          default:
-            matchAge = true;
-        }
-      }
-
-      let matchCertificate = true;
-      let matchVaccination = true;
-      let matchSterilization = true;
-      
-      if (activeFilter === "سرپرستی" || ad.type === "surrender") {
-        if (filterHasCertificate !== "all") {
-          const hasCert = ad.hasBirthCertificate || ad.originalData?.has_birth_certificate || false;
-          matchCertificate = filterHasCertificate === "yes" ? hasCert : !hasCert;
-        }
-        
-        if (filterIsVaccinated !== "all") {
-          const isVacc = ad.isVaccinated || ad.originalData?.vaccination || false;
-          matchVaccination = filterIsVaccinated === "yes" ? isVacc : !isVacc;
-        }
-        
-        if (filterIsSterilized !== "all") {
-          const isSteril = ad.isSterilized || ad.originalData?.steriliz || false;
-          matchSterilization = filterIsSterilized === "yes" ? isSteril : !isSteril;
-        }
-      }
-
-      return matchSearch && matchAnimal && matchSex && matchCity && matchAge && 
-             matchCertificate && matchVaccination && matchSterilization;
-    });
-
-    const sortedAds = sortAds(base);
-    
-    return sortedAds.slice(0, 6);
-  }, [normalizedPosts, search, filterAnimal, filterSex, filterCity, filterAge, 
-      filterHasCertificate, filterIsVaccinated, filterIsSterilized, activeFilter, sortOrder, isSortEnabled]);
-
-  const clearAllFilters = () => {
-    setFilterAnimal("all");
-    setFilterSex("all");
-    setFilterCity("all");
-    setFilterAge("all");
-    setFilterHasCertificate("all");
-    setFilterIsVaccinated("all");
-    setFilterIsSterilized("all");
-    setSortOrder(""); 
-    setSearch("");
-  };
-
-  const handleSortChange = (newSortOrder) => {
-    setSortOrder(newSortOrder);
-    if (newSortOrder !== "none") {
-      setIsSortEnabled(true);
-    }
-  };
-
-  const toggleSortEnabled = () => {
-    setIsSortEnabled(!isSortEnabled);
-    if (!isSortEnabled) {
-      setSortOrder("newest-post"); 
-    }
-  };
+  const displayedAds = useMemo(() => {
+    return normalizedPosts.slice(0, 6);
+  }, [normalizedPosts]);
 
   const handleViewDetails = (ad) => {
     console.log("مشاهده جزئیات برای آگهی (NewPosts):", ad);
@@ -361,170 +197,152 @@ export default function NewPosts() {
     return isNaN(d) ? isoOrRelative : d.toLocaleDateString('fa-IR');
   };
 
+  const filters = [
+    { label: "همه", count: normalizedPosts.length },
+    {
+      label: "پیدا شده",
+      count: normalizedPosts.filter((a) => a.status === "پیدا شده").length,
+    },
+    {
+      label: "گم شده",
+      count: normalizedPosts.filter((a) => a.status === "گم شده").length,
+    },
+    {
+      label: "سرپرستی",
+      count: normalizedPosts.filter((a) => a.status === "سرپرستی").length,
+    },
+  ];
+
   return (
-    <div className="new-post-container-new-posts">
-      <h2 className="section-title-new-posts">مرور آگهی ها</h2>
+    <div className="new-posts-page-landing">
+      <main>
+        <section className="posts-section-landing">
+          <div className="posts-container-landing">
+            <header className="posts-header-landing">
+              <h1 className="posts-title-landing">مرور آگهی‌ها</h1>
+              <p className="posts-subtitle-landing">مرور آگهی‌های حیوانات</p>
+            </header>
 
-      <div className="filter-tabs-new-posts">
-        <div
-          className={`filter-button ${activeFilter === "all" ? "active" : ""}`}
-          onClick={() => setActiveFilter("all")}
-        >
-          همه
-        </div>
-        <div
-          className={`filter-button ${
-            activeFilter === "پیدا شده" ? "active" : ""
-          }`}
-          onClick={() => setActiveFilter("پیدا شده")}
-        >
-          پیدا شده
-        </div>
-        <div
-          className={`filter-button ${
-            activeFilter === "گم شده" ? "active" : ""
-          }`}
-          onClick={() => setActiveFilter("گم شده")}
-        >
-          گم شده
-        </div>
-        <div
-          className={`filter-button ${
-            activeFilter === "سرپرستی" ? "active" : ""
-          }`}
-          onClick={() => setActiveFilter("سرپرستی")}
-        >
-          سرپرستی
-        </div>
-      </div>
-
-      <div className="search-container-new-posts">
-        <div className="search-box-new-posts">
-          <input
-            type="text"
-            placeholder="جستجو بر اساس نام،نژاد یا مکان... "
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-      </div>
-
-      <AdvancedFilters
-        activeFilter={activeFilter}
-        filterAnimal={filterAnimal}
-        setFilterAnimal={setFilterAnimal}
-        filterSex={filterSex}
-        setFilterSex={setFilterSex}
-        filterCity={filterCity}
-        setFilterCity={setFilterCity}
-        filterAge={filterAge}
-        setFilterAge={setFilterAge}
-        filterHasCertificate={filterHasCertificate}
-        setFilterHasCertificate={setFilterHasCertificate}
-        filterIsVaccinated={filterIsVaccinated}
-        setFilterIsVaccinated={setFilterIsVaccinated}
-        filterIsSterilized={filterIsSterilized}
-        setFilterIsSterilized={setFilterIsSterilized}
-        clearAllFilters={clearAllFilters}
-        activeFiltersCount={activeFiltersCount}
-      />
-
-      <SortFilters
-        sortOrder={sortOrder}
-        setSortOrder={setSortOrder}
-      />
-
-      {error && <div className="error-message-new-posts">{error}</div>}
-      {loading && <div className="loading-message-new-posts">در حال بارگذاری...</div>}
-
-      <div className="ads-grid-new-posts">
-        {!loading && filteredAds.length === 0 && (
-          <div className="no-results-container-new-posts">
-            <div className="no-results-icon">
-              <img src="/src/assets/icons/search-n.svg" alt="no results" />
+            <div className="posts-categories-tabs-landing">
+              <div className="posts-categories-list-landing">
+                {filters.map((filter) => (
+                  <button
+                    key={filter.label}
+                    className={`posts-category-tab-landing ${activeFilter === filter.label ? "active-landing" : ""}`}
+                    onClick={() => setActiveFilter(filter.label)}
+                  >
+                    <div className="posts-category-content-landing">
+                      <span className="posts-category-label-landing">{filter.label}</span>
+                      <div className="posts-category-count-landing">
+                        <span>{filter.count}</span>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
-            <h3>هیچ آگهی‌ای یافت نشد</h3>
-            <p className="no-results-text">
-              با فیلترهای انتخاب شده، آگهی مناسبی پیدا نشد. لطفا فیلترهای دیگری را امتحان کنید.
-            </p>
-            <button
-              onClick={clearAllFilters}
-              className="clear-filters-btn-no-results"
-            >
-              <img src="/src/assets/icons/close.svg" alt="clear" className="clear-icon" />
-              پاک کردن همه فیلترها
-            </button>
-          </div>
-        )}
 
-        {filteredAds.map((ad) => (
-          <div className="ad-card-new-posts" key={ad.id}>
-            <img className="pet-image-new-posts" src={ad.image} alt={ad.name} />
+            {error && <div className="error-message-landing">{error}</div>}
+            {loading && <div className="loading-message-landing">در حال بارگذاری...</div>}
 
-            <div className="status-badge-new-posts">
-              <div
-                className={`status-background-new-posts ${
-                  ad.status === "پیدا شده"
-                    ? "status-found-new-posts"
-                    : ad.status === "سرپرستی"
-                    ? "status-adoption-new-posts"
-                    : "status-missing-new-posts"
-                }`}
+            <div className="posts-grid-landing">
+              {!loading && displayedAds.length === 0 && (
+                <div className="no-results-container-landing">
+                  <div className="no-results-icon-landing">
+                    <img src="/src/assets/icons/search-n.svg" alt="no results" />
+                  </div>
+                  <h3>هیچ آگهی‌ای یافت نشد</h3>
+                  <p className="no-results-text-landing">
+                    در حال حاضر آگهی‌ای برای نمایش وجود ندارد.
+                  </p>
+                </div>
+              )}
+
+              {displayedAds.map((ad) => {
+                const getStatusClass = () => {
+                  if (ad.status === 'پیدا شده') return 'found-landing';
+                  if (ad.status === 'گم شده') return 'lost-landing';
+                  if (ad.status === 'سرپرستی') return 'adoption-landing';
+                  return 'active-landing';
+                };
+
+                const statusClass = getStatusClass();
+                
+                return (
+                  <div className="post-card-landing" key={ad.id}>
+                    <div className="post-image-container-landing">
+                      <img className="post-image-landing" src={ad.image} alt={ad.name} />
+                      
+                      <div className={`pet-listing-status-landing ${statusClass}`}>
+                        <span className="status-label-landing">{ad.statusLabel}</span>
+                        <div className="status-pulse-landing"></div>
+                      </div>
+                    </div>
+
+                    <div className="post-content-landing">
+                      <div className="post-header-landing">
+                        <div className="post-info-landing">
+                          <h3 className="post-name-landing">{ad.name}</h3>
+                          <p className="post-subtitle-landing">{ad.category}</p>
+                        </div>
+                        <div className="post-type-landing">
+                          {ad.category}
+                        </div>
+                      </div>
+
+                      <p className="post-description-landing">{ad.desc}</p>
+
+                      <div className="post-details-container-landing">
+                        <div className="post-detail-landing">
+                          <div className="detail-icon-landing">
+                            <LocationIcon />
+                          </div>
+                          <span className="post-detail-text-landing">{ad.location}</span>
+                        </div>
+
+                        <div className="post-detail-landing">
+                          <div className="detail-icon-landing">
+                            <CalendarIcon />
+                          </div>
+                          <span className="post-detail-text-landing">{formatDate(ad.time)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="post-action-buttons-landing">
+                      <button
+                        className="view-details-btn-landing"
+                        onClick={() => handleViewDetails(ad)}
+                      >
+                        <span className="btn-glow-landing"></span>
+                        <span className="border-animation-landing"></span>
+                        مشاهده جزئیات
+                        <svg className="btn-icon-landing" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                          <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="show-more-container-landing">
+              <button
+                className="show-more-btn-landing"
+                onClick={() => navigate("/posts")}
               >
-                {ad.statusLabel}
-              </div>
-            </div>
-
-            <div className="ad-content-new-posts">
-              <div className="top-row-new-posts">
-                <div className="pet-name-new-posts">{ad.name}</div>
-                <div className="category-badge-new-posts">{ad.category}</div>
-              </div>
-
-              <p className="pet-description-new-posts">{ad.desc}</p>
-
-              <div className="location-container-new-posts">
-                <div>{ad.location}</div>
-                <img
-                  className="location-icon"
-                  alt="location"
-                  src="/src/icons/location.svg"
-                />
-              </div>
-
-              <div className="calender-container-new-posts">
-                <div>{formatDate(ad.time)}</div>
-                <img
-                  className="calendar-icon"
-                  alt="calendar"
-                  src="/src/icons/calendar-2.svg"
-                />
-              </div>
-            </div>
-
-            <div className="action-buttons-new-posts">
-              <div
-                className="btn view-details-btn-new-posts"
-                onClick={() => handleViewDetails(ad)}
-              >
-                مشاهده جزییات
-              </div>
+                <span className="pulse-effect-landing"></span>
+                <span className="glowing-border-landing"></span>
+                مشاهده بیشتر
+                <svg className="arrow-icon-landing" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
             </div>
           </div>
-        ))}
-      </div>
-
-      <div className="show-more-container-new-posts">
-        <button
-          className="show-more-btn-new-posts"
-          onClick={() => navigate("/posts")}
-        >
-          مشاهده بیشتر
-          <svg className="arrow-icon" viewBox="0 0 24 24" fill="none">
-            <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" />
-          </svg>
-        </button>
-      </div>
+        </section>
+      </main>
     </div>
   );
 }

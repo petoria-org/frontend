@@ -24,7 +24,7 @@ import LocationPicker from "./pages/LocationPicker/LocationPicker";
 // Protected pages
 import { UserProfilePage } from "./pages/UserProfilePage";
 import ChatPage from "./pages/Chats";
-// import Notification from './pages/Notification.jsx'
+import CreateAd from "./pages/CreateAd";
 
 function App() {
   return (
@@ -58,6 +58,7 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/user-profile" element={<UserProfilePage />} />
           <Route path="/chats" element={<ChatPage />} />
+          <Route path="/create-ad" element={<CreateAd />} />
         </Route>
       </Route>
     </Routes>
