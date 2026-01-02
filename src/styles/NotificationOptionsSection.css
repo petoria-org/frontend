@@ -46,6 +46,9 @@
   overflow: hidden; 
   position: relative;
   animation: cardEntrance 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .notification-options-content-wrapper {
@@ -2498,34 +2501,6 @@
   to { opacity: 1; }
 }
 
-@media (max-width: 768px) {
-  .compact-age-input-fields {
-    flex-direction: column;
-    gap: 8px;
-  }
-  
-  .compact-age-input-group {
-    width: 100%;
-  }
-  
-  .compact-age-separator {
-    margin-top: 0;
-    padding: 4px 0;
-    order: -1;
-  }
-  
-  .compact-age-input {
-    height: 48px;
-    font-size: 15px;
-    padding: 0 45px 0 14px;
-  }
-  
-  .compact-age-unit {
-    left: 14px;
-    font-size: 13px;
-  }
-}
-
 .modern-glass-dropdown {
   width: 100%;
   position: relative;
@@ -3643,124 +3618,6 @@
   transform: translateY(-1px);
 }
 
-@media (max-width: 768px) {
-  .professional-time-selector .form-input.time-picker-field {
-    height: 48px;
-    font-size: 15px;
-    padding: 0 50px 0 16px;
-  }
-  
-  .professional-time-selector .time-field-digits {
-    font-size: 15px;
-  }
-  
-  .professional-time-selector .time-field-period {
-    font-size: 13px;
-    padding: 3px 10px;
-  }
-  
-  .professional-time-selector .time-field-icon {
-    left: 16px;
-    width: 20px;
-    height: 20px;
-  }
-
-  .time-picker-content {
-    padding: 16px;
-  }
-  
-  .time-controls {
-    grid-template-columns: repeat(2, minmax(150px, 1fr));
-    gap: 10px;
-  }
-  
-  .time-digit {
-    font-size: 20px;
-  }
-  
-  .time-digit-group {
-    padding: 10px 12px;
-  }
-  
-  .time-input-container {
-    width: 54px;
-    height: 36px;
-  }
-  
-  .time-input-value {
-    font-size: 18px;
-  }
-  
-  .time-control-btn {
-    width: 28px;
-    height: 28px;
-  }
-  
-  .time-quick-buttons {
-    flex-direction: column;
-  }
-
-  .time-slider-content {
-    width: 95%;
-    padding: 20px;
-  }
-  
-  .slider-value {
-    font-size: 40px;
-  }
-}
-
-@media (max-width: 480px) {
-  .professional-time-selector .form-label-edit {
-    font-size: 14px;
-    margin-bottom: 10px;
-  }
-  
-  .professional-time-selector .form-input.time-picker-field {
-    height: 44px;
-    font-size: 14px;
-    padding: 0 45px 0 14px;
-  }
-  
-  .professional-time-selector .time-field-digits {
-    font-size: 14px;
-  }
-  
-  .professional-time-selector .time-field-period {
-    font-size: 12px;
-    padding: 2px 8px;
-  }
-  
-  .time-display {
-    padding: 12px;
-  }
-  
-  .time-digit {
-    font-size: 18px;
-  }
-  
-  .time-digit-group {
-    padding: 8px 10px;
-  }
-  
-  .time-input-container {
-    width: 48px;
-    height: 32px;
-  }
-  
-  .time-input-value {
-    font-size: 16px;
-  }
-
-  .slider-value {
-    font-size: 36px;
-  }
-  
-  .slider-unit {
-    font-size: 18px;
-  }
-}
-
 .professional-time-selector .form-input.time-picker-field:focus {
   outline: none;
 }
@@ -3785,80 +3642,6 @@
   box-shadow: 0 0 0 3px rgba(28, 123, 209, 0.3);
 }
 
-@media (max-width: 768px) {
-  .gender-dropdown .dropdown-header {
-    height: 52px;
-    padding: 0 16px;
-  }
-  
-  .gender-dropdown .selected-icon {
-    width: 32px;
-    height: 32px;
-  }
-  
-  .gender-option {
-    padding: 12px 14px;
-  }
-  
-  .gender-option-icon {
-    width: 36px;
-    height: 36px;
-  }
-}
-
-@media (max-width: 768px) {
-  .dropdown-header {
-    height: 52px;
-    padding: 0 16px;
-    border-radius: 12px;
-  }
-  
-  .selected-icon {
-    width: 32px;
-    height: 32px;
-  }
-  
-  .animal-icon {
-    width: 18px;
-    height: 18px;
-  }
-  
-  .selected-text, .dropdown-placeholder {
-    font-size: 15px;
-  }
-  
-  .dropdown-content {
-    border-radius: 14px;
-  }
-  
-  .dropdown-search {
-    padding: 16px;
-  }
-  
-  .search-input {
-    height: 42px;
-    font-size: 14px;
-  }
-  
-  .dropdown-option {
-    padding: 12px 14px;
-    gap: 12px;
-  }
-  
-  .option-icon {
-    width: 36px;
-    height: 36px;
-  }
-  
-  .option-label {
-    font-size: 14px;
-  }
-  
-  .option-description {
-    font-size: 12px;
-  }
-}
-
 @supports not (backdrop-filter: blur(10px)) {
   .dropdown-header {
     background: rgba(255, 255, 255, 0.98);
@@ -3866,367 +3649,6 @@
   
   .dropdown-content {
     background: rgba(248, 251, 255, 0.99);
-  }
-}
-
-@media (max-width: 1200px) {
-  .notification-options-container {
-    width: 95%;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
-  .ad-type-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .uploaded-images-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  }
-
-  .date-time-horizontal-container {
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .date-input-container,
-  .time-input-container-main {
-    width: 100%;
-  }
-
-}
-
-@media (max-width: 768px) {
-  .notification-options-section {
-    padding: 16px;
-  }
-
-  .notification-options-content {
-    padding: 24px;
-  }
-
-  .form-section {
-    padding: 24px;
-  }
-
-  .form-section-title {
-    font-size: 18px;
-  }
-
-  .ad-type-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .upload-container-header {
-    padding: 20px;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 16px;
-  }
-
-  .upload-header-info {
-    align-items: center;
-    text-align: center;
-  }
-
-  .upload-container-content {
-    padding: 20px;
-    gap: 16px;
-  }
-
-  .uploaded-images-grid {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 16px;
-  }
-
-  .image-gallery-item,
-  .image-upload-button {
-    width: 120px;
-    height: 120px;
-  }
-
-  .upload-button-content {
-    padding: 20px;
-    gap: 12px;
-  }
-
-  .date-time-horizontal-container {
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .time-input-wrapper {
-    gap: 8px;
-  }
-  
-  .time-input {
-    width: 30px;
-    height: 20px;
-    font-size: 10px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .time-separator {
-    font-size: 20px;
-  }
-
-  .toggle-container {
-    padding: 20px;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-  }
-
-  .toggle-switch {
-    align-self: flex-start;
-  }
-
-  .contact-disabled-message {
-    padding: 24px;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .contact-info-card {
-    padding: 24px;
-  }
-
-  .location-detail-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .location-detail-value {
-    text-align: right;
-    margin-right: 0;
-  }
-
-  .form-actions {
-    flex-direction: column;
-  }
-
-  .form-button {
-    width: 100%;
-    min-width: auto;
-  }
-
-  .persian-datepicker-calendar {
-    width: 300px !important;
-    margin: 0 auto !important;
-  }
-  
-  .persian-datepicker-calendar .react-datepicker {
-    width: 100% !important;
-  }
-  
-  .persian-datepicker-calendar .react-datepicker__month-container {
-    width: 100% !important;
-  }
-  
-  .persian-datepicker-calendar .react-datepicker__day {
-    width: 32px !important;
-    height: 32px !important;
-    line-height: 32px !important;
-    font-size: 13px !important;
-  }
-  
-  .persian-datepicker-calendar .react-datepicker__day-name {
-    width: 32px !important;
-    font-size: 12px !important;
-  }
-
-  .custom-datepicker-header {
-    flex-direction: column;
-    gap: 8px;
-    padding: 0 10px;
-  }
-  
-  .year-select-container {
-    max-width: 100px;
-  }
-  
-  .year-select-dropdown {
-    height: 32px;
-    font-size: 14px;
-    padding: 0 25px 0 8px;
-  }
-  
-  .year-dropdown-arrow {
-    left: 8px;
-    font-size: 10px;
-  }
-  
-  .datepicker-nav-button.year-nav {
-    width: 28px;
-    height: 28px;
-    font-size: 14px;
-  }
-  
-  .datepicker-current-month {
-    font-size: 16px !important;
-  }
-  
-  .datepicker-nav-button.month-nav {
-    width: 32px;
-    height: 32px;
-    font-size: 16px;
-  }
-
-    .date-input-container,
-  .time-input-container-main {
-    width: 100%;
-  }
-  
-  .time-input-section-main {
-    height: 48px;
-    padding: 8px;
-  }
-  
-  .time-input {
-    width: 40px;
-    height: 30px;
-    font-size: 15px;
-  }
-  
-  .time-separator {
-    font-size: 16px;
-  }
-  
-  .date-input-compact {
-    height: 48px;
-    font-size: 14px;
-    padding: 0 14px;
-  }
-}
-
-@media (max-width: 480px) {
-  .notification-options-title {
-    font-size: 22px;
-  }
-
-  .upload-header-title {
-    font-size: 18px;
-  }
-
-  .upload-header-count {
-    font-size: 14px;
-  }
-
-  .form-label-edit {
-    font-size: 14px;
-  }
-
-  .form-input,
-  .form-input-with-icon,
-  .form-textarea {
-    font-size: 14px;
-  }
-
-  .health-status-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .location-select-button {
-    padding: 16px 24px;
-    font-size: 16px;
-  }
-
-  .toggle-label {
-    font-size: 16px;
-  }
-
-  .toggle-description {
-    font-size: 14px;
-  }
-
-  .time-input-section {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  
-  .time-input-label {
-    align-self: flex-start;
-  }
-
-  .custom-datepicker-header {
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .datepicker-year-section {
-    order: 2;
-  }
-  
-  .datepicker-month-section {
-    order: 1;
-  }
-  
-  .year-select-container {
-    max-width: 90px;
-  }
-  
-  .year-select-dropdown {
-    height: 30px;
-    font-size: 13px;
-  }
-
-  .time-input-section-main {
-    height: 46px;
-  }
-  
-  .time-input {
-    width: 38px;
-    height: 28px;
-    font-size: 14px;
-  }
-  
-  .time-separator {
-    font-size: 15px;
-  }
-  
-  .date-input-compact {
-    height: 46px;
-  }
-  
-  .form-label-date,
-  .form-label-time {
-    font-size: 14px;
-    margin-bottom: 8px;
-  }
-}
-
-@media (max-width: 768px) {
-  .time-input {
-    width: 36px;
-    height: 36px;
-    font-size: 16px;
-  }
-  
-  .time-colon {
-    font-size: 20px;
-  }
-  
-}
-
-@media (max-width: 480px) {
-  .time-input {
-    width: 32px;
-    height: 32px;
-    font-size: 14px;
-  }
-  
-  .time-colon {
-    font-size: 18px;
-  }
-  
-  .time-unit-label-combined {
-    font-size: 12px;
   }
 }
 
@@ -4240,18 +3662,6 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   margin-bottom: 20px;
-}
-
-@media (max-width: 1024px) {
-  .ad-type-grid-pro {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 640px) {
-  .ad-type-grid-pro {
-    grid-template-columns: 1fr;
-  }
 }
 
 .ad-type-card-pro {
@@ -4601,87 +4011,6 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
-@media (max-width: 768px) {
-  .ad-type-card-pro {
-    padding: 16px;
-    height: 120px;
-  }
-  
-  .ad-type-icon-wrapper {
-    width: 40px;
-    height: 40px;
-    top: 12px;
-    right: 12px;
-  }
-  
-  .ad-type-icon-bg {
-    border-radius: 10px;
-  }
-  
-  .ad-type-icon-pro {
-    width: 20px;
-    height: 20px;
-  }
-  
-  .ad-type-content {
-    padding-right: 55px;
-    padding-top: 4px;
-  }
-  
-  .ad-type-title {
-    font-size: 16px;
-  }
-  
-  .ad-type-description {
-    font-size: 12px;
-  }
-  
-  .selected-badge {
-    width: 20px;
-    height: 20px;
-    top: -4px;
-    right: -4px;
-  }
-  
-  .ad-type-status {
-    padding: 10px;
-  }
-}
-
-@media (max-width: 480px) {
-  .ad-type-card-pro {
-    padding: 14px;
-    height: 110px;
-  }
-  
-  .ad-type-icon-wrapper {
-    width: 36px;
-    height: 36px;
-  }
-  
-  .ad-type-icon-pro {
-    width: 18px;
-    height: 18px;
-  }
-  
-  .ad-type-content {
-    padding-right: 50px;
-  }
-  
-  .ad-type-title {
-    font-size: 15px;
-  }
-  
-  .ad-type-description {
-    font-size: 11px;
-  }
-  
-  .selected-badge {
-    width: 18px;
-    height: 18px;
-  }
-}
-
 .ad-type-card-pro[data-type="lost"] {
   --card-color: #ea9799;
   --card-gradient: linear-gradient(135deg, #ea9799 0%, #f8c3c4 100%);
@@ -4695,4 +4024,1593 @@
 .ad-type-card-pro[data-type="adoption"] {
   --card-color: #10b981;
   --card-gradient: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+}
+
+@media (max-width: 1200px) {
+  .notification-options-container {
+    width: 95%;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .ad-type-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .uploaded-images-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+
+  .date-time-horizontal-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .date-input-container,
+  .time-input-container-main {
+    width: 100%;
+  }
+}
+
+@media (max-width: 1024px) {
+  .ad-type-grid-pro {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .ad-type-grid-pro {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+    .notification-options-section {
+    padding: 16px;
+  }
+
+  .notification-options-content {
+    padding: 24px;
+    border-radius: 24px;
+  }
+
+  .notification-options-content-wrapper {
+    margin-right: 0;
+    padding: 0 12px;
+    max-height: calc(85vh - 60px);
+  }
+
+  .notification-options-title {
+    font-size: 22px;
+  }
+
+  .close-button {
+    width: 40px;
+    height: 40px;
+    font-size: 22px;
+  }
+
+  .form-section {
+    padding: 24px;
+    border-radius: 16px;
+    margin-top: 20px;
+  }
+
+  .form-section-title {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .ad-type-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .ad-type-card {
+    min-height: 120px;
+    border-radius: 16px;
+  }
+
+  .ad-type-card-content {
+    padding: 24px 16px;
+    gap: 12px;
+  }
+
+  .ad-type-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .ad-type-label {
+    font-size: 16px;
+  }
+
+  .image-upload-main-container {
+    min-height: 280px;
+    border-radius: 16px;
+  }
+
+  .upload-container-header {
+    padding: 20px;
+  }
+
+  .upload-header-title {
+    font-size: 18px;
+  }
+
+  .remove-all-images-btn-inside {
+    font-size: 14px;
+    padding: 10px 16px;
+    gap: 10px;
+  }
+
+  .upload-container-content {
+    padding: 24px;
+    gap: 20px;
+  }
+
+  .uploaded-images-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+  }
+
+  .image-gallery-item {
+    width: 140px;
+    height: 140px;
+    border-radius: 16px;
+  }
+
+  .remove-single-image-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+  }
+
+  .image-upload-button {
+    width: 140px;
+    height: 140px;
+    border-radius: 16px;
+  }
+
+  .upload-button-content {
+    gap: 16px;
+    padding: 20px;
+  }
+
+  .upload-button-text {
+    font-size: 14px;
+  }
+
+  .upload-container-footer {
+    padding: 16px 24px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .form-input {
+    height: 48px;
+    font-size: 15px;
+    padding: 0 16px;
+  }
+
+  .form-input-with-icon {
+    height: 48px;
+    padding-left: 52px;
+    font-size: 15px;
+  }
+
+  .form-textarea {
+    min-height: 120px;
+    font-size: 15px;
+    padding: 14px 16px;
+  }
+
+  .health-status-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .health-status-card {
+    height: 52px;
+    padding: 16px;
+  }
+
+  .location-select-button {
+    padding: 16px 24px;
+    font-size: 16px;
+  }
+
+  .location-info-card {
+    padding: 24px;
+  }
+
+  .location-info-title {
+    font-size: 20px;
+  }
+
+  .location-full-address {
+    padding: 16px;
+  }
+
+  .change-location-btn {
+    font-size: 15px;
+    padding: 12px 20px;
+  }
+
+  .toggle-container {
+    padding: 20px;
+    gap: 16px;
+  }
+
+  .contact-disabled-message {
+    padding: 20px;
+    gap: 16px;
+  }
+
+  .contact-info-card {
+    padding: 24px;
+    gap: 20px;
+  }
+
+  .rmdp-wrapper[style] {
+    transform: none !important;
+  }
+
+  .rmdp-day,
+  .rmdp-week-day {
+    width: 40px !important;
+    height: 40px !important;
+    font-size: 13px;
+  }
+
+  .persian-datepicker-input {
+    height: 48px;
+    font-size: 15px;
+    background-color: #7f1d1d;
+  }
+
+  .react-datepicker__today-button {
+    padding: 10px !important;
+    font-size: 14px !important;
+  }
+
+  .time-input {
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+  }
+
+  .date-time-horizontal-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .time-separator {
+    font-size: 22px;
+    margin: 0 6px;
+    top: -1px;
+  }
+
+  .form-label-date,
+  .form-label-time {
+    font-size: 14px;
+    margin-bottom: 10px;
+    padding-right: 12px;
+  }
+
+  .input-container.datepicker-field {
+    height: auto;
+  }
+
+  .dropdown-header {
+    height: 52px;
+    padding: 0 16px;
+    border-radius: 12px;
+  }
+
+  .compact-age-input {
+    height: 48px;
+    font-size: 15px;
+    padding: 0 44px 0 14px;
+  }
+
+  .input-container.datepicker-field .rmdp-input,
+  .date-input-compact {
+    height: 52px;
+    font-size: 15px;
+    padding: 0 16px;
+    border-radius: 12px;
+  }
+
+  .input-container.datepicker-field::after {
+    width: 18px;
+    height: 18px;
+    left: 14px;
+  }
+
+  .selected-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+  }
+
+  .animal-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .selected-text {
+    font-size: 15px;
+  }
+
+  .dropdown-placeholder {
+    font-size: 15px;
+  }
+
+  .dropdown-arrow {
+    width: 18px;
+    height: 18px;
+  }
+
+  .dropdown-content {
+    border-radius: 0 0 14px 14px;
+  }
+
+  .dropdown-search {
+    padding: 16px;
+  }
+
+  .search-input {
+    height: 40px;
+    font-size: 14px;
+    padding: 0 44px 0 14px;
+    border-radius: 8px;
+  }
+
+  .search-icon {
+    right: 24px;
+  }
+
+  .dropdown-options {
+    max-height: 260px;
+    padding: 10px;
+  }
+
+  .dropdown-option {
+    padding: 12px 14px;
+    gap: 12px;
+    border-radius: 10px;
+  }
+
+  .modern-glass-dropdown .option-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+  }
+
+  .modern-glass-dropdown .option-icon-img,
+  .modern-glass-dropdown .option-icon-svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .option-label {
+    font-size: 14px;
+  }
+
+  .option-description {
+    font-size: 12px;
+  }
+
+  .option-check {
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+  }
+
+  .dropdown-footer {
+    padding: 14px 16px;
+  }
+
+  .footer-text {
+    font-size: 12px;
+  }
+
+  .gender-option:hover {
+    transform: translateX(-4px);
+  }
+
+  .professional-time-selector {
+    margin-bottom: 16px;
+  }
+
+  .professional-time-selector .form-label-edit {
+    font-size: 15px;
+    margin-bottom: 10px;
+  }
+
+  .professional-time-selector .form-label-edit::before {
+    width: 5px;
+    height: 5px;
+  }
+
+  .professional-time-selector .form-input.time-picker-field {
+    height: 54px;
+    font-size: 15px;
+    padding: 0 16px;
+    border-radius: 12px;
+  }
+
+  
+  .professional-time-selector .time-field-display {
+    gap: 10px;
+  }
+
+  .professional-time-selector .time-field-digits {
+    font-size: 14px;
+    letter-spacing: 0.8px;
+  }
+
+  .professional-time-selector .time-field-period {
+    font-size: 13px;
+    padding: 4px 10px;
+  }
+
+  .professional-time-selector .time-field-icon {
+    left: 16px;
+    width: 22px;
+    height: 22px;
+  }
+
+  .time-picker-content {
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .time-display {
+    padding: 14px;
+    margin-bottom: 20px;
+  }
+
+  .time-digit-group {
+    padding: 8px 12px;
+  }
+
+  .time-digit {
+    font-size: 20px;
+    min-width: 18px;
+  }
+
+  .time-unit-labels {
+    gap: 32px;
+  }
+
+  .time-unit {
+    font-size: 11px;
+  }
+
+  .time-controls {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .time-control-group {
+    padding: 10px;
+  }
+
+  .time-control-label {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  .time-control-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 7px;
+  }
+
+  .time-input-container {
+    width: 48px;
+    height: 32px;
+  }
+
+  .time-input-value {
+    font-size: 16px;
+  }
+
+  .time-quick-buttons {
+    gap: 10px;
+  }
+
+  .time-quick-btn {
+    height: 34px;
+    font-size: 13px;
+    gap: 6px;
+  }
+
+  .time-slider-content {
+    padding: 20px;
+    border-radius: 18px;
+  }
+
+  .time-slider-header {
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+  }
+
+  .time-slider-title {
+    font-size: 17px;
+  }
+
+  .time-slider-close {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+  }
+
+  .slider-value-display {
+    margin-bottom: 20px;
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .slider-value {
+    font-size: 40px;
+    margin-right: 6px;
+  }
+
+  .slider-unit {
+    font-size: 18px;
+  }
+
+  .time-range-slider {
+    height: 40px;
+    margin: 18px 0;
+  }
+
+  .time-range-slider::-webkit-slider-thumb {
+    width: 28px;
+    height: 28px;
+    margin-top: -10px;
+  }
+
+  .time-range-slider::-moz-range-thumb {
+    width: 28px;
+    height: 28px;
+  }
+
+  .slider-ticks {
+    margin-top: 14px;
+    padding: 0 6px;
+  }
+
+  .tick-label {
+    font-size: 11px;
+  }
+
+  .time-slider-footer {
+    margin-top: 20px;
+  }
+
+  .time-slider-preset {
+    padding: 8px 18px;
+    font-size: 13px;
+  }
+
+  .ad-type-grid-pro {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .ad-type-card-pro {
+    height: 130px;
+    padding: 18px;
+    border-radius: 14px;
+  }
+
+  .ad-type-icon-wrapper {
+    top: 14px;
+    right: 14px;
+    width: 42px;
+    height: 42px;
+  }
+
+  .ad-type-icon-pro {
+    width: 22px;
+    height: 22px;
+  }
+
+  .selected-badge {
+    width: 22px;
+    height: 22px;
+    top: -5px;
+    right: -5px;
+  }
+
+  .ad-type-content {
+    padding-right: 62px;
+    padding-top: 6px;
+  }
+
+  .ad-type-title {
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+
+  .ad-type-description {
+    font-size: 12px;
+  }
+
+  .ad-type-indicator {
+    margin-top: 10px;
+  }
+
+  .ad-type-status {
+    padding: 10px;
+    border-radius: 8px;
+  }
+
+  .status-text {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .notification-options-section {
+    padding: 0px;
+  }
+
+  .notification-options-content {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .notification-options-title {
+    font-size: 18px;
+  }
+
+  .form-section-header {
+    padding-bottom: 10px;
+  }
+
+  .close-button {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
+
+  .form-section {
+    padding: 16px;
+    border-radius: 14px;
+    margin-top: 16px;
+  }
+
+  .form-section-title {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .ad-type-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .ad-type-card {
+    min-height: 110px;
+    border-radius: 14px;
+  }
+
+  .ad-type-card-content {
+    padding: 20px 14px;
+    gap: 10px;
+  }
+
+  .ad-type-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .ad-type-label {
+    font-size: 14px;
+  }
+
+  .image-upload-main-container {
+    min-height: 200px;
+    border-radius: 14px;
+  }
+
+  .upload-container-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .upload-header-title {
+    font-size: 16px;
+  }
+
+  .upload-header-count {
+    font-size: 14px;
+    padding: 4px 12px;
+  }
+
+  .remove-all-images-btn-inside {
+    width: 100%;
+    justify-content: center;
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .upload-container-content {
+    padding: 16px;
+    gap: 16px;
+    min-height: auto;
+  }
+
+  .uploaded-images-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+  }
+
+  .image-gallery-item {
+    width: 120px;
+    height: 120px;
+    border-radius: 14px;
+  }
+
+  .image-actions {
+    top: 8px;
+    left: 8px;
+    right: 8px;
+  }
+
+  .remove-single-image-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+  }
+
+  .image-badge {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .image-upload-button {
+    width: 120px;
+    height: 120px;
+    border-radius: 14px;
+  }
+
+  .upload-button-content {
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .upload-button-icon-wrapper {
+    width: 44px;
+    height: 44px;
+  }
+
+  .upload-button-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .upload-button-plus {
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    top: -4px;
+    right: -4px;
+  }
+
+  .upload-button-text {
+    font-size: 13px;
+  }
+
+  .upload-container-footer {
+    padding: 14px 16px;
+  }
+
+  .upload-footer-info {
+    gap: 8px;
+    padding: 10px 14px;
+  }
+
+  .upload-footer-icon {
+    font-size: 16px;
+  }
+
+  .upload-footer-text {
+    font-size: 12px;
+  }
+
+  .form-label-edit {
+    font-size: 14px;
+  }
+
+  .form-label-edit::before {
+    width: 4px;
+    height: 4px;
+  }
+
+  .form-input {
+    height: 44px;
+    font-size: 14px;
+    padding: 0 14px;
+  }
+
+  .form-input::placeholder {
+    font-size: 12px;
+  }
+
+  .form-input-with-icon {
+    height: 44px;
+    padding-left: 44px;
+    font-size: 14px;
+  }
+
+  .form-input-icon {
+    width: 20px;
+    height: 20px;
+    left: 14px;
+  }
+
+  .form-textarea {
+    min-height: 100px;
+    font-size: 14px;
+    padding: 12px 14px;
+  }
+
+  .form-textarea::placeholder {
+    font-size: 12px;
+  }
+
+  .health-status-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .health-status-card {
+    height: auto;
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .health-status-label {
+    font-size: 14px;
+  }
+
+  .health-toggle-switch {
+    width: 48px;
+    height: 24px;
+  }
+
+  .health-toggle-slider {
+    border-radius: 24px;
+  }
+
+  .health-toggle-slider:before {
+    width: 16px;
+    height: 16px;
+    left: 3px;
+    bottom: 3px;
+  }
+
+  .health-toggle-switch input:checked + .health-toggle-slider:before {
+    transform: translateX(20px);
+  }
+
+  .location-section {
+    gap: 16px;
+  }
+
+  .location-select-button {
+    padding: 14px 18px;
+    font-size: 14px;
+    gap: 12px;
+    border-radius: 14px;
+  }
+
+  .location-button-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .location-info-card {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .location-info-header {
+    gap: 12px;
+  }
+
+  .location-info-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+  }
+
+  .location-info-icon img {
+    width: 24px;
+    height: 24px;
+  }
+
+  .location-info-title {
+    font-size: 18px;
+  }
+
+  .location-info-description {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .location-details {
+    gap: 12px;
+  }
+
+  .location-detail-row {
+    padding: 12px;
+    border-radius: 10px;
+  }
+
+  .location-detail-row:hover {
+    transform: none;
+  }
+
+  .location-detail-label {
+    font-size: 13px;
+    min-width: auto;
+  }
+
+  .location-detail-value {
+    font-size: 14px;
+    margin-right: 8px;
+  }
+
+  .location-full-address {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .location-full-address::before {
+    width: 4px;
+  }
+
+  .location-detail-value-full {
+    font-size: 14px;
+    padding-right: 8px;
+    line-height: 1.6;
+  }
+
+  .change-location-btn {
+    font-size: 14px;
+    padding: 12px 16px;
+    gap: 10px;
+  }
+
+  .change-location-btn img {
+    width: 18px;
+    height: 18px;
+  }
+
+  .contact-settings-toggle {
+    margin-bottom: 24px;
+  }
+
+  .toggle-container {
+    padding: 16px;
+    gap: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .toggle-label {
+    font-size: 16px;
+  }
+
+  .toggle-description {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .toggle-switch {
+    width: 52px;
+    height: 26px;
+    margin-top: 0;
+  }
+
+   .toggle-slider:before {
+    width: 18px;
+    height: 18px;
+    left: 4px;
+    bottom: 4px;
+  }
+
+  .toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(22px);
+  }
+
+  .contact-disabled-message {
+    padding: 16px;
+    gap: 12px;
+    font-size: 14px;
+  }
+
+  .contact-disabled-icon {
+    font-size: 24px;
+    margin-top: 4px;
+  }
+
+  .contact-disabled-title {
+    font-size: 17px;
+  }
+
+  .contact-disabled-description {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .contact-info-card {
+    padding: 16px;
+    gap: 16px;
+    border-radius: 14px;
+  }
+
+  .contact-info-title {
+    font-size: 18px;
+  }
+
+  .contact-info-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .contact-info-note {
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .form-button {
+    height: 48px;
+    font-size: 14px;
+    min-width: 100%;
+  }
+
+  .form-button-submit.loading {
+    padding-right: 36px;
+  }
+
+  .persian-datepicker-input {
+    height: 46px;
+    font-size: 14px;
+    padding: 0 48px 0 16px;
+  }
+
+  .react-datepicker__current-month {
+    font-size: 16px !important;
+  }
+
+  .react-datepicker__day-name {
+    font-size: 11px !important;
+    width: 30px !important;
+  }
+
+  .react-datepicker__day {
+    width: 28px !important;
+    height: 28px !important;
+    line-height: 28px !important;
+    font-size: 12px !important;
+    margin: 1px !important;
+    border-radius: 6px !important;
+  }
+
+  .react-datepicker__day--selected,
+  .react-datepicker__day--today {
+    border-radius: 6px !important;
+  }
+
+  .react-datepicker__navigation {
+    top: 10px !important;
+  }
+
+  .react-datepicker__navigation--previous {
+    right: 10px !important;
+  }
+
+  .react-datepicker__navigation--next {
+    left: 10px !important;
+  }
+
+  .react-datepicker__navigation-icon::before {
+    width: 6px !important;
+    height: 6px !important;
+    top: 6px !important;
+    border-width: 2px 2px 0 0 !important;
+  }
+
+  .react-datepicker__time-container {
+    border-right: none !important;
+    border-top: 2px solid rgba(122, 179, 224, 0.3) !important;
+  }
+
+  .react-datepicker__time-list-item {
+    padding: 6px 10px !important;
+    font-size: 13px !important;
+  }
+
+  .react-datepicker__today-button {
+    padding: 8px !important;
+    font-size: 13px !important;
+  }
+
+  .custom-datepicker-header {
+    gap: 8px;
+    padding: 0 8px;
+    margin-bottom: 10px;
+  }
+
+  .datepicker-year-section {
+    gap: 6px;
+  }
+
+  .year-select-container {
+    max-width: 100px;
+  }
+
+  .year-select-dropdown {
+    height: 32px;
+    font-size: 13px;
+    padding: 0 26px 0 8px;
+  }
+
+  .year-dropdown-arrow {
+    font-size: 10px;
+    left: 8px;
+  }
+
+  .datepicker-month-section {
+    gap: 6px;
+  }
+
+  .datepicker-current-month {
+    font-size: 14px !important;
+    padding: 0 6px;
+  }
+
+  .datepicker-nav-button.month-nav,
+  .datepicker-nav-button.year-nav {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+
+  .time-input {
+    width: 26px;
+    height: 26px;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+
+    .date-time-horizontal-container {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .time-separator {
+    font-size: 20px;
+    margin: 0 4px;
+    top: 0;
+  }
+
+  .time-separator::after {
+    width: 8px;
+    bottom: -6px;
+  }
+
+  .form-label-date,
+  .form-label-time {
+    font-size: 13px;
+    margin-bottom: 8px;
+    padding-right: 10px;
+  }
+
+  .form-label-date::before,
+  .form-label-time::before {
+    width: 4px;
+    height: 4px;
+  }
+
+  .dropdown-header {
+    height: 48px;
+    padding: 0 14px;
+    border-radius: 10px;
+  }
+
+  .compact-age-input {
+    height: 44px;
+    font-size: 14px;
+    padding: 0 40px 0 12px;
+    border-radius: 10px;
+  }
+
+  .compact-age-input-fields {
+    gap: 8px;
+  }
+
+  .compact-age-unit {
+    font-size: 12px;
+    left: 12px;
+  }
+
+  .input-container.datepicker-field .rmdp-input,
+  .date-input-compact {
+    height: 48px;
+    font-size: 14px;
+    padding: 0 14px;
+    border-radius: 10px;
+  }
+
+  .input-container.datepicker-field::after {
+    width: 16px;
+    height: 16px;
+    left: 12px;
+  }
+
+   .selected-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+  }
+
+  .animal-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .selected-text {
+    font-size: 14px;
+  }
+
+  .dropdown-placeholder {
+    font-size: 14px;
+  }
+
+  .dropdown-arrow {
+    width: 16px;
+    height: 16px;
+  }
+
+  .dropdown-content {
+    border-radius: 0 0 12px 12px;
+  }
+
+  .dropdown-search {
+    padding: 14px;
+  }
+
+  .search-input {
+    height: 36px;
+    font-size: 13px;
+    padding: 0 40px 0 12px;
+    border-radius: 6px;
+  }
+
+  .search-icon {
+    right: 20px;
+  }
+
+  .dropdown-options {
+    max-height: 220px;
+    padding: 8px;
+  }
+
+  .dropdown-option {
+    padding: 10px 12px;
+    gap: 10px;
+    border-radius: 8px;
+  }
+
+  .modern-glass-dropdown .option-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+  }
+
+  .modern-glass-dropdown .option-icon-img,
+  .modern-glass-dropdown .option-icon-svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .option-label {
+    font-size: 13px;
+  }
+
+  .option-description {
+    font-size: 11px;
+  }
+
+  .option-check {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+  }
+
+  .dropdown-footer {
+    padding: 12px 14px;
+  }
+
+  .footer-text {
+    font-size: 11px;
+  }
+
+  .gender-option:hover {
+    transform: none;
+  }
+
+  .professional-time-selector {
+    margin-bottom: 14px;
+  }
+
+  .professional-time-selector .form-label-edit {
+    font-size: 14px;
+    margin-bottom: 8px;
+    gap: 6px;
+  }
+
+  .professional-time-selector .form-label-edit::before {
+    width: 4px;
+    height: 4px;
+  }
+
+  .professional-time-selector .form-input.time-picker-field {
+    height: 48px;
+    font-size: 14px;
+    padding: 0 14px;
+    border-radius: 10px;
+  }
+
+   .professional-time-selector .time-field-display {
+    gap: 8px;
+  }
+
+  .professional-time-selector .time-field-digits {
+    font-size: 13px;
+    letter-spacing: 0.6px;
+  }
+
+  .professional-time-selector .time-field-period {
+    font-size: 12px;
+    padding: 3px 8px;
+  }
+
+  .professional-time-selector .time-field-icon {
+    left: 12px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .time-picker-content {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .time-display {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+
+  .time-digit-group {
+    padding: 6px 10px;
+  }
+
+  .time-digit {
+    font-size: 18px;
+    min-width: 16px;
+  }
+
+  .time-unit-labels {
+    gap: 24px;
+  }
+
+  .time-unit {
+    font-size: 10px;
+  }
+
+  .time-controls {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .time-control-group {
+    padding: 10px;
+  }
+
+  .time-control-label {
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+
+  .time-control-btn {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+  }
+
+  .time-input-container {
+    width: 44px;
+    height: 30px;
+  }
+
+  .time-input-value {
+    font-size: 15px;
+  }
+
+  .time-quick-buttons {
+    gap: 8px;
+  }
+
+  .time-quick-btn {
+    height: 32px;
+    font-size: 12px;
+    gap: 4px;
+  }
+
+  .time-slider-content {
+    padding: 16px;
+    border-radius: 16px;
+    width: 92%;
+  }
+
+  .time-slider-header {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+  }
+
+  .time-slider-title {
+    font-size: 16px;
+  }
+
+  .time-slider-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+  }
+
+  .slider-value-display {
+    margin-bottom: 16px;
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .slider-value {
+    font-size: 34px;
+    margin-right: 4px;
+  }
+
+  .slider-unit {
+    font-size: 16px;
+  }
+
+  .time-range-slider {
+    height: 36px;
+    margin: 16px 0;
+  }
+
+  .time-range-slider::-webkit-slider-thumb {
+    width: 24px;
+    height: 24px;
+    margin-top: -8px;
+  }
+
+  .time-range-slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+  }
+
+  .slider-ticks {
+    margin-top: 12px;
+    padding: 0 4px;
+  }
+
+  .tick-label {
+    font-size: 10px;
+  }
+
+  .time-slider-footer {
+    margin-top: 16px;
+  }
+
+  .time-slider-preset {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
+  .ad-type-grid-pro {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .ad-type-card-pro {
+    height: 110px;
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .ad-type-icon-wrapper {
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .ad-type-icon-bg {
+    border-radius: 10px;
+  }
+
+  .ad-type-icon-pro {
+    width: 20px;
+    height: 20px;
+  }
+
+  .selected-badge {
+    width: 20px;
+    height: 20px;
+    top: -4px;
+    right: -4px;
+  }
+
+  .ad-type-content {
+    padding-right: 54px;
+    padding-top: 4px;
+  }
+
+  .ad-type-title {
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  .ad-type-description {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  .ad-type-indicator {
+    margin-top: 8px;
+    gap: 6px;
+  }
+
+  .indicator-dot {
+    width: 5px;
+    height: 5px;
+  }
+
+  .ad-type-status {
+    padding: 8px;
+    margin-top: 6px;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+  }
+
+  .status-text {
+    font-size: 12px;
+  }
 }
