@@ -719,6 +719,7 @@ export default function OpenConv({
 
   const pendingScrollOnSendRef = useRef(false);
   const prevMessageCountRef = useRef(Array.isArray(messages) ? messages.length : 0);
+  const lastMessageKeyRef = useRef(null);
   const initialScrollDoneRef = useRef(false);
   const lastOutgoingAtRef = useRef(0);
   const LIVE_WINDOW_MS = 60000;
@@ -731,6 +732,31 @@ export default function OpenConv({
   const [pendingAttachments, setPendingAttachments] = useState(null);
 
   const [pendingPreviewUrls, setPendingPreviewUrls] = useState([]);
+
+  const scrollToBottom = useCallback(
+    (behavior = "smooth") => {
+      const vp = messagesViewportRef.current;
+      if (!vp) return;
+
+      const run = () => vp.scrollTo({ top: vp.scrollHeight, behavior });
+
+      // Run across a couple of frames so late layout (fonts/images) are included.
+      requestAnimationFrame(() => {
+        run();
+        requestAnimationFrame(() => run());
+        setTimeout(run, 60);
+      });
+    },
+    []
+  );
+
+  const settleBottomAfterSend = useCallback(() => {
+    // Re-run bottom scroll a few times to catch late layout (fonts/images)
+    const runs = [0, 80, 160, 280];
+    runs.forEach((delay) => {
+      setTimeout(() => scrollToBottom("auto"), delay);
+    });
+  }, [scrollToBottom]);
 
   useEffect(() => {
     if (!pendingAttachments?.files?.length) {
@@ -807,13 +833,14 @@ export default function OpenConv({
       }
     }
 
-    viewport.scrollTo({ top: viewport.scrollHeight, behavior: "auto" });
+    scrollToBottom("auto");
     initialScrollDoneRef.current = true;
-  }, [messages]);
+  }, [messages, scrollToBottom]);
 
   useEffect(() => {
     const prevCount = prevMessageCountRef.current;
     const nextCount = Array.isArray(messages) ? messages.length : 0;
+    const listGrew = nextCount > prevCount;
 
     if (nextCount <= prevCount) {
       prevMessageCountRef.current = nextCount;
@@ -838,11 +865,13 @@ export default function OpenConv({
     }
 
     const newMessages = messages.slice(prevCount, nextCount);
-    const hasNewOutgoing = newMessages.some((msg) => msg?.side === "out");
     const hasNewIncoming = newMessages.some((msg) => msg?.side !== "out");
 
-    if (pendingScrollOnSendRef.current && hasNewOutgoing) {
-      viewport.scrollTo({ top: viewport.scrollHeight, behavior: "smooth" });
+    // Scroll any time the list grows after we triggered a send; sorting by id can re-order items,
+    // so the new outgoing message is not guaranteed to sit in the tail slice.
+    if (pendingScrollOnSendRef.current && listGrew) {
+      scrollToBottom("smooth");
+      settleBottomAfterSend();
       pendingScrollOnSendRef.current = false;
     }
 
@@ -850,12 +879,12 @@ export default function OpenConv({
       const now = Date.now();
       const recentlyTyping = now - (lastOutgoingAtRef.current || 0) <= LIVE_WINDOW_MS;
 
-      if (recentlyTyping) viewport.scrollTo({ top: viewport.scrollHeight, behavior: "smooth" });
-      else if (isNearBottom()) viewport.scrollTo({ top: viewport.scrollHeight, behavior: "smooth" });
+      if (recentlyTyping) scrollToBottom("smooth");
+      else if (isNearBottom()) scrollToBottom("smooth");
     }
 
     prevMessageCountRef.current = nextCount;
-  }, [messages, isNearBottom]);
+  }, [messages, isNearBottom, scrollToBottom, settleBottomAfterSend]);
 
   const handleSendClick = useCallback(() => {
     if (!chat) return;
