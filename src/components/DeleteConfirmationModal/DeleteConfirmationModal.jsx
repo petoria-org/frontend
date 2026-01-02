@@ -1,5 +1,7 @@
-import React from 'react';
 import '../../styles/DeleteConfirmationModal.css';
+import { useEffect } from "react";
+import { useOutletContext } from "react-router-dom";
+
 
 const DeleteConfirmationModal = ({ 
   isOpen, 
@@ -12,8 +14,23 @@ const DeleteConfirmationModal = ({
   isLoading = false,
   imageUrl = null
 }) => {
-  if (!isOpen) return null;
 
+  const { setHideNavbar } = useOutletContext();
+
+  useEffect(() => {
+    if (isOpen) {
+      setHideNavbar(true);
+      document.body.style.overflow = "hidden";
+    }
+
+    return () => {
+      setHideNavbar(false);
+      document.body.style.overflow = "auto";
+    };
+  }, [isOpen, setHideNavbar]);
+
+  if (!isOpen) return null;
+  
   return (
     <div className="delete-confirmation-overlay">
       <div className="delete-confirmation-modal" onClick={(e) => e.stopPropagation()}>

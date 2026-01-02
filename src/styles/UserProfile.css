@@ -1167,35 +1167,6 @@
   }
 }
 
-.delete-modal-header {
-  text-align: center;
-  margin-bottom: 32px;
-}
-
-.delete-modal-icon {
-  width: 72px;
-  height: 72px;
-  background: rgba(244, 67, 54, 0.1);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 20px;
-  border: 3px solid rgba(244, 67, 54, 0.2);
-  animation: iconPulse 2s infinite;
-}
-
-@keyframes iconPulse {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.2);
-  }
-  50% {
-    transform: scale(1.05);
-    box-shadow: 0 0 0 10px rgba(244, 67, 54, 0);
-  }
-}
-
 .delete-modal-title {
   font-family: 'Inter', Helvetica;
   font-weight: 700;
