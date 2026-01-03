@@ -922,8 +922,10 @@ export default function OpenConv({
         text: textSnippet || "(No text)",
         senderName: msg.senderName || (msg.side === "out" ? "You" : chat?.title || "Sender"),
       });
+      // Ensure the reply bar is visible by nudging the viewport to the bottom
+      setTimeout(() => scrollToBottom("smooth"), 0);
     },
-    [chat?.title]
+    [chat?.title, scrollToBottom]
   );
 
   const handleAttachPick = useCallback((type) => {
@@ -939,6 +941,13 @@ export default function OpenConv({
     },
     [attachmentModalType]
   );
+
+  // When reply bar or pending attachments appear, keep the latest messages in view
+  useEffect(() => {
+    if (replyTarget || hasPendingUpload) {
+      scrollToBottom("smooth");
+    }
+  }, [replyTarget, hasPendingUpload, scrollToBottom]);
 
   const jumpToMessage = useCallback((msgId) => {
     const viewport = messagesViewportRef.current;
@@ -983,16 +992,22 @@ export default function OpenConv({
           </div>
         </div>
 
-        <div ref={setViewportEl} className="open__messages" style={{ flex: 1, minHeight: 0, overflowY: "auto", position: "relative" }}>
-          {messages.map((m) => (
-            <MessageBubble
-              key={m.id ?? m.client_temp_id ?? `${m.time}_${m.side}`}
-              m={m}
-              onReply={handleReplyPick}
-              chatTitle={chat.title}
-              onJumpToMessage={jumpToMessage}
-            />
-          ))}
+        <div className="open__messagesWrap" style={{ flex: 1, minHeight: 0, position: "relative" }}>
+          <div
+            ref={setViewportEl}
+            className="open__messages"
+            style={{ height: "100%", overflowY: "auto", position: "relative", background: "transparent" }}
+          >
+            {messages.map((m) => (
+              <MessageBubble
+                key={m.id ?? m.client_temp_id ?? `${m.time}_${m.side}`}
+                m={m}
+                onReply={handleReplyPick}
+                chatTitle={chat.title}
+                onJumpToMessage={jumpToMessage}
+              />
+            ))}
+          </div>
         </div>
 
         {/* ✅ Reply ABOVE attachments */}
