@@ -50,12 +50,6 @@ export default function Stats() {
         </div>
 
         <div className="compact-stats-box">
-          <img className="compact-stats-img" src="/images/heart.png" alt="حیوانات نجات یافته" />
-          <div className="compact-stats-number">2,647</div>
-          <div className="compact-stats-label">حیوانات نجات‌یافته</div>
-        </div>
-
-        <div className="compact-stats-box">
           <img className="compact-stats-img" src="/images/paw.png" alt="آگهی‌های فعال" />
           <div className="compact-stats-number">
             {activeAdsCount !== null

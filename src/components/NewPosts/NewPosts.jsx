@@ -12,22 +12,89 @@ const API_ENDPOINTS = {
   adoption: "posts/surrender-posts/",
 };
 
+const POST_TYPE_TO_BACKEND = {
+  lost: "lost",
+  "گم شده": "lost",
+  found: "found",
+  "پیدا شده": "found",
+  surrender: "surrender",
+  "سرپرستی": "surrender",
+  adoption: "surrender",
+};
+
+const normalizePostTypeValue = (value) => {
+  if (!value) {
+    return "";
+  }
+  const normalized = String(value).trim().toLowerCase();
+  return POST_TYPE_TO_BACKEND[normalized] || normalized;
+};
+
+const resolvePostType = (post) => {
+  if (!post) {
+    return "generic";
+  }
+  const explicit = normalizePostTypeValue(post.post_type || post.type);
+  if (explicit === "lost" || explicit === "found" || explicit === "surrender") {
+    return explicit;
+  }
+  if (post.found_time) {
+    return "found";
+  }
+  if (post.lost_time) {
+    return "lost";
+  }
+  if (post.surrender_date || post.has_birth_certificate || post.vaccination || post.steriliz) {
+    return "surrender";
+  }
+  return "generic";
+};
+
+const toJalaliDate = (dateString) => {
+  if (!dateString) return "";
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date)) return "";
+    return new Intl.DateTimeFormat("fa-IR", {
+      year: "numeric",
+      month: "long",  
+      day: "numeric",
+    }).format(date);
+  } catch {
+    return "";
+  }
+};
+
 const calculateRelativeTime = (isoDate) => {
   if (!isoDate) return "تاریخ نامشخص";
-
   const now = new Date();
   const date = new Date(isoDate);
-
   if (isNaN(date)) return "تاریخ نامشخص";
-
   const diffInSeconds = Math.floor((now - date) / 1000);
-
   if (diffInSeconds < 60) return "همین الان";
   if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} دقیقه پیش`;
   if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} ساعت پیش`;
   if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} روز پیش`;
   if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)} ماه پیش`;
   return `${Math.floor(diffInSeconds / 31536000)} سال پیش`;
+};
+
+const getPostType = (type) => {
+  if (!type) return "نامشخص";
+  const typeStr = String(type).toLowerCase().trim();
+  switch (typeStr) {
+    case "lost":
+    case "گم شده":
+      return "گم شده";
+    case "found":
+    case "پیدا شده":
+      return "پیدا شده";
+    case "surrender":
+    case "سرپرستی":
+      return "سرپرستی";
+    default:
+      return "نامشخص";
+  }
 };
 
 const LocationIcon = () => (
@@ -50,6 +117,16 @@ const CalendarIcon = () => (
   />
 );
 
+const ClockIcon = () => (
+  <img 
+    src="/src/icons/clock.svg" 
+    alt="time"
+    width="12" 
+    height="12"
+    className="icon-img-landing"
+  />
+);
+
 const ArrowIcon = () => (
   <svg className="arrow-icon-landing" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
     <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"/>
@@ -63,18 +140,15 @@ export default function NewPosts() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-    
+  const [hoveredCard, setHoveredCard] = useState(null);
 
   const fetchPosts = async (url) => {
     setLoading(true);
     setError("");
-
     try {
       const res = await api.get(url);
       const data = res.data;
       const results = Array.isArray(data) ? data : data.results || [];
-
       setPosts(results);
     } catch (err) {
       console.error("خطا در دریافت آگهی‌ها:", err);
@@ -95,12 +169,15 @@ export default function NewPosts() {
     } else {
       url = API_ENDPOINTS.all;
     }
-
     fetchPosts(url);
   }, [activeFilter]);
 
   const normalizedPosts = useMemo(() => {
     return posts.map((p) => {
+      const postType = resolvePostType(p);
+      const postTypeLabel = getPostType(postType);
+      const petType = getPetType(p.pet_type, "سایر");
+      
       let status = "فعال";
       let statusLabel = "فعال";
 
@@ -114,13 +191,13 @@ export default function NewPosts() {
         status = "سرپرستی";
         statusLabel = "سرپرستی";
       } else {
-        if (p.post_type === "found" || p.found_time) {
+        if (postType === "found" || p.found_time) {
           status = "پیدا شده";
           statusLabel = "پیدا شده";
-        } else if (p.psot_type === "lost" || p.lost_time) {
+        } else if (postType === "lost" || p.lost_time) {
           status = "گم شده";
           statusLabel = "گم شده";
-        } else if (p.post_type === "surrender") {
+        } else if (postType === "surrender") {
           status = "سرپرستی";
           statusLabel = "سرپرستی";
         } else {
@@ -137,19 +214,29 @@ export default function NewPosts() {
       const eventDate = p.lost_time || p.found_time || p.surrender_date || p.created_at;
       const eventDateTime = eventDate ? new Date(eventDate) : createdAt;
 
+      const timeText = postType === "lost" ? toJalaliDate(p.lost_time) : 
+                      postType === "found" ? toJalaliDate(p.found_time) : 
+                      toJalaliDate(p.updated_at);
+      
+      const postTimeText = toJalaliDate(p.updated_at);
+
       return {
-        id: `${p.post_type || "generic"}-${p.id}`,
+        id: `${postType}-${p.id}`,
         rawId: p.id,
         name: p.pet_name || p.title || "بدون نام",
         desc: p.description || "",
-        category: getPetType(p.pet_type, "سایر"),
+        category: petType,
         status,
         statusLabel,
         location: locationText,
         city: locationText,
-        time: calculateRelativeTime(p.created_at || p.updated_at),
+        time: timeText,
+        relativeTime: calculateRelativeTime(p.updated_at),
+        postTime: postTimeText,
         image: getPostImage(p),
         type: p.post_type || "generic",
+        postType: postType,
+        postTypeLabel: postTypeLabel,
         sex: sex,
         age: age,
         hasBirthCertificate: p.has_birth_certificate || false,
@@ -169,9 +256,7 @@ export default function NewPosts() {
 
   const handleViewDetails = (ad) => {
     console.log("مشاهده جزئیات برای آگهی (NewPosts):", ad);
-
-    const postType = ad.type || ad.originalData?.type || "generic";
-
+    const postType = ad.postType && ad.postType !== "generic" ? ad.postType : resolvePostType(ad.originalData);
     navigate("/post-details", {
       state: {
         postId: ad.rawId,
@@ -269,14 +354,33 @@ export default function NewPosts() {
                 const statusClass = getStatusClass();
                 
                 return (
-                  <div className="post-card-landing" key={ad.id}>
+                  <div 
+                    className="post-card-landing" 
+                    key={ad.id}
+                    onMouseEnter={() => setHoveredCard(ad.id)}
+                    onMouseLeave={() => setHoveredCard(null)}
+                  >
                     <div className="post-image-container-landing">
-                      <img className="post-image-landing" src={ad.image} alt={ad.name} />
+                      <img 
+                        className={`post-image-landing ${hoveredCard === ad.id ? 'blurred' : ''}`} 
+                        src={ad.image} 
+                        alt={ad.name} 
+                      />
                       
                       <div className={`pet-listing-status-landing ${statusClass}`}>
                         <span className="status-label-landing">{ad.statusLabel}</span>
                         <div className="status-pulse-landing"></div>
                       </div>
+
+                      <button 
+                        className={`image-glass-view-btn-landing ${hoveredCard === ad.id ? 'visible' : ''}`}
+                        onClick={() => handleViewDetails(ad)}
+                      >
+                        <span className="image-glass-btn-text-landing">مشاهده جزئیات</span>
+                        <svg className="image-glass-btn-icon-landing" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
                     </div>
 
                     <div className="post-content-landing">
@@ -304,23 +408,17 @@ export default function NewPosts() {
                           <div className="detail-icon-landing">
                             <CalendarIcon />
                           </div>
-                          <span className="post-detail-text-landing">{formatDate(ad.time)}</span>
+                          <span className="post-detail-text-landing">{ad.time}</span>
                         </div>
-                      </div>
-                    </div>
 
-                    <div className="post-action-buttons-landing">
-                      <button
-                        className="view-details-btn-landing"
-                        onClick={() => handleViewDetails(ad)}
-                      >
-                        <span className="btn-glow-landing"></span>
-                        <span className="border-animation-landing"></span>
-                        مشاهده جزئیات
-                        <svg className="btn-icon-landing" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                          <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </button>
+                      <div className="pet-listing-time-landing">
+                        <div className="time-icon-landing">
+                          <ClockIcon />
+                        </div>
+                        <span className="pet-listing-time-text-landing">{ad.postTime}</span>
+                      </div>
+
+                      </div>
                     </div>
                   </div>
                 );
