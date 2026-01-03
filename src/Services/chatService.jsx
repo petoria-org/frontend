@@ -57,11 +57,8 @@ export const uploadAttachments = async (files, type = null) => {
     const fd = new FormData();
     const list = Array.isArray(files) ? files : [];
 
-    if (list.length === 1) {
-      fd.append("file", list[0]);
-    } else {
-      list.forEach((file) => fd.append("files", file));
-    }
+    // Backend expects repeated "file" fields; use the same key for single or multiple
+    list.forEach((file) => fd.append("file", file));
 
     if (type) fd.append("type", type);
 

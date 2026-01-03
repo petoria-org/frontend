@@ -380,6 +380,8 @@
   line-height: 1.8;
   font-size: 14px;
   text-align: right;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .msg:not(.msg--out) .msg__text{ color: #2c5282; }
