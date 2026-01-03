@@ -538,10 +538,18 @@
   font-size: 12px;
   opacity: .8;
   color: inherit;
+  white-space: nowrap;
 }
 
 .msgRow--out .msg__meta{ justify-content: flex-end; }
-.msg__tick{ font-weight: 900; }
+.msg__tick{
+  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  flex-shrink: 0;
+}
 
 .replyPreview{
   margin: 0;
