@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import "../styles/Hero.css";
+import Stats from "./Stats";
 
 import dogImage from "../assets/images/bgc1.png";
 import catImage from "../assets/images/bgc2.png";
@@ -106,12 +107,12 @@ export default function Hero() {
       accentColor: "#C8E6FF",
       imageSide: "right",
       contentPosition: "left",
-      pageType: "content"
+      pageType: "content",
+      showStats: true
     },
   ];
 
-  // تنظیمات زمان‌بندی (به میلی‌ثانیه)
-  const AUTO_SLIDE_INTERVAL = 5000; // 5 ثانیه
+  const AUTO_SLIDE_INTERVAL = 5000;
 
   const handleNextPage = () => {
     if (isAnimating) return;
@@ -151,7 +152,6 @@ export default function Hero() {
     }, 600);
   };
 
-  // شروع جابجایی خودکار صفحات
   const startAutoSlide = () => {
     if (autoSlideInterval.current) {
       clearInterval(autoSlideInterval.current);
@@ -162,7 +162,6 @@ export default function Hero() {
     }, AUTO_SLIDE_INTERVAL);
   };
 
-  // توقف جابجایی خودکار
   const stopAutoSlide = () => {
     if (autoSlideInterval.current) {
       clearInterval(autoSlideInterval.current);
@@ -181,7 +180,6 @@ export default function Hero() {
 
     window.addEventListener('keydown', handleKeyDown);
     
-    // شروع جابجایی خودکار هنگام بارگذاری کامپوننت
     startAutoSlide();
     
     return () => {
@@ -196,12 +194,10 @@ export default function Hero() {
     }
   }, [currentPage]);
 
-  // متوقف کردن جابجایی خودکار هنگام هوور ماوس روی بخش
   const handleMouseEnter = () => {
     stopAutoSlide();
   };
 
-  // شروع مجدد جابجایی خودکار هنگام خروج ماوس
   const handleMouseLeave = () => {
     startAutoSlide();
   };
@@ -280,7 +276,17 @@ export default function Hero() {
             </div>
           )}
 
-          {currentPage > 0 && (
+          {currentPage === 0 && (
+            <div className="welcome-dog">
+              <img 
+                src={dogImage} 
+                alt="سگ خوش آمدگویی"
+                className="welcome-dog-image"
+              />
+            </div>
+          )}
+
+          {currentPage > 0 && currentPage < 6 && (
             <div className={`content-screen-hero ${currentPageData.imageSide} page-${currentPageData.id}`}>
               <div className="animal-image-container">
                 <img 
@@ -303,15 +309,36 @@ export default function Hero() {
             </div>
           )}
 
-          {currentPage === 0 && (
-            <div className="welcome-dog">
-              <img 
-                src={dogImage} 
-                alt="سگ خوش آمدگویی"
-                className="welcome-dog-image"
-              />
+          {currentPage === 6 && (
+          <>
+            <div className={`content-screen-hero ${currentPageData.imageSide} page-${currentPageData.id} page-with-stats`}>
+              <div className="animal-image-container">
+                <img 
+                  src={currentPageData.image} 
+                  alt={currentPageData.title}
+                  className={`main-animal-image-hero ${isAnimating ? 'slide-out' : 'slide-in'}`}
+                />
+                <div className="image-glow"></div>
+              </div>
+
+              <div
+                className={`text-content-hero ${currentPageData.contentPosition} text-page-${currentPageData.id}`}
+              >
+                <div className="content-wrapper-hero"> 
+                  <h2 className="page-title-hero">جامعه پتوریا</h2> 
+                  <div className="accent-line-hero" style={{ backgroundColor: currentPageData.accentColor }}></div> 
+                  <p className="page-description-hero"> 
+                    با هم قدرتمندیم... سایت ما بیش از یک پلتفرم است؛ جامعه‌ای است از افرادی که برای رفاه حیوانات ارزش قائلند. چه با گزارش حیوان گم‌شده، چه با پذیرش سرپرستی، چه با اشتراک داستان موفقیت—همه ما بخشی از این حرکت مهربانی هستیم.
+                  </p>
+                </div>
+              </div>
             </div>
-          )}
+            
+            <div className="compact-stats-container">
+              <Stats />
+            </div>
+          </>
+        )}
         </div>
       </section>
 

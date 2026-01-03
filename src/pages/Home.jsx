@@ -24,7 +24,6 @@ export default function Home() {
   return (
     <div>
       <Hero />
-      <Stats />
       <SucccessStories />
       <NewPosts />
     </div>
