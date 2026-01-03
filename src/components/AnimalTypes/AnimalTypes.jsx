@@ -20,51 +20,64 @@ export default function AnimalTypes() {
 
   return (
     <div className="animal-types-section">
-      <div className="animal-types-container">
-        <div className="animal-types-header">
-          <h2 className="animal-types-title">
-            انواع حیوانات در <span className="highlight">پتوریا</span>
-          </h2>
-          <p className="animal-types-subtitle">
-            با انواع حیوانات خانگی که می‌توانید در سایت پیدا کنید آشنا شوید
-          </p>
-        </div>
-        
-        <div className="animal-types-wave-container">
-          <div className="wave-line"></div>
-          
-          <div className="animal-types-wave-line">
-            {animalTypes.map((animal, index) => (
-              <div 
-                key={animal.id} 
-                className={`animal-type-item ${index % 2 === 0 ? 'wave-up' : 'wave-down'}`}
-                style={{ 
-                  animationDelay: `${index * 0.15}s`,
-                  '--animal-color': animal.color
-                }}
-              >
-                <div className="animal-type-circle">
-                  <div className="circle-outer-glow"></div>
-                  <div className="circle-inner-glow"></div>
-                  
-                  <div className="animal-type-image-wrapper">
-                    <img 
-                      src={animal.image} 
-                      alt={animal.alt}
-                      className="animal-type-image"
-                    />
-                    <div className="image-overlay"></div>
-                  </div>
-                  
-                  <div className="circle-pulse"></div>
-                </div>
-                
-                <div className="animal-type-name">
-                  <span className="name-text">{animal.name}</span>
-                  <div className="name-underline"></div>
-                </div>
+      <div className="animal-types-card">
+        <div className="animal-types-border"></div>
+        <div className="animal-types-content">
+          <div className="animal-types-header-container">
+            <div className="animal-types-title-container">
+              <div className="animal-types-title-text-content">
+                <h1 className="animal-types-title-gradient">
+                  انواع حیوانات در پتوریا
+                </h1>
+                <p className="animal-types-subtitle">
+                  با انواع حیوانات خانگی که می‌توانید در سایت پیدا کنید آشنا شوید
+                </p>
               </div>
-            ))}
+            </div>
+          </div>
+          
+          <div className="animal-types-main-content">
+            <div className="animal-types-wave-container">
+              <div className="wave-line"></div>
+              
+              <div className="animal-types-wave-line">
+                {animalTypes.map((animal, index) => (
+                  <div 
+                    key={animal.id} 
+                    className={`animal-type-item ${index % 2 === 0 ? 'wave-up' : 'wave-down'}`}
+                    style={{ 
+                      animationDelay: `${index * 0.15}s`,
+                      '--animal-color': animal.color
+                    }}
+                  >
+                    <div className="animal-type-circle">
+                      {/* لایه‌های جدید بوردر */}
+                      <div className="animal-type-circle-border-layer"></div>
+                      <div className="animal-type-circle-border-white"></div>
+                      
+                      <div className="circle-outer-glow"></div>
+                      <div className="circle-inner-glow"></div>
+                      
+                      <div className="animal-type-image-wrapper">
+                        <img 
+                          src={animal.image} 
+                          alt={animal.alt}
+                          className="animal-type-image"
+                        />
+                        <div className="image-overlay"></div>
+                      </div>
+                      
+                      <div className="circle-pulse"></div>
+                    </div>
+                    
+                    <div className="animal-type-name">
+                      <span className="name-text">{animal.name}</span>
+                      <div className="name-underline"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -12,6 +12,7 @@ const SuccessStoriesModern = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [hoveredCard, setHoveredCard] = useState(null);
 
   const BACKEND_URL = config.BACKEND_URL;
 
@@ -34,32 +35,36 @@ const SuccessStoriesModern = () => {
     switch(storyType) {
       case 'lost':
         return {
-          backgroundColor: "rgba(122, 238, 151, 0.95)",
-          color: "#0f7228",
+          statusClass: 'ls-lost-landing',
+          backgroundColor: "rgba(234, 151, 153, 0.85)",
+          color: "#fff",
           borderColor: "rgba(255, 255, 255, 0.9)"
         };
       case 'found':
         return {
-          backgroundColor: "rgba(159, 199, 235, 0.95)",
-          color: "#0a5ca6",
+          statusClass: 'ls-found-landing',
+          backgroundColor: "rgba(159, 199, 235, 0.85)",
+          color: "#fff",
           borderColor: "rgba(255, 255, 255, 0.9)"
         };
       case 'surrender':
         return {
-          backgroundColor: "rgba(122, 179, 224, 0.95)",
-          color: "#1c7bd1",
+          statusClass: 'ls-adoption-landing',
+          backgroundColor: "rgba(122, 238, 151, 0.85)",
+          color: "#fff",
           borderColor: "rgba(255, 255, 255, 0.9)"
         };
       default:
         return {
-          backgroundColor: "rgba(122, 238, 151, 0.95)",
-          color: "#0f7228",
+          statusClass: 'ls-active-landing',
+          backgroundColor: "rgba(122, 179, 224, 0.85)",
+          color: "#fff",
           borderColor: "rgba(255, 255, 255, 0.9)"
         };
     }
   };
 
-  const truncateText = (text, maxLength = 150) => {
+  const truncateText = (text, maxLength = 110) => {
     if (!text) return "";
     return text.length > maxLength
       ? text.slice(0, maxLength) + "..."
@@ -72,27 +77,41 @@ const SuccessStoriesModern = () => {
       
       const startTime = Date.now();
       
+      
       try {
         const data = await getSuccessStories();
         
-        const mapped = data.slice(0, 3).map((story) => ({
-          id: story.id,
-          title: story.title,
-          author: story.user_name,
-          date: toJalaliDate(story.created_at),
-          status: storyTypeMap[story.story_type] || "موفقیت",
-          statusColor: getStatusColor(story.story_type).backgroundColor,
-          statusTextColor: getStatusColor(story.story_type).color,
-          statusBorderColor: getStatusColor(story.story_type).borderColor,
-          image: story.image
-            ? `${BACKEND_URL}${story.image}`
-            : "/src/assets/images/default-pet.png",
-          images: story.image
-            ? [`${BACKEND_URL}${story.image}`]
-            : [],
-          content: story.story,
-          story_type: story.story_type,
-        }));
+        const sortedStories = [...data].sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        );
+
+        const mapped = sortedStories.slice(0, 4).map((story) => {
+          const statusColors = getStatusColor(story.story_type);
+          return {
+            id: story.id,
+            title: story.title,
+            author: story.user_name,
+            date: toJalaliDate(story.created_at),
+            status: storyTypeMap[story.story_type] || "موفقیت",
+            statusClass: statusColors.statusClass,
+            statusColor: statusColors.backgroundColor,
+            statusTextColor: statusColors.color,
+            statusBorderColor: statusColors.borderColor,
+            image: story.image
+              ? `${BACKEND_URL}${story.image}`
+              : "/src/assets/images/default-pet.png",
+            images: story.image
+              ? [`${BACKEND_URL}${story.image}`]
+              : [],
+            content: story.story,
+            story_type: story.story_type,
+            category: "داستان موفق",
+            description: story.story,
+            location: story.location || "موقعیت نامشخص",
+            time: toJalaliDate(story.created_at),
+            postTime: toJalaliDate(story.created_at),
+          };
+        });
 
         setStories(mapped);
         setIsVisible(true);
@@ -128,198 +147,159 @@ const SuccessStoriesModern = () => {
     navigate("/success-stories");
   };
 
+  const LocationIcon = () => (
+    <img 
+      src="/src/icons/location.svg" 
+      alt="location"
+      width="16" 
+      height="16"
+      className="ls-icon-img-landing"
+    />
+  );
+
+  const CalendarIcon = () => (
+    <img 
+      src="/src/icons/calendar-2.svg" 
+      alt="calendar"
+      width="16" 
+      height="16"
+      className="ls-icon-img-landing"
+    />
+  );
+
+  const ClockIcon = () => (
+    <img 
+      src="/src/icons/clock.svg" 
+      alt="time"
+      width="12" 
+      height="12"
+      className="ls-icon-img-landing"
+    />
+  );
+
   if (loading) {
     return (
-      <div className="success-stories-modern">
-        <div className="stories-container-modern">
-          <div className="loading-overlay-modern">
-            <div className="spinner-modern">
-              <div className="spinner-circle-modern"></div>
+        <div className="ls-success-stories-profile-style">
+          <div className="ls-loading-overlay-profile">
+            <div className="ls-spinner-profile">
+              <div className="ls-spinner-circle-profile"></div>
             </div>
             <p>در حال بارگذاری داستان‌های موفق...</p>
           </div>
         </div>
-      </div>
     );
   }
 
   if (error) {
     return (
-      <div className="success-stories-modern">
-        <div className="stories-container-modern">
-          <div className="error-modern">
-            <p>{error}</p>
-            <button 
-              onClick={() => window.location.reload()} 
-              className="retry-btn-modern"
-            >
-              تلاش مجدد
-            </button>
-          </div>
+      <div className="ls-success-stories-profile-style">
+        <div className="ls-error-profile">
+          <p>{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="ls-retry-btn-profile"
+          >
+            تلاش مجدد
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="success-stories-modern">
-      <div className="floating-particles-modern">
-        <div className="floating-particle"></div>
-        <div className="floating-particle"></div>
-        <div className="floating-particle"></div>
-      </div>
-
-      <div className="stories-container-modern">
-        <div className="stories-header-modern">
-          <div className="stories-title-wrapper-modern">
-            <h1 className="stories-title-modern">
-              داستان‌های موفقیت
-              <span className="title-accent-modern"> پتوریا</span>
-            </h1>
-          </div>
-          <p className="stories-subtitle-modern">
-            روایت‌هایی از عشق و بازگشت، هر داستان پر از امید و لبخند
-          </p>
-        </div>
-
-        <div className="stories-grid-modern">
-          {stories.map((story, index) => (
-            <div 
-              key={story.id} 
-              className={`story-card-modern ${isVisible ? "slide-in" : ""}`}
-              style={{ animationDelay: `${index * 0.15}s` }}
-            >
-              <div className="story-image-wrapper-modern">
-                <div 
-                  className="story-status-badge-modern"
-                  style={{
-                    backgroundColor: story.statusColor,
-                    color: story.statusTextColor,
-                    borderColor: story.statusBorderColor
-                  }}
-                >
-                  <div className="status-pulse-landing"></div>
-                  <span className="status-text-badge-modern">{story.status}</span>
-                </div>
-                
-                <img
-                  src={story.image}
-                  alt={story.title}
-                  className="story-image-modern"
-                  loading="lazy"
-                />
-                <div className="image-overlay-modern"></div>
-              </div>
-
-              <div className="story-content-modern">
-                <div className="story-header-modern">
-                  <div className="story-meta-modern">
-                    <div className="title-wrapper-modern">
-                      <h3 className="story-title-modern">{story.title}</h3>
-                      <div className="title-line-modern"></div>
-                    </div>
-                    
-                    <div className="author-date-modern">
-                      <span className="date-separator-modern">•</span>
-                      <span className="story-author-modern">{story.author}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="story-number-modern">0{index + 1}</div>
-                </div>
-
-                <div className="story-content-box-modern">
-                  <div className="story-description-container-modern">
-                    <p className="story-description-text-modern">
-                      {truncateText(story.content)}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="story-footer-modern">
-                  <span className="story-date-modern">
-                    <svg 
-                      className="date-icon-modern" 
-                      viewBox="0 0 24 24" 
-                      fill="none"
-                    >
-                      <path 
-                        d="M19 4H5C3.89543 4 3 4.89543 3 6V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V6C21 4.89543 20.1046 4 19 4Z" 
-                        stroke="currentColor" 
-                        strokeWidth="2" 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round"
-                      />
-                      <path 
-                        d="M16 2V6" 
-                        stroke="currentColor" 
-                        strokeWidth="2" 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round"
-                      />
-                      <path 
-                        d="M8 2V6" 
-                        stroke="currentColor" 
-                        strokeWidth="2" 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round"
-                      />
-                      <path 
-                        d="M3 10H21" 
-                        stroke="currentColor" 
-                        strokeWidth="2" 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    {story.date}
-                  </span>
-                  
-                  <button
-                    className="story-view-btn-modern"
-                    onClick={() => handleViewStory(story)}
-                  >
-                    <span>مشاهده داستان</span>
-                    <svg 
-                      className="story-arrow-modern" 
-                      viewBox="0 0 24 24" 
-                      fill="none"
-                    >
-                      <path 
-                        d="M15 18L9 12L15 6" 
-                        stroke="currentColor" 
-                        strokeWidth="2" 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </button>
-                </div>
+    <div className="ls-success-stories-profile-style">
+      <div className="ls-success-stories-card">
+        <div className="ls-success-stories-border"></div>
+        <div className="ls-success-stories-content">
+          <header className="ls-success-stories-header">
+            <div className="ls-success-stories-title-container">
+              <div className="ls-success-stories-title-text-content">
+                <h1 className="ls-success-stories-title-gradient">
+                  داستان‌های موفقیت پتوریا
+                </h1>
+                <p className="ls-success-stories-subtitle">
+                  روایت‌هایی از عشق و بازگشت، هر داستان پر از امید و لبخند
+                </p>
               </div>
             </div>
-          ))}
-        </div>
+          </header>
 
-        <div className="view-more-section-modern">
-          <button
-            className="view-more-btn-modern"
-            onClick={handleViewAllStories}
-          >
-            <span>مشاهده همه داستان‌ها</span>
-            <svg 
-              className="view-more-arrow-modern" 
-              viewBox="0 0 24 24" 
-              fill="none"
+          <div className="ls-success-stories-grid-profile">
+            {stories.map((story, index) => (
+              <div
+                key={story.id}
+                className="ls-success-story-card-profile"
+              >
+                <div className="ls-success-story-border-inner"></div>
+                <div className="ls-success-story-number">0{index + 1}</div>
+                
+                <div className="ls-success-story-content-wrapper">
+                  <div className="ls-success-story-image-section">
+                    <div className="ls-success-story-image-frame">
+                      <div className="ls-success-story-image-border">
+                        <img
+                          className="ls-success-story-image"
+                          src={story.image}
+                          alt={story.title}
+                        />
+                      </div>
+                    </div>
+                    <div className="ls-success-story-image-decoration">
+                      <div className="ls-success-story-decoration-circle"></div>
+                      <div className="ls-success-story-decoration-circle"></div>
+                      <div className="ls-success-story-decoration-circle"></div>
+                    </div>
+                  </div>
+                  <div className="ls-success-story-text-section">
+                    <div className="ls-success-story-header">
+                      <div className="ls-success-story-meta">
+                        <div className="ls-success-story-title-wrapper">
+                          <h3 className="ls-success-story-title-text">{story.title}</h3>
+                          <div className="ls-success-story-title-line"></div>
+                        </div>
+                        <div className="ls-success-story-author-date">
+                          <span className="ls-success-story-author">{story.author}</span>
+                          <span className="ls-success-story-date-separator">•</span>
+                          <span className="ls-success-story-date">{story.date}</span>
+                        </div>
+                      </div>
+                      
+                      
+            
+                    </div>
+                    <div className="ls-success-story-content-box">
+                      <p className="ls-success-story-content-text">
+                        {truncateText(story.content)}
+                      </p>
+                    </div>
+                    <div className="ls-success-story-footer">
+                      <button
+                        className="ls-success-story-read-more-btn"
+                        onClick={() => handleViewStory(story)}
+                      >
+                        <span>مشاهده داستان</span>
+                        <svg className="ls-success-story-btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                          <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="ls-show-all-stories-container">
+            <button
+              className="ls-show-all-stories-btn"
+              onClick={handleViewAllStories}
             >
-              <path 
-                d="M15 18L9 12L15 6" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
+              مشاهده همه داستان‌ها
+              <svg className="ls-show-all-arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 

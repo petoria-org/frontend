@@ -1,3 +1,139 @@
+.animal-types-section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 80px;
+  position: relative;
+}
+
+.animal-types-card {
+  width: 1400px;
+  background: white;
+  border-radius: 32px;
+  box-shadow: 
+    0 25px 50px -12px rgba(28, 123, 209, 0.15),
+    0 8px 16px -4px rgba(28, 123, 209, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  padding: 50px;
+  position: relative;
+  overflow: hidden;
+  animation: at-cardEntrance 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes at-cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animal-types-border {
+  position: absolute;
+  inset: 0;
+  border: 2px solid rgba(28, 123, 209, 0.2);
+  border-radius: 32px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.animal-types-content {
+  position: relative;
+  z-index: 2;
+}
+
+.animal-types-header-container {
+  margin-bottom: 60px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid rgba(28, 123, 209, 0.1);
+}
+
+.animal-types-title-container {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.animal-types-icon-circle {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #1c7bd1 0%, #4a9fe3 100%);
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 15px 35px rgba(28, 123, 209, 0.3),
+    inset 0 4px 8px rgba(255, 255, 255, 0.4);
+  position: relative;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+}
+
+.animal-types-icon-circle::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  background: linear-gradient(135deg, #1c7bd1 0%, #4a9fe3 100%);
+  border-radius: 23px;
+}
+
+.animal-types-paw-icon {
+  width: 32px;
+  height: 32px;
+  color: white;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.animal-types-title-text-content {
+  flex: 1;
+}
+
+.animal-types-title-gradient {
+  background: linear-gradient(135deg, #0a5ca6 0%, #1c7bd1 50%, #4a9fe3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-family: 'Inter', Helvetica;
+  font-weight: 800;
+  font-size: 32px;
+  margin: 0 0 15px 0;
+  letter-spacing: -0.5px;
+}
+
+.animal-types-subtitle {
+  font-family: 'Inter', Helvetica;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.7;
+  color: #5a6c7d;
+  margin: 0;
+  max-width: 700px;
+  padding-right: 20px;
+  position: relative;
+}
+
+.animal-types-subtitle::before {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 10px;
+  width: 10px;
+  height: 10px;
+  background: #4a9fe3;
+  border-radius: 50%;
+}
+
+.animal-types-main-content {
+  width: 100%;
+}
+
 :root {
   --light-blue: #87CEEB;
   --soft-blue: #A6D8FF;
@@ -17,15 +153,6 @@
   --shadow-dark: rgba(44, 62, 80, 0.1);
   --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-bounce: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.animal-types-section {
-  width: 100%;
-  padding: 80px 0;
-  background: transparent;
-  position: relative;
-  overflow: hidden;
-  direction: rtl;
 }
 
 .animal-types-container {
@@ -167,6 +294,63 @@
   margin-bottom: 15px;
   cursor: pointer;
   overflow: visible;
+}
+
+/* تغییرات جدید برای اضافه کردن بوردر به دایره‌ها */
+.animal-type-circle {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  overflow: visible;
+}
+
+/* لایه اول: گرادینت پشت */
+.animal-type-circle-border-layer {
+  position: absolute;
+  top: -12px;
+  left: -12px;
+  right: -12px;
+  bottom: -12px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, 
+    rgba(28, 123, 209, 0.25) 0%, 
+    rgba(74, 159, 227, 0.3) 50%,
+    rgba(28, 123, 209, 0.25) 100%);
+  z-index: 0;
+  opacity: 0;
+  transition: var(--transition-smooth);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 
+    0 10px 30px rgba(28, 123, 209, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+/* لایه دوم: حاشیه سفید */
+.animal-type-circle-border-white {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.95);
+  z-index: 0;
+  opacity: 0;
+  transition: var(--transition-smooth);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.animal-type-item:hover .animal-type-circle-border-layer {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.animal-type-item:hover .animal-type-circle-border-white {
+  opacity: 0.9;
+  transform: scale(1.02);
 }
 
 .circle-outer-glow {
@@ -374,76 +558,43 @@
   opacity: 0.8;
 }
 
-@media (max-width: 1440px) {
-  .animal-types-container {
-    max-width: 1400px;
-    padding: 0 5px;
-  }
-  
-  .animal-types-title,
-  .highlight {
-    font-size: 1.9rem;
-  }
-  
-  .animal-types-subtitle {
-    font-size: 1rem;
-  }
-  
-  .animal-type-circle {
-    width: 170px;
-    height: 170px;
-  }
-  
-  .animal-type-image {
-    width: 125px;
-    height: 125px;
-  }
-  
-  .name-text {
-    font-size: 0.95rem;
-  }
-}
-
 @media (max-width: 1200px) {
-  .animal-types-section {
-    padding: 70px 0;
+  .animal-types-card {
+    width: 95%;
+    padding: 40px;
   }
   
-  .animal-types-container {
-    max-width: 1200px;
-    padding: 0 5px;
-  }
-  
-  .animal-types-title,
-  .highlight {
-    font-size: 1.7rem;
-  }
-  
-  .animal-types-subtitle {
-    font-size: 0.95rem;
-  }
-  
-  .animal-types-wave-line {
-    min-height: 240px;
-    gap: 8px;
-  }
-  
-  .animal-type-circle {
-    width: 160px;
-    height: 160px;
-  }
-  
-  .animal-type-image {
-    width: 120px;
-    height: 120px;
-  }
-  
-  .name-text {
-    font-size: 0.9rem;
+  .animal-types-title-gradient {
+    font-size: 36px;
   }
 }
 
 @media (max-width: 992px) {
+  .animal-types-card {
+    padding: 30px;
+    border-radius: 24px;
+  }
+  
+  .animal-types-title-container {
+    flex-direction: column;
+    text-align: center;
+    gap: 25px;
+  }
+  
+  .animal-types-title-gradient {
+    font-size: 32px;
+  }
+  
+  .animal-types-subtitle {
+    font-size: 16px;
+    padding-right: 0;
+    text-align: center;
+  }
+  
+  .animal-types-subtitle::before {
+    display: none;
+  }
+  
   .animal-types-wave-line {
     flex-wrap: wrap;
     justify-content: center;
@@ -507,25 +658,27 @@
 }
 
 @media (max-width: 768px) {
-  .animal-types-section {
-    padding: 60px 0;
+  .animal-types-card {
+    padding: 25px 20px;
   }
   
-  .animal-types-container {
-    padding: 0 8px;
-  }
-  
-  .animal-types-header {
-    margin-bottom: 50px;
-  }
-  
-  .animal-types-title,
-  .highlight {
-    font-size: 1.5rem;
+  .animal-types-title-gradient {
+    font-size: 28px;
   }
   
   .animal-types-subtitle {
-    font-size: 0.85rem;
+    font-size: 15px;
+  }
+  
+  .animal-types-icon-circle {
+    width: 70px;
+    height: 70px;
+    border-radius: 20px;
+  }
+  
+  .animal-types-paw-icon {
+    width: 28px;
+    height: 28px;
   }
   
   .animal-type-item {
@@ -548,21 +701,16 @@
 }
 
 @media (max-width: 576px) {
-  .animal-types-section {
-    padding: 50px 0;
+  .animal-types-card {
+    padding: 20px 16px;
   }
   
-  .animal-types-container {
-    padding: 0 6px;
-  }
-  
-  .animal-types-title,
-  .highlight {
-    font-size: 1.4rem;
+  .animal-types-title-gradient {
+    font-size: 24px;
   }
   
   .animal-types-subtitle {
-    font-size: 0.8rem;
+    font-size: 14px;
   }
   
   .animal-types-wave-line {
@@ -590,17 +738,27 @@
 }
 
 @media (max-width: 480px) {
-  .animal-types-container {
-    padding: 0 4px;
+  .animal-types-card {
+    padding: 18px 12px;
   }
   
-  .animal-types-title,
-  .highlight {
-    font-size: 1.3rem;
+  .animal-types-title-gradient {
+    font-size: 22px;
   }
   
   .animal-types-subtitle {
-    font-size: 0.75rem;
+    font-size: 13px;
+  }
+  
+  .animal-types-icon-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 18px;
+  }
+  
+  .animal-types-paw-icon {
+    width: 24px;
+    height: 24px;
   }
   
   .animal-type-item {
@@ -628,21 +786,16 @@
 }
 
 @media (max-width: 360px) {
-  .animal-types-section {
-    padding: 40px 0;
+  .animal-types-card {
+    padding: 16px 10px;
   }
   
-  .animal-types-container {
-    padding: 0 3px;
-  }
-  
-  .animal-types-title,
-  .highlight {
-    font-size: 1.2rem;
+  .animal-types-title-gradient {
+    font-size: 20px;
   }
   
   .animal-types-subtitle {
-    font-size: 0.7rem;
+    font-size: 12px;
   }
   
   .animal-type-circle {
@@ -658,4 +811,10 @@
   .name-text {
     font-size: 0.65rem;
   }
+}
+
+.animal-types-title-text-content .animal-types-subtitle {
+  text-align: right;
+  margin-right: 0;
+  margin-left: auto;
 }

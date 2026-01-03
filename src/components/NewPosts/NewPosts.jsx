@@ -298,149 +298,190 @@ export default function NewPosts() {
     },
   ];
 
+  if (loading) {
+    return (
+      <div className="new-posts-page-landing">
+        <div className="np-loading-overlay-landing">
+          <div className="np-spinner-landing">
+            <div className="np-spinner-circle-landing"></div>
+          </div>
+          <p>در حال بارگذاری آگهی‌ها...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="new-posts-page-landing">
+        <div className="np-error-landing">
+          <p>{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="np-retry-btn-landing"
+          >
+            تلاش مجدد
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="new-posts-page-landing">
-      <main>
-        <section className="posts-section-landing">
-          <div className="posts-container-landing">
-            <header className="posts-header-landing">
-              <h1 className="posts-title-landing">مرور آگهی‌ها</h1>
-              <p className="posts-subtitle-landing">مرور آگهی‌های حیوانات</p>
-            </header>
-
-            <div className="posts-categories-tabs-landing">
-              <div className="posts-categories-list-landing">
-                {filters.map((filter) => (
-                  <button
-                    key={filter.label}
-                    className={`posts-category-tab-landing ${activeFilter === filter.label ? "active-landing" : ""}`}
-                    onClick={() => setActiveFilter(filter.label)}
-                  >
-                    <div className="posts-category-content-landing">
-                      <span className="posts-category-label-landing">{filter.label}</span>
-                      <div className="posts-category-count-landing">
-                        <span>{filter.count}</span>
-                      </div>
-                    </div>
-                  </button>
-                ))}
+      <div className="new-posts-card-landing">
+        <div className="new-posts-border-landing"></div>
+        <div className="new-posts-content-landing">
+          <header className="new-posts-header-landing">
+            <div className="new-posts-title-container-landing">
+              <div className="new-posts-title-text-content-landing">
+                <h1 className="new-posts-title-gradient-landing">
+                  آگهی‌های جدید پتوریا
+                </h1>
+                <p className="new-posts-subtitle-landing">
+                  جدیدترین آگهی‌های حیوانات در انتظار شما
+                </p>
               </div>
             </div>
+          </header>
 
-            {error && <div className="error-message-landing">{error}</div>}
-            {loading && <div className="loading-message-landing">در حال بارگذاری...</div>}
+          <main>
+            <section className="posts-section-landing">
+              <div className="posts-container-landing">
 
-            <div className="posts-grid-landing">
-              {!loading && displayedAds.length === 0 && (
-                <div className="no-results-container-landing">
-                  <div className="no-results-icon-landing">
-                    <img src="/src/assets/icons/search-n.svg" alt="no results" />
-                  </div>
-                  <h3>هیچ آگهی‌ای یافت نشد</h3>
-                  <p className="no-results-text-landing">
-                    در حال حاضر آگهی‌ای برای نمایش وجود ندارد.
-                  </p>
-                </div>
-              )}
-
-              {displayedAds.map((ad) => {
-                const getStatusClass = () => {
-                  if (ad.status === 'پیدا شده') return 'found-landing';
-                  if (ad.status === 'گم شده') return 'lost-landing';
-                  if (ad.status === 'سرپرستی') return 'adoption-landing';
-                  return 'active-landing';
-                };
-
-                const statusClass = getStatusClass();
-                
-                return (
-                  <div 
-                    className="post-card-landing" 
-                    key={ad.id}
-                    onMouseEnter={() => setHoveredCard(ad.id)}
-                    onMouseLeave={() => setHoveredCard(null)}
-                  >
-                    <div className="post-image-container-landing">
-                      <img 
-                        className={`post-image-landing ${hoveredCard === ad.id ? 'blurred' : ''}`} 
-                        src={ad.image} 
-                        alt={ad.name} 
-                      />
-                      
-                      <div className={`pet-listing-status-landing ${statusClass}`}>
-                        <span className="status-label-landing">{ad.statusLabel}</span>
-                        <div className="status-pulse-landing"></div>
-                      </div>
-
-                      <button 
-                        className={`image-glass-view-btn-landing ${hoveredCard === ad.id ? 'visible' : ''}`}
-                        onClick={() => handleViewDetails(ad)}
+                <div className="posts-categories-tabs-landing">
+                  <div className="posts-categories-list-landing">
+                    {filters.map((filter) => (
+                      <button
+                        key={filter.label}
+                        className={`posts-category-tab-landing ${activeFilter === filter.label ? "active-landing" : ""}`}
+                        onClick={() => setActiveFilter(filter.label)}
                       >
-                        <span className="image-glass-btn-text-landing">مشاهده جزئیات</span>
-                        <svg className="image-glass-btn-icon-landing" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
+                        <div className="posts-category-content-landing">
+                          <span className="posts-category-label-landing">{filter.label}</span>
+                          <div className="posts-category-count-landing">
+                            <span>{filter.count}</span>
+                          </div>
+                        </div>
                       </button>
-                    </div>
-
-                    <div className="post-content-landing">
-                      <div className="post-header-landing">
-                        <div className="post-info-landing">
-                          <h3 className="post-name-landing">{ad.name}</h3>
-                          <p className="post-subtitle-landing">{ad.category}</p>
-                        </div>
-                        <div className="post-type-landing">
-                          {ad.category}
-                        </div>
-                      </div>
-
-                      <p className="post-description-landing">{ad.desc}</p>
-
-                      <div className="post-details-container-landing">
-                        <div className="post-detail-landing">
-                          <div className="detail-icon-landing">
-                            <LocationIcon />
-                          </div>
-                          <span className="post-detail-text-landing">{ad.location}</span>
-                        </div>
-
-                        <div className="post-detail-landing">
-                          <div className="detail-icon-landing">
-                            <CalendarIcon />
-                          </div>
-                          <span className="post-detail-text-landing">{ad.time}</span>
-                        </div>
-
-                      <div className="pet-listing-time-landing">
-                        <div className="time-icon-landing">
-                          <ClockIcon />
-                        </div>
-                        <span className="pet-listing-time-text-landing">{ad.postTime}</span>
-                      </div>
-
-                      </div>
-                    </div>
+                    ))}
                   </div>
-                );
-              })}
-            </div>
+                </div>
 
-            <div className="show-more-container-landing">
-              <button
-                className="show-more-btn-landing"
-                onClick={() => navigate("/posts")}
-              >
-                <span className="pulse-effect-landing"></span>
-                <span className="glowing-border-landing"></span>
-                مشاهده بیشتر
-                <svg className="arrow-icon-landing" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-        </section>
-      </main>
+                {error && <div className="error-message-landing">{error}</div>}
+
+                <div className="posts-grid-landing">
+                  {!loading && displayedAds.length === 0 && (
+                    <div className="no-results-container-landing">
+                      <div className="no-results-icon-landing">
+                        <img src="/src/assets/icons/search-n.svg" alt="no results" />
+                      </div>
+                      <h3>هیچ آگهی‌ای یافت نشد</h3>
+                      <p className="no-results-text-landing">
+                        در حال حاضر آگهی‌ای برای نمایش وجود ندارد.
+                      </p>
+                    </div>
+                  )}
+
+                  {displayedAds.map((ad) => {
+                    const getStatusClass = () => {
+                      if (ad.status === 'پیدا شده') return 'found-landing';
+                      if (ad.status === 'گم شده') return 'lost-landing';
+                      if (ad.status === 'سرپرستی') return 'adoption-landing';
+                      return 'active-landing';
+                    };
+
+                    const statusClass = getStatusClass();
+                    
+                    return (
+                      <div 
+                        className="post-card-landing" 
+                        key={ad.id}
+                        onMouseEnter={() => setHoveredCard(ad.id)}
+                        onMouseLeave={() => setHoveredCard(null)}
+                      >
+                        <div className="post-image-container-landing">
+                          <img 
+                            className={`post-image-landing ${hoveredCard === ad.id ? 'blurred' : ''}`} 
+                            src={ad.image} 
+                            alt={ad.name} 
+                          />
+                          
+                          <div className={`pet-listing-status-landing ${statusClass}`}>
+                            <span className="status-label-landing">{ad.statusLabel}</span>
+                            <div className="status-pulse-landing"></div>
+                          </div>
+
+                          <button 
+                            className={`image-glass-view-btn-landing ${hoveredCard === ad.id ? 'visible' : ''}`}
+                            onClick={() => handleViewDetails(ad)}
+                          >
+                            <span className="image-glass-btn-text-landing">مشاهده جزئیات</span>
+                            <svg className="image-glass-btn-icon-landing" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </button>
+                        </div>
+
+                        <div className="post-content-landing">
+                          <div className="post-header-landing">
+                            <div className="post-info-landing">
+                              <h3 className="post-name-landing">{ad.name}</h3>
+                              <p className="post-subtitle-landing">{ad.category}</p>
+                            </div>
+                            <div className="post-type-landing">
+                              {ad.category}
+                            </div>
+                          </div>
+
+                          <p className="post-description-landing">{ad.desc}</p>
+
+                          <div className="post-details-container-landing">
+                            <div className="post-detail-landing">
+                              <div className="detail-icon-landing">
+                                <LocationIcon />
+                              </div>
+                              <span className="post-detail-text-landing">{ad.location}</span>
+                            </div>
+
+                            <div className="post-detail-landing">
+                              <div className="detail-icon-landing">
+                                <CalendarIcon />
+                              </div>
+                              <span className="post-detail-text-landing">{ad.time}</span>
+                            </div>
+
+                            <div className="pet-listing-time-landing">
+                              <div className="time-icon-landing">
+                                <ClockIcon />
+                              </div>
+                              <span className="pet-listing-time-text-landing">{ad.postTime}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="show-more-container-landing">
+                  <button
+                    className="show-more-btn-landing"
+                    onClick={() => navigate("/posts")}
+                  >
+                    <span className="pulse-effect-landing"></span>
+                    <span className="glowing-border-landing"></span>
+                    مشاهده بیشتر
+                    <svg className="arrow-icon-landing" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </section>
+          </main>
+        </div>
+      </div>
     </div>
   );
 }
