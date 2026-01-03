@@ -1216,7 +1216,7 @@
   border-radius: 20px;
   width: 100%;
   max-width: 800px;
-  max-height: 90vh;
+  max-height: 85vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -1739,82 +1739,485 @@
 }
 
 /* Responsive Design */
-@media (max-width: 1200px){
-  .chatMain{
+@media (max-width: 1200px) {
+  .chatMain {
     height: calc(100vh - 4 * var(--page-pad));
   }
 }
 
-@media (max-width: 1024px){
-  .chats{ 
-    overflow: hidden; 
+@media (max-width: 1024px) {
+  .chats {
+    overflow: hidden;
     --page-pad: 16px;
   }
 
-  .chatMain{
+  .chatMain {
     height: calc(100vh - 4 * var(--page-pad));
   }
 
-  .conv, .chats .open{ height: 100%; }
+  .conv,
+  .chats .open {
+    height: 100%;
+  }
 }
 
-@media (max-width: 768px){
-  .chats{ --page-pad: 12px; }
-  .chatShell{ height: 100vh; }
+@media (max-width: 768px) {
+  .chats {
+    --page-pad: 12px;
+  }
 
-  .chatMain{
+  .chatShell {
+    height: 100vh;
+  }
+
+  .chatMain {
     gap: 10px;
     height: calc(100vh - 4 * var(--page-pad));
   }
 
-  .conv__title{ font-size: 18px; }
-  .conv__list{ padding: 6px; }
+  .conv__title {
+    font-size: 18px;
+  }
 
-  .convItem{
+  .conv__list {
+    padding: 6px;
+  }
+
+  .convItem {
     height: 88px;
     padding: 10px;
   }
 
-  .convItem__avatar{
-    width: 46px; 
+  .convItem__avatar {
+    width: 46px;
     height: 46px;
     margin-left: 12px;
   }
 
-  .convItem__name{ font-size: 16px; }
-  .convItem__hint{ -webkit-line-clamp: 1; padding-top: 6px; }
-  .convItem__timeCol{ padding-bottom: 10px; }
+  .convItem__name {
+    font-size: 16px;
+  }
 
-  .open__top{ padding: 12px; }
-  .open__avatar{ width: 38px; height: 38px; }
-  .open__name{ font-size: 18px; }
-  .open__messages{ padding: 12px; }
+  .convItem__hint {
+    -webkit-line-clamp: 1;
+    padding-top: 6px;
+  }
 
-  .msg:not(.msg--out), .msg--out{
+  .convItem__timeCol {
+    padding-bottom: 10px;
+  }
+
+  .open__top {
+    padding: 12px;
+  }
+
+  .open__avatar {
+    width: 38px;
+    height: 38px;
+  }
+
+  .open__name {
+    font-size: 18px;
+  }
+
+  .open__messages {
+    padding: 12px;
+  }
+
+  .msg:not(.msg--out),
+  .msg--out {
     max-width: 70%;
     padding: 8px 10px;
     border-radius: 12px;
   }
-  .msg__text{
+
+  .msg__text {
     font-size: 12.5px;
     line-height: 1.5;
   }
-  .msgRow{ margin-bottom: 6px; }
 
-  .open__composer{ padding: 10px; gap: 8px; }
-  .composer__input{ padding: 10px; font-size: 14px; }
-  .sendBtn{ width: 42px; height: 42px; }
-  .iconBtn{ width: 38px; height: 38px; }
+  .msgRow {
+    margin-bottom: 6px;
+  }
+
+  .open__composer {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .composer__input {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .sendBtn {
+    width: 42px;
+    height: 42px;
+  }
+
+  .iconBtn {
+    width: 38px;
+    height: 38px;
+  }
+
+  /* بهبود کامل اتچمنت مودال برای موبایل */
+  .modernModalOverlay {
+    padding: 10px;
+    align-items: flex-end; /* مودال از پایین بیاد */
+  }
+
+  .modernModal {
+    max-height: 85vh;
+    height: auto;
+    min-height: 70vh;
+    width: 100%;
+    border-radius: 20px 20px 0 0; /* گردی فقط بالا */
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s ease; /* انیمیشن از پایین */
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+    }
+
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  .modernModal__header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+
+  .modernModal__header h3 {
+    font-size: 18px;
+    text-align: center;
+    margin: 0;
+  }
+
+  .modernModal__close {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-secondary);
+  }
+
+  .modernModal__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .modernModal__preview {
+    flex: 0 0 auto;
+    padding: 16px;
+    background: var(--bg-light);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .modernPreviewContainer {
+    height: 200px;
+    max-height: 200px;
+    min-height: 200px;
+    width: 100%;
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: 12px;
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .modernModal__main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .modernModal__sidebar {
+    width: 100%;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    height: 180px;
+    max-height: 180px;
+    min-height: 180px;
+    overflow-y: auto;
+    padding: 0;
+    background: var(--white);
+  }
+
+  .modernFileList {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    padding: 16px;
+    overflow-x: auto;
+    height: 100%;
+    align-items: center;
+  }
+
+  .modernFileItem {
+    min-width: 180px;
+    height: 140px;
+    margin-bottom: 0;
+    flex: 0 0 auto;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s;
+    cursor: pointer;
+    position: relative;
+  }
+
+  /* استایل انتخاب شده */
+  .modernFileItem--selected {
+    border: 2px solid var(--primary);
+    background: rgba(var(--primary-rgb, 59, 130, 246), 0.05);
+  }
+
+  .modernFileItem:hover,
+  .modernFileItem:active {
+    transform: scale(0.98);
+  }
+
+  .modernAddMoreBtn {
+    width: 100%;
+    padding: 16px;
+    background: var(--white);
+    border-top: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-weight: 500;
+    color: var(--primary);
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .modernAddMoreBtn:hover,
+  .modernAddMoreBtn:active {
+    background: var(--bg-light);
+  }
+
+  .modernFileInfo {
+    padding: 16px;
+    background: var(--bg-light);
+    border-top: 1px solid var(--line);
+    max-height: 120px;
+    overflow-y: auto;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .modernFileInfo p {
+    margin: 6px 0;
+  }
+
+  .modernModal__footer {
+    padding: 16px;
+    background: var(--white);
+    border-top: 1px solid var(--line);
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .modernModal__actions {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .modernActionBtn {
+    flex: 1;
+    min-width: 120px;
+    padding: 12px 20px;
+    border-radius: 25px;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    font-size: 15px;
+  }
+
+  .modernActionBtn--primary {
+    background: linear-gradient(135deg, #40c057, #37b24d);
+    color: white;
+    border-color: #40c057;
+  }
+
+  .modernActionBtn--primary:active {
+    transform: translateY(0);
+  }
+
+  .modernActionBtn--secondary {
+    background: var(--bg-light);
+    color: var(--text);
+    border: 1px solid var(--line);
+  }
+
+  .modernActionBtn--secondary:hover {
+    background: var(--bg-hover);
+  }
+
+  /* اگر کلاسی برای انتخاب وجود داره، اینو اضافه کن */
+  .modernSelectBtn {
+    background: var(--primary) !important;
+    color: white !important;
+    border: none !important;
+  }
+
+  /* اگر دکمه خاصی برای انتخاب دارید، این استایل رو داشته باشه */
+  .btn-select,
+  .select-btn,
+  .attachment-select-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-select:hover,
+  .select-btn:hover,
+  .attachment-select-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+  }
 }
 
-@media (max-width: 480px){
-  .open__messages{ padding: 10px; }
-  .msg:not(.msg--out), .msg--out{
+@media (max-width: 480px) {
+  .open__messages {
+    padding: 10px;
+  }
+
+  .msg:not(.msg--out),
+  .msg--out {
     max-width: 70%;
     padding: 7px 9px;
     border-radius: 11px;
   }
-  .msg__text{ font-size: 11.5px; line-height: 1.45; }
-  .replyComposer{ margin: 6px 6px 0; }
-  .attachComposer{ padding: 8px; }
+
+  .msg__text {
+    font-size: 11.5px;
+    line-height: 1.45;
+  }
+
+  .replyComposer {
+    margin: 6px 6px 0;
+  }
+
+  .attachComposer {
+    padding: 8px;
+  }
+
+  /* تنظیمات دقیق‌تر برای صفحات خیلی کوچک */
+  .modernModalOverlay {
+    padding: 0;
+  }
+
+  .modernModal {
+    height: 90vh;
+    max-height: 90vh;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .modernModal__header {
+    padding: 14px 16px;
+  }
+
+  .modernModal__header h3 {
+    font-size: 17px;
+  }
+
+  .modernPreviewContainer {
+    height: 170px;
+    max-height: 170px;
+    min-height: 170px;
+  }
+
+  .modernFileList {
+    padding: 14px;
+    gap: 10px;
+  }
+
+  .modernFileItem {
+    min-width: 160px;
+    height: 130px;
+  }
+
+  .modernModal__sidebar {
+    height: 160px;
+    max-height: 160px;
+    min-height: 160px;
+  }
+
+  .modernFileInfo {
+    max-height: 100px;
+    font-size: 13px;
+    padding: 14px;
+  }
+
+  .modernModal__footer {
+    padding: 14px;
+  }
+
+  .modernActionBtn {
+    padding: 11px 18px;
+    font-size: 14px;
+    min-width: 110px;
+  }
+}
+
+/* تنظیمات برای حالت لنداسکیپ در موبایل */
+@media (max-width: 768px) and (orientation: landscape) {
+  .modernModal {
+    max-height: 95vh;
+    border-radius: 12px;
+  }
+
+  .modernModal__content {
+    flex-direction: row;
+  }
+
+  .modernModal__preview {
+    flex: 0 0 45%;
+    border-bottom: 0;
+    border-right: 1px solid var(--line);
+  }
+
+  .modernPreviewContainer {
+    height: 100%;
+    max-height: 100%;
+  }
+
+  .modernModal__main {
+    flex: 0 0 55%;
+  }
+
+  .modernModal__sidebar {
+    height: 140px;
+    max-height: 140px;
+    min-height: 140px;
+  }
 }
