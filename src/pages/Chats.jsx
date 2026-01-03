@@ -176,6 +176,10 @@ export default function ChatPage() {
   const [chats, setChats] = useState([]);
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [inputValue, setInputValue] = useState("");
+  const [viewportWidth, setViewportWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1200
+  );
+  const [showDetailPane, setShowDetailPane] = useState(false);
 
   const [messages, setMessages] = useState([]);
   const [loadingMessages, setLoadingMessages] = useState(false);
@@ -225,6 +229,7 @@ export default function ChatPage() {
   // =========================
   // Viewport ref from OpenConv
   // =========================
+  const COMPACT_BREAKPOINT = 1024;
   const messagesViewportRef = useRef(null);
 
   const handleMountMessagesViewport = useCallback((el) => {
@@ -237,6 +242,29 @@ export default function ChatPage() {
     const el = document.querySelector(".open__messages");
     if (el) messagesViewportRef.current = el;
   }, [selectedChatId, messages.length]);
+
+  // =========================
+  // Layout (desktop vs mobile/tablet)
+  // =========================
+  useEffect(() => {
+    const handleResize = () => {
+      setViewportWidth(typeof window !== "undefined" ? window.innerWidth : 1200);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const isCompactLayout = viewportWidth <= COMPACT_BREAKPOINT;
+
+  useEffect(() => {
+    if (!isCompactLayout) {
+      setShowDetailPane(true);
+      return;
+    }
+    if (!selectedChatId) setShowDetailPane(false);
+  }, [isCompactLayout, selectedChatId]);
 
   // =========================
   // WS send helper
@@ -900,6 +928,7 @@ export default function ChatPage() {
   const handleSelectChat = useCallback(
     (chatId) => {
       setSelectedChatId(chatId);
+      if (isCompactLayout) setShowDetailPane(true);
 
       const chatObj = (Array.isArray(chats) ? chats : []).find(
         (c) => String(c.id) === String(chatId)
@@ -909,8 +938,12 @@ export default function ChatPage() {
       if (other?.id) setRecipient({ id: other.id, username: other.username || "Unknown" });
       else setRecipient(null);
     },
-    [chats]
+    [chats, isCompactLayout]
   );
+
+  const handleBackToList = useCallback(() => {
+    if (isCompactLayout) setShowDetailPane(false);
+  }, [isCompactLayout]);
 
   // =========================
   // Sidebar items
@@ -990,6 +1023,15 @@ export default function ChatPage() {
       };
     });
   }, [messages, currentUserId]);
+
+  const chatMainClass = [
+    "chatMain",
+    isCompactLayout ? "chatMain--stacked" : "",
+    isCompactLayout && showDetailPane ? "chatMain--showDetail" : "",
+    isCompactLayout && !showDetailPane ? "chatMain--showList" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   // =========================
   // Send message
@@ -1164,7 +1206,7 @@ export default function ChatPage() {
 
   return (
     <div className="chatShell chats">
-      <div className="chatMain">
+      <div className={chatMainClass}>
         <Conversations
           items={convItems}
           selectedChatId={selectedChatId}
@@ -1194,6 +1236,8 @@ export default function ChatPage() {
           onSend={handleSend}
           onAttach={handleSendAttachments}
           onMountMessagesViewport={handleMountMessagesViewport}
+          onBack={handleBackToList}
+          showBackButton={isCompactLayout}
         />
       </div>
     </div>

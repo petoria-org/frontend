@@ -713,6 +713,8 @@ export default function OpenConv({
   onSend,
   onAttach,
   onMountMessagesViewport,
+  onBack,
+  showBackButton = false,
 }) {
   const attachBtnRef = useRef(null);
   const messagesViewportRef = useRef(null);
@@ -991,6 +993,11 @@ export default function OpenConv({
             )}
             <div className="open__name">{chat.title}</div>
           </div>
+          {showBackButton && (
+            <button type="button" className="open__backBtn" aria-label="back to conversations" onClick={() => onBack?.()}>
+              {"\u2190"}
+            </button>
+          )}
         </div>
 
         <div className="open__messagesWrap" style={{ flex: 1, minHeight: 0, position: "relative" }}>
