@@ -708,6 +708,7 @@ export default function OpenConv({
   chat = null,
   messages = [],
   inputValue = "",
+  loadingOlderMessages = false,
   onInputChange,
   onSend,
   onAttach,
@@ -998,6 +999,12 @@ export default function OpenConv({
             className="open__messages"
             style={{ height: "100%", overflowY: "auto", position: "relative", background: "transparent" }}
           >
+            {loadingOlderMessages && (
+              <div className="messagesLoader" aria-live="polite">
+                <span className="messagesLoader__spinner" />
+                <span className="messagesLoader__text">Loading earlier messages...</span>
+              </div>
+            )}
             {messages.map((m) => (
               <MessageBubble
                 key={m.id ?? m.client_temp_id ?? `${m.time}_${m.side}`}

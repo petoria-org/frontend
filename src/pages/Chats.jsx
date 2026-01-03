@@ -179,6 +179,8 @@ export default function ChatPage() {
 
   const [messages, setMessages] = useState([]);
   const [loadingMessages, setLoadingMessages] = useState(false);
+  const [messagesPageInfo, setMessagesPageInfo] = useState({ next: null, previous: null });
+  const [loadingOlderMessages, setLoadingOlderMessages] = useState(false);
 
   const [recipient, setRecipient] = useState(null); // { id, username }
   const recipientRef = useRef(null);
@@ -208,6 +210,17 @@ export default function ChatPage() {
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
+
+  const messagesPageInfoRef = useRef({ next: null, previous: null });
+  const loadingOlderMessagesRef = useRef(false);
+
+  useEffect(() => {
+    messagesPageInfoRef.current = messagesPageInfo;
+  }, [messagesPageInfo]);
+
+  useEffect(() => {
+    loadingOlderMessagesRef.current = loadingOlderMessages;
+  }, [loadingOlderMessages]);
 
   // =========================
   // Viewport ref from OpenConv
@@ -443,13 +456,65 @@ export default function ChatPage() {
     return () => clearTimeout(t);
   }, [selectedChatId, messages.length, markVisibleUnreadNow]);
 
+  const loadOlderMessages = useCallback(async () => {
+    const chatId = selectedChatIdRef.current;
+    const nextUrl = messagesPageInfoRef.current?.next;
+    if (!chatId || !nextUrl || loadingOlderMessagesRef.current) return;
+
+    const viewport = messagesViewportRef.current;
+    const prevHeight = viewport?.scrollHeight ?? 0;
+    const prevScrollTop = viewport?.scrollTop ?? 0;
+
+    loadingOlderMessagesRef.current = true;
+    setLoadingOlderMessages(true);
+
+    try {
+      const res = await getChatMessages(chatId, { cursorUrl: nextUrl });
+      if (res?.success) {
+        const activeChatId = selectedChatIdRef.current;
+        if (!activeChatId || String(activeChatId) !== String(chatId)) return;
+
+        const arr = Array.isArray(res.data) ? res.data : [];
+        const normalized = arr.map((m) => (m?.chat_id ? m : { ...m, chat_id: chatId }));
+
+        setMessages((prev) => mergeMessages(prev, normalized));
+        const page = {
+          next: res.next ?? null,
+          previous: res.previous ?? null,
+        };
+        messagesPageInfoRef.current = page;
+        setMessagesPageInfo(page);
+
+        // Keep the current viewport anchored after prepending older messages
+        setTimeout(() => {
+          const vp = messagesViewportRef.current;
+          if (!vp) return;
+          const newHeight = vp.scrollHeight;
+          const delta = newHeight - prevHeight;
+          if (delta > 0) {
+            vp.scrollTop = prevScrollTop + delta;
+          }
+        }, 0);
+      }
+    } finally {
+      loadingOlderMessagesRef.current = false;
+      setLoadingOlderMessages(false);
+    }
+  }, []);
+
   // scan on scroll + resize
   useEffect(() => {
     const viewport = messagesViewportRef.current;
     const chatId = selectedChatIdRef.current ?? selectedChatId;
     if (!viewport || !chatId) return;
 
-    const onScroll = () => markVisibleUnreadNow();
+    const onScroll = () => {
+      markVisibleUnreadNow();
+
+      if (viewport.scrollTop <= 60) {
+        loadOlderMessages();
+      }
+    };
 
     viewport.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
@@ -460,7 +525,7 @@ export default function ChatPage() {
       viewport.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
-  }, [selectedChatId, markVisibleUnreadNow]);
+  }, [selectedChatId, markVisibleUnreadNow, loadOlderMessages]);
 
   // =========================
   // Upsert chat & sort
@@ -590,11 +655,20 @@ export default function ChatPage() {
         try {
           const res = await getChatMessages(chatId);
           if (res?.success) {
+            const activeChatId = selectedChatIdRef.current;
+            if (!activeChatId || String(activeChatId) !== String(chatId)) return;
+
             const arr = Array.isArray(res.data) ? res.data : [];
             const normalized = arr.map((m) =>
               m?.chat_id ? m : { ...m, chat_id: chatId }
             );
             setMessages((prev) => mergeMessages(prev, normalized));
+            const page = {
+              next: res.next ?? null,
+              previous: res.previous ?? null,
+            };
+            messagesPageInfoRef.current = page;
+            setMessagesPageInfo(page);
             setTimeout(() => markVisibleUnreadNow(), 0);
           }
         } finally {
@@ -777,11 +851,19 @@ export default function ChatPage() {
   useEffect(() => {
     if (!selectedChatId) {
       setMessages([]);
+      messagesPageInfoRef.current = { next: null, previous: null };
+      loadingOlderMessagesRef.current = false;
+      setMessagesPageInfo({ next: null, previous: null });
+      setLoadingOlderMessages(false);
       return;
     }
 
     // Clear previous chat's messages before loading the new thread
     setMessages([]);
+    messagesPageInfoRef.current = { next: null, previous: null };
+    loadingOlderMessagesRef.current = false;
+    setMessagesPageInfo({ next: null, previous: null });
+    setLoadingOlderMessages(false);
 
     const loadMessages = async () => {
       setLoadingMessages(true);
@@ -794,8 +876,17 @@ export default function ChatPage() {
           m?.chat_id ? m : { ...m, chat_id: selectedChatId }
         );
         setMessages(() => mergeMessages([], normalized));
+        const page = {
+          next: res.next ?? null,
+          previous: res.previous ?? null,
+        };
+        messagesPageInfoRef.current = page;
+        setMessagesPageInfo(page);
       } else {
         setMessages([]);
+        messagesPageInfoRef.current = { next: null, previous: null };
+        setMessagesPageInfo({ next: null, previous: null });
+        setLoadingOlderMessages(false);
         alert(res.message || "Error fetching messages");
       }
     };
@@ -1098,6 +1189,7 @@ export default function ChatPage() {
               : openMessages
           }
           inputValue={inputValue}
+          loadingOlderMessages={loadingOlderMessages}
           onInputChange={setInputValue}
           onSend={handleSend}
           onAttach={handleSendAttachments}
