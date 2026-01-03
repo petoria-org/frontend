@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import api from "../Services/api";
 import Hero from "../components/Hero";
-import Stats from "../components/Stats";
-import SucccessStories from "../components/SuccessStories";
+import AnimalTypes from "../components/AnimalTypes/AnimalTypes";
+import SuccessStories from "../components/SuccessStories";
 import NewPosts from "../components/NewPosts";
 
 export default function Home() {
@@ -24,7 +24,8 @@ export default function Home() {
   return (
     <div>
       <Hero />
-      <SucccessStories />
+      <AnimalTypes /> 
+      <SuccessStories />
       <NewPosts />
     </div>
   );

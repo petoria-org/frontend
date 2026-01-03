@@ -16,10 +16,10 @@
   --light-pink: #FFE6EB;
   --warm-pink: #FF9EAD;
   
-  --text-primary: #2C3E50; 
-  --text-secondary: #34495E; 
-  --text-light: #5D6D7E; 
-
+  --text-primary: #5A769C; 
+  --text-secondary: #6E8AB8; 
+  --text-light: #8FA3CC; 
+  
   --shadow-soft: rgba(255, 182, 193, 0.15);
   --shadow-blue: rgba(135, 206, 235, 0.2);
   --shadow-dark: rgba(44, 62, 80, 0.1); 
@@ -2013,9 +2013,8 @@ body {
 }
 
 .compact-stats-img {
-  width: 42px; 
-  height: 42px;
-  margin-bottom: 10px; 
+  width: 47px; 
+  height: 47px;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
   transition: var(--transition-smooth);
 }
@@ -2027,9 +2026,9 @@ body {
 
 .compact-stats-number {
   color: #1C7CD2;
-  font-size: 24px; 
+  font-size: 16px; 
   font-weight: 800;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   text-shadow: 0 2px 4px rgba(28, 124, 210, 0.25);
   letter-spacing: 0.3px;
   transition: var(--transition-smooth);
