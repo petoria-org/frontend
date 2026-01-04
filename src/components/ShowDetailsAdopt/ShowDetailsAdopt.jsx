@@ -514,6 +514,7 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
                       postData?.type === "found" ? "found" : "adoption"
                     }
                   >
+                    <div class="status-pulse-detail-post"></div>
                     <span className="badge-text">
                       {getStatusText()}
                     </span>
