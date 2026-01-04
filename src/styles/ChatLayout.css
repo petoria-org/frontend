@@ -18,12 +18,12 @@
 }
 
 @media (max-width: 768px) {
-  .main-content {
-    padding-top: 72px;
-    padding-bottom: 32px;
+  .app-layout-chat{
+    min-height: 100dvh;
   }
 
-  .page-container {
-    padding: 16px;
+  .main-content-chat {
+    padding-top: 4em;
+    min-height: 0px;
   }
 }
