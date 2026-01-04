@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import "../../styles/SuccessStoryCreation.css";
 import { useOutletContext } from "react-router-dom";
-import { createSuccessStory } from "../../Services/successStoryService";
+import { createSuccessStory, uploadSuccessStoryImage, deleteSuccessStoryImage } from "../../Services/successStoryService";
+import { config } from "../../config";
 import { deleteLostPost, deleteFoundPost, deleteSurrenderPost } from "../../Services/userService";
 
 export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => { 
@@ -15,6 +16,37 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
   const dropZoneRef = useRef(null);
   const { setHideNavbar, setHideFooter } = useOutletContext();
   const [notification, setNotification] = useState(null);
+  const BACKEND_URL = config.BACKEND_URL;
+
+  const buildImageUrl = (path) => {
+    if (!path) return "";
+    if (path.startsWith("http")) return path;
+    const cleanPath = path.startsWith("/") ? path.slice(1) : path;
+    return `${BACKEND_URL}/${cleanPath}`;
+  };
+
+  const normalizeBackendImages = (backendImages = []) => {
+    const objects = backendImages
+      .map((img, index) => {
+        const rawPath = img?.image || img?.url || img;
+        const url = buildImageUrl(typeof rawPath === "string" ? rawPath : "");
+        if (!url) return null;
+
+        return {
+          id: img?.id ?? `img-${index}`,
+          backendId: img?.id ?? null,
+          url,
+        };
+      })
+      .filter(Boolean);
+
+    return {
+      objects,
+      urls: objects.map(item => item.url),
+    };
+  };
+
+  const isUploadingImages = images.some(img => img.uploading) || Object.keys(uploadProgress).length > 0;
 
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
@@ -39,11 +71,13 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
       setStoryText(pet.successStory);
     }
     if (pet?.images && Array.isArray(pet.images)) {
-      setImages(pet.images.map((url, index) => ({
+      const normalizedPetImages = pet.images.map((url, index) => ({
         id: Date.now() + index,
-        url: url,
-        name: `تصویر ${index + 1}`
-      })));
+        url: buildImageUrl(url) || url,
+        name: `تصویر ${index + 1}`,
+        backendId: null,
+      }));
+      setImages(normalizedPetImages);
     }
   }, [pet]);
 
@@ -85,6 +119,44 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
     e.target.value = "";
   };
 
+  const uploadImageFile = async (file, tempId, previewUrl) => {
+    setUploadProgress(prev => ({
+      ...prev,
+      [tempId]: 10
+    }));
+
+    try {
+      const response = await uploadSuccessStoryImage(file);
+      const result = Array.isArray(response) ? response[0] : response;
+      const rawPath = result?.image || result?.url || result?.path;
+      const uploadedUrl = buildImageUrl(rawPath) || previewUrl;
+      const finalUrl = `${uploadedUrl}${uploadedUrl.includes('?') ? '&' : '?'}t=${Date.now()}`;
+
+      setImages(prev =>
+        prev.map(img =>
+          img.id === tempId
+            ? {
+                ...img,
+                url: finalUrl,
+                backendId: result?.id ?? null,
+                uploading: false,
+              }
+            : img
+        )
+      );
+    } catch (error) {
+      console.error("Story image upload failed:", error);
+      showNotification("بارگذاری تصویر انجام نشد. دوباره تلاش کنید.", "error");
+      setImages(prev => prev.filter(img => img.id !== tempId));
+    } finally {
+      setUploadProgress(prev => {
+        const nextProgress = { ...prev };
+        delete nextProgress[tempId];
+        return nextProgress;
+      });
+    }
+  };
+
   const handleFiles = (files) => {
     const totalFiles = images.length + files.length;
     if (totalFiles > 7) {
@@ -92,65 +164,43 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
       return;
     }
 
-    const newImages = files.map((file, index) => {
+    files.forEach((file, index) => {
+      const tempId = `${Date.now()}-${index}-${file.name}`;
       const reader = new FileReader();
-      
-      return new Promise((resolve) => {
-        setUploadProgress(prev => ({
-          ...prev,
-          [file.name]: 0
-        }));
 
-        const interval = setInterval(() => {
-          setUploadProgress(prev => {
-            const current = prev[file.name] || 0;
-            if (current >= 90) {
-              clearInterval(interval);
-              return prev;
-            }
-            return {
-              ...prev,
-              [file.name]: current + 10
-            };
-          });
-        }, 100);
+      reader.onload = (e) => {
+        const previewUrl = e.target.result;
 
-        reader.onload = (e) => {
-          const newImage = {
-            id: Date.now() + index,
-            url: e.target.result,
-            file: file,
-            name: file.name
-          };
-
-          setUploadProgress(prev => ({
+        setImages(prev => {
+          const nextImages = [
             ...prev,
-            [file.name]: 100
-          }));
+            {
+              id: tempId,
+              url: previewUrl,
+              name: file.name,
+              uploading: true,
+            },
+          ];
+          setActiveImageIndex(nextImages.length - 1);
+          return nextImages;
+        });
 
-          setTimeout(() => {
-            setUploadProgress(prev => {
-              const newProgress = { ...prev };
-              delete newProgress[file.name];
-              return newProgress;
-            });
-          }, 500);
+        uploadImageFile(file, tempId, previewUrl);
+      };
 
-          clearInterval(interval);
-          resolve(newImage);
-        };
-
-        reader.readAsDataURL(file);
-      });
-    });
-
-    Promise.all(newImages).then(loadedImages => {
-      setImages(prev => [...prev, ...loadedImages]);
+      reader.readAsDataURL(file);
     });
   };
-
   const removeImage = (id) => {
     setImages(prev => {
+      const imageToRemove = prev.find(img => img.id === id);
+
+      if (imageToRemove?.backendId) {
+        deleteSuccessStoryImage(imageToRemove.backendId).catch((err) => {
+          console.error("Failed to delete uploaded story image:", err);
+        });
+      }
+
       const nextImages = prev.filter(img => img.id !== id);
 
       setActiveImageIndex(index =>
@@ -163,26 +213,33 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
 
   const handleSave = async () => {
     if (!storyText.trim()) {
-      alert("لطفا متن داستان موفقیت را وارد کنید");
+      alert("لطفاً متن داستان موفقیت را وارد کنید.");
       return;
     }
 
     if (pet?.hasSuccessStory && !pet.successStory) {
-      alert("برای این پست قبلاً داستان موفق ثبت شده است. نمی‌توانید داستان جدیدی ثبت کنید.");
+      alert("برای این آگهی قبلاً داستان موفق ثبت شده است.");
+      return;
+    }
+
+    if (isUploadingImages) {
+      showNotification("منتظر بمانید تا بارگذاری عکس‌ها تمام شود.", "warning");
       return;
     }
 
     setLoading(true);
 
     try {
+      const imageIds = images
+        .filter(img => img.backendId)
+        .map(img => img.backendId);
+
       const payload = {
-        title: `داستان ${pet?.name || "موفقیت"}`,
+        title: `داستان موفقیت ${pet?.name || "پت"}`,
         story: storyText.trim(),
         story_type: pet?.status === "adoption" ? "surrender" : pet?.status,
-        pet_id: pet?.id, 
-        images: images
-          .filter(img => img.file)
-          .map(img => img.file),
+        pet_id: pet?.id,
+        image_ids: imageIds,
       };
       
       showNotification("داستان موفق با موفقیت ثبت شد و آگهی بسته شد", "success");
@@ -204,6 +261,10 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
         }
       }
 
+      const { objects: savedImages, urls: savedImageUrls } = normalizeBackendImages(createdStory.images || []);
+      const fallbackImage = createdStory.image ? buildImageUrl(createdStory.image) : "";
+      const heroImage = savedImageUrls[0] || fallbackImage || "/src/assets/images/default-pet.png";
+
       onSave?.({
         id: createdStory.id,
         title: createdStory.title,
@@ -221,13 +282,9 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
             : "فرزندخوانده شد",
         statusColor: "rgba(122, 238, 151, 0.15)",
         statusTextColor: "#0f7228",
-        image:
-          createdStory.images?.length > 0
-            ? createdStory.images[0].image
-            : "/src/assets/images/default-pet.png",
-        images: createdStory.images
-          ? createdStory.images.map(img => img.image)
-          : [],
+        image: heroImage,
+        images: savedImageUrls.length > 0 ? savedImageUrls : (heroImage ? [heroImage] : []),
+        backendImages: savedImages,
         content: createdStory.story,
         pet_id: pet?.id, 
       });
@@ -252,7 +309,6 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
       setLoading(false);
     }
   };
-
   const handleSkipAndDelete = async () => {
     if (window.confirm("آیا مطمئن هستید که می‌خواهید این آگهی را حذف کنید؟")) {
       setLoading(true);
@@ -458,13 +514,13 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
                           </>
                         )}
 
-                        {uploadProgress[images[activeImageIndex]?.name] && 
-                         uploadProgress[images[activeImageIndex]?.name] < 100 && (
+                        {uploadProgress[images[activeImageIndex]?.id] && 
+                         uploadProgress[images[activeImageIndex]?.id] < 100 && (
                           <div className="upload-progress-bar">
                             <div 
                               className="progress-fill"
                               style={{ 
-                                width: `${uploadProgress[images[activeImageIndex]?.name]}%` 
+                                width: `${uploadProgress[images[activeImageIndex]?.id]}%` 
                               }}
                             />
                           </div>
@@ -620,7 +676,7 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
           <button 
             className="save-btn" 
             onClick={handleSave}
-            disabled={!storyText.trim() || (pet?.hasSuccessStory && !pet?.successStory) || loading}
+            disabled={!storyText.trim() || (pet?.hasSuccessStory && !pet?.successStory) || loading || isUploadingImages}
           >
             <SparkleIcon />
             <span>

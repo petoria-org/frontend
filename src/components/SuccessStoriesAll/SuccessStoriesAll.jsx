@@ -28,6 +28,13 @@ const SuccessStoriesAll = () => {
 
   const BACKEND_URL = config.BACKEND_URL;
 
+  const buildImageUrl = (path) => {
+    if (!path) return "";
+    if (path.startsWith("http")) return path;
+    const cleanPath = path.startsWith("/") ? path : `/${path}`;
+    return `${BACKEND_URL}${cleanPath}`;
+  };
+
   const truncateText = (text, maxLength = 110) => {
     if (!text) return "";
     return text.length > maxLength
@@ -44,22 +51,29 @@ const SuccessStoriesAll = () => {
       try {
         const data = await getSuccessStories();
 
-        const mapped = data.map((story) => ({
-          id: story.id,
-          title: story.title,
-          author: story.user_name,
-          date: toJalaliDate(story.created_at),
-          status: storyTypeMap[story.story_type],
-          statusColor: "rgba(122, 238, 151, 0.15)",
-          statusTextColor: "#0f7228",
-          image: story.image
-            ? `${BACKEND_URL}${story.image}`
-            : "/src/assets/images/default-pet.png",
-          images: story.image
-            ? [`${BACKEND_URL}${story.image}`]
-            : [],
-          content: story.story,
-        }));
+        const mapped = data.map((story) => {
+          const galleryImages = story.images && story.images.length > 0
+            ? story.images
+                .map(img => buildImageUrl(img.image || img.url || img))
+                .filter(Boolean)
+            : story.image
+              ? [buildImageUrl(story.image)]
+              : [];
+          const mainImage = galleryImages[0] || "/src/assets/images/default-pet.png";
+
+          return {
+            id: story.id,
+            title: story.title,
+            author: story.user_name,
+            date: toJalaliDate(story.created_at),
+            status: storyTypeMap[story.story_type],
+            statusColor: "rgba(122, 238, 151, 0.15)",
+            statusTextColor: "#0f7228",
+            image: mainImage,
+            images: galleryImages,
+            content: story.story,
+          };
+        });
 
         setStories(mapped);
         setIsVisible(true);

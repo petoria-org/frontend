@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/SuccessStoryEdit.css";
 import { config } from "../../config";
-import { updateSuccessStory, deleteSuccessStory } from "../../Services/successStoryService";
+import { updateSuccessStory, deleteSuccessStory, uploadSuccessStoryImage, deleteSuccessStoryImage } from "../../Services/successStoryService";
 import { useOutletContext } from "react-router-dom";
 
 export const SuccessStoryEdit = ({ 
@@ -10,12 +10,52 @@ export const SuccessStoryEdit = ({
   onDelete,
   onCancel 
 }) => {
+  const BACKEND_URL = config.BACKEND_URL;
+
+  const buildImageUrl = (path) => {
+    if (!path) return "";
+    if (path.startsWith("http")) return path;
+    const cleanPath = path.startsWith("/") ? path.slice(1) : path;
+    return `${BACKEND_URL}/${cleanPath}`;
+  };
+
+  const normalizeStoryImages = (rawImages = [], fallbackImage = "") => {
+    const baseImages =
+      Array.isArray(rawImages) && rawImages.length > 0
+        ? rawImages
+        : fallbackImage
+        ? [fallbackImage]
+        : [];
+
+    return baseImages
+      .map((img, index) => {
+        const rawPath = typeof img === "string" ? img : img?.image || img?.url;
+        const url = buildImageUrl(rawPath);
+        if (!url) return null;
+
+        return {
+          id: img?.id ?? img?.backendId ?? `img-${index}`,
+          backendId: img?.id ?? img?.backendId ?? null,
+          url,
+          uploading: false,
+        };
+      })
+      .filter(Boolean);
+  };
+
+  const FALLBACK_IMAGE = "/src/assets/images/default-pet.png";
+
+  const initialImages = normalizeStoryImages(
+    story.backendImages || story.images || [],
+    story.image || FALLBACK_IMAGE
+  );
+
   const [selectedImage, setSelectedImage] = useState(
-    story.images && story.images.length > 0 ? story.images[0] : story.image
+    initialImages[0]?.url || story.image || FALLBACK_IMAGE
   );
   const [title, setTitle] = useState(story.title || "");
   const [content, setContent] = useState(story.content || "");
-  const [images, setImages] = useState(story.images || []);
+  const [images, setImages] = useState(initialImages);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [notification, setNotification] = useState(null);
@@ -44,55 +84,140 @@ export const SuccessStoryEdit = ({
     if (story) {
       setTitle(story.title || "");
       setContent(story.content || "");
-      setImages(story.images || []);
-      if (story.images && story.images.length > 0) {
-        setSelectedImage(story.images[0]);
-      } else {
-        setSelectedImage(story.image || "");
-      }
+      const normalized = normalizeStoryImages(
+        story.backendImages || story.images || [],
+        story.image || FALLBACK_IMAGE
+      );
+      setImages(normalized);
+      setSelectedImage(normalized[0]?.url || story.image || FALLBACK_IMAGE);
     }
   }, [story]);
 
   const storyImages = images.length > 0
     ? images
     : selectedImage
-      ? [selectedImage]
-      : [];
+      ? [{ id: "selected-preview", url: selectedImage }]
+      : [{ id: "fallback-preview", url: FALLBACK_IMAGE }];
+  const isUploadingImages = images.some(img => img.uploading);
+
+  const uploadImageFile = async (file, tempId, previewUrl) => {
+    try {
+      const response = await uploadSuccessStoryImage(file);
+      const result = Array.isArray(response) ? response[0] : response;
+      const rawPath = result?.image || result?.url || result?.path;
+      const uploadedUrl = buildImageUrl(rawPath) || previewUrl;
+      const finalUrl = `${uploadedUrl}${uploadedUrl.includes('?') ? '&' : '?'}t=${Date.now()}`;
+
+      setImages(prev =>
+        prev.map(img =>
+          img.id === tempId
+            ? { ...img, url: finalUrl, backendId: result?.id ?? null, uploading: false }
+            : img
+        )
+      );
+      setSelectedImage(prev => (prev === previewUrl ? finalUrl : prev));
+    } catch (error) {
+      console.error("Story image upload failed:", error);
+      setImages(prev => prev.filter(img => img.id !== tempId));
+      showNotification("بارگذاری تصویر انجام نشد. دوباره تلاش کنید.", "error");
+    }
+  };
 
   const handleImageUpload = (event) => {
     const files = Array.from(event.target.files);
-    if (files.length + images.length > 7) {
-      alert("حداکثر ۷ تصویر مجاز است");
+    const remainingSlots = 7 - images.length;
+    const filesToAdd = files.slice(0, remainingSlots);
+
+    if (filesToAdd.length === 0) {
+      alert("حداکثر می‌توانید 7 عکس آپلود کنید");
       return;
     }
 
-    const newImages = files.map(file => URL.createObjectURL(file));
-    setImages(prev => [...prev, ...newImages]);
+    filesToAdd.forEach((file, index) => {
+      const tempId = `${Date.now()}-${index}-${file.name}`;
+      const previewUrl = URL.createObjectURL(file);
+
+      setImages(prev => [...prev, {
+        id: tempId,
+        url: previewUrl,
+        backendId: null,
+        uploading: true,
+      }]);
+
+      if (!selectedImage) {
+        setSelectedImage(previewUrl);
+      }
+
+      uploadImageFile(file, tempId, previewUrl);
+    });
   };
 
-  const handleRemoveImage = (index) => {
-    setImages(prev => prev.filter((_, i) => i !== index));
+  const handleRemoveImage = (id) => {
+    setImages(prev => {
+      const imageToDelete = prev.find(img => img.id === id);
+      if (imageToDelete?.backendId) {
+        deleteSuccessStoryImage(imageToDelete.backendId).catch((err) => {
+          console.error("Failed to delete story image:", err);
+        });
+      }
+
+      const nextImages = prev.filter(img => img.id !== id);
+
+      if (selectedImage && imageToDelete && selectedImage === imageToDelete.url) {
+        setSelectedImage(nextImages[0]?.url || FALLBACK_IMAGE);
+      }
+
+      return nextImages;
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (isUploadingImages) {
+      showNotification("منتظر بمانید تا بارگذاری عکس‌ها کامل شود.", "warning");
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
+      const imageIds = images
+        .filter(img => img.backendId)
+        .map(img => img.backendId);
+
+      const storyType =
+        story.story_type ||
+        getStoryTypeFromStatus(story.status) ||
+        "lost";
+
       const storyData = {
         title,
         story: content,
-        story_type: getStoryTypeFromStatus(story.status),
+        story_type: storyType,
+        image_ids: imageIds,
       };
 
       const updatedStory = await updateSuccessStory(story.id, storyData);
+      const normalized = normalizeStoryImages(
+        updatedStory.images || story.backendImages || [],
+        updatedStory.image || story.image || FALLBACK_IMAGE
+      );
+
+      setImages(normalized);
+      if (normalized[0]?.url) {
+        setSelectedImage(normalized[0].url);
+      }
       
       onUpdate({
         ...story,
         id: updatedStory.id,
         title: updatedStory.title,
         content: updatedStory.story,
+        image: normalized[0]?.url || story.image || "/src/assets/images/default-pet.png",
+        images: normalized.map(img => img.url),
+        backendImages: normalized,
         date: new Intl.DateTimeFormat("fa-IR", {
           year: "numeric",
           month: "long",
@@ -133,8 +258,8 @@ export const SuccessStoryEdit = ({
     switch (status) {
       case "بازگشت به خانه": return "lost";
       case "به خانواده بازگشت": return "found";
-      case "فرزندخوانده شد": return "adoption";
-      default: return "lost";
+      case "فرزندخوانده شد": return "surrender";
+      default: return null;
     }
   };
 
@@ -264,7 +389,7 @@ export const SuccessStoryEdit = ({
                 </div>
                 <div className="main-image-preview">
                   <img
-                    src={selectedImage}
+                    src={selectedImage || FALLBACK_IMAGE}
                     alt={title}
                     className="main-preview-image"
                     onError={(e) => {
@@ -290,13 +415,13 @@ export const SuccessStoryEdit = ({
                 <div className="thumbnail-container">
                   {storyImages.map((img, index) => (
                     <div
-                      key={index}
-                      className={`thumbnail-wrapper ${selectedImage === img ? 'active' : ''}`}
-                      onClick={() => setSelectedImage(img)}
+                      key={img.id || index}
+                      className={`thumbnail-wrapper ${selectedImage === img.url ? 'active' : ''}`}
+                      onClick={() => setSelectedImage(img.url)}
                     >
                       <div className="thumbnail">
                         <img
-                          src={img}
+                          src={img.url}
                           alt={`تصویر ${index + 1}`}
                           className="thumbnail-image"
                           onError={(e) => {
@@ -310,7 +435,7 @@ export const SuccessStoryEdit = ({
                         className="remove-image-btn"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleRemoveImage(index);
+                          handleRemoveImage(img.id || index);
                         }}
                         title="حذف تصویر"
                       >
@@ -422,7 +547,7 @@ export const SuccessStoryEdit = ({
               <button 
                 type="submit" 
                 className="save-btn"
-                disabled={loading}
+                disabled={loading || isUploadingImages}
               >
                 {loading ? (
                   <>

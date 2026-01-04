@@ -206,6 +206,13 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
 
   const BACKEND_URL = config.BACKEND_URL;
 
+  const buildImageUrl = (path) => {
+    if (!path) return "";
+    if (path.startsWith("http")) return path;
+    const cleanPath = path.startsWith("/") ? path.slice(1) : path;
+    return `${BACKEND_URL}/${cleanPath}`;
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -272,22 +279,38 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
 
         setAllAds(mappedAds);
 
-        const mappedStories = successStories.map(story => ({
-          id: story.id,
-          title: story.title,
-          author: story.user_name,
-          date: toJalaliDate(story.created_at),
+        const mappedStories = successStories.map(story => {
+          const formattedImages = (story.images || [])
+            .map((img, index) => {
+              const url = buildImageUrl(img?.image || img?.url || img);
+              if (!url) return null;
+              return {
+                id: img?.id ?? index,
+                backendId: img?.id ?? null,
+                url,
+              };
+            })
+            .filter(Boolean);
+          const imageUrls = formattedImages.map(img => img.url);
+          const primaryImage = imageUrls[0]
+            || (story.image ? buildImageUrl(story.image) : "");
+
+          return {
+            id: story.id,
+            title: story.title,
+            author: story.user_name,
+            date: toJalaliDate(story.created_at),
           status: story.story_type === "lost" ? "بازگشت به خانه" : 
                   story.story_type === "found" ? "به خانواده بازگشت" : 
                   "فرزندخوانده شد",
-          statusColor: "rgba(122, 238, 151, 0.15)",
-          statusTextColor: "#0f7228",
-          image: story.images && story.images.length > 0 
-            ? story.images[0].image 
-            : "/src/assets/images/default-pet.png",
-          images: story.images ? story.images.map(img => img.image) : [],
-          content: story.story,
-        }));
+            statusColor: "rgba(122, 238, 151, 0.15)",
+            statusTextColor: "#0f7228",
+            image: primaryImage || "/src/assets/images/default-pet.png",
+            images: imageUrls.length > 0 ? imageUrls : (primaryImage ? [primaryImage] : []),
+            backendImages: formattedImages,
+            content: story.story,
+          };
+        });
 
         setUserSuccessStories(mappedStories);
 

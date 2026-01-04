@@ -26,6 +26,27 @@ export const getPetSuccessStoriesStatus = async () => {
   }
 };
 
+export const uploadSuccessStoryImage = async (file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await api.post(
+    "/SuccessStory/images/upload/",
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+
+  return res.data;
+};
+
+export const deleteSuccessStoryImage = async (imageId) => {
+  const res = await api.delete(`/SuccessStory/images/${imageId}/`);
+  return res.data;
+};
 
 export const getSuccessStoryByPetId = async (petId) => {
   try {
@@ -41,44 +62,69 @@ export const getSuccessStoryByPetId = async (petId) => {
 };
 
 export const createSuccessStory = async (data) => {
-  const formData = new FormData();
+  const shouldUseFormData = data.images && data.images.length > 0 && (!data.image_ids || data.image_ids.length === 0);
 
-  formData.append("title", data.title);
-  formData.append("story", data.story);
-  formData.append("story_type", data.story_type);
-  
-  if (data.pet_id) {
-    formData.append("pet_id", data.pet_id);
-  }
+  if (shouldUseFormData) {
+    const formData = new FormData();
 
-  if (data.images && data.images.length > 0) {
+    formData.append("title", data.title);
+    formData.append("story", data.story);
+    formData.append("story_type", data.story_type);
+    
+    if (data.pet_id) {
+      formData.append("pet_id", data.pet_id);
+    }
+
     data.images.forEach((file) => {
       formData.append("images", file);
     });
+
+    const res = await api.post(
+      "/SuccessStory/stories/",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+  
+    return res.data;
   }
 
-  const res = await api.post(
-    "/SuccessStory/stories/",
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
+  const payload = {
+    title: data.title,
+    story: data.story,
+    story_type: data.story_type,
+  };
 
+  if (data.pet_id) {
+    payload.pet_id = data.pet_id;
+  }
+
+  if (data.image_ids && data.image_ids.length > 0) {
+    payload.image_ids = data.image_ids;
+  }
+
+  const res = await api.post("/SuccessStory/stories/", payload);
   return res.data;
 };
 
 export const updateSuccessStory = async (id, data) => {
   if (!id) throw new Error("Story ID is required");
-  
-  console.log("Updating story with ID:", id);
-  console.log("Data being sent:", data);
-  
+
+  const payload = {
+    title: data.title,
+    story: data.story,
+    story_type: data.story_type,
+  };
+
+  if (data.image_ids) {
+    payload.image_ids = data.image_ids;
+  }
+
   try {
-    const res = await api.put(`/SuccessStory/stories/${id}/`, data);
-    console.log("Update response:", res.data);
+    const res = await api.put(`/SuccessStory/stories/${id}/`, payload);
     return res.data;
   } catch (error) {
     console.error("Update API error:", error.response?.data || error.message);

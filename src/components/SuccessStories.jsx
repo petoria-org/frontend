@@ -16,6 +16,13 @@ const SuccessStoriesModern = () => {
 
   const BACKEND_URL = config.BACKEND_URL;
 
+  const buildImageUrl = (path) => {
+    if (!path) return "";
+    if (path.startsWith("http")) return path;
+    const cleanPath = path.startsWith("/") ? path : `/${path}`;
+    return `${BACKEND_URL}${cleanPath}`;
+  };
+
   const toJalaliDate = (dateString) => {
     if (!dateString) return "";
     return new Intl.DateTimeFormat("fa-IR", {
@@ -87,6 +94,15 @@ const SuccessStoriesModern = () => {
 
         const mapped = sortedStories.slice(0, 4).map((story) => {
           const statusColors = getStatusColor(story.story_type);
+          const galleryImages = story.images && story.images.length > 0
+            ? story.images
+                .map(img => buildImageUrl(img.image || img.url || img))
+                .filter(Boolean)
+            : story.image
+              ? [buildImageUrl(story.image)]
+              : [];
+          const mainImage = galleryImages[0] || "/src/assets/images/default-pet.png";
+
           return {
             id: story.id,
             title: story.title,
@@ -97,12 +113,8 @@ const SuccessStoriesModern = () => {
             statusColor: statusColors.backgroundColor,
             statusTextColor: statusColors.color,
             statusBorderColor: statusColors.borderColor,
-            image: story.image
-              ? `${BACKEND_URL}${story.image}`
-              : "/src/assets/images/default-pet.png",
-            images: story.image
-              ? [`${BACKEND_URL}${story.image}`]
-              : [],
+            image: mainImage,
+            images: galleryImages,
             content: story.story,
             story_type: story.story_type,
             category: "داستان موفق",
