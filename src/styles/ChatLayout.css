@@ -1,0 +1,29 @@
+.app-layout-chat {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #D3DEE7;
+}
+
+.main-content-chat {
+  flex: 1;
+  padding-top: 4.5em;
+  padding-bottom: 0px;
+}
+
+.page-container-chat {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 0px;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding-top: 72px;
+    padding-bottom: 32px;
+  }
+
+  .page-container {
+    padding: 16px;
+  }
+}

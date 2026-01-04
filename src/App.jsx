@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 
+import ChatLayout from "./layouts/ChatLayout";
 import MainLayout from "./layouts/MainLayout";
 import EmptyLayout from "./layouts/EmptyLayout";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -41,6 +42,12 @@ function App() {
         <Route path="/pick-location" element={<LocationPicker />} />
       </Route>
 
+      <Route element={<ChatLayout />}>
+        <Route element={<ProtectedRoute />}>
+          <Route path="/chats" element={<ChatPage/>}></Route>
+        </Route>
+      </Route>
+
       {/* =========================
           Navbar + Footer
       ========================= */}
@@ -57,7 +64,6 @@ function App() {
         {/* Protected pages */}
         <Route element={<ProtectedRoute />}>
           <Route path="/user-profile" element={<UserProfilePage />} />
-          <Route path="/chats" element={<ChatPage />} />
           <Route path="/create-ad" element={<CreateAd />} />
         </Route>
       </Route>
