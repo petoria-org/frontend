@@ -63,17 +63,6 @@ useEffect(() => {
         width: img.width,
         height: img.height,
       });
-
-      if (imageWrapperRef.current) {
-        const wrapperRect = imageWrapperRef.current.getBoundingClientRect();
-        const imgWidth = img.width * scale;
-        const imgHeight = img.height * scale;
-        
-        const x = (wrapperRect.width - imgWidth) / 2;
-        const y = (wrapperRect.height - imgHeight) / 2;
-
-        setImagePosition({ x, y });
-      }
     };
     img.src = image;
   };
@@ -141,33 +130,11 @@ useEffect(() => {
     const delta = e.deltaY > 0 ? -0.1 : 0.1;
     const newScale = Math.max(minZoom, Math.min(maxZoom, scale + delta));
     setScale(parseFloat(newScale.toFixed(2)));
-
-    if (imageWrapperRef.current && imageRef.current) {
-      const wrapperRect = imageWrapperRef.current.getBoundingClientRect();
-      const img = imageRef.current;
-      const imgWidth = img.naturalWidth * newScale;
-      const imgHeight = img.naturalHeight * newScale;
-      
-      const x = (wrapperRect.width - imgWidth) / 2;
-      const y = (wrapperRect.height - imgHeight) / 2;
-      setImagePosition({ x, y });
-    }
   }, [scale, maxZoom, minZoom]);
 
   const handleScaleChange = (e) => {
     const newScale = parseFloat(e.target.value);
     setScale(newScale);
-    
-    if (imageWrapperRef.current && imageRef.current) {
-      const wrapperRect = imageWrapperRef.current.getBoundingClientRect();
-      const img = imageRef.current;
-      const imgWidth = img.naturalWidth * newScale;
-      const imgHeight = img.naturalHeight * newScale;
-      
-      const x = (wrapperRect.width - imgWidth) / 2;
-      const y = (wrapperRect.height - imgHeight) / 2;
-      setImagePosition({ x, y });
-    }
   };
 
   const handleRotationChange = (e) => {
@@ -181,20 +148,9 @@ useEffect(() => {
   const handleScaleIncrement = (value) => {
     const newScale = Math.max(minZoom, Math.min(maxZoom, scale + value));
     setScale(parseFloat(newScale.toFixed(2)));
-    
-    if (imageWrapperRef.current && imageRef.current) {
-      const wrapperRect = imageWrapperRef.current.getBoundingClientRect();
-      const img = imageRef.current;
-      const imgWidth = img.naturalWidth * newScale;
-      const imgHeight = img.naturalHeight * newScale;
-      
-      const x = (wrapperRect.width - imgWidth) / 2;
-      const y = (wrapperRect.height - imgHeight) / 2;
-      setImagePosition({ x, y });
-    }
   };
 
-  const getCroppedImage = useCallback(() => {
+const getCroppedImage = useCallback(() => {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = "anonymous";
@@ -202,15 +158,24 @@ useEffect(() => {
     img.onload = () => {
       const pixelRatio = window.devicePixelRatio || 1;
 
+      if (!imageRef.current || !containerRef.current) {
+        reject(new Error("Cropper refs not ready"));
+        return;
+      }
+
       const imageRect = imageRef.current.getBoundingClientRect();
+      const containerRect = containerRef.current.getBoundingClientRect();
+
+      const offsetX = imageRect.left - containerRect.left;
+      const offsetY = imageRect.top - containerRect.top;
 
       // نسبت تصویر اصلی به نمایشی
       const scaleX = img.naturalWidth / imageRect.width;
       const scaleY = img.naturalHeight / imageRect.height;
 
       // مختصات واقعی کراپ روی تصویر اصلی
-      const sx = (crop.x - imagePosition.x) * scaleX;
-      const sy = (crop.y - imagePosition.y) * scaleY;
+      const sx = (crop.x - offsetX) * scaleX;
+      const sy = (crop.y - offsetY) * scaleY;
       const sw = calculatedCropSize.width * scaleX;
       const sh = calculatedCropSize.height * scaleY;
 
@@ -222,6 +187,8 @@ useEffect(() => {
       const ctx = canvas.getContext("2d");
       ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
       ctx.imageSmoothingQuality = "high";
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, sw, sh);
 
       ctx.save();
 
@@ -261,7 +228,6 @@ useEffect(() => {
 }, [
   image,
   crop,
-  imagePosition,
   calculatedCropSize,
   rotation,
   format,
@@ -318,32 +284,12 @@ const handleCrop = async () => {
     const centerX = Math.max(0, (containerSize.width - calculatedCropSize.width) / 2);
     const centerY = Math.max(0, (containerSize.height - calculatedCropSize.height) / 2);
     setCrop({ x: centerX, y: centerY });
-
-    if (imageWrapperRef.current && imageRef.current) {
-      const wrapperRect = imageWrapperRef.current.getBoundingClientRect();
-      const img = imageRef.current;
-      const imgWidth = img.naturalWidth;
-      const imgHeight = img.naturalHeight;
-      
-      const x = (wrapperRect.width - imgWidth) / 2;
-      const y = (wrapperRect.height - imgHeight) / 2;
-      setImagePosition({ x, y });
-    }
+    setImagePosition({ x: 0, y: 0 });
   };
 
   const handleZoomToZero = () => {
     setScale(minZoom);
-    
-    if (imageWrapperRef.current && imageRef.current) {
-      const wrapperRect = imageWrapperRef.current.getBoundingClientRect();
-      const img = imageRef.current;
-      const imgWidth = img.naturalWidth * minZoom;
-      const imgHeight = img.naturalHeight * minZoom;
-      
-      const x = (wrapperRect.width - imgWidth) / 2;
-      const y = (wrapperRect.height - imgHeight) / 2;
-      setImagePosition({ x, y });
-    }
+    setImagePosition({ x: 0, y: 0 });
   };
 
   useEffect(() => {
@@ -360,12 +306,18 @@ const handleCrop = async () => {
   }, [onClose, handleReset, handleCrop, isLoading, handleZoomToZero]);
 
   const imageStyle = useMemo(() => ({
-    transform: `translate(${imagePosition.x}px, ${imagePosition.y}px) scale(${scale}) rotate(${rotation}deg)`,
-    transformOrigin: 'top left',
-    transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
-    position: 'absolute',
-    willChange: 'transform',
+    left: "50%",
+    top: "50%",
+    transform: `translate(calc(-50% + ${imagePosition.x}px), calc(-50% + ${imagePosition.y}px)) scale(${scale}) rotate(${rotation}deg)`,
+    transformOrigin: "center center",
+    transition: isDragging ? "none" : "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+    position: "absolute",
+    willChange: "transform",
   }), [scale, rotation, imagePosition, isDragging]);
+
+  const handleImageLoad = useCallback(() => {
+    setImagePosition({ x: 0, y: 0 });
+  }, []);
 
   const cropAreaStyle = useMemo(() => ({
     width: `${calculatedCropSize.width}px`,
@@ -444,15 +396,13 @@ const handleCrop = async () => {
           >
             <div className="image-wrapper" ref={imageWrapperRef}>
                 <img
-                ref={imageRef}
-                src={image}
-                alt="تصویر برای ویرایش"
-                className="cropper-image"
-                style={{
-                    '--scale': scale,
-                    '--rotate': rotation + 'deg',
-                }}
-                draggable="false"
+                  ref={imageRef}
+                  src={image}
+                  alt="تصویر برای ویرایش"
+                  className="cropper-image"
+                  style={imageStyle}
+                  onLoad={handleImageLoad}
+                  draggable="false"
                 />
               <div className="grid-overlay">
                 <div className="grid-line horizontal"></div>
