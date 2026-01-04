@@ -242,68 +242,15 @@ function SimpleAttachMenu({ open, anchorEl, onClose, onPick }) {
     </div>
   );
 }
-
-// Crop Controls Component
-function CropControls({ zoom, onZoomChange, onCropToggle, isCropping, onCropComplete, onCancelCrop }) {
-  return (
-    <div className="cropControls">
-      <div className="cropControls__zoom">
-        <span className="cropControls__zoomIcon">🔍</span>
-        <input
-          type="range"
-          min="1"
-          max="3"
-          step="0.1"
-          value={zoom}
-          onChange={(e) => onZoomChange(parseFloat(e.target.value))}
-          className="cropControls__zoomSlider"
-        />
-        <span className="cropControls__zoomValue">{zoom.toFixed(1)}x</span>
-      </div>
-
-      <div className="cropControls__buttons">
-        <button
-          type="button"
-          className={`cropControls__btn cropControls__btn--crop ${isCropping ? "cropControls__btn--active" : ""}`}
-          onClick={onCropToggle}
-          title={isCropping ? "خروج از حالت کراپ" : "کراپ تصویر"}
-        >
-          ✂️
-        </button>
-
-        {isCropping && (
-          <>
-            <button type="button" className="cropControls__btn cropControls__btn--check" onClick={onCropComplete} title="اعمال کراپ">
-              ✓
-            </button>
-            <button type="button" className="cropControls__btn cropControls__btn--close" onClick={onCancelCrop} title="انصراف از کراپ">
-              ✕
-            </button>
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
 // Attachment Modal Component
 function AttachmentModal({ isOpen, type, onClose, onSend }) {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [currentFileIndex, setCurrentFileIndex] = useState(0);
-  const [isCropping, setIsCropping] = useState(false);
-  const [zoom, setZoom] = useState(1);
-  const [cropArea, setCropArea] = useState(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
 
   // ✅ null instead of ""
   const [currentPreviewUrl, setCurrentPreviewUrl] = useState(null);
 
   const fileInputRef = useRef(null);
-  const previewContainerRef = useRef(null);
-  const imageRef = useRef(null);
-  const cropOverlayRef = useRef(null);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "unset";
@@ -311,13 +258,6 @@ function AttachmentModal({ isOpen, type, onClose, onSend }) {
       document.body.style.overflow = "unset";
     };
   }, [isOpen]);
-
-  useEffect(() => {
-    setZoom(1);
-    setImagePosition({ x: 0, y: 0 });
-    setIsCropping(false);
-    setCropArea(null);
-  }, [currentFileIndex]);
 
   const currentFile = selectedFiles[currentFileIndex];
 
@@ -331,137 +271,6 @@ function AttachmentModal({ isOpen, type, onClose, onSend }) {
     setCurrentPreviewUrl(url);
     return () => URL.revokeObjectURL(url);
   }, [currentFile]);
-
-  useEffect(() => {
-    if (!previewContainerRef.current || !imageRef.current) return;
-
-    const container = previewContainerRef.current;
-    const image = imageRef.current;
-
-    const handleMouseDown = (e) => {
-      if (zoom <= 1) return;
-      setIsDragging(true);
-      setDragStart({
-        x: e.clientX - imagePosition.x,
-        y: e.clientY - imagePosition.y,
-      });
-      e.preventDefault();
-    };
-
-    const handleMouseMove = (e) => {
-      if (!isDragging || zoom <= 1) return;
-
-      const newX = e.clientX - dragStart.x;
-      const newY = e.clientY - dragStart.y;
-
-      const maxX = Math.max(0, (image.width * zoom - container.clientWidth) / 2);
-      const maxY = Math.max(0, (image.height * zoom - container.clientHeight) / 2);
-
-      const clampedX = Math.max(-maxX, Math.min(maxX, newX));
-      const clampedY = Math.max(-maxY, Math.min(maxY, newY));
-
-      setImagePosition({ x: clampedX, y: clampedY });
-      e.preventDefault();
-    };
-
-    const handleMouseUp = () => setIsDragging(false);
-
-    container.addEventListener("mousedown", handleMouseDown);
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
-
-    return () => {
-      container.removeEventListener("mousedown", handleMouseDown);
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, [isDragging, dragStart, imagePosition, zoom]);
-
-  useEffect(() => {
-    if (!isCropping || !previewContainerRef.current) return;
-
-    const container = previewContainerRef.current;
-    let cropStart = null;
-    let currentCropRect = null;
-
-    const getRelativeCoordinates = (e) => {
-      const rect = container.getBoundingClientRect();
-      return { x: e.clientX - rect.left, y: e.clientY - rect.top };
-    };
-
-    const createCropOverlay = () => {
-      if (cropOverlayRef.current) cropOverlayRef.current.remove();
-
-      const overlay = document.createElement("div");
-      overlay.className = "cropOverlay";
-      overlay.style.position = "absolute";
-      overlay.style.left = "0";
-      overlay.style.top = "0";
-      overlay.style.width = "100%";
-      overlay.style.height = "100%";
-      overlay.style.cursor = "crosshair";
-      overlay.style.zIndex = "10";
-      overlay.style.pointerEvents = "auto";
-      container.appendChild(overlay);
-      cropOverlayRef.current = overlay;
-    };
-
-    const updateCropDisplay = (rect) => {
-      if (!cropOverlayRef.current || !rect) return;
-      cropOverlayRef.current.innerHTML = `
-        <div style="position:absolute;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.3);"></div>
-        <div style="position:absolute;left:${rect.x}px;top:${rect.y}px;width:${rect.width}px;height:${rect.height}px;
-             background:transparent;border:2px solid #4dabf7;box-shadow:0 0 0 9999px rgba(0,0,0,0.4);pointer-events:none;"></div>
-        <div style="position:absolute;left:${rect.x + rect.width / 2 - 30}px;top:${rect.y + rect.height / 2 - 15}px;
-             background:rgba(77,171,247,0.9);color:white;padding:4px 8px;border-radius:4px;font-size:12px;pointer-events:none;">
-             ${Math.round(rect.width)}×${Math.round(rect.height)}
-        </div>
-      `;
-    };
-
-    const handleMouseDown = (e) => {
-      cropStart = getRelativeCoordinates(e);
-      createCropOverlay();
-    };
-
-    const handleMouseMove = (e) => {
-      if (!cropStart) return;
-
-      const pos = getRelativeCoordinates(e);
-      const minX = Math.max(0, Math.min(cropStart.x, pos.x));
-      const minY = Math.max(0, Math.min(cropStart.y, pos.y));
-      const maxX = Math.min(container.clientWidth, Math.max(cropStart.x, pos.x));
-      const maxY = Math.min(container.clientHeight, Math.max(cropStart.y, pos.y));
-
-      currentCropRect = { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
-      updateCropDisplay(currentCropRect);
-    };
-
-    const handleMouseUp = () => {
-      if (currentCropRect && currentCropRect.width > 10 && currentCropRect.height > 10) {
-        setCropArea(currentCropRect);
-      } else if (cropOverlayRef.current) {
-        cropOverlayRef.current.remove();
-        cropOverlayRef.current = null;
-      }
-      cropStart = null;
-    };
-
-    container.addEventListener("mousedown", handleMouseDown);
-    container.addEventListener("mousemove", handleMouseMove);
-    container.addEventListener("mouseup", handleMouseUp);
-
-    return () => {
-      container.removeEventListener("mousedown", handleMouseDown);
-      container.removeEventListener("mousemove", handleMouseMove);
-      container.removeEventListener("mouseup", handleMouseUp);
-      if (cropOverlayRef.current) {
-        cropOverlayRef.current.remove();
-        cropOverlayRef.current = null;
-      }
-    };
-  }, [isCropping]);
-
   const handleFileSelect = (e) => {
     const files = Array.from(e.target.files || []);
     const filteredFiles = files.filter((file) => {
@@ -483,62 +292,15 @@ function AttachmentModal({ isOpen, type, onClose, onSend }) {
 
   const handleSelectFile = (index) => setCurrentFileIndex(index);
 
-  const handleZoomChange = (newZoom) => {
-    setZoom(newZoom);
-    setImagePosition({ x: 0, y: 0 });
-  };
-
-  const handleToggleCrop = () => {
-    if (type === "video") return;
-    const next = !isCropping;
-    setIsCropping(next);
-    if (!next) {
-      setCropArea(null);
-      if (cropOverlayRef.current) {
-        cropOverlayRef.current.remove();
-        cropOverlayRef.current = null;
-      }
-    }
-  };
-
-  const handleCropComplete = () => {
-    if (cropArea) {
-      alert(`کراپ اعمال شد: ${Math.round(cropArea.width)}×${Math.round(cropArea.height)} پیکسل`);
-      // TODO: apply real crop logic
-    }
-    setIsCropping(false);
-    setCropArea(null);
-    if (cropOverlayRef.current) {
-      cropOverlayRef.current.remove();
-      cropOverlayRef.current = null;
-    }
-  };
-
-  const handleCancelCrop = () => {
-    setIsCropping(false);
-    setCropArea(null);
-    if (cropOverlayRef.current) {
-      cropOverlayRef.current.remove();
-      cropOverlayRef.current = null;
-    }
-  };
-
   const handleSend = () => {
     if (selectedFiles.length > 0) onSend?.(selectedFiles);
     handleClose();
   };
 
   const handleClose = () => {
-    setIsCropping(false);
-    setCropArea(null);
-    setZoom(1);
-    setImagePosition({ x: 0, y: 0 });
     setSelectedFiles([]);
     setCurrentFileIndex(0);
-    if (cropOverlayRef.current) {
-      cropOverlayRef.current.remove();
-      cropOverlayRef.current = null;
-    }
+    setCurrentPreviewUrl(null);
     onClose?.();
   };
 
@@ -593,26 +355,9 @@ function AttachmentModal({ isOpen, type, onClose, onSend }) {
           <div className="modernModal__preview">
             {currentFile ? (
               <>
-                {currentFile.type.startsWith("image/") && (
-                  <div className="previewControls">
-                    <CropControls
-                      zoom={zoom}
-                      onZoomChange={handleZoomChange}
-                      onCropToggle={handleToggleCrop}
-                      isCropping={isCropping}
-                      onCropComplete={handleCropComplete}
-                      onCancelCrop={handleCancelCrop}
-                    />
-                  </div>
-                )}
-
                 <div
-                  ref={previewContainerRef}
-                  className={`modernPreviewContainer ${isCropping ? "modernPreviewContainer--cropping" : ""} ${
-                    zoom > 1 ? "modernPreviewContainer--zoomed" : ""
-                  }`}
+                  className="modernPreviewContainer"
                   style={{
-                    cursor: isCropping ? "crosshair" : zoom > 1 ? "grab" : "default",
                     overflow: "hidden",
                     height: 320,
                     maxHeight: 320,
@@ -624,7 +369,6 @@ function AttachmentModal({ isOpen, type, onClose, onSend }) {
                   {currentFile.type.startsWith("image/") ? (
                     currentPreviewUrl ? (
                       <img
-                        ref={imageRef}
                         src={currentPreviewUrl}
                         alt="Preview"
                         className="modernPreviewImage"
@@ -633,9 +377,6 @@ function AttachmentModal({ isOpen, type, onClose, onSend }) {
                           height: "100%",
                           maxHeight: 320,
                           objectFit: "contain",
-                          transform: `scale(${zoom}) translate(${imagePosition.x}px, ${imagePosition.y}px)`,
-                          transformOrigin: "center center",
-                          transition: isDragging ? "none" : "transform 0.2s ease",
                         }}
                       />
                     ) : null
@@ -664,16 +405,6 @@ function AttachmentModal({ isOpen, type, onClose, onSend }) {
                   <p>
                     <strong>نوع:</strong> {currentFile.type}
                   </p>
-                  {cropArea && (
-                    <p>
-                      <strong>اندازه کراپ:</strong> {Math.round(cropArea.width)}×{Math.round(cropArea.height)} پیکسل
-                    </p>
-                  )}
-                  {zoom > 1 && (
-                    <p>
-                      <strong>زوم:</strong> {zoom.toFixed(1)}x
-                    </p>
-                  )}
                 </div>
               </>
             ) : (

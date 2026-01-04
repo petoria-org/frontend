@@ -18,8 +18,24 @@ export default function Conversations({
           const active = c.id === selectedChatId;
           const tick = c.isMineLast 
             ? (c.lastIsRead 
-                ? <img src="/src/icons/double-check.svg" alt="read" />
-                : <img src="/src/icons/check.svg" alt="sent" />) 
+                ? <img 
+                    src="/src/icons/double-check.svg"  
+                    alt="read" 
+                    style={{
+                      width: "16px",
+                      height: "16px",
+                      filter: "brightness(0) saturate(100%) invert(46%) sepia(14%) saturate(640%) hue-rotate(169deg)",
+                    }}
+                  />
+                : <img 
+                    src="/src/icons/check.svg"
+                    alt="sent"
+                    style={{
+                      width: "16px",
+                      height: "16px",
+                      filter: "brightness(0) saturate(100%) invert(46%) sepia(14%) saturate(640%) hue-rotate(169deg)",
+                    }}                    
+                  />) 
             : null;
 
             return (

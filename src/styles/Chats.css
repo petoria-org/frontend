@@ -168,6 +168,9 @@
   color: var(--muted);
   padding-bottom: 15px;
   text-align: left;
+  display: flex;
+  gap: 2px;
+  align-items: center;
 }
 
 .convItem__name{
@@ -473,10 +476,10 @@
 .msg__replyBtn--out{ left: -40px; }
 
 .msg:not(.msg--out){
-  max-width: 72%;
+  max-width: 67%;
   border: 1px solid rgba(173, 216, 230, 0.4);
   border-radius: 16px;
-  padding: 12px 14px;
+  padding: 8px 12px;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgb(247, 251, 255));
   text-align: right;
   color: #1976d2;
@@ -485,10 +488,10 @@
 }
 
 .msg--out{
-  max-width: 72%;
+  max-width: 67%;
   border: 1px solid rgba(77, 171, 247, 0.3);
   border-radius: 16px;
-  padding: 12px 14px;
+  padding: 8px 12px;
   background: linear-gradient(135deg, #88b3d0, #339af0);
   color: #fff;
   text-align: right;
@@ -813,7 +816,7 @@
 .msg__meta{
   margin-top: 8px;
   display: flex;
-  gap: 8px;
+  gap: 5px;
   align-items: center;
   justify-content: flex-start;
   font-size: 12px;
@@ -830,6 +833,11 @@
   justify-content: center;
   width: 22px;
   flex-shrink: 0;
+}
+
+.msg__tick-icon{
+  width: 19px;
+  height: 19px;
 }
 
 .replyPreview{
@@ -1739,18 +1747,13 @@
 /* Responsive Design */
 @media (max-width: 1200px) {
   .chatMain {
-    height: calc(100vh - 4 * var(--page-pad));
+    height: calc(100dvh - 4 * var(--page-pad));
   }
 }
 
 @media (max-width: 1024px) {
-  .chats {
-    overflow: hidden;
-    --page-pad: 16px;
-  }
-
   .chatMain {
-    height: calc(100vh - 4 * var(--page-pad));
+    height: calc(100dvh - 4 * var(--page-pad));
   }
 
   .conv,
@@ -1760,10 +1763,6 @@
 }
 
 @media (max-width: 768px) {
-  .chats {
-    --page-pad: 12px;
-  }
-
   .chatShell {
     height: 100vh;
   }
