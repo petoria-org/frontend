@@ -173,6 +173,16 @@ function mergeMessages(prevList, incomingList = []) {
 }
 
 export default function ChatPage() {
+  
+  useEffect(() => {
+    const root = document.getElementById('root');
+    root.style.overflow = 'hidden'; // Overrides App.css
+
+    return () => {
+      root.style.overflow = 'auto'; // Restores App.css
+    };
+  }, []);
+
   const [chats, setChats] = useState([]);
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [inputValue, setInputValue] = useState("");
