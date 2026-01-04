@@ -5,6 +5,9 @@ import { getSuccessStoryDetail } from "../../Services/successStoryService";
 import { config } from "../../config";
 
 export const SuccessStoryDetail = ({ story, onClose }) => {
+  const [storyData, setStoryData] = useState(story || {});
+  const [loadingDetail, setLoadingDetail] = useState(false);
+  const fallbackImage = "/src/assets/images/default-pet.png";
   const BACKEND_URL = config.BACKEND_URL;
 
   const buildImageUrl = (path) => {
@@ -14,8 +17,24 @@ export const SuccessStoryDetail = ({ story, onClose }) => {
     return `${BACKEND_URL}${cleanPath}`;
   };
 
+  useEffect(() => {
+    const fetchDetail = async () => {
+      if (!story?.id) return;
+      try {
+        setLoadingDetail(true);
+        const detail = await getSuccessStoryDetail(story.id);
+        setStoryData(detail);
+      } catch (error) {
+        console.error("Failed to load success story detail:", error);
+      } finally {
+        setLoadingDetail(false);
+      }
+    };
+    fetchDetail();
+  }, [story]);
+
   const galleryImages = useMemo(() => {
-    const rawList = story.backendImages || story.images || [];
+    const rawList = storyData.backendImages || storyData.images || [];
 
     const mapped = rawList
       .map((img, index) => {
@@ -26,16 +45,15 @@ export const SuccessStoryDetail = ({ story, onClose }) => {
       })
       .filter(Boolean);
 
-    if (mapped.length === 0 && story.image) {
-      mapped.push({ id: "main-image", url: buildImageUrl(story.image) });
+    if (mapped.length === 0 && storyData.image) {
+      mapped.push({ id: "main-image", url: buildImageUrl(storyData.image) });
     }
 
     return mapped;
-  }, [story, BACKEND_URL]);
+  }, [storyData, BACKEND_URL]);
 
-  const fallbackImage = "/src/assets/images/default-pet.png";
   const [selectedImage, setSelectedImage] = useState(
-    (galleryImages[0] && galleryImages[0].url) || story.image || fallbackImage
+    (galleryImages[0] && galleryImages[0].url) || storyData.image || fallbackImage
   );
   const { setHideNavbar, setHideFooter } = useOutletContext();
 
@@ -56,12 +74,12 @@ export const SuccessStoryDetail = ({ story, onClose }) => {
   useEffect(() => {
     if (galleryImages.length > 0) {
       setSelectedImage(galleryImages[0].url);
-    } else if (story.image) {
-      setSelectedImage(buildImageUrl(story.image));
+    } else if (storyData.image) {
+      setSelectedImage(buildImageUrl(storyData.image));
     } else {
       setSelectedImage(fallbackImage);
     }
-  }, [galleryImages, story.image]);
+  }, [galleryImages, storyData.image]);
 
   const storyImages = galleryImages.length > 0 ? galleryImages : [{ id: "fallback", url: fallbackImage }];
 
