@@ -240,6 +240,7 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
         story_type: pet?.status === "adoption" ? "surrender" : pet?.status,
         pet_id: pet?.id,
         image_ids: imageIds,
+        images: imageIds,
       };
       
       showNotification("داستان موفق با موفقیت ثبت شد و آگهی بسته شد", "success");

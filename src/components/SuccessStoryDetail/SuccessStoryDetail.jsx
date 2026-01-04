@@ -1,10 +1,42 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import "../../styles/SuccessStoryDetail.css";
 import { useOutletContext } from "react-router-dom";
 import { getSuccessStoryDetail } from "../../Services/successStoryService";
+import { config } from "../../config";
 
 export const SuccessStoryDetail = ({ story, onClose }) => {
-  const [selectedImage, setSelectedImage] = useState(story.images && story.images.length > 0 ? story.images[0] : story.image);
+  const BACKEND_URL = config.BACKEND_URL;
+
+  const buildImageUrl = (path) => {
+    if (!path) return "";
+    if (path.startsWith("http")) return path;
+    const cleanPath = path.startsWith("/") ? path : `/${path}`;
+    return `${BACKEND_URL}${cleanPath}`;
+  };
+
+  const galleryImages = useMemo(() => {
+    const rawList = story.backendImages || story.images || [];
+
+    const mapped = rawList
+      .map((img, index) => {
+        const rawPath = typeof img === "string" ? img : img?.image || img?.url;
+        const url = buildImageUrl(rawPath);
+        if (!url) return null;
+        return { id: img?.id ?? img?.backendId ?? `img-${index}`, url };
+      })
+      .filter(Boolean);
+
+    if (mapped.length === 0 && story.image) {
+      mapped.push({ id: "main-image", url: buildImageUrl(story.image) });
+    }
+
+    return mapped;
+  }, [story, BACKEND_URL]);
+
+  const fallbackImage = "/src/assets/images/default-pet.png";
+  const [selectedImage, setSelectedImage] = useState(
+    (galleryImages[0] && galleryImages[0].url) || story.image || fallbackImage
+  );
   const { setHideNavbar, setHideFooter } = useOutletContext();
 
   useEffect(() => {
@@ -21,11 +53,17 @@ export const SuccessStoryDetail = ({ story, onClose }) => {
     };
   }, [setHideNavbar, setHideFooter]);
 
-  const storyImages = story.images && story.images.length > 0
-  ? story.images
-  : story.image
-      ? [story.image]
-      : [];
+  useEffect(() => {
+    if (galleryImages.length > 0) {
+      setSelectedImage(galleryImages[0].url);
+    } else if (story.image) {
+      setSelectedImage(buildImageUrl(story.image));
+    } else {
+      setSelectedImage(fallbackImage);
+    }
+  }, [galleryImages, story.image]);
+
+  const storyImages = galleryImages.length > 0 ? galleryImages : [{ id: "fallback", url: fallbackImage }];
 
   const BackIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -106,18 +144,18 @@ export const SuccessStoryDetail = ({ story, onClose }) => {
                 <div className="thumbnail-container">
                   {storyImages.map((img, index) => (
                     <div
-                      key={index}
-                      className={`thumbnail-wrapper ${selectedImage === img ? 'active' : ''}`}
-                      onClick={() => setSelectedImage(img)}
+                      key={img.id || index}
+                      className={`thumbnail-wrapper ${selectedImage === img.url ? 'active' : ''}`}
+                      onClick={() => setSelectedImage(img.url)}
                     >
                       <div className="thumbnail">
                         <img
-                          src={img}
-                          alt={`تصویر ${index + 1}`}
+                          src={img.url}
+                          alt={`????? ${index + 1}`}
                           className="thumbnail-image"
                           onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2YwZjBmMCI+PHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSIjZjBmMGYwIi8+PHBhdGggZD0iTTE5IDVINWMtMS4xIDAtMiAuOS0yIDJ2MTRjMCAxLjEuOSAyIDIgMmgxNGMxLjEgMCAyLS45IDItMlY3YzAtMS4xLS45LTItMi0yem0wIDE2SDVWN2gxNHYxNHpNMTMuNTEgOC40OWMtMS4wNi0xLjA2LTIuNzgtMS4wNi0zLjg0IDBMNy41IDExLjE3bC0uMDktLjA5Yy0uMzktLjM5LTEuMDItLjM5LTEuNDEgMC0uMzkuMzktLjM5IDEuMDIgMCAxLjQxbDMuNTkgMy41OWMuODkuODkgMi4zMy44OSAzLjIyMGw1LjU5LTUuNTljLjM5LS4zOS4zOS0xLjAyIDAtMS40MS0uMzktLjM4LTEuMDItLjM5LTEuNDEtLjA4bC01LjA4IDUuMDd6Ii8+PC9zdmc+";
+                            e.target.src = "/src/assets/images/default-pet.png";
                           }}
                         />
                       </div>

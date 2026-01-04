@@ -197,6 +197,7 @@ export const SuccessStoryEdit = ({
         story: content,
         story_type: storyType,
         image_ids: imageIds,
+        images: imageIds,
       };
 
       const updatedStory = await updateSuccessStory(story.id, storyData);

@@ -104,6 +104,7 @@ export const createSuccessStory = async (data) => {
 
   if (data.image_ids && data.image_ids.length > 0) {
     payload.image_ids = data.image_ids;
+    payload.images = data.image_ids;
   }
 
   const res = await api.post("/SuccessStory/stories/", payload);
@@ -121,6 +122,7 @@ export const updateSuccessStory = async (id, data) => {
 
   if (data.image_ids) {
     payload.image_ids = data.image_ids;
+    payload.images = data.image_ids;
   }
 
   try {
