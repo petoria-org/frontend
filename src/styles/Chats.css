@@ -31,8 +31,6 @@
 .chatMain{
   height: calc(100vh - 4 * var(--page-pad));
   margin: 0 auto;
-  padding-left: var(--page-pad);
-  padding-right: var(--page-pad);
   display: grid;
   grid-template-columns: 360px 1fr;
   min-height: 0;

@@ -55,6 +55,15 @@ const downloadAttachment = async (att) => {
   }
 };
 
+const StatusTick = ({ status }) => {
+  if (status === "seen") {
+    return <img className="msg__tick-icon" src="/src/icons/double-check.svg" alt="seen" />;
+  } else if (status === "sent" || status === "delivered") {
+    return <img className="msg__tick-icon" src="/src/icons/check.svg" alt="sent" />;
+  }
+  return null;
+};
+
 function MessageBubble({ m, onReply, chatTitle, onJumpToMessage }) {
   const isMine = m.side === "out";
   const safeText = m.text || "";
@@ -158,8 +167,13 @@ function MessageBubble({ m, onReply, chatTitle, onJumpToMessage }) {
 
         <div className="msg__meta">
           <span className="msg__time">{m.time}</span>
-          {isMine && <span className={`msg__tick msg__tick--${m.status || "sent"}`}>{m.status === "seen" ? "✓✓" : "✓"}</span>}
+          {isMine && (
+            <span className={`msg__tick msg__tick--${m.status || "sent"}`}>
+              <StatusTick status={m.status} />
+            </span>
+          )}
         </div>
+        
       </div>
     </div>
   );
