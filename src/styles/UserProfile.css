@@ -1563,15 +1563,15 @@
 }
 
 .user-story-image-section {
-  flex: 0 1 180px;
-  max-width: 180px;
+  flex: 0 1 220px;
+  max-width: 220px;
   width: 100%;
   min-width: 0;
 }
 
 .user-image-frame {
   width: 100%;
-  height: 200px;
+  height: 260px;
   border-radius: 18px;
   overflow: hidden;
   position: relative;
@@ -3804,7 +3804,7 @@
   }
 
   .user-image-frame {
-    height: 250px;
+    height: 300px;
   }
 
   .user-story-content {

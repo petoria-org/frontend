@@ -203,12 +203,12 @@
 }
 
 .ls-success-story-image-section {
-  flex: 0 0 180px;
+  flex: 0 0 220px;
 }
 
 .ls-success-story-image-frame {
   width: 100%;
-  height: 200px;
+  height: 260px;
   border-radius: 20px;
   overflow: hidden;
   position: relative;
@@ -546,9 +546,9 @@
     flex: none;
     width: 100%;
   }
-  
+
   .ls-success-story-image-frame {
-    height: 300px;
+    height: 340px;
   }
   
   .ls-success-stories-title-gradient {
@@ -630,7 +630,7 @@
   }
   
   .ls-success-story-image-frame {
-    height: 250px;
+    height: 300px;
   }
   
   .ls-success-story-title-text {
@@ -648,7 +648,7 @@
   }
 
   .ls-success-story-image-frame {
-    height: 200px;
+    height: 260px;
   }
 
   .ls-success-story-title-text {
