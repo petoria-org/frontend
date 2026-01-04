@@ -5,6 +5,7 @@ import "../../styles/SuccessStoriesAll.css";
 import { getSuccessStories } from "../../Services/successStoryService";
 import { config } from "../../config";
 import { getSuccessStoryDefaultImage } from "../../utils/postImages";
+import { Pagination } from "../Pagination/Pagination";
 
 const toJalaliDate = (dateString) => {
   if (!dateString) return "";
@@ -26,6 +27,7 @@ const SuccessStoriesAll = () => {
   const [selectedStory, setSelectedStory] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const BACKEND_URL = config.BACKEND_URL;
 
@@ -80,6 +82,7 @@ const SuccessStoriesAll = () => {
         });
 
         setStories(mapped);
+        setCurrentPage(1);
         setIsVisible(true);
       } catch (e) {
         console.error("خطا در دریافت داستان‌های موفق:", e);
@@ -99,6 +102,15 @@ const SuccessStoriesAll = () => {
 
     fetchStories();
   }, []);
+
+  const itemsPerPage = 6;
+  const totalPages = Math.max(1, Math.ceil(stories.length / itemsPerPage));
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const visibleStories = stories.slice(startIndex, startIndex + itemsPerPage);
+
+  const handlePageChange = (page) => setCurrentPage(page);
+  const handlePrev = () => setCurrentPage((p) => Math.max(1, p - 1));
+  const handleNext = () => setCurrentPage((p) => Math.min(totalPages, p + 1));
 
   return (
     <div className="success-stories-container-all">
@@ -169,7 +181,7 @@ const SuccessStoriesAll = () => {
                   <p>در حال حاضر داستان موفقیتی برای نمایش وجود ندارد.</p>
                 </div>
               ) : (
-                stories.map((story, index) => (
+                visibleStories.map((story, index) => (
                   <div
                     key={story.id}
                     className={`story-card-all ${isVisible ? "slide-in" : ""}`}
@@ -177,7 +189,7 @@ const SuccessStoriesAll = () => {
                     onClick={() => setSelectedStory(story)}
                   >
                     <div className="card-border-inner"></div>
-                    <div className="story-number-all">0{index + 1}</div>
+                    <div className="story-number-all">0{startIndex + index + 1}</div>
 
                     <div className="story-content-wrapper-all">
                       <div className="story-image-section-all">
@@ -233,7 +245,7 @@ const SuccessStoriesAll = () => {
                         </div>
 
                         <div className="story-footer-all">
-                          <button className="read-more-btn-all">
+                          <button className="read-more-btn-all" onClick={() => setSelectedStory(story)}>
                             <span>خواندن ادامه داستان</span>
                             <div className="btn-arrow-all">
                               →
@@ -248,6 +260,16 @@ const SuccessStoriesAll = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="success-stories-pagination-wrapper">
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          onPrevious={handlePrev}
+          onNext={handleNext}
+        />
       </div>
 
       {selectedStory && (
