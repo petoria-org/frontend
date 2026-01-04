@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "../styles/Stats.css";
+import "../styles/Hero.css";
 import api from "../Services/api";
 
 export default function Stats() {
@@ -34,36 +34,30 @@ export default function Stats() {
   }, []);
 
   return (
-    <div className="main-container">
-      <div className="boxes-container">
+    <div className="compact-stats-wrapper">
+      <div className="compact-stats-boxes">
         
-        <div className="box">
-          <img className="stats-img" src="/images/correct.png" />
-          <div className="stats-number">1,200</div>
-          <div className="stats-labels">داستان های موفق</div>
+        <div className="compact-stats-box">
+          <img className="compact-stats-img" src="/images/correct.png" alt="داستان‌های موفق" />
+          <div className="compact-stats-number">1,200</div>
+          <div className="compact-stats-label">داستان‌های موفق</div>
         </div>
 
-        <div className="box">
-          <img className="stats-img" src="/images/person.png" />
-          <div className="stats-number">12,548</div>
-          <div className="stats-labels">کاربران فعال</div>
+        <div className="compact-stats-box">
+          <img className="compact-stats-img" src="/images/person.png" alt="کاربران فعال" />
+          <div className="compact-stats-number">12,548</div>
+          <div className="compact-stats-label">کاربران فعال</div>
         </div>
 
-        <div className="box">
-          <img className="stats-img" src="/images/heart.png" />
-          <div className="stats-number">2,647</div>
-          <div className="stats-labels">حیوانات نجات یافته</div>
-        </div>
-
-        <div className="box">
-          <img className="stats-img" src="/images/paw.png" />
-          <div className="stats-number">
+        <div className="compact-stats-box">
+          <img className="compact-stats-img" src="/images/paw.png" alt="آگهی‌های فعال" />
+          <div className="compact-stats-number">
             {activeAdsCount !== null
               ? activeAdsCount.toLocaleString("en-US")
               : "…"}
           </div>
-          <div className="stats-labels">آگهی های فعال</div>
-          {error && <div className="stats-error">{error}</div>}
+          <div className="compact-stats-label">آگهی‌های فعال</div>
+          {error && <div className="compact-stats-error">{error}</div>}
         </div>
 
       </div>

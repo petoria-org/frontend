@@ -11,6 +11,42 @@ export const PET_DEFAULT_IMAGES = {
   other: "/src/assets/images/other.png",
 };
 
+const normalizeBackendImageUrl = (imagePath) => {
+  if (!imagePath) {
+    return null;
+  }
+
+  if (typeof imagePath === "object" && imagePath !== null) {
+    const nested =
+      imagePath.url ||
+      imagePath.image ||
+      imagePath.thumbnail ||
+      imagePath.file ||
+      imagePath.image_url;
+    return normalizeBackendImageUrl(nested);
+  }
+
+  const pathString = String(imagePath);
+
+  if (
+    pathString === "null" ||
+    pathString === "" ||
+    pathString === "undefined"
+  ) {
+    return null;
+  }
+
+  if (pathString.startsWith("http://") || pathString.startsWith("https://")) {
+    return pathString;
+  }
+
+  if (pathString.startsWith("/")) {
+    return `${BACKEND_URL}${pathString}`;
+  }
+
+  return `${BACKEND_URL}/${pathString}`;
+};
+
 export const getFallbackPetImage = (data) => {
   const rawType =
     data?.pet_type?.value ||
@@ -28,8 +64,12 @@ export const getPostImage = (post) => {
     return PET_DEFAULT_IMAGES.other;
   }
 
-  if (post.thumbnail) {
-    return `${BACKEND_URL}${post.thumbnail}`;
+  const backendImage = normalizeBackendImageUrl(
+    post.image_url || post.image || post.thumbnail
+  );
+
+  if (backendImage) {
+    return backendImage;
   }
 
   const petType = String(post.pet_type || "").toLowerCase();

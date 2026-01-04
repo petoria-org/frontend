@@ -10,7 +10,7 @@ import ContactInfoIcon from "../../assets/icons/stickynote.svg";
 import "../../styles/ShowDetailsAdopt.css";
 import { config } from "../../config";
 import { getFallbackPetImage } from "../../utils/postImages";
-import {getPetType} from "../AllPosts/AllPosts"
+import { getPetType } from "../../utils/petTypes";
 
 const API_BASE_URL = config.API_BASE_URL;
 const BACKEND_URL = config.BACKEND_URL;
@@ -456,7 +456,7 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
 
   if (loading) {
     return (
-      <div className="details-page-wrapper">
+      <div className="details-container">
         <div className="show-details-container loading">
           <div className="loading-spinner"></div>
           <div className="loading-message">در حال بارگذاری جزئیات...</div>
@@ -483,327 +483,330 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
   };
 
   return (
-    <div className="show-details-container">
-      <div className="back-button-container">
-        <button 
-          onClick={handleBackClick}
-          className="back-button"
-        >
-          <span className="back-text">بازگشت به لیست آگهی ها</span>
-          <img src={BackIcon} alt="بازگشت" className="back-icon" />
-        </button>
-      </div>
+    <div className="details-container">
+      <div className="show-details-container">
+        <div className="back-button-container">
+          <button 
+            onClick={handleBackClick}
+            className="back-button"
+          >
+            <span className="back-text">بازگشت به لیست آگهی ها</span>
+            <img src={BackIcon} alt="بازگشت" className="back-icon" />
+          </button>
+        </div>
 
-      <div className="main-card">
-        <div className="card-content-wrapper">
-          <div className="content-sections">
-            <div className="details-section">
-              <div className="details-header">
-                <h1 className="pet-name-show-details">
-                  {postData?.pet_name || 
-                  postData?.title || 
-                  postData?.originalData?.pet_name || 
-                  "بدون نام"}
-                </h1>
-                <div 
-                  className="card-badge" 
-                  data-status={
-                    isAdoptionPost ? "adoption" : 
-                    postData?.type === "lost" ? "lost" : 
-                    postData?.type === "found" ? "found" : "adoption"
-                  }
-                >
-                  <span className="badge-text">
-                    {getStatusText()}
-                  </span>
-                </div>
-              </div>
-
-              <div className="details-grid">
-                {petDetails.map((detail, index) => (
+        <div className="main-card">
+          <div className="card-content-wrapper">
+            <div className="content-sections">
+              <div className="details-section">
+                <div className="details-header">
+                  <h1 className="pet-name-show-details">
+                    {postData?.pet_name || 
+                    postData?.title || 
+                    postData?.originalData?.pet_name || 
+                    "بدون نام"}
+                  </h1>
                   <div 
-                    key={index} 
-                    className="detail-item"
+                    className="card-badge" 
+                    data-status={
+                      isAdoptionPost ? "adoption" : 
+                      postData?.type === "lost" ? "lost" : 
+                      postData?.type === "found" ? "found" : "adoption"
+                    }
                   >
-                    <div className="detail-text">
-                      <div className="detail-value">
-                        {detail.value}
+                    <div class="status-pulse-detail-post"></div>
+                    <span className="badge-text">
+                      {getStatusText()}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="details-grid">
+                  {petDetails.map((detail, index) => (
+                    <div 
+                      key={index} 
+                      className="detail-item"
+                    >
+                      <div className="detail-text">
+                        <div className="detail-value">
+                          {detail.value}
+                        </div>
+                        <div className="detail-label">
+                          {detail.label}
+                        </div>
                       </div>
-                      <div className="detail-label">
-                        {detail.label}
+                      <img
+                        src={detail.icon}
+                        alt={detail.label}
+                        className="detail-icon"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                <div className="location-item">
+                  <div className="detail-text">
+                    <div className="detail-value">
+                      {postData?.location?.readable || 
+                       postData?.location || 
+                       postData?.originalData?.location?.readable ||
+                       postData?.originalData?.location ||
+                       "مکان نامشخص"}
+                    </div>
+                    <div className="detail-label">
+                      مکان
+                    </div>
+                  </div>
+                  <img 
+                    src={LocationIcon} 
+                    alt="مکان" 
+                    className="detail-icon"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                </div>
+
+                {isAdoptionPost &&(
+                  <section className="section">
+                    <h2 className="section-title-show-details">
+                      بیماری ها
+                    </h2>
+                    <div className="diseases-content">
+                      {postData?.diseases || 
+                       postData?.originalData?.diseases ||
+                       "این حیوان هیچ بیماری خاصی ندارد."}
+                    </div>
+                  </section>
+                )}
+
+                {postData?.type=="lost" || postData?.type == "found" &&(
+                  <section className="section">
+                    <h2 className="section-title-show-details">
+                      علائم خاص
+                    </h2>
+                    <div className="diseases-content">
+                      {postData?.Specific_symptoms || 
+                       postData?.originalData?.Specific_symptoms ||
+                       "این حیوان هیچ علامت خاصی ندارد."}
+                    </div>
+                  </section>
+                )}
+
+                {isAdoptionPost && (
+                  <section className="section">
+                    <h2 className="section-title-show-details">
+                      وضعیت سلامت
+                    </h2>
+                    <div className="toggles-container">
+                      <div className="toggle-item">
+                        <HealthToggle
+                          checked={healthStatus.has_birth_certificate}
+                          disabled={false}
+                          label="دارای شناسنامه"
+                        />
+                        <span className="toggle-label">
+                          دارای شناسنامه
+                        </span>
+                      </div>
+                      <div className="toggle-item">
+                        <HealthToggle
+                          checked={healthStatus.vaccination}
+                          disabled={false}
+                          label="واکسینه شده"
+                        />
+                        <span className="toggle-label">
+                          واکسینه شده
+                        </span>
+                      </div>
+                      <div className="toggle-item">
+                        <HealthToggle
+                          checked={healthStatus.steriliz}
+                          disabled={false}
+                          label="عقیم شده"
+                        />
+                        <span className="toggle-label">
+                          عقیم شده
+                        </span>
                       </div>
                     </div>
-                    <img
-                      src={detail.icon}
-                      alt={detail.label}
-                      className="detail-icon"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                      }}
-                    />
+                  </section>
+                )}
+
+                <section className="section">
+                  <h2 className="section-title-show-details">
+                    توضیحات
+                  </h2>
+                  <div className="description-content">
+                    {postData?.description || 
+                     postData?.originalData?.description || 
+                     "توضیحاتی برای این آگهی ثبت نشده است."}
                   </div>
+                </section>
+
+                <section className="contact-section">
+                  <div className="contact-container">
+                    <div className="contact-header">
+                      <img 
+                        src={ContactInfoIcon} 
+                        alt="اطلاعات تماس" 
+                        className="contact-icon-show-details"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                      <h2 className="contact-title">
+                        اطلاعات تماس
+                      </h2>
+                    </div>
+
+                    <div className="contact-fields">
+                      <div className="contact-field">
+                        <label className="field-label">
+                          ثبت کننده آگهی
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="نام و نام خانوادگی"
+                          value={contactInfo.name}
+                          readOnly
+                          className="contact-input readonly"
+                        />
+                      </div>
+                      <div className="contact-field">
+                        <label className="field-label">
+                          ایمیل
+                        </label>
+                        <input
+                          type="email"
+                          placeholder="آدرس ایمیل"
+                          value={contactInfo.email}
+                          readOnly
+                          className="contact-input readonly"
+                        />
+                      </div>
+                    </div>
+
+                    <p className="contact-note">
+                      اطلاعات تماس فقط برای ارتباط با ثبت کننده آگهی است
+                    </p>
+                  </div>
+                </section>
+
+                <button 
+                  onClick={handleStartChat}
+                  className="start-chat-button"
+                >
+                  شروع گفتگو
+                </button>
+              </div>
+
+              <div className="gallery-section">
+                <div className="gallery-container">
+                  <div className="main-image-frame">
+                    <div className={`main-image-wrapper ${isFullscreen ? 'fullscreen' : ''}`}>
+                      {petImages.length > 0 ? (
+                        <img
+                          src={petImages[selectedImageIndex]?.src}
+                          alt={petImages[selectedImageIndex]?.alt || "تصویر اصلی حیوان"}
+                          className="main-display-image"
+                          onError={handleImageError}
+                        />
+                      ) : (
+                        <div className="image-placeholder-large">
+                          <div className="placeholder-icon-large">🐾</div>
+                          <div className="placeholder-text-large">تصویر حیوان موجود نیست</div>
+                        </div>
+                      )}
+                      {petImages.length > 0 && (
+                        <button 
+                          className="fullscreen-toggle"
+                          onClick={handleFullscreenToggle}
+                          title="نمایش تمام صفحه"
+                        >
+                          ⛶
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  {petImages.length > 1 && (
+                    <div className="image-dots-container">
+                      <div className="image-dots">
+                        {petImages.map((_, index) => (
+                          <button
+                            key={index}
+                            className={`image-dot ${index === selectedImageIndex ? 'active' : ''}`}
+                            onClick={() => handleImageClick(index)}
+                            aria-label={`تصویر ${index + 1}`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {petImages.length > 1 && (
+                    <div className="other-images-container">
+                      <div className="other-images-title">
+                        <span>سایر تصاویر</span>
+                        <span className="images-count">{petImages.length - 1} تصویر</span>
+                      </div>
+                      <div className="other-images-grid">
+                        {petImages.map((image, index) => (
+                          index !== selectedImageIndex && (
+                            <div 
+                              key={image.id}
+                              className="other-image-item"
+                              onClick={() => handleImageClick(index)}
+                            >
+                              <img
+                                src={image.src}
+                                alt={image.alt}
+                                className="other-image"
+                                onError={handleImageError}
+                              />
+                              <div className="image-overlay">
+                                <span className="view-text">مشاهده</span>
+                              </div>
+                            </div>
+                          )
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {isFullscreen && petImages.length > 0 && (
+          <div className="fullscreen-modal" onClick={handleFullscreenToggle}>
+            <div className="fullscreen-content" onClick={(e) => e.stopPropagation()}>
+              <button className="close-fullscreen" onClick={handleFullscreenToggle}>
+                ✕
+              </button>
+              <img
+                src={petImages[selectedImageIndex]?.src}
+                alt="تصویر تمام صفحه"
+                className="fullscreen-image"
+                onError={handleImageError}
+              />
+              <div className="fullscreen-navigation">
+                {petImages.map((_, index) => (
+                  <button
+                    key={index}
+                    className={`fullscreen-dot ${index === selectedImageIndex ? 'active' : ''}`}
+                    onClick={() => handleImageClick(index)}
+                  />
                 ))}
               </div>
-
-              <div className="location-item">
-                <div className="detail-text">
-                  <div className="detail-value">
-                    {postData?.location?.readable || 
-                     postData?.location || 
-                     postData?.originalData?.location?.readable ||
-                     postData?.originalData?.location ||
-                     "مکان نامشخص"}
-                  </div>
-                  <div className="detail-label">
-                    مکان
-                  </div>
-                </div>
-                <img 
-                  src={LocationIcon} 
-                  alt="مکان" 
-                  className="detail-icon"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                  }}
-                />
-              </div>
-
-              {isAdoptionPost &&(
-                <section className="section">
-                  <h2 className="section-title-show-details">
-                    بیماری ها
-                  </h2>
-                  <div className="diseases-content">
-                    {postData?.diseases || 
-                     postData?.originalData?.diseases ||
-                     "این حیوان هیچ بیماری خاصی ندارد."}
-                  </div>
-                </section>
-              )}
-
-              {postData?.type=="lost" || postData?.type == "found" &&(
-                <section className="section">
-                  <h2 className="section-title-show-details">
-                    علائم خاص
-                  </h2>
-                  <div className="diseases-content">
-                    {postData?.Specific_symptoms || 
-                     postData?.originalData?.Specific_symptoms ||
-                     "این حیوان هیچ علامت خاصی ندارد."}
-                  </div>
-                </section>
-              )}
-
-              {isAdoptionPost && (
-                <section className="section">
-                  <h2 className="section-title-show-details">
-                    وضعیت سلامت
-                  </h2>
-                  <div className="toggles-container">
-                    <div className="toggle-item">
-                      <HealthToggle
-                        checked={healthStatus.has_birth_certificate}
-                        disabled={false}
-                        label="دارای شناسنامه"
-                      />
-                      <span className="toggle-label">
-                        دارای شناسنامه
-                      </span>
-                    </div>
-                    <div className="toggle-item">
-                      <HealthToggle
-                        checked={healthStatus.vaccination}
-                        disabled={false}
-                        label="واکسینه شده"
-                      />
-                      <span className="toggle-label">
-                        واکسینه شده
-                      </span>
-                    </div>
-                    <div className="toggle-item">
-                      <HealthToggle
-                        checked={healthStatus.steriliz}
-                        disabled={false}
-                        label="عقیم شده"
-                      />
-                      <span className="toggle-label">
-                        عقیم شده
-                      </span>
-                    </div>
-                  </div>
-                </section>
-              )}
-
-              <section className="section">
-                <h2 className="section-title-show-details">
-                  توضیحات
-                </h2>
-                <div className="description-content">
-                  {postData?.description || 
-                   postData?.originalData?.description || 
-                   "توضیحاتی برای این آگهی ثبت نشده است."}
-                </div>
-              </section>
-
-              <section className="contact-section">
-                <div className="contact-container">
-                  <div className="contact-header">
-                    <img 
-                      src={ContactInfoIcon} 
-                      alt="اطلاعات تماس" 
-                      className="contact-icon-show-details"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                      }}
-                    />
-                    <h2 className="contact-title">
-                      اطلاعات تماس
-                    </h2>
-                  </div>
-
-                  <div className="contact-fields">
-                    <div className="contact-field">
-                      <label className="field-label">
-                        ثبت کننده آگهی
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="نام و نام خانوادگی"
-                        value={contactInfo.name}
-                        readOnly
-                        className="contact-input readonly"
-                      />
-                    </div>
-                    <div className="contact-field">
-                      <label className="field-label">
-                        ایمیل
-                      </label>
-                      <input
-                        type="email"
-                        placeholder="آدرس ایمیل"
-                        value={contactInfo.email}
-                        readOnly
-                        className="contact-input readonly"
-                      />
-                    </div>
-                  </div>
-
-                  <p className="contact-note">
-                    اطلاعات تماس فقط برای ارتباط با ثبت کننده آگهی است
-                  </p>
-                </div>
-              </section>
-
-              <button 
-                onClick={handleStartChat}
-                className="start-chat-button"
-              >
-                شروع گفتگو
-              </button>
-            </div>
-
-            <div className="gallery-section">
-              <div className="gallery-container">
-                <div className="main-image-frame">
-                  <div className={`main-image-wrapper ${isFullscreen ? 'fullscreen' : ''}`}>
-                    {petImages.length > 0 ? (
-                      <img
-                        src={petImages[selectedImageIndex]?.src}
-                        alt={petImages[selectedImageIndex]?.alt || "تصویر اصلی حیوان"}
-                        className="main-display-image"
-                        onError={handleImageError}
-                      />
-                    ) : (
-                      <div className="image-placeholder-large">
-                        <div className="placeholder-icon-large">🐾</div>
-                        <div className="placeholder-text-large">تصویر حیوان موجود نیست</div>
-                      </div>
-                    )}
-                    {petImages.length > 0 && (
-                      <button 
-                        className="fullscreen-toggle"
-                        onClick={handleFullscreenToggle}
-                        title="نمایش تمام صفحه"
-                      >
-                        ⛶
-                      </button>
-                    )}
-                  </div>
-                </div>
-                {petImages.length > 1 && (
-                  <div className="image-dots-container">
-                    <div className="image-dots">
-                      {petImages.map((_, index) => (
-                        <button
-                          key={index}
-                          className={`image-dot ${index === selectedImageIndex ? 'active' : ''}`}
-                          onClick={() => handleImageClick(index)}
-                          aria-label={`تصویر ${index + 1}`}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {petImages.length > 1 && (
-                  <div className="other-images-container">
-                    <div className="other-images-title">
-                      <span>سایر تصاویر</span>
-                      <span className="images-count">{petImages.length - 1} تصویر</span>
-                    </div>
-                    <div className="other-images-grid">
-                      {petImages.map((image, index) => (
-                        index !== selectedImageIndex && (
-                          <div 
-                            key={image.id}
-                            className="other-image-item"
-                            onClick={() => handleImageClick(index)}
-                          >
-                            <img
-                              src={image.src}
-                              alt={image.alt}
-                              className="other-image"
-                              onError={handleImageError}
-                            />
-                            <div className="image-overlay">
-                              <span className="view-text">مشاهده</span>
-                            </div>
-                          </div>
-                        )
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
-
-      {isFullscreen && petImages.length > 0 && (
-        <div className="fullscreen-modal" onClick={handleFullscreenToggle}>
-          <div className="fullscreen-content" onClick={(e) => e.stopPropagation()}>
-            <button className="close-fullscreen" onClick={handleFullscreenToggle}>
-              ✕
-            </button>
-            <img
-              src={petImages[selectedImageIndex]?.src}
-              alt="تصویر تمام صفحه"
-              className="fullscreen-image"
-              onError={handleImageError}
-            />
-            <div className="fullscreen-navigation">
-              {petImages.map((_, index) => (
-                <button
-                  key={index}
-                  className={`fullscreen-dot ${index === selectedImageIndex ? 'active' : ''}`}
-                  onClick={() => handleImageClick(index)}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
