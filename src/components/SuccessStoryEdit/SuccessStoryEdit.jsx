@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../../styles/SuccessStoryEdit.css";
 import { config } from "../../config";
 import { updateSuccessStory, deleteSuccessStory } from "../../Services/successStoryService";
+import { useOutletContext } from "react-router-dom";
 
 export const SuccessStoryEdit = ({ 
   story, 
@@ -18,10 +19,26 @@ export const SuccessStoryEdit = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [notification, setNotification] = useState(null);
+  const { setHideNavbar, setHideFooter } = useOutletContext();
   
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
   };
+
+  useEffect(() => {
+    setHideNavbar(true);
+    setHideFooter(true);
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      setHideNavbar(false);
+      setHideFooter(false);
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [setHideNavbar, setHideFooter]);
+
 
   useEffect(() => {
     if (story) {
