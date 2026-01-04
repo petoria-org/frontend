@@ -629,7 +629,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
       alt="پنجه حیوان"
       width="85"
       height="85"
-      className="paw-icon"
+      className="paw-icon-profile"
     />
   );
 
@@ -898,7 +898,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                     ) : (
                       <div className="no-data-message">
                         <div className="no-data-icon">
-                          <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                          <svg width="80" height="80" viewBox="0 0 24 24" fill="none">
                             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#7ab3e0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                           </svg>
                         </div>
