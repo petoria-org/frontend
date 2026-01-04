@@ -3,11 +3,11 @@ import "../../styles/SuccessStoryDetail.css";
 import { useOutletContext } from "react-router-dom";
 import { getSuccessStoryDetail } from "../../Services/successStoryService";
 import { config } from "../../config";
+import { getSuccessStoryDefaultImage } from "../../utils/postImages";
 
 export const SuccessStoryDetail = ({ story, onClose }) => {
   const [storyData, setStoryData] = useState(story || {});
   const [loadingDetail, setLoadingDetail] = useState(false);
-  const fallbackImage = "/src/assets/images/default-pet.png";
   const BACKEND_URL = config.BACKEND_URL;
 
   const buildImageUrl = (path) => {
@@ -32,6 +32,11 @@ export const SuccessStoryDetail = ({ story, onClose }) => {
     };
     fetchDetail();
   }, [story]);
+
+  const fallbackImage = useMemo(
+    () => getSuccessStoryDefaultImage(storyData || story || {}),
+    [storyData, story]
+  );
 
   const galleryImages = useMemo(() => {
     const rawList = storyData.backendImages || storyData.images || [];

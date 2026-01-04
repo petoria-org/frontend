@@ -4,6 +4,7 @@ import "../styles/SuccessStories.css";
 import { getSuccessStories } from "../Services/successStoryService";
 import { config } from "../config";
 import { SuccessStoryDetail } from "./SuccessStoryDetail/SuccessStoryDetail";
+import { getSuccessStoryDefaultImage } from "../utils/postImages";
 
 const SuccessStoriesModern = () => {
   const navigate = useNavigate();
@@ -101,7 +102,10 @@ const SuccessStoriesModern = () => {
             : story.image
               ? [buildImageUrl(story.image)]
               : [];
-          const mainImage = galleryImages[0] || "/src/assets/images/default-pet.png";
+          const mainImage =
+            galleryImages[0] ||
+            (story.image ? buildImageUrl(story.image) : "") ||
+            getSuccessStoryDefaultImage(story);
 
           return {
             id: story.id,

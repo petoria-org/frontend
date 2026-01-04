@@ -27,6 +27,15 @@ const PET_DEFAULT_IMAGES = {
   other: "/src/assets/images/other.png",
 };
 
+const SUCCESS_STORY_DEFAULT_IMAGES = {
+  dog: "/src/assets/images/success_story_dog.png",
+  cat: "/src/assets/images/success_story_cat.png",
+  rabbit: "/src/assets/images/success_story_rabbit.png",
+  hamster: "/src/assets/images/success_story_hamster.png",
+  bird: "/src/assets/images/success_story_birdpng",
+  other: "/src/assets/images/success_story_other.png",
+};
+
 const getPostImage = (post, BACKEND_URL) => {
   if (post.thumbnail) {
     return `${BACKEND_URL}${post.thumbnail}`;
@@ -34,6 +43,19 @@ const getPostImage = (post, BACKEND_URL) => {
 
   const petType = (post.pet_type || "").toLowerCase();
   return PET_DEFAULT_IMAGES[petType] || PET_DEFAULT_IMAGES.other;
+};
+
+const getStoryDefaultImage = (story) => {
+  const rawType =
+    story?.pet_type?.value ||
+    story?.pet_type ||
+    story?.pet?.pet_type ||
+    story?.pet?.type ||
+    story?.type ||
+    story?.petType ||
+    "";
+  const key = String(rawType).toLowerCase().trim();
+  return SUCCESS_STORY_DEFAULT_IMAGES[key] || SUCCESS_STORY_DEFAULT_IMAGES.other;
 };
 
 const toJalaliDate = (dateString) => {
@@ -280,6 +302,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
         setAllAds(mappedAds);
 
         const mappedStories = successStories.map(story => {
+          const defaultStoryImage = getStoryDefaultImage(story);
           const formattedImages = (story.images || [])
             .map((img, index) => {
               const url = buildImageUrl(img?.image || img?.url || img);
@@ -305,8 +328,8 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                   "فرزندخوانده شد",
             statusColor: "rgba(122, 238, 151, 0.15)",
             statusTextColor: "#0f7228",
-            image: primaryImage || "/src/assets/images/default-pet.png",
-            images: imageUrls.length > 0 ? imageUrls : (primaryImage ? [primaryImage] : []),
+            image: primaryImage || defaultStoryImage,
+            images: imageUrls.length > 0 ? imageUrls : [primaryImage || defaultStoryImage],
             backendImages: formattedImages,
             content: story.story,
           };

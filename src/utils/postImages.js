@@ -11,6 +11,15 @@ export const PET_DEFAULT_IMAGES = {
   other: "/src/assets/images/other.png",
 };
 
+export const SUCCESS_STORY_DEFAULT_IMAGES = {
+  dog: "/src/assets/images/success_story_dog.png",
+  cat: "/src/assets/images/success_story_cat.png",
+  rabbit: "/src/assets/images/success_story_rabbit.png",
+  hamster: "/src/assets/images/success_story_hamster.png",
+  bird: "/src/assets/images/success_story_birdpng",
+  other: "/src/assets/images/success_story_other.png",
+};
+
 const normalizeBackendImageUrl = (imagePath) => {
   if (!imagePath) {
     return null;
@@ -57,6 +66,20 @@ export const getFallbackPetImage = (data) => {
 
   const typeKey = String(rawType).toLowerCase().trim();
   return PET_DEFAULT_IMAGES[typeKey] || PET_DEFAULT_IMAGES.other;
+};
+
+export const getSuccessStoryDefaultImage = (data) => {
+  const rawType =
+    data?.pet_type?.value ||
+    data?.pet_type ||
+    data?.pet?.pet_type ||
+    data?.pet?.type ||
+    data?.type ||
+    data?.petType ||
+    "";
+
+  const typeKey = String(rawType).toLowerCase().trim();
+  return SUCCESS_STORY_DEFAULT_IMAGES[typeKey] || SUCCESS_STORY_DEFAULT_IMAGES.other;
 };
 
 export const getPostImage = (post) => {
