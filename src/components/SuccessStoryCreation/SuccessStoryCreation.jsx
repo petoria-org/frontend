@@ -4,6 +4,7 @@ import { useOutletContext } from "react-router-dom";
 import { createSuccessStory, uploadSuccessStoryImage, deleteSuccessStoryImage } from "../../Services/successStoryService";
 import { config } from "../../config";
 import { deleteLostPost, deleteFoundPost, deleteSurrenderPost } from "../../Services/userService";
+import { ImageCropper } from "../ImageCropper";
 
 export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => { 
   const [images, setImages] = useState([]);
@@ -16,6 +17,9 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
   const dropZoneRef = useRef(null);
   const { setHideNavbar, setHideFooter } = useOutletContext();
   const [notification, setNotification] = useState(null);
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [imageToCrop, setImageToCrop] = useState(null);
+  const [pendingFiles, setPendingFiles] = useState([]);
   const BACKEND_URL = config.BACKEND_URL;
 
   const buildImageUrl = (path) => {
@@ -119,77 +123,33 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
     e.target.value = "";
   };
 
-  const uploadImageFile = async (file, tempId, previewUrl) => {
-    setUploadProgress(prev => ({
-      ...prev,
-      [tempId]: 10
-    }));
-
-    try {
-      const response = await uploadSuccessStoryImage(file);
-      const result = Array.isArray(response) ? response[0] : response;
-      const rawPath = result?.image || result?.url || result?.path;
-      const uploadedUrl = buildImageUrl(rawPath) || previewUrl;
-      const finalUrl = `${uploadedUrl}${uploadedUrl.includes('?') ? '&' : '?'}t=${Date.now()}`;
-
-      setImages(prev =>
-        prev.map(img =>
-          img.id === tempId
-            ? {
-                ...img,
-                url: finalUrl,
-                backendId: result?.id ?? null,
-                uploading: false,
-              }
-            : img
-        )
-      );
-    } catch (error) {
-      console.error("Story image upload failed:", error);
-      showNotification("بارگذاری تصویر انجام نشد. دوباره تلاش کنید.", "error");
-      setImages(prev => prev.filter(img => img.id !== tempId));
-    } finally {
-      setUploadProgress(prev => {
-        const nextProgress = { ...prev };
-        delete nextProgress[tempId];
-        return nextProgress;
-      });
-    }
+  const startCropForFile = (file) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImageToCrop(e.target.result);
+      setCropModalOpen(true);
+    };
+    reader.readAsDataURL(file);
   };
 
+  useEffect(() => {
+    if (!cropModalOpen && pendingFiles.length > 0) {
+      startCropForFile(pendingFiles[0]);
+    }
+  }, [pendingFiles, cropModalOpen]);
+
   const handleFiles = (files) => {
-    const totalFiles = images.length + files.length;
-    if (totalFiles > 7) {
+    const allowedFiles = files.filter(file => file.type.startsWith('image/'));
+    const remainingSlots = 7 - (images.length + pendingFiles.length);
+    const filesToAdd = allowedFiles.slice(0, Math.max(0, remainingSlots));
+
+    if (filesToAdd.length === 0) {
       alert("حداکثر می‌توانید 7 عکس آپلود کنید");
       return;
     }
 
-    files.forEach((file, index) => {
-      const tempId = `${Date.now()}-${index}-${file.name}`;
-      const reader = new FileReader();
-
-      reader.onload = (e) => {
-        const previewUrl = e.target.result;
-
-        setImages(prev => {
-          const nextImages = [
-            ...prev,
-            {
-              id: tempId,
-              url: previewUrl,
-              name: file.name,
-              uploading: true,
-            },
-          ];
-          setActiveImageIndex(nextImages.length - 1);
-          return nextImages;
-        });
-
-        uploadImageFile(file, tempId, previewUrl);
-      };
-
-      reader.readAsDataURL(file);
-    });
+    setPendingFiles(prev => [...prev, ...filesToAdd]);
   };
   const removeImage = (id) => {
     setImages(prev => {
@@ -345,8 +305,46 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
     setStoryText("");
     setImages([]);
     setActiveImageIndex(0);
+    setPendingFiles([]);
+    setCropModalOpen(false);
+    setImageToCrop(null);
 
     onCancel?.();
+  };
+
+  const finalizeCropStep = () => {
+    setPendingFiles(prev => prev.slice(1));
+    setCropModalOpen(false);
+    setImageToCrop(null);
+  };
+
+  const handleCropComplete = (croppedResult) => {
+    if (croppedResult) {
+      const finalUrl = croppedResult.image
+        ? (croppedResult.image.includes('?t=')
+            ? croppedResult.image
+            : `${croppedResult.image}${croppedResult.image.includes('?') ? '&' : '?'}t=${Date.now()}`)
+        : "";
+
+      const newImage = {
+        id: croppedResult.id || Date.now(),
+        url: finalUrl || imageToCrop,
+        backendId: croppedResult.backendId || croppedResult.id || null,
+        uploading: false,
+      };
+
+      setImages(prev => {
+        const next = [...prev, newImage];
+        setActiveImageIndex(next.length - 1);
+        return next;
+      });
+    }
+
+    finalizeCropStep();
+  };
+
+  const handleCropCancel = () => {
+    finalizeCropStep();
   };
 
   const handleClose = () => {
@@ -418,6 +416,7 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
   );
 
   return (
+    <>
     <div className="success-story-creation-overlay" onClick={handleClose}>
       <div className="success-story-creation-modal" onClick={(e) => e.stopPropagation()}>
         <div className="success-story-header">
@@ -690,5 +689,20 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
         </div>
       </div>
     </div>
+
+    {cropModalOpen && imageToCrop && (
+      <ImageCropper
+        image={imageToCrop}
+        onCropComplete={handleCropComplete}
+        onClose={handleCropCancel}
+        aspect={3 / 4}
+        cropSize={{ width: 360, height: 480 }}
+        uploadImageFn={uploadSuccessStoryImage}
+        format="jpeg"
+        quality={0.92}
+      />
+    )}
+    </>
   );
 };
+

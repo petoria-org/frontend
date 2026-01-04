@@ -83,6 +83,18 @@ export const SuccessStoryDetail = ({ story, onClose }) => {
 
   const storyImages = galleryImages.length > 0 ? galleryImages : [{ id: "fallback", url: fallbackImage }];
 
+  const displayTitle = storyData.title || story?.title || "";
+  const displayStatus = storyData.status || story?.status || "";
+  const displayStatusColor = storyData.statusColor || story?.statusColor;
+  const displayStatusTextColor = storyData.statusTextColor || story?.statusTextColor;
+  const displayAuthor = storyData.user_name || storyData.author || story?.author || "";
+  const displayDate = storyData.date || (storyData.created_at ? new Intl.DateTimeFormat("fa-IR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(new Date(storyData.created_at)) : story?.date || "");
+  const displayContent = storyData.story || storyData.content || story?.content || "";
+
   const BackIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
       <path d="M19 12H5M12 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round"/>
@@ -135,11 +147,11 @@ export const SuccessStoryDetail = ({ story, onClose }) => {
               <div className="main-image-preview">
                 <img
                   src={selectedImage}
-                  alt={story.title}
+                  alt={displayTitle}
                   className="main-preview-image"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZjBmMGYwIj48cmVjdCB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9IiNmMGYwZjAiLz48cGF0aCBkPSJNMTkgNUg1Yy0xLjEgMC0yIC45LTIgMnYxNGMwIDEuMS45IDIgMiAyaDE0YzEuMSAwIDItLjkgMi0yVjdjMC0xLjEtLjktMi0yLTJ6bTAgMTZINVY3aDE0djE0ek0xMy41MSA4LjQ5Yy0xLjA2LTEuMDYtIi43OC0xLjA2LTMuODQgMEw3LjUgMTEuMTdsLS4wOS0uMDljLS4zOS0uMzktMS4wMi0uMzktMS40MSAwLS4zOS4zOS0uMzkgMS4wMiAwIDEuNDFsMy41OSAzLjU5Yy44OS44OSAyLjMzLjg5IDMuMjIwMGw1LjU5LTUuNTljLjM5LS4zOS4zOS0xLjAyIDAtMS40MS0uMzktLjM4LTEuMDItLjM5LTEuNDEtLjA4bC01LjA4IDUuMDd6Ii8+PC9zdmc+";
+                    e.target.src = "/src/assets/images/default-pet.png";
                   }}
                 />
               </div>
@@ -198,28 +210,28 @@ export const SuccessStoryDetail = ({ story, onClose }) => {
               
               <div className="story-header-details">
                 <div className="story-title-wrapper">
-                  <h2 className="story-title-main">{story.title}</h2>
+                  <h2 className="story-title-main">{displayTitle}</h2>
                   <div 
                     className="story-status-badge"
                     style={{ 
-                      backgroundColor: story.statusColor,
-                      color: story.statusTextColor
+                      backgroundColor: displayStatusColor,
+                      color: displayStatusTextColor
                     }}
                   >
                     <HeartIcon />
-                    <span>{story.status}</span>
+                    <span>{displayStatus}</span>
                   </div>
                 </div>
                 
                 <div className="story-meta">
                   <div className="meta-item">
                     <span className="meta-label">نویسنده:</span>
-                    <span className="meta-value">{story.author}</span>
+                    <span className="meta-value">{displayAuthor}</span>
                   </div>
                   <div className="meta-divider">•</div>
                   <div className="meta-item">
                     <span className="meta-label">تاریخ انتشار:</span>
-                    <span className="meta-value">{story.date}</span>
+                    <span className="meta-value">{displayDate}</span>
                   </div>
                 </div>
               </div>
@@ -238,7 +250,7 @@ export const SuccessStoryDetail = ({ story, onClose }) => {
                   </h4>
                 </div>
                 <div className="story-text-content">
-                  <p>{story.content}</p>
+                  <p>{displayContent}</p>
                 </div>
               </div>
 

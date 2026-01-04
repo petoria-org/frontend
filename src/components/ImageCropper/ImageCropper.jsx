@@ -15,6 +15,7 @@ const ImageCropper = ({
   minZoom = 0.1,
   format = "jpeg",
   quality = 0.95,
+  uploadImageFn = uploadPostImage,
 }) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [scale, setScale] = useState(1);
@@ -38,10 +39,11 @@ const ImageCropper = ({
     startCropY: 0,
   });
 
-  const calculatedCropSize = useMemo(() => ({
-  width: 420,
-  height: 250,
-}), []);
+  const calculatedCropSize = useMemo(() => (
+    cropSize && cropSize.width && cropSize.height
+      ? cropSize
+      : { width: 420, height: 250 }
+  ), [cropSize]);
 
 
 useEffect(() => {
@@ -272,7 +274,7 @@ const handleCrop = async () => {
 
     const blob = await getCroppedImage();
 
-    const arr = await uploadPostImage(blob);
+    const arr = await uploadImageFn(blob);
     const result = arr[0]
     console.log(result)
 
@@ -712,6 +714,7 @@ ImageCropper.propTypes = {
   minZoom: PropTypes.number, 
   format: PropTypes.oneOf(["jpeg", "png", "webp"]),
   quality: PropTypes.number,
+  uploadImageFn: PropTypes.func,
 };
 
 ImageCropper.defaultProps = {
@@ -720,6 +723,7 @@ ImageCropper.defaultProps = {
   minZoom: 0.1,
   format: "jpeg",
   quality: 0.95,
+  uploadImageFn: uploadPostImage,
 };
 
 export { ImageCropper };
