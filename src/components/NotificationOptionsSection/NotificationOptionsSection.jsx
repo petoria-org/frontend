@@ -38,6 +38,24 @@ import DeleteConfirmationModal from '../DeleteConfirmationModal/DeleteConfirmati
 
 const DatePicker = DatePickerModule.default || DatePickerModule;
 
+const PET_TYPE_FA_TO_EN = {
+  "سگ": "dog",
+  "گربه": "cat",
+  "پرنده": "bird",
+  "خرگوش": "rabbit",
+  "همستر": "hamster",
+  "سایر": "others",
+};
+
+const PET_TYPE_EN_TO_FA = {
+  dog: "سگ",
+  cat: "گربه",
+  bird: "پرنده",
+  rabbit: "خرگوش",
+  hamster: "همستر",
+  others: "سایر",
+};
+
 const toInputDateTime = (iso) => {
   if (!iso) return "";
   return new Date(iso);
@@ -1133,7 +1151,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
           specialSigns: data.Specific_symptoms || "",
           description: data.description || "",
           breed: data.breed || "",
-          animalType: data.pet_type === "cat" ? "گربه" : "سگ",
+          animalType: PET_TYPE_EN_TO_FA[String(data.pet_type || "").toLowerCase()] || "سایر",
           diseases: data.diseases || "",
           hasCertificate: data.has_birth_certificate || false,
           isVaccinated: data.vaccination || false,
@@ -1616,7 +1634,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
       title: formData.type,
       pet_name: formData.name,
       breed: formData.breed || "",
-      pet_type: formData.animalType === "گربه" ? "cat" : "dog",
+      pet_type: PET_TYPE_FA_TO_EN[formData.animalType] || "other",
       pet_sex: formData.gender === "نر" ? "male" : "female",
       pet_age: petAgePayload,
       Specific_symptoms: formData.specialSigns || "",
