@@ -210,13 +210,13 @@ export default function AllPosts() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   
-  const [filterAnimal, setFilterAnimal] = useState("همه");
-  const [filterSex, setFilterSex] = useState("همه");
-  const [filterCity, setFilterCity] = useState("همه");
-  const [filterAge, setFilterAge] = useState("همه");
-  const [filterHasCertificate, setFilterHasCertificate] = useState("همه");
-  const [filterIsVaccinated, setFilterIsVaccinated] = useState("همه");
-  const [filterIsSterilized, setFilterIsSterilized] = useState("همه");
+  const [filterAnimal, setFilterAnimal] = useState("");
+  const [filterSex, setFilterSex] = useState("");
+  const [filterCity, setFilterCity] = useState("");
+  const [filterAge, setFilterAge] = useState("");
+  const [filterHasCertificate, setFilterHasCertificate] = useState("");
+  const [filterIsVaccinated, setFilterIsVaccinated] = useState("");
+  const [filterIsSterilized, setFilterIsSterilized] = useState("");
   
   const [sortOrder, setSortOrder] = useState("");
 
