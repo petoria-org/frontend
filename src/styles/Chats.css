@@ -17,12 +17,12 @@
   margin: 0;
   direction: rtl;
   font-family: Vazirmatn, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  min-height: 100vh;
+  min-height: calc(100vh - 4em);
 }
 
 .chatShell{
-  min-height: 100vh;
-  height: 100vh;
+  min-height: calc(100vh - 4.5em);
+  height: calc(100vh - 4.5em);
   display: flex;
   overflow: hidden;
   backdrop-filter: var(--backdrop);
@@ -1747,13 +1747,13 @@
 /* Responsive Design */
 @media (max-width: 1200px) {
   .chatMain {
-    height: calc(100dvh - 4 * var(--page-pad));
+    height: calc(100dvh - 4rem);
   }
 }
 
 @media (max-width: 1024px) {
   .chatMain {
-    height: calc(100dvh - 4 * var(--page-pad));
+    min-height: calc(100dvh - 4rem);
   }
 
   .conv,
@@ -1769,7 +1769,7 @@
 
   .chatMain {
     gap: 10px;
-    height: calc(100vh - 4 * var(--page-pad));
+    height: calc(100vh - 4rem);
   }
 
   .conv__title {

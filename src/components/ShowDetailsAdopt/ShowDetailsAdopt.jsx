@@ -11,6 +11,7 @@ import "../../styles/ShowDetailsAdopt.css";
 import { config } from "../../config";
 import { getFallbackPetImage } from "../../utils/postImages";
 import { getPetType } from "../../utils/petTypes";
+import { getChatWithUser , getUserById} from "../../Services/chatService";
 
 const API_BASE_URL = config.API_BASE_URL;
 const BACKEND_URL = config.BACKEND_URL;
@@ -234,6 +235,7 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
     name: "",
     email: ""
   });
+  const [chatChecking, setChatChecking] = useState(false);
   
   const [petDetails, setPetDetails] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -241,6 +243,7 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
   const [petImages, setPetImages] = useState([]);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [recipientUser, setRecipientUser] = useState(null);
   
   const navigate = useNavigate();
   const location = useLocation();
@@ -269,7 +272,53 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
 
     setLoading(false);
   }, [propPostData, propPostId, propPostType, location]);
-  
+    
+    useEffect(() => {
+    const sourceData = getPostSourceData();
+    const recipientId = sourceData?.user_id ?? null;
+
+    if (!recipientId) {
+      setRecipientUser(null);
+      return;
+    }
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const res = await getUserById(recipientId);
+        console.log("getUserById raw res =", res);
+
+        if (cancelled) return;
+
+        // ✅ support BOTH formats:
+        // 1) { success: true, data: user }
+        // 2) user object directly { id, username, ... }
+        const user = res?.data ?? res;
+
+        if (user?.username) {
+          setRecipientUser(user);
+
+          // optional: also reflect in contact inputs
+          setContactInfo((prev) => ({
+            ...prev,
+            name: user.username ?? prev.name,
+            email: user.email ?? prev.email,
+          }));
+        } else {
+          setRecipientUser(null);
+          console.warn("User response did not include username:", res);
+        }
+      } catch (e) {
+        if (!cancelled) setRecipientUser(null);
+        console.error("getUserById failed:", e);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [postData, propPostData, location.state?.postData]);
 
   const initializeData = (data) => {
     console.log("مقداردهی اولیه داده‌ها:", data);
@@ -430,8 +479,53 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
     }
   };
 
-  const handleStartChat = () => {
-    console.log("شروع گفتگو", { contactInfo, postData });
+  const getPostSourceData = () =>
+    postData || propPostData || location.state?.postData || null;
+
+  const resolveRecipientId = (data) => data?.user_id ?? null;
+
+  const resolveRecipientName = () => {
+    return recipientUser?.username || contactInfo?.name || "س";
+  };
+
+  const handleStartChat = async () => {
+    if (chatChecking) return;
+
+    const sourceData = getPostSourceData();
+    const recipientId = resolveRecipientId(sourceData);
+
+    if (!recipientId) {
+      window.alert("کاربری برای گفتگو یافت نشد.");
+      return;
+    }
+
+    setChatChecking(true);
+    try {
+      const res = await getChatWithUser(recipientId);
+      if (!res?.success) {
+        window.alert(res?.message || "خطا در بررسی گفتگوهای قبلی.");
+        return;
+      }
+
+      const chatId = res?.data?.chat_id ?? null;
+
+      const statePayload = {
+        fromShowDetails: true,
+        recipientId,
+        recipientName: resolveRecipientName(),
+      };
+
+      if (chatId != null) {
+        statePayload.openChatId = chatId;
+      }
+
+      navigate("/chats", { state: statePayload });
+    } catch (error) {
+      console.error("Failed to start chat:", error);
+      window.alert("خطا در برقراری ارتباط. لطفا دوباره تلاش کنید.");
+    } finally {
+      setChatChecking(false);
+    }
   };
 
   const handleImageClick = (index) => {
@@ -699,6 +793,7 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
                 <button 
                   onClick={handleStartChat}
                   className="start-chat-button"
+                  disabled={chatChecking}
                 >
                   شروع گفتگو
                 </button>

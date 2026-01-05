@@ -1,5 +1,6 @@
 // Chat.jsx
 import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { useLocation } from "react-router-dom";
 import OpenConv from "../components/OpenConv";
 import Conversations from "../components/Conversations";
 import "../styles/Chats.css";
@@ -197,13 +198,17 @@ export default function ChatPage() {
   const [loadingOlderMessages, setLoadingOlderMessages] = useState(false);
 
   const [recipient, setRecipient] = useState(null); // { id, username }
+  const [pendingRecipientInfo, setPendingRecipientInfo] = useState(null);
   const recipientRef = useRef(null);
+  const pendingRecipientIdRef = useRef(null);
 
   const currentUserId = useMemo(() => getCurrentUserIdFromAccessToken(), []);
   const currentUserIdRef = useRef(null);
   useEffect(() => {
     currentUserIdRef.current = currentUserId;
   }, [currentUserId]);
+
+  const location = useLocation();
 
   // =========================
   // WS refs
@@ -275,6 +280,31 @@ export default function ChatPage() {
     }
     if (!selectedChatId) setShowDetailPane(false);
   }, [isCompactLayout, selectedChatId]);
+
+  useEffect(() => {
+    const state = location.state;
+    if (!state?.fromShowDetails) return;
+
+    if (state.openChatId) {
+      setSelectedChatId(state.openChatId);
+      setRecipient(null);
+      setPendingRecipientInfo(null);
+      pendingRecipientIdRef.current = null;
+      if (isCompactLayout) setShowDetailPane(true);
+    } else if (state.recipientId) {
+      const name = state.recipientName;
+      setPendingRecipientInfo({
+        id: `pending-${state.recipientId}`,
+        title: name,
+        avatar: state.recipientAvatar || null,
+      });
+      pendingRecipientIdRef.current = state.recipientId;
+      setRecipient({ id: state.recipientId, username: name });
+      if (isCompactLayout) setShowDetailPane(true);
+    }
+
+    window.history.replaceState(null, "", window.location.pathname);
+  }, [location.key, location.state, isCompactLayout]);
 
   // =========================
   // WS send helper
@@ -804,6 +834,13 @@ export default function ChatPage() {
         const chatId = data.chat_id;
         const serverMsg = data.message;
 
+        if (!selectedChatIdRef.current && pendingRecipientIdRef.current) {
+          setSelectedChatId(chatId);
+          setPendingRecipientInfo(null);
+          pendingRecipientIdRef.current = null;
+          setRecipient(null);
+        }
+
         // sender-side: unread should stay 0
         upsertChatAndSort(chatId, serverMsg, 0);
 
@@ -937,6 +974,8 @@ export default function ChatPage() {
   // =========================
   const handleSelectChat = useCallback(
     (chatId) => {
+      setPendingRecipientInfo(null);
+      pendingRecipientIdRef.current = null;
       setSelectedChatId(chatId);
       if (isCompactLayout) setShowDetailPane(true);
 
@@ -944,8 +983,9 @@ export default function ChatPage() {
         (c) => String(c.id) === String(chatId)
       );
 
-      const other = chatObj?.other_participant;
-      if (other?.id) setRecipient({ id: other.id, username: other.username || "Unknown" });
+      const otherUsername = chatObj?.other_participant?.username || chatObj?.other_username || "Unknown";
+      const otherId = chatObj?.other_participant?.id || chatObj?.other_id || null;
+      if (otherId) setRecipient({ id: otherId, username: otherUsername });
       else setRecipient(null);
     },
     [chats, isCompactLayout]
@@ -979,10 +1019,9 @@ export default function ChatPage() {
 
       return {
         id: c.id,
-        name: c.other_participant?.username || c.last_message?.sender_name || "Unknown",
+        name:c.other_participant?.username ||c.other_username ||c.last_message?.sender_name ||"Unknown",
         avatar: c.other_participant?.avatar || c.avatar || "https://i.pravatar.cc/80?img=12",
         time: c.last_message?.timestamp ? formatTime(c.last_message.timestamp) : "",
-        // ✅ do NOT zero when opening; only sender-side safety
         unreadCount: isMineLast ? 0 : c.unread_count || 0,
         hint,
         isMineLast,
@@ -995,12 +1034,14 @@ export default function ChatPage() {
   // Open chat header
   // =========================
   const openChat = useMemo(() => {
-    if (!selectedChatId) return null;
-    const c = convItems.find((x) => String(x.id) === String(selectedChatId));
-    if (!c) return null;
-    const title = recipient?.username || c.name;
-    return { id: c.id, title, subtitle: "", avatar: c.avatar };
-  }, [selectedChatId, convItems, recipient]);
+    if (selectedChatId) {
+      const c = convItems.find((x) => String(x.id) === String(selectedChatId));
+      if (!c) return null;
+      const title = recipient?.username || c.name;
+      return { id: c.id, title, subtitle: "", avatar: c.avatar };
+    }
+    return pendingRecipientInfo || null;
+  }, [selectedChatId, convItems, recipient, pendingRecipientInfo]);
 
   // =========================
   // Messages mapping
@@ -1057,8 +1098,9 @@ export default function ChatPage() {
         return;
       }
 
+      const pendingRecipientId = pendingRecipientIdRef.current;
       let chatId = selectedChatIdRef.current;
-      if (!chatId) {
+      if (!chatId && !pendingRecipientId) {
         const r = recipientRef.current;
         if (!r?.id) {
           alert("Recipient is required to create chat.");
@@ -1100,11 +1142,16 @@ export default function ChatPage() {
 
       const payload = {
         action: "send_message",
-        chat_id: chatId,
         message: text,
         reply_to_id: replyTarget?.id ?? null,
         attachment_ids: [],
       };
+
+      if (chatId) {
+        payload.chat_id = chatId;
+      } else if (pendingRecipientId) {
+        payload.recipient_id = pendingRecipientId;
+      }
 
       const ok = wsSend(payload);
 
@@ -1113,7 +1160,7 @@ export default function ChatPage() {
           prev.map((m) => (m.client_temp_id === clientId ? { ...m, _failed: true } : m))
         );
         alert("Send failed.");
-      } else {
+      } else if (chatId) {
         // sender-side: unread_count should stay 0
         upsertChatAndSort(chatId, { content: text, timestamp: nowIso, sender: currentUserId }, 0);
       }
@@ -1131,8 +1178,9 @@ export default function ChatPage() {
         return;
       }
 
+      const pendingRecipientId = pendingRecipientIdRef.current;
       let chatId = selectedChatIdRef.current;
-      if (!chatId) {
+      if (!chatId && !pendingRecipientId) {
         const r = recipientRef.current;
         if (!r?.id) {
           alert("Recipient is required to create chat.");
@@ -1189,11 +1237,16 @@ export default function ChatPage() {
 
       const payload = {
         action: "send_message",
-        chat_id: chatId,
         message: trimmedText,
         reply_to_id: replyToId,
         attachment_ids: ids,
       };
+
+      if (chatId) {
+        payload.chat_id = chatId;
+      } else if (pendingRecipientId) {
+        payload.recipient_id = pendingRecipientId;
+      }
 
       const ok = wsSend(payload);
 
@@ -1202,7 +1255,7 @@ export default function ChatPage() {
           prev.map((m) => (m.client_temp_id === clientId ? { ...m, _failed: true } : m))
         );
         alert("Send failed.");
-      } else {
+      } else if (chatId) {
         const previewContent = trimmedText || "[Attachment]";
         upsertChatAndSort(
           chatId,

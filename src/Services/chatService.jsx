@@ -113,6 +113,45 @@ export const ensureChat = async (recipientId) => {
   }
 };
 
+export const getChatWithUser = async (recipientId) => {
+  if (!recipientId) {
+    return {
+      success: false,
+      message: "Recipient id is required.",
+    };
+  }
+
+  try {
+    const res = await api.get(`/chat/with/${recipientId}/`);
+    return {
+      success: true,
+      data: res.data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: parseError(
+        error,
+        "ساخت/یافتن گفتگو ناموفق بود"
+      ),
+    };
+  }
+};
+
+export const getUserById = async (id) => {
+  if (!id) return { success: false, message: "User id is required." };
+
+  try {
+    const res = await api.get(`/users/${id}/`);
+    return { success: true, data: res.data };
+  } catch (error) {
+    return {
+      success: false,
+      message: parseError(error, "دریافت اطلاعات کاربر ناموفق بود"),
+    };
+  }
+};
+
 export function buildChatWsUrl() {
   const token = localStorage.getItem("access");
   if (!token) return null;
