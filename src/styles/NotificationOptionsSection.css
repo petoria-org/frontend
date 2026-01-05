@@ -5641,3 +5641,164 @@
   border-color: #1c7bd1;
   box-shadow: 0 0 0 3px rgba(28, 123, 209, 0.15);
 }
+
+.direct-time-input-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  direction: ltr;
+}
+
+.direct-time-input {
+  width: 50px;
+  height: 40px;
+  text-align: center;
+  font-family: 'Inter', Helvetica;
+  font-weight: 700;
+  font-size: 20px;
+  border: 2px solid #1c7bd1;
+  border-radius: 8px;
+  background: white;
+  color: #2c3e50;
+  transition: all 0.2s ease;
+}
+
+.direct-time-input:focus {
+  outline: none;
+  border-color: #1c7bd1;
+  box-shadow: 0 0 0 3px rgba(28, 123, 209, 0.2);
+  transform: scale(1.05);
+}
+
+.direct-time-input::placeholder {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.time-mode-toggle {
+  display: flex;
+  gap: 8px;
+  margin: 16px 0;
+  justify-content: center;
+}
+
+.mode-toggle-btn {
+  padding: 8px 16px;
+  border: 2px solid rgba(122, 179, 224, 0.3);
+  background: white;
+  border-radius: 8px;
+  font-family: 'Inter', Helvetica;
+  font-weight: 600;
+  font-size: 14px;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mode-toggle-btn:hover:not(:disabled) {
+  border-color: #1c7bd1;
+  color: #1c7bd1;
+  transform: translateY(-2px);
+}
+
+.mode-toggle-btn.active {
+  background: linear-gradient(135deg, #1c7bd1, #5a9bc9);
+  border-color: transparent;
+  color: white;
+}
+
+.mode-toggle-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.native-time-input-container {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(122, 179, 224, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.native-time-input-full {
+  width: 100%;
+  max-width: 200px;
+  padding: 10px 14px;
+  font-size: 16px;
+  border: 2px solid #d7e1ec;
+  border-radius: 12px;
+  background: white;
+  color: #1f2937;
+  direction: ltr;
+  text-align: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+}
+
+.native-time-input-full:focus {
+  outline: none;
+  border-color: #1c7bd1;
+  box-shadow: 0 0 0 3px rgba(28, 123, 209, 0.15);
+}
+
+.native-time-hint {
+  font-family: 'Inter', Helvetica;
+  font-size: 12px;
+  color: #64748b;
+  text-align: center;
+}
+
+.time-digit-group {
+  transition: all 0.2s ease;
+}
+
+.time-digit-group:hover {
+  background: rgba(28, 123, 209, 0.1);
+  transform: scale(1.05);
+}
+
+.time-digit-group:active {
+  transform: scale(0.95);
+}
+
+@media (max-width: 768px) {
+  .direct-time-input {
+    width: 45px;
+    height: 36px;
+    font-size: 18px;
+  }
+  
+  .mode-toggle-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+  
+  .native-time-input-full {
+    font-size: 15px;
+    padding: 8px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .direct-time-input {
+    width: 40px;
+    height: 32px;
+    font-size: 16px;
+  }
+  
+  .time-mode-toggle {
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .mode-toggle-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

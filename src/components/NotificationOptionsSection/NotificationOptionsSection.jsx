@@ -374,535 +374,643 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
   }, [isTimePickerOpen]);
 
   const ProfessionalTimeSelector = useMemo(
-    () =>
-      function ProfessionalTimeSelectorComponent({ value, onChange, disabled, label, fieldType }) {
-    const [hours, setHours] = useState("00");
-    const [minutes, setMinutes] = useState("00");
-    const [isHoursFocused, setIsHoursFocused] = useState(false);
-    const [isMinutesFocused, setIsMinutesFocused] = useState(false);
-    const [showSlider, setShowSlider] = useState(false);
-    const [activeSlider, setActiveSlider] = useState(null);
-    const [isPickerOpen, setIsPickerOpen] = useState(false);
-    const triggerRef = useRef(null);
-    const popupRef = useRef(null);
-    const [popupPosition, setPopupPosition] = useState({
-      top: 0,
-      left: 0,
-      width: 0
-    });
-
-    const updatePopupPosition = () => {
-      const target = triggerRef.current;
-      if (!target) return;
-
-      const rect = target.getBoundingClientRect();
-      setPopupPosition({
-        top: rect.bottom + window.scrollY + 8,
-        left: rect.left + window.scrollX,
-        width: rect.width
+  () =>
+    function ProfessionalTimeSelectorComponent({ value, onChange, disabled, label, fieldType }) {
+      const [hours, setHours] = useState("00");
+      const [minutes, setMinutes] = useState("00");
+      const [isHoursFocused, setIsHoursFocused] = useState(false);
+      const [isMinutesFocused, setIsMinutesFocused] = useState(false);
+      const [showSlider, setShowSlider] = useState(false);
+      const [activeSlider, setActiveSlider] = useState(null);
+      const [isPickerOpen, setIsPickerOpen] = useState(false);
+      const [isTypingMode, setIsTypingMode] = useState(false);
+      const triggerRef = useRef(null);
+      const popupRef = useRef(null);
+      const hourInputRef = useRef(null);
+      const minuteInputRef = useRef(null);
+      const directTimeInputRef = useRef(null);
+      const [popupPosition, setPopupPosition] = useState({
+        top: 0,
+        left: 0,
+        width: 0
       });
-    };
-    
-    useEffect(() => {
-      if (value instanceof Date) {
-        setHours(String(value.getHours()).padStart(2, '0'));
-        setMinutes(String(value.getMinutes()).padStart(2, '0'));
-      } else {
-        setHours("00");
-        setMinutes("00");
-      }
-    }, [value]);
 
-    useEffect(() => {
-      if (!isPickerOpen) return;
+      const updatePopupPosition = () => {
+        const target = triggerRef.current;
+        if (!target) return;
 
-      const handleReposition = () => updatePopupPosition();
-
-      updatePopupPosition();
-      window.addEventListener('resize', handleReposition);
-      window.addEventListener('scroll', handleReposition, true);
-
-      return () => {
-        window.removeEventListener('resize', handleReposition);
-        window.removeEventListener('scroll', handleReposition, true);
+        const rect = target.getBoundingClientRect();
+        setPopupPosition({
+          top: rect.bottom + window.scrollY + 8,
+          left: rect.left + window.scrollX,
+          width: rect.width
+        });
       };
-    }, [isPickerOpen]);
-
-    useEffect(() => {
-      if (!isPickerOpen) return;
       
-      const handleScrollOrClickOutside = (e) => {
-        if (e.type === 'scroll' || e.type === 'wheel' || e.type === 'touchmove') {
-          setIsPickerOpen(false);
-          setShowSlider(false);
-          return;
+      useEffect(() => {
+        if (value instanceof Date) {
+          setHours(String(value.getHours()).padStart(2, '0'));
+          setMinutes(String(value.getMinutes()).padStart(2, '0'));
+        } else {
+          setHours("00");
+          setMinutes("00");
         }
-        
-        if (isPickerOpen && popupRef.current && !popupRef.current.contains(e.target)) {
-          if (triggerRef.current && !triggerRef.current.contains(e.target)) {
+      }, [value]);
+
+      useEffect(() => {
+        if (isTypingMode && hourInputRef.current) {
+          setTimeout(() => {
+            hourInputRef.current?.focus();
+            hourInputRef.current?.select();
+          }, 50);
+        }
+      }, [isTypingMode]);
+
+      useEffect(() => {
+        if (!isPickerOpen) return;
+
+        const handleScrollOrClickOutside = (e) => {
+          if (e.type === 'scroll' || e.type === 'wheel' || e.type === 'touchmove') {
             setIsPickerOpen(false);
             setShowSlider(false);
+            setIsTypingMode(false);
+            return;
           }
+          
+          if (isPickerOpen && popupRef.current && !popupRef.current.contains(e.target)) {
+            if (triggerRef.current && !triggerRef.current.contains(e.target)) {
+              setIsPickerOpen(false);
+              setShowSlider(false);
+              setIsTypingMode(false);
+            }
+          }
+        };
+        
+        window.addEventListener('scroll', handleScrollOrClickOutside, true);
+        window.addEventListener('wheel', handleScrollOrClickOutside, { passive: true });
+        window.addEventListener('touchmove', handleScrollOrClickOutside, { passive: true });
+        document.addEventListener('mousedown', handleScrollOrClickOutside);
+        
+        return () => {
+          window.removeEventListener('scroll', handleScrollOrClickOutside, true);
+          window.removeEventListener('wheel', handleScrollOrClickOutside);
+          window.removeEventListener('touchmove', handleScrollOrClickOutside);
+          document.removeEventListener('mousedown', handleScrollOrClickOutside);
+        };
+      }, [isPickerOpen]);
+
+      useEffect(() => {
+        if (!isPickerOpen) return;
+
+        const handleReposition = () => updatePopupPosition();
+
+        updatePopupPosition();
+        window.addEventListener('resize', handleReposition);
+        window.addEventListener('scroll', handleReposition, true);
+
+        return () => {
+          window.removeEventListener('resize', handleReposition);
+          window.removeEventListener('scroll', handleReposition, true);
+        };
+      }, [isPickerOpen]);
+
+      const getTimePeriod = () => {
+        const hour = parseInt(hours);
+        if (hour < 12) return "صبح";
+        if (hour < 17) return "ظهر";
+        if (hour < 20) return "عصر";
+        return "شب";
+      };
+
+      const handleHourChange = (newHour) => {
+        let hourNum = parseInt(newHour) || 0;
+        if (hourNum > 23) hourNum = 23;
+        if (hourNum < 0) hourNum = 0;
+        const minuteNum = parseInt(minutes) || 0;
+        
+        const newHours = String(hourNum).padStart(2, '0');
+        setHours(newHours);
+        
+        const newDate = value instanceof Date ? new Date(value) : new Date();
+        newDate.setHours(hourNum);
+        newDate.setMinutes(minuteNum);
+        onChange(newDate);
+      };
+
+      const handleMinuteChange = (newMinute) => {
+        let minuteNum = parseInt(newMinute) || 0;
+        if (minuteNum > 59) minuteNum = 59;
+        if (minuteNum < 0) minuteNum = 0;
+        const hourNum = parseInt(hours) || 0;
+        
+        const newMinutes = String(minuteNum).padStart(2, '0');
+        setMinutes(newMinutes);
+        
+        const newDate = value instanceof Date ? new Date(value) : new Date();
+        newDate.setHours(hourNum);
+        newDate.setMinutes(minuteNum);
+        onChange(newDate);
+      };
+
+      const handleDirectTimeChange = (e) => {
+        const timeValue = e.target.value;
+        if (!timeValue) return;
+        
+        const [h, m] = timeValue.split(':').map(Number);
+        if (!isNaN(h) && !isNaN(m)) {
+          handleHourChange(h.toString());
+          handleMinuteChange(m.toString());
+          setIsTypingMode(false);
         }
       };
-      
-      window.addEventListener('scroll', handleScrollOrClickOutside, true);
-      window.addEventListener('wheel', handleScrollOrClickOutside, { passive: true });
-      window.addEventListener('touchmove', handleScrollOrClickOutside, { passive: true });
-      document.addEventListener('mousedown', handleScrollOrClickOutside);
-      
-      return () => {
-        window.removeEventListener('scroll', handleScrollOrClickOutside, true);
-        window.removeEventListener('wheel', handleScrollOrClickOutside);
-        window.removeEventListener('touchmove', handleScrollOrClickOutside);
-        document.removeEventListener('mousedown', handleScrollOrClickOutside);
+
+      const handleKeyDown = (e, type) => {
+        if (e.key === 'Enter') {
+          setIsTypingMode(false);
+          if (type === 'hour' && minuteInputRef.current) {
+            minuteInputRef.current.focus();
+          }
+        }
+        
+        if (e.key === 'Escape') {
+          setIsTypingMode(false);
+        }
+        
+        if (e.key === 'Tab' && !e.shiftKey && type === 'hour') {
+          e.preventDefault();
+          minuteInputRef.current?.focus();
+        }
+        if (e.key === 'Tab' && e.shiftKey && type === 'minute') {
+          e.preventDefault();
+          hourInputRef.current?.focus();
+        }
       };
-    }, [isPickerOpen]);
 
-    const getTimePeriod = () => {
-      const hour = parseInt(hours);
-      if (hour < 12) return "صبح";
-      if (hour < 17) return "ظهر";
-      if (hour < 20) return "عصر";
-      return "شب";
-    };
-
-    const handleHourChange = (newHour) => {
-      let hourNum = parseInt(newHour) || 0;
-      if (hourNum > 23) hourNum = 23;
-      if (hourNum < 0) hourNum = 0;
-      const minuteNum = parseInt(minutes) || 0;
-      
-      const newHours = String(hourNum).padStart(2, '0');
-      setHours(newHours);
-      
-      const newDate = value instanceof Date ? new Date(value) : new Date();
-      newDate.setHours(hourNum);
-      newDate.setMinutes(minuteNum);
-      onChange(newDate);
-    };
-
-    const handleMinuteChange = (newMinute) => {
-      let minuteNum = parseInt(newMinute) || 0;
-      if (minuteNum > 59) minuteNum = 59;
-      if (minuteNum < 0) minuteNum = 0;
-      const hourNum = parseInt(hours) || 0;
-      
-      const newMinutes = String(minuteNum).padStart(2, '0');
-      setMinutes(newMinutes);
-      
-      const newDate = value instanceof Date ? new Date(value) : new Date();
-      newDate.setHours(hourNum);
-      newDate.setMinutes(minuteNum);
-      onChange(newDate);
-    };
-
-    const incrementHour = () => {
-      let hourNum = parseInt(hours) || 0;
-      hourNum = (hourNum + 1) % 24;
-      handleHourChange(hourNum.toString());
-    };
-
-    const decrementHour = () => {
-      let hourNum = parseInt(hours) || 0;
-      hourNum = hourNum - 1;
-      if (hourNum < 0) hourNum = 23;
-      handleHourChange(hourNum.toString());
-    };
-
-    const incrementMinute = () => {
-      let minuteNum = parseInt(minutes) || 0;
-      minuteNum = (minuteNum + 5) % 60;
-      handleMinuteChange(minuteNum.toString());
-    };
-
-    const decrementMinute = () => {
-      let minuteNum = parseInt(minutes) || 0;
-      minuteNum = minuteNum - 5;
-      if (minuteNum < 0) minuteNum = 60 + minuteNum;
-      handleMinuteChange(minuteNum.toString());
-    };
-
-    const handleHourInputChange = (e) => {
-      const newHour = e.target.value;
-      if (/^\d{0,2}$/.test(newHour)) {
-        handleHourChange(newHour);
-      }
-    };
-
-    const handleMinuteInputChange = (e) => {
-      const newMinute = e.target.value;
-      if (/^\d{0,2}$/.test(newMinute)) {
-        handleMinuteChange(newMinute);
-      }
-    };
-
-    const handleHourSliderChange = (e) => {
-      const hourValue = parseInt(e.target.value);
-      handleHourChange(hourValue.toString());
-    };
-
-    const handleMinuteSliderChange = (e) => {
-      const minuteValue = parseInt(e.target.value);
-      handleMinuteChange(minuteValue.toString());
-    };
-
-    const toggleSlider = (type) => {
-      setActiveSlider(type);
-      setShowSlider(true);
-    };
-
-    const togglePicker = () => {
-      if (!disabled) {
-        updatePopupPosition();
-        setIsPickerOpen(true);
+      const activateTypingMode = () => {
+        setIsTypingMode(true);
         setShowSlider(false);
-      }
-    };
+      };
 
-    const setCurrentTime = () => {
-      const now = new Date();
-      const hourNow = now.getHours();
-      const minuteNow = now.getMinutes();
-      
-      setHours(String(hourNow).padStart(2, '0'));
-      setMinutes(String(minuteNow).padStart(2, '0'));
-      
-      const newDate = value instanceof Date ? new Date(value) : new Date();
-      newDate.setHours(hourNow);
-      newDate.setMinutes(minuteNow);
-      onChange(newDate);
-    };
+      const deactivateTypingMode = () => {
+        setIsTypingMode(false);
+      };
 
-    const setMidnight = () => {
-      handleHourChange('00');
-      handleMinuteChange('00');
-    };
+      const incrementHour = () => {
+        let hourNum = parseInt(hours) || 0;
+        hourNum = (hourNum + 1) % 24;
+        handleHourChange(hourNum.toString());
+      };
 
-    const popupWidth = popupPosition.width || (triggerRef.current ? triggerRef.current.offsetWidth : undefined);
+      const decrementHour = () => {
+        let hourNum = parseInt(hours) || 0;
+        hourNum = hourNum - 1;
+        if (hourNum < 0) hourNum = 23;
+        handleHourChange(hourNum.toString());
+      };
 
-    return (
-      <div className="professional-time-selector">
-        <label className="form-label-edit">{label}</label>
-      
-        <div className="input-container" ref={triggerRef}>
-          <div 
-            className="form-input time-picker-field"
-            onClick={togglePicker}
-            style={{ cursor: 'pointer' }}
-          >
-            <div className="time-field-display" dir="ltr">
-              <span className="time-field-digits">
-                <span className="time-field-hours">{hours}</span>
-                <span className="time-field-colon">:</span>
-                <span className="time-field-minutes">{minutes}</span>
-              </span>
-              <span className="time-field-period">{getTimePeriod()}</span>
+      const incrementMinute = () => {
+        let minuteNum = parseInt(minutes) || 0;
+        minuteNum = (minuteNum + 1) % 60;
+        handleMinuteChange(minuteNum.toString());
+      };
+
+      const decrementMinute = () => {
+        let minuteNum = parseInt(minutes) || 0;
+        minuteNum = minuteNum - 1;
+        if (minuteNum < 0) minuteNum = 60 + minuteNum;
+        handleMinuteChange(minuteNum.toString());
+      };
+
+      const handleHourInputChange = (e) => {
+        const newHour = e.target.value;
+        if (/^\d{0,2}$/.test(newHour)) {
+          handleHourChange(newHour);
+        }
+      };
+
+      const handleMinuteInputChange = (e) => {
+        const newMinute = e.target.value;
+        if (/^\d{0,2}$/.test(newMinute)) {
+          handleMinuteChange(newMinute);
+        }
+      };
+
+      const handleHourSliderChange = (e) => {
+        const hourValue = parseInt(e.target.value);
+        handleHourChange(hourValue.toString());
+      };
+
+      const handleMinuteSliderChange = (e) => {
+        const minuteValue = parseInt(e.target.value);
+        handleMinuteChange(minuteValue.toString());
+      };
+
+      const toggleSlider = (type) => {
+        setActiveSlider(type);
+        setShowSlider(true);
+      };
+
+      const togglePicker = () => {
+        if (!disabled) {
+          updatePopupPosition();
+          setIsPickerOpen(true);
+          setShowSlider(false);
+          setIsTypingMode(false);
+        }
+      };
+
+      const setCurrentTime = () => {
+        const now = new Date();
+        const hourNow = now.getHours();
+        const minuteNow = now.getMinutes();
+        
+        setHours(String(hourNow).padStart(2, '0'));
+        setMinutes(String(minuteNow).padStart(2, '0'));
+        
+        const newDate = value instanceof Date ? new Date(value) : new Date();
+        newDate.setHours(hourNow);
+        newDate.setMinutes(minuteNow);
+        onChange(newDate);
+      };
+
+      const setMidnight = () => {
+        setHours('00');
+        setMinutes('00');
+        
+        const newDate = value instanceof Date ? new Date(value) : new Date();
+        newDate.setHours(0);
+        newDate.setMinutes(0);
+        onChange(newDate);
+      };
+
+      const popupWidth = popupPosition.width || (triggerRef.current ? triggerRef.current.offsetWidth : undefined);
+
+      return (
+        <div className="professional-time-selector">
+          <label className="form-label-edit">{label}</label>
+        
+          <div className="input-container" ref={triggerRef}>
+            <div 
+              className="form-input time-picker-field"
+              onClick={togglePicker}
+              style={{ cursor: 'pointer' }}
+            >
+              <div className="time-field-display" dir="ltr">
+                <span className="time-field-digits">
+                  <span className="time-field-hours">{hours}</span>
+                  <span className="time-field-colon">:</span>
+                  <span className="time-field-minutes">{minutes}</span>
+                </span>
+                <span className="time-field-period">{getTimePeriod()}</span>
+              </div>
+            </div>
+            <div className="time-field-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" 
+                  stroke="currentColor" strokeWidth="1.5"/>
+                <path d="M12 6V12L16 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
             </div>
           </div>
-          <div className="time-field-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" 
-                stroke="currentColor" strokeWidth="1.5"/>
-              <path d="M12 6V12L16 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-          </div>
-        </div>
 
-        {isPickerOpen && createPortal(
-          <>
-            <div
-              className="time-picker-overlay"
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-            />
-            <div
-              className="time-picker-popup"
-              style={{
-                top: popupPosition.top,
-                left: popupPosition.left,
-                width: popupWidth
-              }}
-              ref={popupRef}
-            >
-              <div className="time-picker-content" dir="ltr">
-                <div className="time-selector-main">
-                  <div className="time-display">
-                    <div className="time-display-digits">
-                      <span
-                        className="time-digit-group time-digit-hours"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleSlider('hours');
-                        }}
-                      >
-                        {hours.split('').map((digit, index) => (
-                          <span key={`hour-${index}`} className="time-digit">
-                            {digit}
-                          </span>
-                        ))}
-                      </span>
-                      <span className="time-colon-animated">
-                        <span className="colon-dot top"></span>
-                        <span className="colon-dot bottom"></span>
-                      </span>
-                      <span
-                        className="time-digit-group time-digit-minutes"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleSlider('minutes');
-                        }}
-                      >
-                        {minutes.split('').map((digit, index) => (
-                          <span key={`minute-${index}`} className="time-digit">
-                            {digit}
-                          </span>
-                        ))}
-                      </span>
-                    </div>
-                    <div className="time-unit-labels">
-                      <span className="time-unit">دقیقه</span>
-                      <span className="time-unit">ساعت</span>
-                    </div>
-                  </div>
-
-                  <div className="time-controls">
-                    <div className="time-control-group">
-                      <div className="time-control-label">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                          <circle cx="12" cy="12" r="9" stroke="#1c7bd1" strokeWidth="1.5"/>
-                          <path d="M12 8V12L15 15" stroke="#1c7bd1" strokeWidth="1.5" strokeLinecap="round"/>
-                        </svg>
-                        ساعت
-                      </div>
-                      <div className="time-control-buttons">
-                        <button
-                          className="time-control-btn time-control-btn-decrement"
-                          onClick={decrementHour}
-                          disabled={disabled}
-                          type="button"
-                        >
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                            <path d="M6 12H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                          </svg>
-                        </button>
-                        
-                        <div 
-                          className={`time-input-container ${isHoursFocused ? 'focused' : ''}`}
-                          onClick={() => toggleSlider('hours')}
-                        >
-                          <input
-                            type="number"
-                            value={hours}
-                            onChange={handleHourInputChange}
-                            className="time-input-digit"
-                            min="0"
-                            max="23"
-                            disabled={disabled}
-                            onFocus={() => setIsHoursFocused(true)}
-                            onBlur={() => setIsHoursFocused(false)}
-                            inputMode="numeric"
-                          />
-                          <div className="time-input-overlay">
-                            <span className="time-input-value">{hours}</span>
-                          </div>
-                        </div>
-                        
-                        <button
-                          className="time-control-btn time-control-btn-increment"
-                          onClick={incrementHour}
-                          disabled={disabled}
-                          type="button"
-                        >
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                            <path d="M12 6V18M6 12H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="time-control-group">
-                      <div className="time-control-label">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                          <circle cx="12" cy="12" r="9" stroke="#ff6b9d" strokeWidth="1.5"/>
-                          <path d="M12 8V12L15 15" stroke="#ff6b9d" strokeWidth="1.5" strokeLinecap="round"/>
-                        </svg>
-                        دقیقه
-                      </div>
-                      <div className="time-control-buttons">
-                        <button
-                          className="time-control-btn time-control-btn-decrement"
-                          onClick={decrementMinute}
-                          disabled={disabled}
-                          type="button"
-                        >
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                            <path d="M6 12H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                          </svg>
-                        </button>
-                        
-                        <div 
-                          className={`time-input-container ${isMinutesFocused ? 'focused' : ''}`}
-                          onClick={() => toggleSlider('minutes')}
-                        >
-                          <input
-                            type="number"
-                            value={minutes}
-                            onChange={handleMinuteInputChange}
-                            className="time-input-digit"
-                            min="0"
-                            max="59"
-                            disabled={disabled}
-                            onFocus={() => setIsMinutesFocused(true)}
-                            onBlur={() => setIsMinutesFocused(false)}
-                            inputMode="numeric"
-                          />
-                          <div className="time-input-overlay">
-                            <span className="time-input-value">{minutes}</span>
-                          </div>
-                        </div>
-                        
-                        <button
-                          className="time-control-btn time-control-btn-increment"
-                          onClick={incrementMinute}
-                          disabled={disabled}
-                          type="button"
-                        >
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                            <path d="M12 6V18M6 12H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="time-quick-buttons">
-                    <button
-                      className="time-quick-btn"
-                      onClick={setCurrentTime}
-                      disabled={disabled}
-                      type="button"
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" 
-                          stroke="currentColor" strokeWidth="1.5"/>
-                        <path d="M12 6V12L16 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                      </svg>
-                      زمان حال
-                    </button>
-                    
-                    <button
-                      className="time-quick-btn"
-                      onClick={setMidnight}
-                      disabled={disabled}
-                      type="button"
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" 
-                          stroke="currentColor" strokeWidth="1.5"/>
-                        <path d="M12 6V12L8 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                      </svg>
-                      ۰۰:۰۰
-                    </button>
-                  </div>
-                </div>
-
-                {showSlider && (
-                  <div className="time-slider-modal">
-                    <div className="time-slider-backdrop" onClick={() => setShowSlider(false)}></div>
-                    <div className="time-slider-content">
-                      <div className="time-slider-header">
-                        <h3 className="time-slider-title">
-                          تنظیم {activeSlider === 'hours' ? 'ساعت' : 'دقیقه'}
-                        </h3>
-                        <button 
-                          className="time-slider-close"
-                          onClick={() => setShowSlider(false)}
-                          type="button"
-                        >
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                          </svg>
-                        </button>
-                      </div>
-                      
-                    <div className="time-slider-body" dir="ltr">
-                        {activeSlider === 'hours' ? (
-                          <>
-                            <div className="slider-value-display">
-                              <span className="slider-value">{hours}</span>
-                              <span className="slider-unit">ساعت</span>
-                            </div>
+          {isPickerOpen && createPortal(
+            <>
+              <div
+                className="time-picker-overlay"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsPickerOpen(false);
+                  setShowSlider(false);
+                  setIsTypingMode(false);
+                }}
+              />
+              <div
+                className="time-picker-popup"
+                style={{
+                  top: popupPosition.top,
+                  left: popupPosition.left,
+                  width: popupWidth
+                }}
+                ref={popupRef}
+              >
+                <div className="time-picker-content" dir="ltr">
+                  <div className="time-selector-main">
+                    <div className="time-display">
+                      <div className="time-display-digits">
+                        {isTypingMode ? (
+                          <div className="direct-time-input-container">
                             <input
-                              type="range"
+                              ref={hourInputRef}
+                              type="number"
+                              value={hours}
+                              onChange={(e) => handleHourChange(e.target.value)}
+                              onKeyDown={(e) => handleKeyDown(e, 'hour')}
+                              onBlur={deactivateTypingMode}
+                              className="direct-time-input"
                               min="0"
                               max="23"
-                              value={hours}
-                              onChange={handleHourSliderChange}
-                              className="time-range-slider"
                               disabled={disabled}
+                              placeholder="HH"
+                              maxLength={2}
                             />
-                            <div className="slider-ticks">
-                              {[0, 6, 12, 18, 23].map(tick => (
-                                <div key={tick} className="slider-tick">
-                                  <span className="tick-label">{tick}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            <div className="slider-value-display">
-                              <span className="slider-value">{minutes}</span>
-                              <span className="slider-unit">دقیقه</span>
-                            </div>
+                            <span className="time-colon-animated">
+                              <span className="colon-dot top"></span>
+                              <span className="colon-dot bottom"></span>
+                            </span>
                             <input
-                              type="range"
+                              ref={minuteInputRef}
+                              type="number"
+                              value={minutes}
+                              onChange={(e) => handleMinuteChange(e.target.value)}
+                              onKeyDown={(e) => handleKeyDown(e, 'minute')}
+                              onBlur={deactivateTypingMode}
+                              className="direct-time-input"
                               min="0"
                               max="59"
-                              value={minutes}
-                              onChange={handleMinuteSliderChange}
-                              className="time-range-slider"
-                              step="1"
                               disabled={disabled}
+                              placeholder="MM"
+                              maxLength={2}
                             />
-                            <div className="slider-ticks">
-                              {[0, 15, 30, 45, 59].map(tick => (
-                                <div key={tick} className="slider-tick">
-                                  <span className="tick-label">{tick}</span>
-                                </div>
+                          </div>
+                        ) : (
+                          <>
+                            <span
+                              className="time-digit-group time-digit-hours"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                activateTypingMode();
+                              }}
+                              style={{ cursor: 'pointer' }}
+                            >
+                              {hours.split('').map((digit, index) => (
+                                <span key={`hour-${index}`} className="time-digit">
+                                  {digit}
+                                </span>
                               ))}
-                            </div>
+                            </span>
+                            <span className="time-colon-animated">
+                              <span className="colon-dot top"></span>
+                              <span className="colon-dot bottom"></span>
+                            </span>
+                            <span
+                              className="time-digit-group time-digit-minutes"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                activateTypingMode();
+                              }}
+                              style={{ cursor: 'pointer' }}
+                            >
+                              {minutes.split('').map((digit, index) => (
+                                <span key={`minute-${index}`} className="time-digit">
+                                  {digit}
+                                </span>
+                              ))}
+                            </span>
                           </>
                         )}
                       </div>
-                      
-                      <div className="time-slider-footer">
-                        <button 
-                          className="time-slider-preset"
-                          onClick={() => {
-                            if (activeSlider === 'hours') handleHourChange('12');
-                            else handleMinuteChange('00');
-                          }}
-                          type="button"
-                        >
-                          تنظیم پیش‌فرض
-                        </button>
+                      <div className="time-unit-labels">
+                        <span className="time-unit">دقیقه</span>
+                        <span className="time-unit">ساعت</span>
                       </div>
                     </div>
+
+                    <div className="time-controls">
+                      <div className="time-control-group">
+                        <div className="time-control-label">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="9" stroke="#1c7bd1" strokeWidth="1.5"/>
+                            <path d="M12 8V12L15 15" stroke="#1c7bd1" strokeWidth="1.5" strokeLinecap="round"/>
+                          </svg>
+                          ساعت
+                        </div>
+                        <div className="time-control-buttons">
+                          <button
+                            className="time-control-btn time-control-btn-decrement"
+                            onClick={decrementHour}
+                            disabled={disabled}
+                            type="button"
+                          >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                              <path d="M6 12H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            </svg>
+                          </button>
+                          
+                          <div 
+                            className={`time-input-container ${isHoursFocused ? 'focused' : ''}`}
+                            onClick={() => toggleSlider('hours')}
+                          >
+                            <input
+                              type="number"
+                              value={hours}
+                              onChange={handleHourInputChange}
+                              className="time-input-digit"
+                              min="0"
+                              max="23"
+                              disabled={disabled}
+                              onFocus={() => setIsHoursFocused(true)}
+                              onBlur={() => setIsHoursFocused(false)}
+                              inputMode="numeric"
+                            />
+                            <div className="time-input-overlay">
+                              <span className="time-input-value">{hours}</span>
+                            </div>
+                          </div>
+                          
+                          <button
+                            className="time-control-btn time-control-btn-increment"
+                            onClick={incrementHour}
+                            disabled={disabled}
+                            type="button"
+                          >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                              <path d="M12 6V18M6 12H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="time-control-group">
+                        <div className="time-control-label">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="9" stroke="#ff6b9d" strokeWidth="1.5"/>
+                            <path d="M12 8V12L15 15" stroke="#ff6b9d" strokeWidth="1.5" strokeLinecap="round"/>
+                          </svg>
+                          دقیقه
+                        </div>
+                        <div className="time-control-buttons">
+                          <button
+                            className="time-control-btn time-control-btn-decrement"
+                            onClick={decrementMinute}
+                            disabled={disabled}
+                            type="button"
+                          >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                              <path d="M6 12H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            </svg>
+                          </button>
+                          
+                          <div 
+                            className={`time-input-container ${isMinutesFocused ? 'focused' : ''}`}
+                            onClick={() => toggleSlider('minutes')}
+                          >
+                            <input
+                              type="number"
+                              value={minutes}
+                              onChange={handleMinuteInputChange}
+                              className="time-input-digit"
+                              min="0"
+                              max="59"
+                              disabled={disabled}
+                              onFocus={() => setIsMinutesFocused(true)}
+                              onBlur={() => setIsMinutesFocused(false)}
+                              inputMode="numeric"
+                            />
+                            <div className="time-input-overlay">
+                              <span className="time-input-value">{minutes}</span>
+                            </div>
+                          </div>
+                          
+                          <button
+                            className="time-control-btn time-control-btn-increment"
+                            onClick={incrementMinute}
+                            disabled={disabled}
+                            type="button"
+                          >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                              <path d="M12 6V18M6 12H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="time-quick-buttons">
+                      <button
+                        className="time-quick-btn"
+                        onClick={setCurrentTime}
+                        disabled={disabled}
+                        type="button"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                          <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" 
+                            stroke="currentColor" strokeWidth="1.5"/>
+                          <path d="M12 6V12L16 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                        </svg>
+                        زمان حال
+                      </button>
+                      
+                      <button
+                        className="time-quick-btn"
+                        onClick={setMidnight} 
+                        disabled={disabled}
+                        type="button"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                          <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" 
+                            stroke="currentColor" strokeWidth="1.5"/>
+                          <path d="M12 6V12L8 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                        </svg>
+                        ۰۰:۰۰
+                      </button>
+                    </div>
                   </div>
-                )}
+
+                  {showSlider && (
+                    <div className="time-slider-modal">
+                      <div className="time-slider-backdrop" onClick={() => setShowSlider(false)}></div>
+                      <div className="time-slider-content">
+                        <div className="time-slider-header">
+                          <h3 className="time-slider-title">
+                            تنظیم {activeSlider === 'hours' ? 'ساعت' : 'دقیقه'}
+                          </h3>
+                          <button 
+                            className="time-slider-close"
+                            onClick={() => setShowSlider(false)}
+                            type="button"
+                          >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                              <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            </svg>
+                          </button>
+                        </div>
+                        
+                        <div className="time-slider-body" dir="ltr">
+                          {activeSlider === 'hours' ? (
+                            <>
+                              <div className="slider-value-display">
+                                <span className="slider-value">{hours}</span>
+                                <span className="slider-unit">ساعت</span>
+                              </div>
+                              <input
+                                type="range"
+                                min="0"
+                                max="23"
+                                value={hours}
+                                onChange={handleHourSliderChange}
+                                className="time-range-slider"
+                                disabled={disabled}
+                              />
+                              <div className="slider-ticks">
+                                {[0, 6, 12, 18, 23].map(tick => (
+                                  <div key={tick} className="slider-tick">
+                                    <span className="tick-label">{tick}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="slider-value-display">
+                                <span className="slider-value">{minutes}</span>
+                                <span className="slider-unit">دقیقه</span>
+                              </div>
+                              <input
+                                type="range"
+                                min="0"
+                                max="59"
+                                value={minutes}
+                                onChange={handleMinuteSliderChange}
+                                className="time-range-slider"
+                                step="1"
+                                disabled={disabled}
+                              />
+                              <div className="slider-ticks">
+                                {[0, 15, 30, 45, 59].map(tick => (
+                                  <div key={tick} className="slider-tick">
+                                    <span className="tick-label">{tick}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                        
+                        <div className="time-slider-footer">
+                          <button 
+                            className="time-slider-preset"
+                            onClick={() => {
+                              if (activeSlider === 'hours') handleHourChange('12');
+                              else handleMinuteChange('00');
+                            }}
+                            type="button"
+                          >
+                            تنظیم پیش‌فرض
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </>,
-          document.body
-        )}
-      </div>
-    );
-  },
-    [isTimePickerOpen, activeTimeField]
-  );
+            </>,
+            document.body
+          )}
+        </div>
+      );
+    },
+  [isTimePickerOpen, activeTimeField]
+);
 
   useEffect(() => {
     const shouldHide =
