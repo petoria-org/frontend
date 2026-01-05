@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { createPortal } from "react-dom";
 import "../../styles/NotificationOptionsSection.css";
 import searchIcon from '../../assets/icons/Search.svg';
@@ -69,6 +69,33 @@ const parseDateKeepClock = (value) => {
   }
 
   return new Date(value);
+};
+
+const TimeInput = ({ value, onChange, disabled }) => {
+  const timeValue = value ? moment(value).format("HH:mm") : "";
+
+  const handleChange = (e) => {
+    const raw = e.target.value || "";
+    const [h, m] = raw.split(":").map(Number);
+    if (Number.isNaN(h) || Number.isNaN(m)) {
+      return;
+    }
+    const base = value ? new Date(value) : new Date();
+    base.setHours(h, m, 0, 0);
+    onChange?.(base);
+  };
+
+  return (
+    <input
+      type="time"
+      className="native-time-input"
+      value={timeValue}
+      onChange={handleChange}
+      disabled={disabled}
+      step="60"
+      inputMode="numeric"
+    />
+  );
 };
 
 const PersianDatePickerInput = React.forwardRef(({ value, onClick, placeholder, disabled, showTimeInput = false, onTimeChange, onChange }, ref) => (
@@ -252,8 +279,103 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
   const [isDeleting, setIsDeleting] = useState(false);
 
   const { setHideNavbar, setHideFooter } = useOutletContext();
+  const lostDateRef = useRef(null);
+  const foundDateRef = useRef(null);
+  const surrenderDateRef = useRef(null);
 
-  const ProfessionalTimeSelector = ({ value, onChange, disabled, label }) => {
+  const [isTimePickerOpen, setIsTimePickerOpen] = useState(false);
+  const [activeTimeField, setActiveTimeField] = useState(null);
+
+  useEffect(() => {
+    const closeCalendars = () => {
+      lostDateRef.current?.closeCalendar?.();
+      foundDateRef.current?.closeCalendar?.();
+      surrenderDateRef.current?.closeCalendar?.();
+    };
+
+    window.addEventListener("wheel", closeCalendars, { passive: true });
+    window.addEventListener("scroll", closeCalendars, true);
+    window.addEventListener("touchmove", closeCalendars, { passive: true });
+
+    return () => {
+      window.removeEventListener("wheel", closeCalendars, { passive: true });
+      window.removeEventListener("scroll", closeCalendars, true);
+      window.removeEventListener("touchmove", closeCalendars, { passive: true });
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleOutside = (event) => {
+      const target = event.target;
+      const isInsidePicker =
+        target.closest(".rmdp-container") ||
+        target.closest(".rmdp-wrapper") ||
+        target.closest(".datepicker-field");
+
+      if (isInsidePicker) return;
+
+      lostDateRef.current?.closeCalendar?.();
+      foundDateRef.current?.closeCalendar?.();
+      surrenderDateRef.current?.closeCalendar?.();
+    };
+
+    document.addEventListener("mousedown", handleOutside);
+    document.addEventListener("touchstart", handleOutside, { passive: true });
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutside);
+      document.removeEventListener("touchstart", handleOutside, { passive: true });
+    };
+  }, []);
+
+  useEffect(() => {
+    const closeTimePickers = () => {
+      if (isTimePickerOpen) {
+        setIsTimePickerOpen(false);
+        setActiveTimeField(null);
+      }
+    };
+
+    window.addEventListener("wheel", closeTimePickers, { passive: true });
+    window.addEventListener("scroll", closeTimePickers, true);
+    window.addEventListener("touchmove", closeTimePickers, { passive: true });
+
+    const handleOutsideClick = (event) => {
+      const timePickerElement = document.querySelector('.time-picker-popup');
+      const triggerElements = document.querySelectorAll('.time-picker-field');
+      
+      let isInsideTimePicker = false;
+      
+      if (timePickerElement && timePickerElement.contains(event.target)) {
+        isInsideTimePicker = true;
+      }
+      
+      triggerElements.forEach(element => {
+        if (element.contains(event.target)) {
+          isInsideTimePicker = true;
+        }
+      });
+      
+      if (!isInsideTimePicker && isTimePickerOpen) {
+        closeTimePickers();
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener("touchstart", handleOutsideClick, { passive: true });
+
+    return () => {
+      window.removeEventListener("wheel", closeTimePickers);
+      window.removeEventListener("scroll", closeTimePickers, true);
+      window.removeEventListener("touchmove", closeTimePickers);
+      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("touchstart", handleOutsideClick);
+    };
+  }, [isTimePickerOpen]);
+
+  const ProfessionalTimeSelector = useMemo(
+    () =>
+      function ProfessionalTimeSelectorComponent({ value, onChange, disabled, label, fieldType }) {
     const [hours, setHours] = useState("00");
     const [minutes, setMinutes] = useState("00");
     const [isHoursFocused, setIsHoursFocused] = useState(false);
@@ -262,6 +384,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
     const [activeSlider, setActiveSlider] = useState(null);
     const [isPickerOpen, setIsPickerOpen] = useState(false);
     const triggerRef = useRef(null);
+    const popupRef = useRef(null);
     const [popupPosition, setPopupPosition] = useState({
       top: 0,
       left: 0,
@@ -291,34 +414,48 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
     }, [value]);
 
     useEffect(() => {
-      const handleClickOutside = (event) => {
-        if (
-          isPickerOpen &&
-          !event.target.closest('.professional-time-selector') &&
-          !event.target.closest('.time-picker-popup') &&
-          !event.target.closest('.time-slider-modal')
-        ) {
-          setIsPickerOpen(false);
-          setShowSlider(false);
-        }
-      };
-
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [isPickerOpen]);
-
-    useEffect(() => {
       if (!isPickerOpen) return;
 
-      updatePopupPosition();
       const handleReposition = () => updatePopupPosition();
 
+      updatePopupPosition();
       window.addEventListener('resize', handleReposition);
       window.addEventListener('scroll', handleReposition, true);
 
       return () => {
         window.removeEventListener('resize', handleReposition);
         window.removeEventListener('scroll', handleReposition, true);
+      };
+    }, [isPickerOpen]);
+
+    useEffect(() => {
+      if (!isPickerOpen) return;
+      
+      const handleScrollOrClickOutside = (e) => {
+        if (e.type === 'scroll' || e.type === 'wheel' || e.type === 'touchmove') {
+          setIsPickerOpen(false);
+          setShowSlider(false);
+          return;
+        }
+        
+        if (isPickerOpen && popupRef.current && !popupRef.current.contains(e.target)) {
+          if (triggerRef.current && !triggerRef.current.contains(e.target)) {
+            setIsPickerOpen(false);
+            setShowSlider(false);
+          }
+        }
+      };
+      
+      window.addEventListener('scroll', handleScrollOrClickOutside, true);
+      window.addEventListener('wheel', handleScrollOrClickOutside, { passive: true });
+      window.addEventListener('touchmove', handleScrollOrClickOutside, { passive: true });
+      document.addEventListener('mousedown', handleScrollOrClickOutside);
+      
+      return () => {
+        window.removeEventListener('scroll', handleScrollOrClickOutside, true);
+        window.removeEventListener('wheel', handleScrollOrClickOutside);
+        window.removeEventListener('touchmove', handleScrollOrClickOutside);
+        document.removeEventListener('mousedown', handleScrollOrClickOutside);
       };
     }, [isPickerOpen]);
 
@@ -417,13 +554,9 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
 
     const togglePicker = () => {
       if (!disabled) {
-        if (!isPickerOpen) {
-          updatePopupPosition();
-        }
-        setIsPickerOpen(!isPickerOpen);
-        if (isPickerOpen) {
-          setShowSlider(false);
-        }
+        updatePopupPosition();
+        setIsPickerOpen(true);
+        setShowSlider(false);
       }
     };
 
@@ -458,7 +591,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
             onClick={togglePicker}
             style={{ cursor: 'pointer' }}
           >
-            <div className="time-field-display">
+            <div className="time-field-display" dir="ltr">
               <span className="time-field-digits">
                 <span className="time-field-hours">{hours}</span>
                 <span className="time-field-colon">:</span>
@@ -480,9 +613,8 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
           <>
             <div
               className="time-picker-overlay"
-              onClick={() => {
-                setIsPickerOpen(false);
-                setShowSlider(false);
+              onClick={(e) => {
+                e.stopPropagation();
               }}
             />
             <div
@@ -492,12 +624,19 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
                 left: popupPosition.left,
                 width: popupWidth
               }}
+              ref={popupRef}
             >
-              <div className="time-picker-content">
+              <div className="time-picker-content" dir="ltr">
                 <div className="time-selector-main">
-                  <div className="time-display" onClick={() => toggleSlider('hours')}>
+                  <div className="time-display">
                     <div className="time-display-digits">
-                      <span className="time-digit-group">
+                      <span
+                        className="time-digit-group time-digit-hours"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleSlider('hours');
+                        }}
+                      >
                         {hours.split('').map((digit, index) => (
                           <span key={`hour-${index}`} className="time-digit">
                             {digit}
@@ -508,7 +647,13 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
                         <span className="colon-dot top"></span>
                         <span className="colon-dot bottom"></span>
                       </span>
-                      <span className="time-digit-group">
+                      <span
+                        className="time-digit-group time-digit-minutes"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleSlider('minutes');
+                        }}
+                      >
                         {minutes.split('').map((digit, index) => (
                           <span key={`minute-${index}`} className="time-digit">
                             {digit}
@@ -517,8 +662,8 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
                       </span>
                     </div>
                     <div className="time-unit-labels">
-                      <span className="time-unit">ساعت</span>
                       <span className="time-unit">دقیقه</span>
+                      <span className="time-unit">ساعت</span>
                     </div>
                   </div>
 
@@ -682,7 +827,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
                         </button>
                       </div>
                       
-                      <div className="time-slider-body">
+                    <div className="time-slider-body" dir="ltr">
                         {activeSlider === 'hours' ? (
                           <>
                             <div className="slider-value-display">
@@ -755,7 +900,9 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
         )}
       </div>
     );
-  };
+  },
+    [isTimePickerOpen, activeTimeField]
+  );
 
   useEffect(() => {
     const shouldHide =
@@ -1032,6 +1179,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
     
     reader.readAsDataURL(file);
   };
+
   const handleCropImageClick = (imageIndex) => {
     const image = formData.images[imageIndex];
 
@@ -1281,9 +1429,14 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
     setImageToDelete(null);
     setIsDeleting(false);
     setIsLoading(false);
+    setIsTimePickerOpen(false);
+    setActiveTimeField(null);
   };
 
   const handleCancel = () => {
+    setIsTimePickerOpen(false);
+    setActiveTimeField(null);
+    
     if (mode === "edit") {
       onClose?.();
     }
@@ -2146,6 +2299,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
                               <label className="form-label-edit form-label-date">تاریخ گم شدن</label>
                               <div className="input-container datepicker-field">
                                 <DatePicker
+                                  ref={lostDateRef}
                                   value={formData.lostTime}
                                   onChange={(date) => {
                                     setFormData(prev => ({
@@ -2158,6 +2312,8 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
                                   format="YYYY/MM/DD"
                                   placeholder="انتخاب تاریخ"
                                   calendarPosition="bottom-start"
+                                  fixMainPosition
+                                  offsetY={8}
                                   disabled={isLoading}
                                   inputClass="form-input date-input-compact"
                                   containerStyle={{ width: '100%', overflow: 'visible' }}
@@ -2173,6 +2329,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
                                 onChange={handleTimeChangeLost} 
                                 disabled={isLoading}
                                 label="ساعت گم شدن"
+                                fieldType="lost"
                               />
                             </div>
                           </div>
@@ -2211,6 +2368,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
                               <label className="form-label-edit form-label-date">تاریخ پیدا شدن</label>
                               <div className="input-container datepicker-field">
                                 <DatePicker
+                                  ref={foundDateRef}
                                   value={formData.foundTime}
                                   onChange={(date) => {
                                     setFormData(prev => ({
@@ -2223,9 +2381,11 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
                                   format="YYYY/MM/DD"
                                   placeholder="انتخاب تاریخ"
                                   calendarPosition="bottom-start"
+                                  fixMainPosition
+                                  offsetY={8}
                                   disabled={isLoading}
                                   inputClass="form-input date-input-compact"
-                                  containerStyle={{ width: '100%' }}
+                                  containerStyle={{ width: '100%', overflow: 'visible' }}
                                   weekDays={["شنبه", "یک‌شنبه", "دوشنبه", "سه‌شنبه", "چهارشنبه", "پنج‌شنبه", "جمعه"]}
                                   portal={true}
                                 />
@@ -2238,6 +2398,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
                                 onChange={handleTimeChangeFound} 
                                 disabled={isLoading}
                                 label="ساعت پیدا شدن"
+                                fieldType="found"
                               />
                             </div>
                           </div>
