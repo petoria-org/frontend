@@ -417,28 +417,6 @@ export default function AllPosts() {
       
       setTotalPages(calculatedTotalPages);
 
-      if (page === 1) {
-        let allResults = results;
-        let nextUrl = data.next;
-        
-        while (nextUrl) {
-          try {
-            const nextRes = await fetch(nextUrl);
-            if (!nextRes.ok) break;
-            
-            const nextData = await nextRes.json();
-            const nextResults = nextData.results || [];
-            
-            allResults = [...allResults, ...nextResults];
-            nextUrl = nextData.next;
-          } catch (err) {
-            console.error("خطا در دریافت صفحه بعد:", err);
-            break;
-          }
-        }
-        
-        setAllPosts(allResults);
-      }
     } catch (err) {
       console.error("خطا در دریافت آگهی‌ها:", err);
       setError("بارگذاری آگهی‌ها موفقیت‌آمیز نبود.");
@@ -446,6 +424,36 @@ export default function AllPosts() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const fetchAllPostsForCount = async () => {
+      try {
+        const res = await fetch(API_ENDPOINTS.all);
+        if (!res.ok) return;
+
+        const data = await res.json();
+        const results = data.results || [];
+
+        let allResults = results;
+        let nextUrl = data.next;
+
+        while (nextUrl) {
+          const nextRes = await fetch(nextUrl);
+          if (!nextRes.ok) break;
+
+          const nextData = await nextRes.json();
+          allResults = [...allResults, ...(nextData.results || [])];
+          nextUrl = nextData.next;
+        }
+
+        setAllPosts(allResults);
+      } catch (err) {
+        console.error("خطا در دریافت allPosts:", err);
+      }
+    };
+
+    fetchAllPostsForCount();
+  }, []);
 
   useEffect(() => {
     if (isFirstRender.current) {
