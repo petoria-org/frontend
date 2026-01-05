@@ -642,10 +642,10 @@
   height: 6px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.9);
-  animation: statusPulse 2s infinite;
+  animation: statusPulse-all-posts 2s infinite;
 }
 
-@keyframes statusPulse {
+@keyframes statusPulse-all-posts {
   0% {
     transform: scale(0.95);
     box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
