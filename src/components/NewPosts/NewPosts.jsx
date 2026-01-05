@@ -393,25 +393,6 @@ export default function NewPosts() {
             <section className="posts-section-landing">
               <div className="posts-container-landing">
 
-                <div className="posts-categories-tabs-landing">
-                  <div className="posts-categories-list-landing">
-                    {filters.map((filter) => (
-                      <button
-                        key={filter.label}
-                        className={`posts-category-tab-landing ${activeFilter === filter.label ? "active-landing" : ""}`}
-                        onClick={() => setActiveFilter(filter.label)}
-                      >
-                        <div className="posts-category-content-landing">
-                          <span className="posts-category-label-landing">{filter.label}</span>
-                          <div className="posts-category-count-landing">
-                            <span>{filter.count}</span>
-                          </div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
                 {error && <div className="error-message-landing">{error}</div>}
 
                 <div className="posts-grid-landing">

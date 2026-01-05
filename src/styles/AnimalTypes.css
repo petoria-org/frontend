@@ -1,4 +1,7 @@
 .animal-types-section {
+  width: 100%;
+  padding: 0 40px;   
+  box-sizing: border-box;
   --light-blue: #87CEEB;
   --soft-blue: #A6D8FF;
   --pale-blue: #C8E6FF;
@@ -28,7 +31,9 @@
 }
 
 .animal-types-section .animal-types-card {
-  width: 1400px;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;     
   background: white;
   border-radius: 32px;
   box-shadow: 
