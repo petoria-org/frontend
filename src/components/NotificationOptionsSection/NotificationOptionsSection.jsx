@@ -546,6 +546,15 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
         }
       };
 
+      const handleTypingBlur = (e) => {
+        const next = e.relatedTarget; 
+        
+        if (next && next.closest(".direct-time-input-container")) return;
+        if (next && next.closest(".time-picker-popup")) return;
+
+        deactivateTypingMode();
+      };
+
       const activateTypingMode = () => {
         setIsTypingMode(true);
         setShowSlider(false);
@@ -577,7 +586,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
       const decrementMinute = () => {
         let minuteNum = parseInt(minutes) || 0;
         minuteNum = minuteNum - 1;
-        if (minuteNum < 0) minuteNum = 60 + minuteNum;
+        if (minuteNum < 0) minuteNum = 59 + minuteNum;
         handleMinuteChange(minuteNum.toString());
       };
 
@@ -704,14 +713,13 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
                               type="number"
                               value={hours}
                               onChange={(e) => handleHourChange(e.target.value)}
-                              onKeyDown={(e) => handleKeyDown(e, 'hour')}
-                              onBlur={deactivateTypingMode}
+                              onKeyDown={(e) => handleKeyDown(e, "hour")}
+                              onBlur={handleTypingBlur}
                               className="direct-time-input"
                               min="0"
                               max="23"
                               disabled={disabled}
                               placeholder="HH"
-                              maxLength={2}
                             />
                             <span className="time-colon-animated">
                               <span className="colon-dot top"></span>
@@ -722,14 +730,13 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
                               type="number"
                               value={minutes}
                               onChange={(e) => handleMinuteChange(e.target.value)}
-                              onKeyDown={(e) => handleKeyDown(e, 'minute')}
-                              onBlur={deactivateTypingMode}
+                              onKeyDown={(e) => handleKeyDown(e, "minute")}
+                              onBlur={handleTypingBlur}
                               className="direct-time-input"
                               min="0"
                               max="59"
                               disabled={disabled}
                               placeholder="MM"
-                              maxLength={2}
                             />
                           </div>
                         ) : (
