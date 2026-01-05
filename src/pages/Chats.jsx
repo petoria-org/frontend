@@ -76,32 +76,6 @@ function getMessageOrderTs(msg) {
   return best ?? 0;
 }
 
-function sortMessagesOldestFirst(arr) {
-  const safe = Array.isArray(arr) ? [...arr] : [];
-
-  safe.sort((a, b) => {
-    const aId = Number(a?.id);
-    const bId = Number(b?.id);
-
-    const aHasId = Number.isFinite(aId);
-    const bHasId = Number.isFinite(bId);
-
-    if (aHasId && bHasId) return aId - bId;
-
-    // 2️⃣ only one has server id → server message first
-    if (aHasId && !bHasId) return -1;
-    if (!aHasId && bHasId) return 1;
-
-    // 3️⃣ neither has id (optimistic messages)
-    const aTmp = a?.client_temp_id || "";
-    const bTmp = b?.client_temp_id || "";
-    return aTmp.localeCompare(bTmp);
-  });
-
-  return safe;
-}
-
-
 function mergeMessages(prevList, incomingList = []) {
   const prevArr = Array.isArray(prevList) ? prevList : [];
   const incomingArr = Array.isArray(incomingList) ? incomingList : [incomingList];
@@ -169,8 +143,8 @@ function mergeMessages(prevList, incomingList = []) {
 
   prevArr.forEach(push);
   incomingArr.forEach(push);
-
-  return sortMessagesOldestFirst(merged);
+  
+  return merged;
 }
 
 export default function ChatPage() {
@@ -543,9 +517,10 @@ export default function ChatPage() {
         if (!activeChatId || String(activeChatId) !== String(chatId)) return;
 
         const arr = Array.isArray(res.data) ? res.data : [];
-        const normalized = arr.map((m) => (m?.chat_id ? m : { ...m, chat_id: chatId }));
+        const chronological = [...arr].reverse(); 
+        const normalized = chronological.map((m) => (m?.chat_id ? m : { ...m, chat_id: chatId }));
 
-        setMessages((prev) => mergeMessages(prev, normalized));
+        setMessages((prev) => mergeMessages(normalized, prev));
         const page = {
           next: res.next ?? null,
           previous: res.previous ?? null,
@@ -947,7 +922,8 @@ export default function ChatPage() {
 
       if (res.success) {
         const arr = Array.isArray(res.data) ? res.data : [];
-        const normalized = arr.map((m) =>
+        const chronological = [...arr].reverse();
+        const normalized = chronological.map((m) =>
           m?.chat_id ? m : { ...m, chat_id: selectedChatId }
         );
         setMessages(() => mergeMessages([], normalized));
