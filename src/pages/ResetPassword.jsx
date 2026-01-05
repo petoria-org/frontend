@@ -91,7 +91,7 @@ const ResetPassword = () => {
 
 
               {/* Reset password button */}
-              <button type="submit" className="form-btn form-btn-submit" disabled={isLoading}>
+              <button type="submit" className="form-btn" disabled={isLoading}>
               تغییر رمز عبور
             </button>
           </form>

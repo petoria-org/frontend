@@ -63,7 +63,7 @@ const ForgotPassword = () => {
             </div>
             <p className="error">{errors.email?.message}</p>
 
-            <button type="submit" className="form-btn form-btn-submit" disabled={isLoading}>
+            <button type="submit" className="form-btn" disabled={isLoading}>
               {isLoading ? "در حال ارسال..." : "ارسال کد تأیید"}
             </button>
           </form>

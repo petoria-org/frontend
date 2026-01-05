@@ -1,23 +1,24 @@
 .login-main {
-  max-width: 46.875rem; /* 750px */
+  max-width: 750px;
 }
 
 .register-main {
-  max-width: 56.25rem; /* 900px */
+  max-width: 900px;
 }
 
-.forgot-password-main {
-  max-width: 34.375rem; /* 550px */
+.forgot-password-main,
+.verify-main {
+  max-width: 600px;
 }
 
 .reset-password-main {
-  max-width: 40.625rem; /* 650px */
+  max-width: 650px;
 }
 
 .verify-main {
-  max-width: 37.5rem; /* 600px */
   text-align: center;
 }
+
 .auth-context-ltr {
   direction: ltr;
 }
@@ -40,4 +41,55 @@
 
 .login-main .forgot-pass {
   margin-bottom: 1.2em;
+}
+
+@media (max-width:768px) {
+
+  .login-main {
+    max-width: 400px;
+  }
+
+  .register-main {
+    max-width: 500px;
+  }
+
+  .forgot-password-main,
+  .verify-main,
+  .reset-password-main {
+    max-width: 350px;
+  }
+
+  .auth-img,
+  .verify-img {
+    display: none;
+  }
+
+}
+
+@media (max-width:480px) {
+
+  .login-main {
+    max-width: 350px;
+  }
+
+  .forgot-password-main,
+  .verify-main,
+  .reset-password-main {
+    max-width: 300px;
+  }
+
+}
+
+@media (max-width:360px) {
+
+  .login-main {
+    max-width: 300px;
+  }
+
+  .forgot-password-main,
+  .verify-main,
+  .reset-password-main {
+    max-width: 280px;
+  }
+
 }

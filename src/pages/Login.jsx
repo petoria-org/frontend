@@ -86,7 +86,7 @@ const Login = () => {
             </Link>
 
             <button
-              className="form-btn form-btn-submit"
+              className="form-btn"
               type="submit"
               disabled={isSubmitting}
             >

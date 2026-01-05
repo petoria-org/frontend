@@ -145,7 +145,7 @@ const Verify = () => {
 
           {/* Continue */}
           <button
-            className="form-btn form-btn-submit"
+            className="form-btn"
             onClick={handleSubmit}
             disabled={loading}
           >

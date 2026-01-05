@@ -182,7 +182,7 @@ const Register = () => {
             <p className="error">{errors.confirmPassword?.message}</p>
 
             {/* Register button */}
-            <button className="form-btn form-btn-submit" disabled={loading}>
+            <button className="form-btn" disabled={loading}>
               <span>{loading ? "در حال ارسال..." : "ثبت نام"}</span>
               <img className="arrow" src="/src/icons/arrow-right.svg" alt="arrow-right" />
             </button>
