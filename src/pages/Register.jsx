@@ -1,10 +1,9 @@
-import "../styles/register.css";
-import "../styles/AuthCommon.css";
-import { Link } from "react-router-dom";
+import "../styles/auth/AuthBase.css"
+import "../styles/auth/AuthLayout.css";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useNavigate } from "react-router-dom";
 import { signup } from "../Services/authservice";
 import { useState } from "react";
 
@@ -88,8 +87,8 @@ const Register = () => {
 
   return (
     <div className="auth-page">
-      <div className="register-main">
-        <div className="register-card">
+      <div className="auth-main register-main">
+        <div className="auth-card register-card">
           <h2 className="auth-title">ثبت نام</h2>
           <p className="auth-subtitle">حساب کاربری جدید بسازید</p>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -203,12 +202,12 @@ const Register = () => {
           </button>
 
           {/* Already have account */}
-          <p className="register-footer">
+          <p className="auth-footer">
             قبلاً ثبت نام کرده‌اید؟{" "}
             <Link className="interactive-link" to={"/login"}>وارد شوید</Link>
           </p>
         </div>
-        <div className="register-img">
+        <div className="auth-img register-img">
           <img src="/src/images/cat.svg" alt="cat" />
         </div>
       </div>

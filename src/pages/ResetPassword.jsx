@@ -1,12 +1,11 @@
-import "../styles/resetPassword.css";
-import "../styles/AuthCommon.css";
+import "../styles/auth/AuthBase.css";
+import "../styles/auth/AuthLayout.css";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { resetPassword } from "../Services/authservice";
-import { useLocation } from "react-router-dom";
 
 const ResetPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -55,51 +54,57 @@ const ResetPassword = () => {
 
   return (
     <div className="auth-page">
-      <div className="reset-password-main">
-        <h2 className="auth-title">بازیابی رمز عبور</h2>
-        <p className="auth-subtitle">رمز عبور جدید خود را وارد کنید</p>
-          <form onSubmit={handleSubmit(onSubmit)} >
-            {/* New password */}
-            <label className="field-label">
-                رمز عبور جدید
-            </label>
-            <div className="input-wrapper">
-              <img className="input-icon" src="/src/icons/lock.svg" alt="lock" />
-              <input
-                type="password"
-                className="text-input"
-                placeholder="حداقل 8 کاراکتر"
-                {...register("password")}
-              />
-            </div>
-            <p className="error">{errors.password?.message}</p>
+      <div className="auth-main reset-password-main auth-context-ltr">
+        <div className="auth-card reset-password-card">
+          <h2 className="auth-title">بازیابی رمز عبور</h2>
+          <p className="auth-subtitle">رمز عبور جدید خود را وارد کنید</p>
+            <form onSubmit={handleSubmit(onSubmit)} >
+              {/* New password */}
+              <label className="field-label">
+                  رمز عبور جدید
+              </label>
+              <div className="input-wrapper">
+                <img className="input-icon" src="/src/icons/lock.svg" alt="lock" />
+                <input
+                  type="password"
+                  className="text-input"
+                  placeholder="حداقل 8 کاراکتر"
+                  {...register("password")}
+                />
+              </div>
+              <p className="error">{errors.password?.message}</p>
 
-            {/* Confirm password */}
-            <label className="field-label">
-                تأیید رمز عبور
-            </label>
-            <div className="input-wrapper">
-              <img className="input-icon" src="/src/icons/lock.svg" alt="lock" />
-              <input
-                type="password"
-                className="text-input"
-                placeholder="رمز عبور را دوباره وارد کنید"
-                {...register("confirmPassword")}
-              />
-            </div>
-            <p className="error">{errors.confirmPassword?.message}</p>
+              {/* Confirm password */}
+              <label className="field-label">
+                  تأیید رمز عبور
+              </label>
+              <div className="input-wrapper">
+                <img className="input-icon" src="/src/icons/lock.svg" alt="lock" />
+                <input
+                  type="password"
+                  className="text-input"
+                  placeholder="رمز عبور را دوباره وارد کنید"
+                  {...register("confirmPassword")}
+                />
+              </div>
+              <p className="error">{errors.confirmPassword?.message}</p>
 
 
-            {/* Reset password button */}
-            <button type="submit" className="form-btn form-btn-submit" disabled={isLoading}>
-            تغییر رمز عبور
-          </button>
-        </form>
-        <p className="reset-password">
-          <Link className="interactive-link" to="/login">
-            بازگشت به ورود
-          </Link>
-        </p>
+              {/* Reset password button */}
+              <button type="submit" className="form-btn form-btn-submit" disabled={isLoading}>
+              تغییر رمز عبور
+            </button>
+          </form>
+          <p className="reset-password">
+            <Link className="interactive-link" to="/login">
+              بازگشت به ورود
+            </Link>
+          </p>
+        </div>
+
+        <div className="auth-img reset-password-img">
+          <img src="/src/images/catRP.svg" alt="cat" />
+        </div>
       </div>
     </div>
   );

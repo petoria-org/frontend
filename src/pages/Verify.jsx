@@ -1,4 +1,6 @@
-import "../styles/Verify.css";
+import "../styles/auth/AuthBase.css"
+import "../styles/auth/AuthLayout.css";
+import "../styles/auth/Verify.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { verifyOtp, requestOtp } from "../Services/authservice";
@@ -98,57 +100,63 @@ const Verify = () => {
 
   return (
     <div className="auth-page">
-      <div className="verify-main">
-        <div className="verify-icon">
-          <img src="/src/icons/verify.svg" alt="verify" />
-        </div>
+      <div className="auth-main verify-main auth-context-ltr">
+        <div className="auth-card verify-card">
+          <div className="verify-icon">
+            <img src="/src/icons/verify.svg" alt="verify" />
+          </div>
 
-        <p className="auth-subtitle">کد تأیید ارسال شده را وارد کنید</p>
+          <p className="auth-subtitle">کد تأیید ارسال شده را وارد کنید</p>
 
-        {email && (
-          <p className="verify-email-text">
-            یک کد ۶ رقمی به ایمیل <span>{email}</span> ارسال شد
+          {email && (
+            <p className="verify-email-text">
+              یک کد ۶ رقمی به ایمیل <span>{email}</span> ارسال شد.
+            </p>
+          )}
+
+          {/* OTP Inputs */}
+          <div className="verify-code-box">
+            {code.map((digit, i) => (
+              <input
+                key={i}
+                id={`code-${i}`}
+                className="verify-code-input"
+                maxLength="1"
+                value={digit}
+                onChange={(e) => handleChange(e.target.value, i)}
+              />
+            ))}
+          </div>
+
+          {/* Timer */}
+          <p className="verify-timer">
+            زمان باقی‌مانده:{" "}
+            <span>00:{timer < 10 ? `0${timer}` : timer}</span>
           </p>
-        )}
 
-        {/* OTP Inputs */}
-        <div className="verify-code-box">
-          {code.map((digit, i) => (
-            <input
-              key={i}
-              id={`code-${i}`}
-              className="verify-code-input"
-              maxLength="1"
-              value={digit}
-              onChange={(e) => handleChange(e.target.value, i)}
-            />
-          ))}
+          {/* Resend link */}
+          <div
+            className={`verify-resend-link ${canResend ? "active" : ""}`}
+            onClick={canResend ? handleResend : null}
+          >
+            <img src="/src/icons/resend.svg" alt="resend" />
+            <span>ارسال مجدد کد</span>
+          </div>
+
+          {/* Continue */}
+          <button
+            className="form-btn form-btn-submit"
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            <span>{loading ? "در حال بررسی..." : "تأیید و ادامه"}</span>
+            <img className="arrow" src="/src/icons/arrow-right.svg" alt="arrow-right" />
+          </button>
         </div>
 
-        {/* Timer */}
-        <p className="verify-timer">
-          زمان باقی‌مانده:{" "}
-          <span>00:{timer < 10 ? `0${timer}` : timer}</span>
-        </p>
-
-        {/* Resend link */}
-        <div
-          className={`verify-resend-link ${canResend ? "active" : ""}`}
-          onClick={canResend ? handleResend : null}
-        >
-          <img src="/src/icons/resend.svg" alt="resend" />
-          <span>ارسال مجدد کد</span>
+        <div className="auth-img verify-img">
+          <img src="/src/images/catV.svg" alt="cat" />
         </div>
-
-        {/* Continue */}
-        <button
-          className="form-btn form-btn-submit"
-          onClick={handleSubmit}
-          disabled={loading}
-        >
-          <span>{loading ? "در حال بررسی..." : "تأیید و ادامه"}</span>
-          <img className="arrow" src="/src/icons/arrow-right.svg" alt="arrow-right" />
-        </button>
       </div>
     </div>
   );

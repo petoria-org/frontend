@@ -1,0 +1,43 @@
+.login-main {
+  max-width: 46.875rem; /* 750px */
+}
+
+.register-main {
+  max-width: 56.25rem; /* 900px */
+}
+
+.forgot-password-main {
+  max-width: 34.375rem; /* 550px */
+}
+
+.reset-password-main {
+  max-width: 40.625rem; /* 650px */
+}
+
+.verify-main {
+  max-width: 37.5rem; /* 600px */
+  text-align: center;
+}
+.auth-context-ltr {
+  direction: ltr;
+}
+
+.auth-card {
+  grid-column: 1 / span 13;
+}
+
+.auth-img {
+  grid-column: 14 / -1;
+}
+
+.verify-card {
+  grid-column: 1 / span 14;
+}
+
+.verify-img {
+  grid-column: 15 / -1;
+}
+
+.login-main .forgot-pass {
+  margin-bottom: 1.2em;
+}
