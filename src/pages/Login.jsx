@@ -1,5 +1,5 @@
-import "../styles/login.css";
-import "../styles/AuthCommon.css";
+import "../styles/auth/AuthBase.css"
+import "../styles/auth/AuthLayout.css";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
@@ -43,8 +43,8 @@ const Login = () => {
 
   return (
     <div className="auth-page">
-      <div className="login-main">
-        <div className="login-card">
+      <div className="auth-main login-main">
+        <div className="auth-card login-card">
           <h2 className="auth-title">ورود به حساب کاربری</h2>
           <p className="auth-subtitle">به Petoria خوش آمدید</p>
 
@@ -86,7 +86,7 @@ const Login = () => {
             </Link>
 
             <button
-              className="form-btn form-btn-submit"
+              className="form-btn"
               type="submit"
               disabled={isSubmitting}
             >
@@ -112,7 +112,7 @@ const Login = () => {
             <img src="/src/icons/chrome.svg" alt="chrome" />
           </button>
 
-          <p className="signup-text">
+          <p className="auth-footer">
             حساب کاربری ندارید؟{" "}
             <Link className="interactive-link" to="/register">
               ثبت نام کنید
@@ -120,7 +120,7 @@ const Login = () => {
           </p>
         </div>
 
-        <div className="login-img">
+        <div className="auth-img login-img">
           <img src="/src/images/dog.svg" alt="dog" />
         </div>
       </div>

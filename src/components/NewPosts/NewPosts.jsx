@@ -138,6 +138,7 @@ export default function NewPosts() {
 
   const [activeFilter, setActiveFilter] = useState("همه");
   const [posts, setPosts] = useState([]);
+  const [allPosts, setAllPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [hoveredCard, setHoveredCard] = useState(null);
@@ -157,6 +158,32 @@ export default function NewPosts() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const fetchAllPostsForCount = async () => {
+      try {
+        const res = await api.get(API_ENDPOINTS.all);
+        const data = res.data;
+        const results = data.results || [];
+
+        let allResults = results;
+        let nextUrl = data.next;
+
+        while (nextUrl) {
+          const nextRes = await api.get(nextUrl);
+          const nextData = nextRes.data;
+          allResults = [...allResults, ...(nextData.results || [])];
+          nextUrl = nextData.next;
+        }
+
+        setAllPosts(allResults);
+      } catch (err) {
+        console.error("خطا در دریافت allPosts (count):", err);
+      }
+    };
+
+    fetchAllPostsForCount();
+  }, []);
 
   useEffect(() => {
     let url;
@@ -254,6 +281,15 @@ export default function NewPosts() {
     return normalizedPosts.slice(0, 6);
   }, [normalizedPosts]);
 
+  const normalizedAllPosts = useMemo(() => {
+    return allPosts.map((p) => {
+      const postType = resolvePostType(p);
+      return {
+        postTypeLabel: getPostType(postType),
+      };
+    });
+  }, [allPosts]);
+
   const handleViewDetails = (ad) => {
     console.log("مشاهده جزئیات برای آگهی (NewPosts):", ad);
     const postType = ad.postType && ad.postType !== "generic" ? ad.postType : resolvePostType(ad.originalData);
@@ -282,21 +318,29 @@ export default function NewPosts() {
     return isNaN(d) ? isoOrRelative : d.toLocaleDateString('fa-IR');
   };
 
-  const filters = [
-    { label: "همه", count: normalizedPosts.length },
-    {
-      label: "پیدا شده",
-      count: normalizedPosts.filter((a) => a.status === "پیدا شده").length,
-    },
-    {
-      label: "گم شده",
-      count: normalizedPosts.filter((a) => a.status === "گم شده").length,
-    },
-    {
-      label: "سرپرستی",
-      count: normalizedPosts.filter((a) => a.status === "سرپرستی").length,
-    },
-  ];
+  const filters = useMemo(() => {
+    return [
+      { label: "همه", count: allPosts.length },
+      {
+        label: "پیدا شده",
+        count: normalizedAllPosts.filter(
+          (a) => a.postTypeLabel === "پیدا شده"
+        ).length,
+      },
+      {
+        label: "گم شده",
+        count: normalizedAllPosts.filter(
+          (a) => a.postTypeLabel === "گم شده"
+        ).length,
+      },
+      {
+        label: "سرپرستی",
+        count: normalizedAllPosts.filter(
+          (a) => a.postTypeLabel === "سرپرستی"
+        ).length,
+      },
+    ];
+  }, [allPosts, normalizedAllPosts]);
 
   if (loading) {
     return (
@@ -348,25 +392,6 @@ export default function NewPosts() {
           <main>
             <section className="posts-section-landing">
               <div className="posts-container-landing">
-
-                <div className="posts-categories-tabs-landing">
-                  <div className="posts-categories-list-landing">
-                    {filters.map((filter) => (
-                      <button
-                        key={filter.label}
-                        className={`posts-category-tab-landing ${activeFilter === filter.label ? "active-landing" : ""}`}
-                        onClick={() => setActiveFilter(filter.label)}
-                      >
-                        <div className="posts-category-content-landing">
-                          <span className="posts-category-label-landing">{filter.label}</span>
-                          <div className="posts-category-count-landing">
-                            <span>{filter.count}</span>
-                          </div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
 
                 {error && <div className="error-message-landing">{error}</div>}
 

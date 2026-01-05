@@ -1,0 +1,95 @@
+.login-main {
+  max-width: 750px;
+}
+
+.register-main {
+  max-width: 900px;
+}
+
+.forgot-password-main,
+.verify-main {
+  max-width: 600px;
+}
+
+.reset-password-main {
+  max-width: 650px;
+}
+
+.verify-main {
+  text-align: center;
+}
+
+.auth-context-ltr {
+  direction: ltr;
+}
+
+.auth-card {
+  grid-column: 1 / span 13;
+}
+
+.auth-img {
+  grid-column: 14 / -1;
+}
+
+.verify-card {
+  grid-column: 1 / span 14;
+}
+
+.verify-img {
+  grid-column: 15 / -1;
+}
+
+.login-main .forgot-pass {
+  margin-bottom: 1.2em;
+}
+
+@media (max-width:768px) {
+
+  .login-main {
+    max-width: 400px;
+  }
+
+  .register-main {
+    max-width: 500px;
+  }
+
+  .forgot-password-main,
+  .verify-main,
+  .reset-password-main {
+    max-width: 350px;
+  }
+
+  .auth-img,
+  .verify-img {
+    display: none;
+  }
+
+}
+
+@media (max-width:480px) {
+
+  .login-main {
+    max-width: 350px;
+  }
+
+  .forgot-password-main,
+  .verify-main,
+  .reset-password-main {
+    max-width: 300px;
+  }
+
+}
+
+@media (max-width:360px) {
+
+  .login-main {
+    max-width: 300px;
+  }
+
+  .forgot-password-main,
+  .verify-main,
+  .reset-password-main {
+    max-width: 280px;
+  }
+
+}

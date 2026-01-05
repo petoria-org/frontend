@@ -1,11 +1,30 @@
-/* ===== Auth Page ===== */
 .auth-page {
-  max-height: 100%;
   width: 100%;
   font-size: 16px;
 }
 
-/* ===== Titles ===== */
+.auth-main {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(24, 1fr);
+  border-radius: 0.9rem;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  margin: 0 auto;
+  background-color: #FCFCFC;
+}
+
+.auth-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.auth-card {
+  padding: 1.875rem 2.2rem;
+  border: 1px solid #D7CFC6;
+}
+
 .auth-title {
   font-size: 1.4em;
   font-weight: 600;
@@ -20,7 +39,6 @@
   margin-bottom: 1.1em;
 }
 
-/* ===== Form ===== */
 .field-label {
   display: block;
   margin-bottom: 0.4em;
@@ -34,7 +52,7 @@
 
 .input-icon {
   position: absolute;
-  right: 10px;
+  right: 0.4em;
   top: 50%;
   transform: translateY(-50%);
   width: 1.4em;
@@ -44,23 +62,27 @@
 }
 
 .text-input {
-  padding: 12px 35px 12px 0px;
+  padding: 0.75em 2.2em 0.75em 0.75em;
   background: linear-gradient(135deg, 
     rgba(255, 255, 255, 0.9) 0%,
     rgba(248, 251, 255, 0.9) 100%);
-  border-radius: 12px;
+  border-radius: 0.75em;
   border: 2px solid rgba(122, 179, 224, 0.3);
   color: #2c3e50;
   font-size: 0.9em;
   width: 100%;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    box-shadow 0.3s cubic-bezier(0.4,0,0.2,1),
+    transform 0.2s cubic-bezier(0.4,0,0.2,1),
+    background 0.3s;
   box-shadow: 
     0 6px 20px rgba(0, 0, 0, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
   z-index: 1;
 }
 
-.text-input:focus, .verify-code-input:focus {
+.text-input:focus,
+.verify-code-input:focus {
   outline: none;
   border-color: #1c7bd1;
   background: linear-gradient(135deg, 
@@ -78,7 +100,6 @@
 
 .text-input::placeholder {
   color: #94a3b8;
-  font-size: 1em;
 }
 
 .error {
@@ -86,11 +107,10 @@
   margin-bottom: 1.2em;
 }
 
-
 .form-btn {
   width: 100%;
-  padding: 9px;
-  border-radius: 12px;
+  padding: 0.6em;
+  border-radius: 0.9em;
   font-weight: 600;
   font-size: 1em;
   cursor: pointer;
@@ -107,28 +127,27 @@
   gap: 0.3em;
 }
 
-.form-btn-submit:hover:not(:disabled) {
+.form-btn:active:not(:disabled) {
   background: linear-gradient(135deg, 
     #155fa0 0%,
     #1c7bd1 100%);
-  transform: translateY(-1px);
+  transform: translateY(1px) scale(0.98);
   box-shadow: 
-    0 10px 50px rgba(28, 123, 209, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    0 4px 12px rgba(0, 0, 0, 0.2),
+    inset 0 2px 4px rgba(0, 0, 0, 0.25);
   border-color: transparent;
 }
 
 .form-btn:disabled {
-  opacity: 0.7;
+  opacity: 0.9;
   cursor: not-allowed;
   transform: none;
 }
 
 .arrow {
-  width: 8%;
+  width: 1.5em;
 }
 
-/* ===== Divider ===== */
 .divider {
   display: flex;
   align-items: center;
@@ -138,7 +157,7 @@
 
 .divider-line {
   flex: 1;
-  height: 0.05em;
+  height: 1px;
   background-color: rgba(0,0,0,0.2);
 }
 
@@ -146,13 +165,12 @@
   color: rgba(0,0,0,0.3);
 }
 
-/* ===== Google Button ===== */
 .google-btn {
   width: 100%;
-  border-radius: 12px;
+  border-radius: 0.9em;
   border: 2px solid rgba(122, 179, 224, 0.3);
   background-color: #fff;
-  padding: 10px;
+  padding: 0.65em;
   font-weight: 600;
   cursor: pointer;
   margin-bottom: 1.2em;
@@ -160,6 +178,11 @@
   align-items: center;
   justify-content: center;
   gap: 0.3em;
+}
+
+.google-btn:active {
+  transform: scale(0.97);
+  background-color: #f5f9ff;
 }
 
 .google-btn img {
@@ -178,28 +201,100 @@
     text-shadow 0.2s ease;
 }
 
-.interactive-link:hover,
-.forgot-pass:hover,
-.verify-resend-link.active:hover {
+.interactive-link:active,
+.forgot-pass:active,
+.verify-resend-link.active:active {
   color: #004f9a;
   text-shadow: 0 2px 10px rgba(0, 107, 203, 0.35);
 }
 
-/* Underline effect for interactive links */
-.interactive-link::after, .forgot-pass::after, .verify-resend-link.active::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -2px;
-  width: 100%;
-  height: 0.1em;
-  background-color: currentColor;
-  transform: scaleX(0);
-  transform-origin: right;
-  transition: transform 0.3s ease;
+ .interactive-link::after,
+  .forgot-pass::after,
+  .verify-resend-link.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -0.15em;
+    width: 100%;
+    height: 0.1em;
+    background-color: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+  }
+
+.auth-footer {
+  text-align: center;
+  color: rgba(0, 0, 0, 0.7);
 }
 
-.interactive-link:hover::after, .forgot-pass:hover::after, .verify-resend-link.active:hover::after {
-  transform: scaleX(1);
-  transform-origin: right;
+.forgot-password,
+.reset-password {
+    text-align: center;
+}
+
+.form-btn,
+.google-btn,
+.interactive-link,
+.forgot-pass,
+.verify-resend-link {
+  touch-action: manipulation;
+}
+
+@media (hover: hover) and (pointer: fine) {
+
+  .form-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, 
+      #155fa0 0%,
+      #1c7bd1 100%);
+    transform: translateY(-1px);
+    box-shadow: 
+      0 10px 50px rgba(28, 123, 209, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    border-color: transparent;
+  }
+
+  .interactive-link:hover,
+  .forgot-pass:hover,
+  .verify-resend-link.active:hover {
+    color: #004f9a;
+    text-shadow: 0 2px 10px rgba(0, 107, 203, 0.35);
+  }
+
+  .interactive-link:hover::after,
+  .forgot-pass:hover::after,
+  .verify-resend-link.active:hover::after {
+    transform: scaleX(1);
+    transform-origin: right;
+  }
+
+}
+
+@media (max-width: 768px) {
+
+  .auth-main {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+@media (max-width: 480px) {
+
+  .auth-card {
+    font-size: 15px;
+    padding: 1.4em 1.8em;
+  }
+
+  .error {
+    margin-bottom: 1em;
+  }
+
+}
+
+@media (max-width: 360px) {
+
+  .auth-card {
+    font-size: 13px;
+  }
+
 }
