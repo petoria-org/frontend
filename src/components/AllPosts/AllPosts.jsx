@@ -204,6 +204,7 @@ export default function AllPosts() {
   });
   
   const [search, setSearch] = useState("");
+  const [searchQuery, setSearchQuery] = useState(""); // مقدار جستجوی نهایی
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -219,6 +220,10 @@ export default function AllPosts() {
   
   const [sortOrder, setSortOrder] = useState("");
 
+  const lastQueryRef = useRef("");
+  const isFirstRender = useRef(true);
+  const searchInputRef = useRef(null);
+
   const activeFiltersCount = [
     !isAllValue(filterAnimal),
     !isAllValue(filterSex),
@@ -228,8 +233,6 @@ export default function AllPosts() {
     !isAllValue(filterIsVaccinated),
     !isAllValue(filterIsSterilized),
   ].filter(Boolean).length;
-
-  const lastQueryRef = useRef("");
 
   const activeEndpoint = useMemo(() => {
     if (activeFilter === "گم شده") {
@@ -246,7 +249,7 @@ export default function AllPosts() {
 
   const queryString = useMemo(() => {
     const params = new URLSearchParams();
-    const term = search.trim();
+    const term = searchQuery.trim(); // استفاده از searchQuery نه search
 
     if (term) {
       params.set("q", term);
@@ -312,7 +315,7 @@ export default function AllPosts() {
 
     return params.toString();
   }, [
-    search,
+    searchQuery, // استفاده از searchQuery
     sortOrder,
     filterAnimal,
     filterSex,
@@ -323,6 +326,62 @@ export default function AllPosts() {
     filterIsSterilized,
     activeFilter,
   ]);
+
+  const normalizedAllPosts = useMemo(() => {
+    try {
+      if (!Array.isArray(allPosts) || allPosts.length === 0) {
+        return [];
+      }
+      
+      return allPosts.map((p) => {
+        if (!p) return { id: 'unknown', postTypeLabel: 'نامشخص' };
+        
+        const postType = resolvePostType(p);
+        const postTypeLabel = getPostType(postType);
+        
+        return {
+          id: `${postType}-${p.id || 'unknown'}`,
+          postTypeLabel: postTypeLabel,
+        };
+      });
+    } catch (error) {
+      console.error("Error in normalizedAllPosts:", error);
+      return [];
+    }
+  }, [allPosts]);
+
+  const filters = useMemo(() => {
+    try {
+      const normalized = normalizedAllPosts || [];
+      
+      return [
+        { 
+          label: "همه", 
+          count: allPosts.length || 0
+        },
+        {
+          label: "پیدا شده",
+          count: normalized.filter((a) => a?.postTypeLabel === "پیدا شده").length,
+        },
+        {
+          label: "گم شده",
+          count: normalized.filter((a) => a?.postTypeLabel === "گم شده").length,
+        },
+        {
+          label: "سرپرستی",
+          count: normalized.filter((a) => a?.postTypeLabel === "سرپرستی").length,
+        },
+      ];
+    } catch (error) {
+      console.error("Error calculating filters:", error);
+      return [
+        { label: "همه", count: 0 },
+        { label: "پیدا شده", count: 0 },
+        { label: "گم شده", count: 0 },
+        { label: "سرپرستی", count: 0 },
+      ];
+    }
+  }, [allPosts, normalizedAllPosts]);
 
   const fetchPosts = async (url, page = 1, query = "") => {
     setLoading(true);
@@ -389,68 +448,28 @@ export default function AllPosts() {
   };
 
   useEffect(() => {
-    const queryKey = `${activeEndpoint}|${queryString}`;
-
-    if (queryKey !== lastQueryRef.current && currentPage !== 1) {
-      setCurrentPage(1);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      fetchPosts(activeEndpoint, currentPage, queryString);
       return;
     }
 
+    const queryKey = `${activeEndpoint}|${queryString}`;
+    
+    const oldParams = new URLSearchParams(lastQueryRef.current.split('|')[1] || '');
+    const newParams = new URLSearchParams(queryString);
+    
+    oldParams.delete('page');
+    newParams.delete('page');
+    
+    if (oldParams.toString() !== newParams.toString() && currentPage !== 1) {
+      setCurrentPage(1);
+      return;
+    }
+    
     lastQueryRef.current = queryKey;
     fetchPosts(activeEndpoint, currentPage, queryString);
   }, [activeEndpoint, currentPage, queryString]);
-
-  const normalizedAllPosts = useMemo(() => {
-    return allPosts.map((p) => {
-      const postType = resolvePostType(p);
-      const postTypeLabel = getPostType(postType);
-      
-      let status = "فعال";
-      let statusLabel = "فعال";
-
-      if (activeFilter === "گم شده") {
-        status = "گم شده";
-        statusLabel = "گم شده";
-      } 
-      
-      else if (activeFilter === "پیدا شده") {
-        status = "پیدا شده";
-        statusLabel = "پیدا شده";
-      } 
-      
-      else if (activeFilter === "سرپرستی") {
-        status = "سرپرستی";
-        statusLabel = "سرپرستی";
-      } 
-      
-      else {
-        if (postType === "found" || p.found_time) {
-          status = "پیدا شده";
-          statusLabel = "پیدا شده";
-        } 
-        
-        else if (postType === "lost" || p.lost_time) {
-          status = "گم شده";
-          statusLabel = "گم شده";
-        } 
-        
-        else if (postType === "surrender") {
-          status = "سرپرستی";
-          statusLabel = "سرپرستی";
-        } 
-        
-        else {
-          status = p.status || "فعال";
-          statusLabel = "فعال";
-        }
-      }
-
-      return {
-        id: `${postType}-${p.id}`,
-        postTypeLabel: postTypeLabel,
-      };
-    });
-  }, [allPosts, activeFilter]);
 
   const normalizedPosts = useMemo(() => {
     return posts.map((p) => {
@@ -555,6 +574,7 @@ export default function AllPosts() {
     setFilterIsSterilized("همه");
     setSortOrder("");
     setSearch("");
+    setSearchQuery("");
     setCurrentPage(1);
   };
 
@@ -595,24 +615,29 @@ export default function AllPosts() {
     setCurrentPage(pageNumber);
   };
 
-  const filters = [
-    { 
-      label: "همه", 
-      count: allPosts.length 
-    },
-    {
-      label: "پیدا شده",
-      count: normalizedAllPosts.filter((a) => a.postTypeLabel === "پیدا شده").length,
-    },
-    {
-      label: "گم شده",
-      count: normalizedAllPosts.filter((a) => a.postTypeLabel === "گم شده").length,
-    },
-    {
-      label: "سرپرستی",
-      count: normalizedAllPosts.filter((a) => a.postTypeLabel === "سرپرستی").length,
-    },
-  ];
+  const handleSearchInputChange = (e) => {
+    setSearch(e.target.value);
+  };
+
+  const handleSearchSubmit = () => {
+    setSearchQuery(search);
+    setCurrentPage(1);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearchSubmit();
+    }
+  };
+
+  const handleClearSearch = () => {
+    setSearch('');
+    setSearchQuery('');
+    setCurrentPage(1);
+    if (searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  };
 
 return (
   <div className="new-post-container-all-posts">
@@ -679,40 +704,43 @@ return (
           </div>
         </div>
         
-        <div className="search-wrapper">
-          <div className="search-box-inner" onClick={() => document.querySelector('.search-input-container-landing input')?.focus()}>
-            <div className="search-input-container">
-              <div className="search-icon-box">
-                <img 
-                  src="/src/assets/icons/search-normal.svg" 
-                  alt="search"
-                  width="20"
-                  height="20"
-                  className="search-icon-img"
-                />
-              </div>
+        <div className="search-wrapper-post">
+          <div className="search-box-inner-post">
+            <div className="search-input-container-post">
               <input
+                ref={searchInputRef}
                 type="text"
                 placeholder="جستجو در آگهی‌ها..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="search-input"
+                onChange={handleSearchInputChange}
+                onKeyPress={handleKeyPress}
+                className="search-input-post"
               />
               
               {search && (
                 <button 
-                  className="search-clear-btn"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSearch('');
-                  }}
+                  className="search-clear-btn-post"
+                  onClick={handleClearSearch}
                   type="button"
+                  title="پاک کردن جستجو"
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                     <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </button>
               )}
+              
+              <button 
+                className="search-submit-btn-post"
+                onClick={handleSearchSubmit}
+                type="button"
+                title="جستجو"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M15.5 14.5l5 5" strokeLinecap="round"/>
+                  <circle cx="10.5" cy="10.5" r="6.5"/>
+                </svg>
+              </button>
             </div>
           </div>
         </div>
@@ -752,7 +780,7 @@ return (
               </div>
               <h3>هیچ آگهی‌ای یافت نشد</h3>
               <p className="no-results-text-all-posts">
-                با فیلترهای انتخاب شده، آگهی مناسبی پیدا نشد. لطفا فیلترهای دیگری را امتحان کنید.
+                {searchQuery ? `با عبارت "${searchQuery}"` : "با فیلترهای انتخاب شده"}، آگهی مناسبی پیدا نشد.
               </p>
               <button
                 onClick={clearAllFilters}
