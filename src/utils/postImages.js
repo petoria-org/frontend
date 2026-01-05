@@ -16,7 +16,7 @@ export const SUCCESS_STORY_DEFAULT_IMAGES = {
   cat: "/src/assets/images/success_story_cat.png",
   rabbit: "/src/assets/images/success_story_rabbit.png",
   hamster: "/src/assets/images/success_story_hamster.png",
-  bird: "/src/assets/images/success_story_birdpng",
+  bird: "/src/assets/images/success_story_bird.png",
   other: "/src/assets/images/success_story_other.png",
 };
 

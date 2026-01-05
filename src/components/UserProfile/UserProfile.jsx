@@ -875,7 +875,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                             
                             <div className={`pet-listing-status ${pet.status}`}>
                               <span className="status-label">{pet.statusLabel}</span>
-                              <div className="status-pulse"></div>
+                              <div className="status-pulse-user"></div>
                             </div>
                             
                             <div className="action-buttons-container">
