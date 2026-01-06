@@ -1,5 +1,5 @@
 // OpenConv.jsx
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState, useCallback } from "react";
 import { config } from "../config";
 import api from "../Services/api";
 
@@ -466,6 +466,7 @@ export default function OpenConv({
   const avatarSrc = chat?.avatar ? makeAbsoluteUrl(chat.avatar) || chat.avatar || null : null;
 
   const pendingScrollOnSendRef = useRef(false);
+  const autoScrollOnSendRef = useRef(true);
   const prevMessageCountRef = useRef(Array.isArray(messages) ? messages.length : 0);
   const lastMessageKeyRef = useRef(null);
   const initialScrollDoneRef = useRef(false);
@@ -488,19 +489,14 @@ export default function OpenConv({
 
       const run = () => vp.scrollTo({ top: vp.scrollHeight, behavior });
 
-      // Run across a couple of frames so late layout (fonts/images) are included.
-      requestAnimationFrame(() => {
-        run();
-        requestAnimationFrame(() => run());
-        setTimeout(run, 60);
-      });
-    },
-    []
-  );
+      setTimeout(() => {
+        run()
+        setTimeout(run , 120);
+      }, 100);
+    }, [] );
 
   const settleBottomAfterSend = useCallback(() => {
-    // Re-run bottom scroll a few times to catch late layout (fonts/images)
-    const runs = [0, 80, 160, 280];
+    const runs = [120 , 260];
     runs.forEach((delay) => {
       setTimeout(() => scrollToBottom("auto"), delay);
     });
@@ -560,7 +556,7 @@ export default function OpenConv({
     lastOutgoingAtRef.current = 0;
   }, [chat?.id]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (initialScrollDoneRef.current) return;
 
     const viewport = messagesViewportRef.current;
@@ -569,6 +565,16 @@ export default function OpenConv({
 
     const isLoadingPlaceholder = messages.length === 1 && messages[0]?.id === "loading";
     if (isLoadingPlaceholder) return;
+
+      const hasUnread = messages.some(
+        (m) => m && m.side !== "out" && !m.is_read
+      );
+
+      if (!hasUnread) {
+        viewport.scrollTop = viewport.scrollHeight; // instant, no animation
+        initialScrollDoneRef.current = true;
+        return;
+      }
 
     const firstUnread = messages.find((m) => m && m.side !== "out" && !m.is_read && m.id != null);
 
@@ -581,7 +587,6 @@ export default function OpenConv({
       }
     }
 
-    scrollToBottom("auto");
     initialScrollDoneRef.current = true;
   }, [messages, scrollToBottom]);
 
@@ -615,20 +620,17 @@ export default function OpenConv({
     const newMessages = messages.slice(prevCount, nextCount);
     const hasNewIncoming = newMessages.some((msg) => msg?.side !== "out");
 
-    // Scroll any time the list grows after we triggered a send; sorting by id can re-order items,
     // so the new outgoing message is not guaranteed to sit in the tail slice.
     if (pendingScrollOnSendRef.current && listGrew) {
-      scrollToBottom("smooth");
-      settleBottomAfterSend();
+      if (autoScrollOnSendRef.current) {
+        scrollToBottom("smooth");
+        settleBottomAfterSend();
+      }
       pendingScrollOnSendRef.current = false;
     }
 
-    if (hasNewIncoming) {
-      const now = Date.now();
-      const recentlyTyping = now - (lastOutgoingAtRef.current || 0) <= LIVE_WINDOW_MS;
-
-      if (recentlyTyping) scrollToBottom("smooth");
-      else if (isNearBottom()) scrollToBottom("smooth");
+    if (hasNewIncoming && isNearBottom()) {
+      scrollToBottom("smooth")
     }
 
     prevMessageCountRef.current = nextCount;
@@ -640,6 +642,7 @@ export default function OpenConv({
     // Upload attachments + include text + replyTo
     if (hasPendingUpload) {
       lastOutgoingAtRef.current = Date.now();
+      autoScrollOnSendRef.current = true;
       pendingScrollOnSendRef.current = true;
 
       onAttach?.(pendingAttachments.type, pendingAttachments.files, {
@@ -670,8 +673,9 @@ export default function OpenConv({
         text: textSnippet || "(No text)",
         senderName: msg.senderName || (msg.side === "out" ? "You" : chat?.title || "Sender"),
       });
-      // Ensure the reply bar is visible by nudging the viewport to the bottom
-      setTimeout(() => scrollToBottom("smooth"), 0);
+      if(isNearBottom()) {
+        setTimeout(() => scrollToBottom("smooth"), 0);
+      }
     },
     [chat?.title, scrollToBottom]
   );
@@ -692,7 +696,7 @@ export default function OpenConv({
 
   // When reply bar or pending attachments appear, keep the latest messages in view
   useEffect(() => {
-    if (replyTarget || hasPendingUpload) {
+    if ((replyTarget || hasPendingUpload) && isNearBottom()) {
       scrollToBottom("smooth");
     }
   }, [replyTarget, hasPendingUpload, scrollToBottom]);
