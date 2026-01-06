@@ -156,5 +156,6 @@ export function buildChatWsUrl() {
   const token = localStorage.getItem("access");
   if (!token) return null;
 
+  console.log(`${WS_BASE_URL}/ws/chat/?token=${encodeURIComponent(token)}`)
   return `${WS_BASE_URL}/ws/chat/?token=${encodeURIComponent(token)}`;
 }
