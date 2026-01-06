@@ -157,7 +157,7 @@ const getPostType = (type) => {
 
 const LocationIcon = () => (
   <img 
-    src="/src/icons/location.svg" 
+    src="/icons/location.svg" 
     alt="location"
     width="16" 
     height="16"
@@ -167,7 +167,7 @@ const LocationIcon = () => (
 
 const CalendarIcon = () => (
   <img 
-    src="/src/icons/calendar-2.svg" 
+    src="/icons/calendar-2.svg" 
     alt="calendar"
     width="16" 
     height="16"
@@ -177,7 +177,7 @@ const CalendarIcon = () => (
 
 const ClockIcon = () => (
   <img 
-    src="/src/icons/clock.svg" 
+    src="/icons/clock.svg" 
     alt="time"
     width="12" 
     height="12"
@@ -784,7 +784,7 @@ return (
           {displayedAds.length === 0 && !loading && (
             <div className="no-results-container-all-posts">
               <div className="no-results-icon-all-posts">
-                <img src="/src/assets/icons/search-n.svg" alt="no results" />
+                <img src="/assets/icons/search-n.svg" alt="no results" />
               </div>
               <h3>هیچ آگهی‌ای یافت نشد</h3>
               <p className="no-results-text-all-posts">
@@ -794,7 +794,7 @@ return (
                 onClick={clearAllFilters}
                 className="clear-filters-btn-no-results-all-posts"
               >
-                <img src="/src/assets/icons/close.svg" alt="clear" className="clear-icon-all-posts" />
+                <img src="/assets/icons/close.svg" alt="clear" className="clear-icon-all-posts" />
                 پاک کردن همه فیلترها
               </button>
             </div>

@@ -27,7 +27,7 @@ const Navbar = () => {
           }
         >
           <div className="nav-text">ورود</div>
-          <img className="nav-icon" src="/src/icons/login.svg" alt="login" />
+          <img className="nav-icon" src="/icons/login.svg" alt="login" />
         </NavLink>
       )}
 
@@ -37,7 +37,7 @@ const Navbar = () => {
         <div className="new-ad-text">آگهی جدید</div>
         <img
           className="add-icon"
-          src="/src/assets/icons/add.svg"
+          src="/assets/icons/add.svg"
           alt="add"
         />
       </div>
@@ -54,7 +54,7 @@ const Navbar = () => {
             <div className="nav-text">پروفایل</div>
             <img
               className="nav-icon"
-              src="/src/assets/icons/user.svg"
+              src="/assets/icons/user.svg"
               alt="profile"
             />
           </NavLink>
@@ -68,7 +68,7 @@ const Navbar = () => {
             <div className="nav-text">گفتگوها</div>
             <img
               className="nav-icon"
-              src="/src/assets/icons/message.svg"
+              src="/assets/icons/message.svg"
               alt="chat"
             />
           </NavLink>
@@ -85,7 +85,7 @@ const Navbar = () => {
         <div className="nav-text">آگهی ها</div>
         <img
           className="advertisements-icon"
-          src="/src/assets/icons/Advertisements.svg"
+          src="/assets/icons/Advertisements.svg"
           alt="posts"
         />
       </NavLink>
@@ -99,7 +99,7 @@ const Navbar = () => {
         <div className="nav-text">داستان های موفق</div>
         <img
           className="heart-icon"
-          src="/src/assets/icons/heart.svg"
+          src="/assets/icons/heart.svg"
           alt="success"
         />
       </NavLink>
@@ -113,13 +113,13 @@ const Navbar = () => {
         <div className="nav-text">خانه</div>
         <img
           className="home-icon"
-          src="/src/assets/icons/house.svg"
+          src="/assets/icons/house.svg"
           alt="home"
         />
       </NavLink>
 
       {/* Logo */}
-      <img className="logo" src="/src/assets/images/logo.jpg" alt="logo" />
+      <img className="logo" src="/assets/images/logo.jpg" alt="logo" />
     </div>
   );
 };

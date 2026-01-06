@@ -54,7 +54,7 @@ const ForgotPassword = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <label className="field-label">ایمیل</label>
             <div className="input-wrapper">
-              <img className="input-icon" src="/src/icons/sms.svg" alt="sms" />
+              <img className="input-icon" src="/icons/sms.svg" alt="sms" />
               <input
                 className="text-input"
                 placeholder="example@gmail.com"
@@ -75,7 +75,7 @@ const ForgotPassword = () => {
           </p>
         </div>
         <div className="auth-img forgot-password-img">
-          <img src="/src/images/dogFP.svg" alt="dog" />
+          <img src="/images/dogFP.svg" alt="dog" />
         </div>
       </div>
     </div>

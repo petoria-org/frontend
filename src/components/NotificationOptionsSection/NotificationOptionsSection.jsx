@@ -164,31 +164,31 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
       value: "سگ",
       label: "سگ",
       hint: "حیوان خانگی وفادار",
-      icon: <img src="/src/assets/icons/dog.svg" alt="سگ" className="option-icon-img" />
+      icon: <img src="/assets/icons/dog.svg" alt="سگ" className="option-icon-img" />
     },
     {
       value: "گربه",
       label: "گربه",
       hint: "حیوان خانگی مستقل",
-      icon: <img src="/src/assets/icons/cat.svg" alt="گربه" className="option-icon-img" />
+      icon: <img src="/assets/icons/cat.svg" alt="گربه" className="option-icon-img" />
     },
     {
       value: "پرنده",
       label: "پرنده",
       hint: "حیوان خانگی آوازه خوان",
-      icon: <img src="/src/assets/icons/bird.svg" alt="پرنده" className="option-icon-img" />
+      icon: <img src="/assets/icons/bird.svg" alt="پرنده" className="option-icon-img" />
     },
     {
       value: "خرگوش",
       label: "خرگوش",
       hint: "حیوان خانگی آرام",
-      icon: <img src="/src/assets/icons/rabbit.svg" alt="خرگوش" className="option-icon-img" />
+      icon: <img src="/assets/icons/rabbit.svg" alt="خرگوش" className="option-icon-img" />
     },
     {
       value: "همستر",
       label: "همستر",
       hint: "حیوان خانگی کوچک",
-      icon: <img src="/src/assets/icons/hamster.svg" alt="همستر" className="option-icon-img" />
+      icon: <img src="/assets/icons/hamster.svg" alt="همستر" className="option-icon-img" />
     },
     {
       value: "سایر",
@@ -2161,11 +2161,11 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
                                 {formData.animalType ? (
                                   <>
                                     <div className="selected-icon">
-                                      {formData.animalType === "سگ" && <img src="/src/assets/icons/dog.svg" alt="سگ" className="animal-icon" />}
-                                      {formData.animalType === "گربه" && <img src="/src/assets/icons/cat.svg" alt="گربه" className="animal-icon" />}
-                                      {formData.animalType === "پرنده" && <img src="/src/assets/icons/bird.svg" alt="پرنده" className="animal-icon" />}
-                                      {formData.animalType === "خرگوش" && <img src="/src/assets/icons/rabbit.svg" alt="خرگوش" className="animal-icon" />}
-                                      {formData.animalType === "همستر" && <img src="/src/assets/icons/hamster.svg" alt="همستر" className="animal-icon" />}
+                                      {formData.animalType === "سگ" && <img src="/assets/icons/dog.svg" alt="سگ" className="animal-icon" />}
+                                      {formData.animalType === "گربه" && <img src="/assets/icons/cat.svg" alt="گربه" className="animal-icon" />}
+                                      {formData.animalType === "پرنده" && <img src="/assets/icons/bird.svg" alt="پرنده" className="animal-icon" />}
+                                      {formData.animalType === "خرگوش" && <img src="/assets/icons/rabbit.svg" alt="خرگوش" className="animal-icon" />}
+                                      {formData.animalType === "همستر" && <img src="/assets/icons/hamster.svg" alt="همستر" className="animal-icon" />}
                                       {formData.animalType === "سایر" && (
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="animal-icon">
                                           <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" 

@@ -19,21 +19,21 @@ import { NotificationToast } from "../NotificationToast/NotificationToast";
 
 
 const PET_DEFAULT_IMAGES = {
-  dog: "/src/assets/images/dog.png",
-  cat: "/src/assets/images/cat.png",
-  bird: "/src/assets/images/bird.png",
-  rabbit: "/src/assets/images/rabbit.png",
-  hamster: "/src/assets/images/hamester.png",
-  other: "/src/assets/images/other.png",
+  dog: "/assets/images/dog.png",
+  cat: "/assets/images/cat.png",
+  bird: "/assets/images/bird.png",
+  rabbit: "/assets/images/rabbit.png",
+  hamster: "/assets/images/hamester.png",
+  other: "/assets/images/other.png",
 };
 
 const SUCCESS_STORY_DEFAULT_IMAGES = {
-  dog: "/src/assets/images/success_story_dog.png",
-  cat: "/src/assets/images/success_story_cat.png",
-  rabbit: "/src/assets/images/success_story_rabbit.png",
-  hamster: "/src/assets/images/success_story_hamster.png",
-  bird: "/src/assets/images/success_story_birdpng",
-  other: "/src/assets/images/success_story_other.png",
+  dog: "/assets/images/success_story_dog.png",
+  cat: "/assets/images/success_story_cat.png",
+  rabbit: "/assets/images/success_story_rabbit.png",
+  hamster: "/assets/images/success_story_hamster.png",
+  bird: "/assets/images/success_story_birdpng",
+  other: "/assets/images/success_story_other.png",
 };
 
 const getPostImage = (post, BACKEND_URL) => {

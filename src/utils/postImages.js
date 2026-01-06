@@ -1,24 +1,38 @@
 import { config } from "../config";
+import dogImg from "../assets/images/dog.png";
+import catImg from "../assets/images/cat.png";
+import birdImg from "../assets/images/bird.png";
+import rabbitImg from "../assets/images/rabbit.png";
+import hamsterImg from "../assets/images/hamester.png";
+import otherImg from "../assets/images/other.png";
+
+import successDogImg from "../assets/images/success_story_dog.png";
+import successCatImg from "../assets/images/success_story_cat.png";
+import successRabbitImg from "../assets/images/success_story_rabbit.png";
+import successHamsterImg from "../assets/images/success_story_hamster.png";
+import successBirdImg from "../assets/images/success_story_bird.png";
+import successOtherImg from "../assets/images/success_story_other.png";
 
 const BACKEND_URL = config.BACKEND_URL;
 
 export const PET_DEFAULT_IMAGES = {
-  dog: "/src/assets/images/dog.png",
-  cat: "/src/assets/images/cat.png",
-  bird: "/src/assets/images/bird.png",
-  rabbit: "/src/assets/images/rabbit.png",
-  hamster: "/src/assets/images/hamester.png",
-  other: "/src/assets/images/other.png",
+  dog: dogImg,
+  cat: catImg,
+  bird: birdImg,
+  rabbit: rabbitImg,
+  hamster: hamsterImg,
+  other: otherImg,
 };
 
 export const SUCCESS_STORY_DEFAULT_IMAGES = {
-  dog: "/src/assets/images/success_story_dog.png",
-  cat: "/src/assets/images/success_story_cat.png",
-  rabbit: "/src/assets/images/success_story_rabbit.png",
-  hamster: "/src/assets/images/success_story_hamster.png",
-  bird: "/src/assets/images/success_story_bird.png",
-  other: "/src/assets/images/success_story_other.png",
+  dog: successDogImg,
+  cat: successCatImg,
+  rabbit: successRabbitImg,
+  hamster: successHamsterImg,
+  bird: successBirdImg,
+  other: successOtherImg,
 };
+
 
 const normalizeBackendImageUrl = (imagePath) => {
   if (!imagePath) {

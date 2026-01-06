@@ -224,7 +224,7 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
 
       const { objects: savedImages, urls: savedImageUrls } = normalizeBackendImages(createdStory.images || []);
       const fallbackImage = createdStory.image ? buildImageUrl(createdStory.image) : "";
-      const heroImage = savedImageUrls[0] || fallbackImage || "/src/assets/images/default-pet.png";
+      const heroImage = savedImageUrls[0] || fallbackImage || "/assets/images/default-pet.png";
 
       onSave?.({
         id: createdStory.id,

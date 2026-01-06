@@ -44,7 +44,7 @@ export const SuccessStoryEdit = ({ story, onUpdate, onDelete, onCancel }) => {
       .filter(Boolean);
   };
 
-  const FALLBACK_IMAGE = "/src/assets/images/default-pet.png";
+  const FALLBACK_IMAGE = "/assets/images/default-pet.png";
 
   const initialImages = normalizeStoryImages(
     story.backendImages || story.images || [],

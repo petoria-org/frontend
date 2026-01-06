@@ -1079,7 +1079,7 @@ const renderAdoptionFilters = () => {
             className="advanced-clear-filters-btn"
             onClick={handleClearAllFilters}
           >
-            <img src="/src/assets/icons/close.svg" alt="پاک کردن" className="advanced-clear-icon" />
+            <img src="/assets/icons/close.svg" alt="پاک کردن" className="advanced-clear-icon" />
             پاک کردن همه فیلترها
           </button>
         </div>
@@ -1094,7 +1094,7 @@ const renderAdoptionFilters = () => {
                 className="advanced-remove-filter-btn"
                 onClick={badge.onRemove}
               >
-                <img src="/src/assets/icons/close.svg" alt="حذف" />
+                <img src="/assets/icons/close.svg" alt="حذف" />
               </button>
             </div>
           ))}
@@ -1112,7 +1112,7 @@ const renderAdoptionFilters = () => {
         >
           <div className="advanced-toggle-title">
             <div className="advanced-toggle-icon-wrapper">
-              <img src="/src/assets/icons/filter-search.svg" alt="filter" className="advanced-toggle-icon" />
+              <img src="/assets/icons/filter-search.svg" alt="filter" className="advanced-toggle-icon" />
             </div>
             <div className="advanced-toggle-texts">
               <span className="advanced-toggle-text">فیلترهای پیشرفته</span>

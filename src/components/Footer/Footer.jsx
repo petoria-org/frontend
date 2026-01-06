@@ -10,27 +10,27 @@ const getQuickLinks = () => {
     { 
       label: 'صفحه اصلی', 
       page: 'home',
-      icon: '/src/assets/icons/house.svg'
+      icon: '/assets/icons/house.svg'
     },
     { 
       label: 'جستجوی آگهی‌ها', 
       page: 'ads',
-      icon: '/src/assets/icons/search-normal.svg'
+      icon: '/assets/icons/search-normal.svg'
     },
     { 
       label: 'ثبت آگهی', 
       page: 'new-post',
-      icon: '/src/assets/icons/document-text.svg'
+      icon: '/assets/icons/document-text.svg'
     },
     { 
       label: 'داستان‌های موفق', 
       page: 'happy-tales',
-      icon: '/src/assets/icons/heart.svg'
+      icon: '/assets/icons/heart.svg'
     },
     { 
       label: 'پیام‌رسانی', 
       page: 'chats',
-      icon: '/src/assets/icons/message.svg'
+      icon: '/assets/icons/message.svg'
     },
   ];
 };
@@ -40,17 +40,17 @@ const getAccountLinks = () => {
     { 
       label: 'پروفایل من', 
       page: 'profile',
-      icon: '/src/assets/icons/user.svg'
+      icon: '/assets/icons/user.svg'
     },
     { 
       label: 'ورود به حساب', 
       page: 'login',
-      icon: '/src/assets/icons/login.svg'
+      icon: '/assets/icons/login.svg'
     },
     { 
       label: 'ثبت‌نام', 
       page: 'signup',
-      icon: '/src/assets/icons/user-add.svg'
+      icon: '/assets/icons/user-add.svg'
     },
   ];
 };
@@ -58,7 +58,7 @@ const getAccountLinks = () => {
 const getContactInfo = () => {
   return {
     email: 'petoria58@gmail.com',
-    emailIcon: '/src/assets/icons/email.svg'
+    emailIcon: '/assets/icons/email.svg'
   };
 };
 
@@ -147,7 +147,7 @@ export const Footer = ({ setCurrentPage }) => {
                 <div className="logo-glow"></div>
                 <div className="logo-image-wrapper">
                   <img 
-                    src="/src/assets/images/logo_footer.jpg" 
+                    src="/assets/images/logo_footer.jpg" 
                     alt="لوگوی پتوریا" 
                     className="logo-image"
                     onError={(e) => {

@@ -19,7 +19,7 @@ export default function Conversations({
           const tick = c.isMineLast 
             ? (c.lastIsRead 
                 ? <img 
-                    src="/src/icons/double-check.svg"  
+                    src="/icons/double-check.svg"  
                     alt="read" 
                     style={{
                       width: "16px",
@@ -28,7 +28,7 @@ export default function Conversations({
                     }}
                   />
                 : <img 
-                    src="/src/icons/check.svg"
+                    src="/icons/check.svg"
                     alt="sent"
                     style={{
                       width: "16px",

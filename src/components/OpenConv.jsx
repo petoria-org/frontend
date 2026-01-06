@@ -57,9 +57,9 @@ const downloadAttachment = async (att) => {
 
 const StatusTick = ({ status }) => {
   if (status === "seen") {
-    return <img className="msg__tick-icon" src="/src/icons/double-check.svg" alt="seen" />;
+    return <img className="msg__tick-icon" src="/icons/double-check.svg" alt="seen" />;
   } else if (status === "sent" || status === "delivered") {
-    return <img className="msg__tick-icon" src="/src/icons/check.svg" alt="sent" />;
+    return <img className="msg__tick-icon" src="/icons/check.svg" alt="sent" />;
   }
   return null;
 };

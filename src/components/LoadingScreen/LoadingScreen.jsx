@@ -40,16 +40,16 @@ const LoadingScreen = ({
           {showPaws && (
             <div className="loading-paws">
               <div className="paw-icon">
-                <img src="/src/assets/icons/paw.svg" alt="Paw" className="paw-svg" />
+                <img src="/assets/icons/paw.svg" alt="Paw" className="paw-svg" />
               </div>
               <div className="paw-icon">
-                <img src="/src/assets/icons/paw.svg" alt="Paw" className="paw-svg" />
+                <img src="/assets/icons/paw.svg" alt="Paw" className="paw-svg" />
               </div>
               <div className="paw-icon">
-                <img src="/src/assets/icons/paw.svg" alt="Paw" className="paw-svg" />
+                <img src="/assets/icons/paw.svg" alt="Paw" className="paw-svg" />
               </div>
               <div className="paw-icon">
-                <img src="/src/assets/icons/paw.svg" alt="Paw" className="paw-svg" />
+                <img src="/assets/icons/paw.svg" alt="Paw" className="paw-svg" />
               </div>
             </div>
           )}

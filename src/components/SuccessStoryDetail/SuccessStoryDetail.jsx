@@ -156,7 +156,7 @@ export const SuccessStoryDetail = ({ story, onClose }) => {
                   className="main-preview-image"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = "/src/assets/images/default-pet.png";
+                    e.target.src = "/assets/images/default-pet.png";
                   }}
                 />
               </div>
@@ -190,7 +190,7 @@ export const SuccessStoryDetail = ({ story, onClose }) => {
                           className="thumbnail-image"
                           onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = "/src/assets/images/default-pet.png";
+                            e.target.src = "/assets/images/default-pet.png";
                           }}
                         />
                       </div>

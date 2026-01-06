@@ -151,7 +151,7 @@
   width: 1em;
   height: 1em;
   flex-shrink: 0;
-  background-image: url("src/assets/icons/add.svg");
+  background-image: url("/assets/icons/add.svg");
   background-repeat: no-repeat;
   background-position: center;
   order: -1;

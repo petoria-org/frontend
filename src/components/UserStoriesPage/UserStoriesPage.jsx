@@ -60,7 +60,7 @@ const UserStoriesPage = () => {
         const statusColors = getStatusColor(story.story_type);
         const imageUrl = story.images && story.images.length > 0 
           ? story.images[0].image 
-          : "/src/assets/images/default-pet.png";
+          : "/assets/images/default-pet.png";
           
         return {
           id: story.id,

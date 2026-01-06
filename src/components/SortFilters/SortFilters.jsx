@@ -40,7 +40,7 @@ export default function SortFilters({
         >
           <div className="sort-toggle-title">
             <div className="sort-toggle-icon-wrapper">
-              <img src="/src/assets/icons/sort.svg" alt="sort" className="sort-toggle-icon" />
+              <img src="/assets/icons/sort.svg" alt="sort" className="sort-toggle-icon" />
             </div>
             <div className="sort-toggle-texts">
               <span className="sort-toggle-text">مرتب‌سازی</span>
