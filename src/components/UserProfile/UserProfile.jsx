@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../../styles/UserProfile.css";
 import { SuccessStoryCreation } from "../SuccessStoryCreation";
 import { Pagination } from './../Pagination/Pagination';
+import ProfileEdit from "../ProfileEdit/ProfileEdit";
 import { useAuth } from "../../context/AuthContext";
 import {
   getUserProfile,
@@ -217,6 +218,8 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
   const [loading, setLoading] = useState(true);
   const { logout } = useAuth();
   const [notification, setNotification] = useState(null);
+  const [showProfileEdit, setShowProfileEdit] = useState(false);
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("access");
@@ -501,6 +504,27 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
     }
   };
 
+  const handleProfileSave = async (updatedData) => {
+    try {
+      console.log('Updated profile data:', updatedData);
+      setUser(prev => ({
+        ...prev,
+        username: updatedData.username,
+        email: updatedData.email,
+      }));
+      
+      showNotification("پروفایل با موفقیت به‌روزرسانی شد", "success");
+      
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      showNotification("خطا در ذخیره تغییرات پروفایل", "error");
+    }
+  };
+
+  const handleProfileClose = () => {
+    setShowProfileEdit(false);
+  };
+
   const filters = [
     { label: "همه", count: allAds.length },
     {
@@ -732,7 +756,10 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                   alt="User"
                   src="src/assets/icons/avator.svg" 
                 />
-                <button className="edit-profile-button">
+                <button 
+                  className="edit-profile-button"
+                  onClick={() => setShowProfileEdit(true)}
+                >
                   <Edit3Icon />
                 </button>
               </div>
@@ -1161,6 +1188,19 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
         onUpdate={handleStoryUpdate}
         onDelete={handleStoryDelete}
         onCancel={() => setEditingStory(null)}
+      />
+    )}
+
+    {showProfileEdit && (
+      <ProfileEdit
+        userData={{
+          username: user?.username || "",
+          email: user?.email || "",
+          profileImage: user?.profileImage || null,
+          bio: user?.bio || "",
+        }}
+        onSave={handleProfileSave}
+        onClose={handleProfileClose}
       />
     )}
   </div>
