@@ -16,6 +16,7 @@ const ImageCropper = ({
   format = "jpeg",
   quality = 0.95,
   uploadImageFn = uploadPostImage,
+  maskShape = "rectangle",
 }) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [scale, setScale] = useState(1);
@@ -313,13 +314,16 @@ const ImageCropper = ({
     setImagePosition({ x: 0, y: 0 });
   }, []);
 
+  const isCircularMask = maskShape === "circle";
+
   const cropAreaStyle = useMemo(() => ({
     width: `${calculatedCropSize.width}px`,
     height: `${calculatedCropSize.height}px`,
     left: `${crop.x}px`,
     top: `${crop.y}px`,
     cursor: isDragging ? "grabbing" : "grab",
-  }), [calculatedCropSize, crop, isDragging]);
+    borderRadius: isCircularMask ? "50%" : "10px",
+  }), [calculatedCropSize, crop, isDragging, isCircularMask]);
 
   const modalHeight = useMemo(() => {
     return window.innerHeight * 0.9;
@@ -403,7 +407,7 @@ const ImageCropper = ({
               </div>
 
               <div
-                className="crop-area"
+                className={`crop-area ${isCircularMask ? "crop-area--circle" : ""}`}
                 ref={cropAreaRef}
                 style={cropAreaStyle}
                 onMouseDown={handleDragStart}
@@ -658,6 +662,7 @@ ImageCropper.propTypes = {
   format: PropTypes.oneOf(["jpeg", "png", "webp"]),
   quality: PropTypes.number,
   uploadImageFn: PropTypes.func,
+  maskShape: PropTypes.oneOf(["rectangle", "circle"]),
 };
 
 ImageCropper.defaultProps = {
@@ -667,6 +672,7 @@ ImageCropper.defaultProps = {
   format: "jpeg",
   quality: 0.95,
   uploadImageFn: uploadPostImage,
+  maskShape: "rectangle",
 };
 
 export { ImageCropper };

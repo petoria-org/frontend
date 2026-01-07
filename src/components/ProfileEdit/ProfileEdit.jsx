@@ -555,6 +555,8 @@ const ProfileEdit = ({ userData, onClose, onSave }) => {
           onCropComplete={handleCropComplete}
           onClose={() => setCropModalOpen(false)}
           aspect={1/1}
+          cropSize={{ width: 360, height: 360 }}
+          maskShape="circle"
         />
       )}
       

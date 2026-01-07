@@ -504,6 +504,19 @@
   border-radius: 10px;
 }
 
+.image-cropper-modal-wrapper .crop-area--circle {
+  border-radius: 50%;
+}
+
+.image-cropper-modal-wrapper .crop-area--circle .crop-area-border,
+.image-cropper-modal-wrapper .crop-area--circle .crop-area-overlay {
+  border-radius: 50%;
+}
+
+.image-cropper-modal-wrapper .crop-area--circle .corner-handle {
+  display: none;
+}
+
 @keyframes cropper-cropAreaFloat {
   0%, 100% {
     transform: translateY(0);
