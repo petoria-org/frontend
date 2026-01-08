@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { NotificationToast } from "../NotificationToast/NotificationToast";
 import HeartIcon from "../../assets/icons/heart.svg";
 import LocationIcon from "../../assets/icons/location.svg";
 import GenderIcon from "../../assets/icons/tick-circle.svg";
@@ -244,6 +245,13 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [recipientUser, setRecipientUser] = useState(null);
+  const [notification, setNotification] = useState(null);
+  const showNotification = (message, type = "error") => {
+    setNotification({ message, type });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
+  };
   
   const navigate = useNavigate();
   const location = useLocation();
@@ -495,7 +503,7 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
     const recipientId = resolveRecipientId(sourceData);
 
     if (!recipientId) {
-      window.alert("کاربری برای گفتگو یافت نشد.");
+      showNotification("کاربری برای گفتگو یافت نشد.", "error");
       return;
     }
 
@@ -503,7 +511,7 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
     try {
       const res = await getChatWithUser(recipientId);
       if (!res?.success) {
-        window.alert(res?.message || "خطا در بررسی گفتگوهای قبلی.");
+        showNotification(res?.message || "خطا در بررسی گفتگوهای قبلی.", "error");
         return;
       }
 
@@ -522,7 +530,7 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
       navigate("/chats", { state: statePayload });
     } catch (error) {
       console.error("Failed to start chat:", error);
-      window.alert("خطا در برقراری ارتباط. لطفا دوباره تلاش کنید.");
+      showNotification("خطا در برقراری ارتباط. لطفا دوباره تلاش کنید.", "error");
     } finally {
       setChatChecking(false);
     }
@@ -902,6 +910,14 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
           </div>
         )}
       </div>
+      {notification && (
+        <NotificationToast
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+          position="top-right"
+        />
+      )}
     </div>
   );
 };

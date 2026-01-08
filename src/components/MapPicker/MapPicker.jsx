@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, useMapEvents, useMap, Circle } from "r
 import "leaflet/dist/leaflet.css";
 import axios from "axios";
 import L from 'leaflet';
+import { NotificationToast } from "../NotificationToast/NotificationToast";
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -84,7 +85,7 @@ function ClickHandler({ setPoint }) {
   return null;
 }
 
-function LocationController({ onLocationFound, isLocating, userLocation, accuracy }) {
+function LocationController({ onLocationFound, isLocating, userLocation, accuracy , showNotification }) {
   const map = useMap();
 
   useEffect(() => {
@@ -95,7 +96,7 @@ function LocationController({ onLocationFound, isLocating, userLocation, accurac
 
   const handleLocate = useCallback(() => {
     if (!navigator.geolocation) {
-      alert("مرورگر شما از GPS پشتیبانی نمی‌کند");
+      showNotification?.("مرورگر شما از GPS پشتیبانی نمی‌کند", "error");
       return;
     }
 
@@ -120,7 +121,7 @@ function LocationController({ onLocationFound, isLocating, userLocation, accurac
             errorMessage = "دریافت موقعیت زمان‌بر شد.";
             break;
         }
-        alert(errorMessage);
+        showNotification?.(errorMessage, "error");
         onLocationFound(null, false);
       },
       {
@@ -275,6 +276,14 @@ export default function MapPicker({
   const [isLocating, setIsLocating] = useState(false);
   const [locationAccuracy, setLocationAccuracy] = useState(null);
 
+  const [notification, setNotification] = useState(null);
+  const showNotification = (message, type = "error") => {
+    setNotification({ message, type });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
+  };
+
   useEffect(() => {
     fetchReverseGeocode(point[0], point[1]);
   }, []);
@@ -308,6 +317,7 @@ export default function MapPicker({
       setAddress(newAddress);
 
     } catch (err) {
+      showNotification("خطا در دریافت آدرس از روی نقشه. لطفاً دوباره تلاش کنید.", "error");
       const fallbackAddress = {
         country: "",
         city: "",
@@ -365,6 +375,7 @@ export default function MapPicker({
       }
       
     } catch (err) {
+      showNotification("خطا در جستجوی آدرس. لطفاً دوباره تلاش کنید.", "error");
       setSearchResults([]);
     } finally {
       setLoadingSearch(false);
@@ -600,6 +611,7 @@ export default function MapPicker({
                 isLocating={isLocating}
                 userLocation={userLocation}
                 accuracy={locationAccuracy}
+                showNotification={showNotification}
               />
               <Marker position={point} />
               
@@ -804,6 +816,14 @@ export default function MapPicker({
           </div>
         </div>
       </div>
+      {notification && (
+        <NotificationToast
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+          position="top-right"
+        />
+      )}
     </div>
   );
 }

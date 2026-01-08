@@ -5,6 +5,7 @@ import "../../styles/UserProfile.css";
 import { StoryDetailView } from "./StoryDetailView";
 import { EditStoryModal } from "./EditStoryModal";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
+import { NotificationToast } from "../NotificationToast/NotificationToast";
 
 const toJalaliDate = (dateString) => {
   if (!dateString) return "";
@@ -24,6 +25,13 @@ const UserStoriesPage = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [notification, setNotification] = useState(null);
+  const showNotification = (message, type = "error") => {
+    setNotification({ message, type });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
+  };
 
   const truncateText = (text, maxLength = 110) => {
     if (!text) return "";
@@ -112,10 +120,10 @@ const UserStoriesPage = () => {
       await fetchStories();
       setIsEditModalOpen(false);
       setIsDetailViewOpen(false);
-      alert("داستان با موفقیت ویرایش شد");
+      showNotification("داستان با موفقیت ویرایش شد", "success");
     } catch (error) {
       console.error("Error updating story:", error);
-      alert("خطا در ویرایش داستان");
+      showNotification("خطا در ویرایش داستان", "error");
     }
   };
 
@@ -127,10 +135,10 @@ const UserStoriesPage = () => {
       setStories(prev => prev.filter(story => story.id !== storyId));
       setIsDeleteModalOpen(false);
       setIsDetailViewOpen(false);
-      alert("داستان با موفقیت حذف شد");
+      showNotification("داستان با موفقیت حذف شد", "success");
     } catch (error) {
       console.error("Error deleting story:", error);
-      alert("خطا در حذف داستان");
+      showNotification("خطا در حذف داستان", "error");
     }
   };
 
@@ -322,6 +330,15 @@ const UserStoriesPage = () => {
         title="حذف داستان"
         subtitle="آیا از حذف این داستان مطمئن هستید؟ این عمل قابل بازگشت نیست."
       />
+
+      {notification && (
+        <NotificationToast
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+          position="top-right"
+        />
+      )}
     </div>
   );
 };

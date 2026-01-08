@@ -9,6 +9,7 @@ import {
 } from "../../Services/successStoryService";
 import { useOutletContext } from "react-router-dom";
 import { ImageCropper } from "../ImageCropper";
+import { NotificationToast } from "../NotificationToast/NotificationToast";
 
 export const SuccessStoryEdit = ({ story, onUpdate, onDelete, onCancel }) => {
   const BACKEND_URL = config.BACKEND_URL;
@@ -65,8 +66,11 @@ export const SuccessStoryEdit = ({ story, onUpdate, onDelete, onCancel }) => {
   const [pendingFiles, setPendingFiles] = useState([]);
   const { setHideNavbar, setHideFooter } = useOutletContext();
 
-  const showNotification = (message, type = "success") => {
+  const showNotification = (message, type = "error") => {
     setNotification({ message, type });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
   };
 
   useEffect(() => {
@@ -169,7 +173,7 @@ export const SuccessStoryEdit = ({ story, onUpdate, onDelete, onCancel }) => {
     const filesToAdd = files.slice(0, Math.max(0, remainingSlots));
 
     if (filesToAdd.length === 0) {
-      alert("حداکثر می‌توانید 7 عکس آپلود کنید");
+      showNotification("حداکثر می‌توانید 7 عکس آپلود کنید", "warning");
       event.target.value = "";
       return;
     }
@@ -601,6 +605,14 @@ export const SuccessStoryEdit = ({ story, onUpdate, onDelete, onCancel }) => {
           uploadImageFn={uploadSuccessStoryImage}
           format="jpeg"
           quality={0.92}
+        />
+      )}
+      {notification && (
+        <NotificationToast
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+          position="top-right"
         />
       )}
     </>

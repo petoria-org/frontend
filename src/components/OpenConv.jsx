@@ -2,6 +2,7 @@
 import React, { useEffect, useLayoutEffect, useRef, useState, useCallback } from "react";
 import { config } from "../config";
 import api from "../Services/api";
+import { NotificationToast } from "./NotificationToast/NotificationToast";
 
 const ABS_URL_RE = /^https?:\/\//i;
 
@@ -35,7 +36,7 @@ const getAttachmentLabel = (att, hrefFallback = "") => {
   return "Attachment";
 };
 
-const downloadAttachment = async (att) => {
+const downloadAttachment = async (att , notify) => {
   const downloadUrl = buildDownloadUrl(att);
   if (!downloadUrl) return;
 
@@ -51,7 +52,9 @@ const downloadAttachment = async (att) => {
     window.URL.revokeObjectURL(blobUrl);
   } catch (e) {
     console.error("Attachment download failed", e);
-    alert("Download failed. Please try again.");
+    if (typeof notify === "function") {
+      notify("Download failed. Please try again.", "error");
+    }
   }
 };
 
@@ -101,7 +104,7 @@ function MessageBubble({ m, onReply, chatTitle, onJumpToMessage }) {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                downloadAttachment(att);
+                downloadAttachment(att, m?.notify);
               }}
             >
               ⬇
@@ -472,6 +475,12 @@ export default function OpenConv({
   const initialScrollDoneRef = useRef(false);
   const lastOutgoingAtRef = useRef(0);
   const LIVE_WINDOW_MS = 60000;
+
+  const [notification, setNotification] = useState(null);
+  const showNotification = useCallback((message, type = "success") => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
+  }, []);
 
   const [attachOpen, setAttachOpen] = useState(false);
   const [attachmentModalOpen, setAttachmentModalOpen] = useState(false);
@@ -884,6 +893,15 @@ export default function OpenConv({
       <SimpleAttachMenu open={attachOpen} anchorEl={attachBtnRef.current} onClose={() => setAttachOpen(false)} onPick={handleAttachPick} />
 
       <AttachmentModal isOpen={attachmentModalOpen} type={attachmentModalType} onClose={() => setAttachmentModalOpen(false)} onSend={handleSendAttachments} />
+
+      {notification && (
+        <NotificationToast
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+          position="top-right"
+        />
+      )}
     </section>
   );
 }
