@@ -511,7 +511,15 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
     try {
       const res = await getChatWithUser(recipientId);
       if (!res?.success) {
-        showNotification(res?.message || "خطا در بررسی گفتگوهای قبلی.", "error");
+        let message = "خطا در بررسی گفتگوهای قبلی.";
+
+        if(res?.message === "cannot_chat_with_self"){
+          message = "شما نمی‌توانید با خودتان گفتگو کنید.";
+        } else if(res?.message) {
+          message = res?.message;
+        }
+
+        showNotification(message ,  "error");
         return;
       }
 
