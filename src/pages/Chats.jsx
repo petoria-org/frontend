@@ -162,12 +162,12 @@ export default function ChatPage() {
 
   const [notification, setNotification] = useState(null);
 
-  const showNotification = (message, type = "error") => {
+  const showNotification = useCallback((message, type = "error") => {
     setNotification({ message, type });
     setTimeout(() => {
       setNotification(null);
     }, 3000);
-  };
+  }, []);
 
   const [chats, setChats] = useState([]);
   const [selectedChatId, setSelectedChatId] = useState(null);
