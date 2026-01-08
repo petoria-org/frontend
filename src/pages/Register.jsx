@@ -6,11 +6,20 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { signup } from "../Services/authservice";
 import { useState } from "react";
+import { NotificationToast } from "../components/NotificationToast/NotificationToast";
 
 const Register = () => {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState(null);
+
+  const showNotification = (message, type = "error") => {
+    setNotification({ message, type });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
+  };
 
   const schema = yup.object().shape({
     firstName: yup.string()
@@ -73,10 +82,11 @@ const Register = () => {
     setLoading(false);
 
     if (!result.success) {
-      alert(result.message);
+      showNotification(result.message || "خطا در ثبت نام", "error");
       return;
     }
 
+    showNotification("کد تایید به ایمیل شما ارسال شد", "success");
     navigate("/verify", {
       state: {
         email: data.email,
@@ -87,6 +97,14 @@ const Register = () => {
 
   return (
     <div className="auth-page">
+      {notification && (
+        <NotificationToast
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+          position="top-right"
+        />
+      )}
       <div className="auth-main register-main">
         <div className="auth-card register-card">
           <h2 className="auth-title">ثبت نام</h2>

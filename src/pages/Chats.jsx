@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import OpenConv from "../components/OpenConv";
 import Conversations from "../components/Conversations";
 import "../styles/Chats.css";
+import { NotificationToast } from "../components/NotificationToast/NotificationToast";
 
 import {
   getChatList,
@@ -157,6 +158,16 @@ export default function ChatPage() {
       root.style.overflow = 'auto'; // Restores App.css
     };
   }, []);
+
+
+  const [notification, setNotification] = useState(null);
+
+  const showNotification = (message, type = "error") => {
+    setNotification({ message, type });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
+  };
 
   const [chats, setChats] = useState([]);
   const [selectedChatId, setSelectedChatId] = useState(null);
@@ -889,11 +900,11 @@ export default function ChatPage() {
         setChats(Array.isArray(res.data) ? res.data : []);
       } else {
         setChats([]);
-        alert(res.message || "Error fetching chat list");
+        showNotification(res.message || "خطا در دریافت لیست گفتگوها", "error");
       }
     };
     loadChats();
-  }, []);
+  }, [showNotification]);
 
   // =========================
   // Load messages on select
@@ -938,12 +949,12 @@ export default function ChatPage() {
         messagesPageInfoRef.current = { next: null, previous: null };
         setMessagesPageInfo({ next: null, previous: null });
         setLoadingOlderMessages(false);
-        alert(res.message || "Error fetching messages");
+        showNotification(res.message || "خطا در دریافت پیام‌ها", "error");
       }
     };
 
     loadMessages();
-  }, [selectedChatId]);
+  }, [selectedChatId , showNotification]);
 
   // =========================
   // Select chat
@@ -1070,7 +1081,7 @@ export default function ChatPage() {
 
       const ws = wsRef.current;
       if (!ws || ws.readyState !== WebSocket.OPEN) {
-        alert("WebSocket not connected. Try again.");
+        showNotification("اتصال چت برقرار نیست. دوباره تلاش کنید.", "error");
         return;
       }
 
@@ -1079,13 +1090,13 @@ export default function ChatPage() {
       if (!chatId && !pendingRecipientId) {
         const r = recipientRef.current;
         if (!r?.id) {
-          alert("Recipient is required to create chat.");
+          showNotification("گیرنده برای ایجاد گفتگو لازم است.", "error");
           return;
         }
         try {
           chatId = await ensureChatIdForRecipient(r.id);
         } catch (e) {
-          alert(e?.message || "Failed to create/find chat.");
+          showNotification(e?.message || "ایجاد/یافتن گفتگو ناموفق بود.", "error");
           return;
         }
       }
@@ -1135,13 +1146,13 @@ export default function ChatPage() {
         setMessages((prev) =>
           prev.map((m) => (m.client_temp_id === clientId ? { ...m, _failed: true } : m))
         );
-        alert("Send failed.");
+        showNotification("ارسال پیام ناموفق بود.", "error");
       } else if (chatId) {
         // sender-side: unread_count should stay 0
         upsertChatAndSort(chatId, { content: text, timestamp: nowIso, sender: currentUserId }, 0);
       }
     },
-    [inputValue, currentUserId, ensureChatIdForRecipient, wsSend, upsertChatAndSort]
+    [inputValue, currentUserId, ensureChatIdForRecipient, wsSend, upsertChatAndSort ,showNotification]
   );
 
   const handleSendAttachments = useCallback(
@@ -1150,7 +1161,7 @@ export default function ChatPage() {
 
       const ws = wsRef.current;
       if (!ws || ws.readyState !== WebSocket.OPEN) {
-        alert("WebSocket not connected. Try again.");
+        showNotification("اتصال چت برقرار نیست. دوباره تلاش کنید.", "error");
         return;
       }
 
@@ -1159,26 +1170,26 @@ export default function ChatPage() {
       if (!chatId && !pendingRecipientId) {
         const r = recipientRef.current;
         if (!r?.id) {
-          alert("Recipient is required to create chat.");
+          showNotification("گیرنده برای ایجاد گفتگو لازم است.", "error");
           return;
         }
         try {
           chatId = await ensureChatIdForRecipient(r.id);
         } catch (e) {
-          alert(e?.message || "Failed to create/find chat.");
+          showNotification(e?.message || "ایجاد/یافتن گفتگو ناموفق بود.", "error");
           return;
         }
       }
 
       const uploadRes = await uploadAttachments(files, type);
       if (!uploadRes?.success) {
-        alert(uploadRes?.message || "Attachment upload failed.");
+        showNotification(uploadRes?.message || "آپلود فایل ناموفق بود.", "error");
         return;
       }
 
       const uploaded = Array.isArray(uploadRes.data) ? uploadRes.data : [];
       if (!uploaded.length) {
-        alert("No attachments uploaded.");
+        showNotification("هیچ فایلی آپلود نشد.", "error");
         return;
       }
 
@@ -1230,7 +1241,7 @@ export default function ChatPage() {
         setMessages((prev) =>
           prev.map((m) => (m.client_temp_id === clientId ? { ...m, _failed: true } : m))
         );
-        alert("Send failed.");
+        showNotification("ارسال پیام ناموفق بود.", "error");
       } else if (chatId) {
         const previewContent = trimmedText || "[Attachment]";
         upsertChatAndSort(
@@ -1240,11 +1251,19 @@ export default function ChatPage() {
         );
       }
     },
-    [currentUserId, ensureChatIdForRecipient, uploadAttachments, wsSend, upsertChatAndSort]
+    [currentUserId, ensureChatIdForRecipient, uploadAttachments, wsSend, upsertChatAndSort , showNotification]
   );
 
   return (
     <div className="chatShell chats">
+      {notification && (
+        <NotificationToast
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+          position="top-right"
+        />
+      )}
       <div className={chatMainClass}>
         <Conversations
           items={convItems}

@@ -6,11 +6,20 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useState } from "react";
 import { requestOtp } from "../Services/authservice";
+import { NotificationToast } from "../components/NotificationToast/NotificationToast";
 
 
 const ForgotPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const [notification, setNotification] = useState(null);
+
+  const showNotification = (message, type = "error") => {
+    setNotification({ message, type });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
+  };
 
   const schema = yup.object().shape({
     email: yup
@@ -32,10 +41,11 @@ const ForgotPassword = () => {
     setIsLoading(false);
 
     if (!result.success) {
-      alert(result.message);
+      showNotification(result.message || "ارسال کد تأیید ناموفق بود", "error");
       return;
     }
 
+    showNotification("کد تأیید ارسال شد", "success");
     navigate("/verify", {
       state: {
         email: data.email,
@@ -46,6 +56,14 @@ const ForgotPassword = () => {
 
   return (
     <div className="auth-page">
+      {notification && (
+        <NotificationToast
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+          position="top-right"
+        />
+      )}
       <div className="auth-main forgot-password-main auth-context-ltr">
         <div className="auth-card forgot-password-card">
           <h2 className="auth-title">بازیابی رمز عبور</h2>

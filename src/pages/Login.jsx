@@ -6,12 +6,22 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { login as loginRequest } from "../Services/authservice";
 import { useAuth } from "../context/AuthContext";
+import { useState } from "react";
+import { NotificationToast } from "../components/NotificationToast/NotificationToast";
 
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const location = useLocation();
   const from = location.state?.from || "/";
+  const [notification, setNotification] = useState(null);
+
+  const showNotification = (message, type = "error") => {
+    setNotification({ message, type });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
+  };
 
   const schema = yup.object().shape({
     identifier: yup.string().required("ایمیل یا نام کاربری الزامی است"),
@@ -37,12 +47,20 @@ const Login = () => {
 
       navigate(from, { replace: true });
     } else {
-      alert(response.message || "ورود ناموفق بود");
+      showNotification(response.message || "ورود ناموفق بود", "error");
     }
   };
 
   return (
     <div className="auth-page">
+      {notification && (
+        <NotificationToast
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+          position="top-right"
+        />
+      )}
       <div className="auth-main login-main">
         <div className="auth-card login-card">
           <h2 className="auth-title">ورود به حساب کاربری</h2>

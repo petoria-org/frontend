@@ -6,10 +6,19 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { resetPassword } from "../Services/authservice";
+import { NotificationToast } from "../components/NotificationToast/NotificationToast";
 
 const ResetPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const [notification, setNotification] = useState(null);
+
+  const showNotification = (message, type = "error") => {
+    setNotification({ message, type });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
+  };
 
   const location = useLocation();
   const email = location.state?.email;
@@ -44,16 +53,24 @@ const ResetPassword = () => {
     setIsLoading(false);
 
     if (!result.success) {
-      alert(result.message);
+      showNotification(result.message || "خطا در تغییر رمز عبور", "error");
       return;
     }
 
-    alert("رمز عبور با موفقیت تغییر کرد");
+    showNotification("رمز عبور با موفقیت تغییر کرد", "success");
     navigate("/login");
   };
 
   return (
     <div className="auth-page">
+      {notification && (
+        <NotificationToast
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+          position="top-right"
+        />
+      )}
       <div className="auth-main reset-password-main auth-context-ltr">
         <div className="auth-card reset-password-card">
           <h2 className="auth-title">بازیابی رمز عبور</h2>

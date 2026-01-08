@@ -4,11 +4,20 @@ import "../styles/auth/Verify.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { verifyOtp, requestOtp } from "../Services/authservice";
+import { NotificationToast } from "../components/NotificationToast/NotificationToast";
 
 const Verify = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [notification, setNotification] = useState(null);
 
+  const showNotification = (message, type = "error") => {
+    setNotification({ message, type });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
+  };
+  
   const email = location.state?.email;
   const purpose = location.state?.purpose;
 
@@ -54,11 +63,11 @@ const Verify = () => {
     const result = await requestOtp(email);
 
     if (!result.success) {
-      alert(result.message);
+      showNotification(result.message || "ارسال مجدد کد ناموفق بود", "error");
       return;
     }
 
-    alert("کد تأیید جدید ارسال شد");
+    showNotification("کد تأیید جدید ارسال شد", "success");
   };
 
 
@@ -66,7 +75,7 @@ const Verify = () => {
     const finalCode = code.join("");
 
     if (finalCode.length !== 6) {
-      alert("لطفاً کد ۶ رقمی را کامل وارد کنید");
+      showNotification("لطفاً کد ۶ رقمی را کامل وارد کنید", "warning");
       return;
     }
 
@@ -81,7 +90,7 @@ const Verify = () => {
     setLoading(false);
 
     if (!result.success) {
-      alert(result.message);
+      showNotification(result.message || "کد وارد شده معتبر نیست", "error");
       return;
     }
 
@@ -93,13 +102,21 @@ const Verify = () => {
         },
       });
     } else {
-      alert("حساب کاربری شما با موفقیت فعال شد");
+      showNotification("حساب کاربری شما با موفقیت فعال شد", "success");
       navigate("/login");
     }
   };
 
   return (
     <div className="auth-page">
+      {notification && (
+        <NotificationToast
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+          position="top-right"
+        />
+      )}
       <div className="auth-main verify-main auth-context-ltr">
         <div className="auth-card verify-card">
           <div className="verify-icon">
