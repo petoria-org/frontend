@@ -17,6 +17,7 @@ import { getUserSuccessStories, deleteSuccessStory  } from "../../Services/succe
 import { config } from "../../config";
 import { SuccessStoryEdit } from "../SuccessStoryEdit/SuccessStoryEdit";
 import { NotificationToast } from "../NotificationToast/NotificationToast";
+import profileAvatar from "../../assets/images/profile_avatar.png";
 
 
 const PET_DEFAULT_IMAGES = {
@@ -237,6 +238,8 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
     const cleanPath = path.startsWith("/") ? path.slice(1) : path;
     return `${BACKEND_URL}/${cleanPath}`;
   };
+
+  const profileImageSrc = buildImageUrl(user?.profileImage) || profileAvatar;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -753,8 +756,8 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                 <div className="avatar-border" />
                 <img 
                   className="avatar-image" 
-                  alt="User"
-                  src="src/assets/icons/avator.svg" 
+                  alt={user?.username || "Profile avatar"}
+                  src={profileImageSrc}
                 />
                 <button 
                   className="edit-profile-button"

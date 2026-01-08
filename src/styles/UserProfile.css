@@ -114,8 +114,8 @@
   right: 5px;
   top: 50%;
   transform: translateY(-50%);
-  height: 120px;
-  width: 120px;
+  height: 100px;
+  width: 100px;
 }
 
 .avatar-border {
@@ -126,10 +126,10 @@
     0 10px 30px rgba(28, 123, 209, 0.25),
     0 4px 15px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  height: 106px;
-  width: 106px;
-  left: calc((120px - 106px) / 2);
-  top: calc((120px - 106px) / 2);
+  height: 86px;
+  width: 86px;
+  left: calc((100px - 86px) / 2);
+  top: calc((100px - 86px) / 2);
   position: absolute;
   animation: borderGlow 3s ease-in-out infinite;
 }
@@ -150,8 +150,8 @@
 }
 
 .avatar-image {
-  height: 120px;
-  width: 120px;
+  height: 100px;
+  width: 100px;
   object-fit: cover;
   position: absolute;
   top: 0;
