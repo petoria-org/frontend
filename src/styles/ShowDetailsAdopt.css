@@ -1706,7 +1706,7 @@
 }
 
 .location-map-panel-card {
-  width: min(900px, calc(80% - 2rem));
+  width: min(900px, calc(80% - 1.5rem));
   border-radius: 24px;
   padding: 30px;
   box-sizing: border-box;
@@ -1727,6 +1727,16 @@
   gap: 1.5rem;
   max-height: calc(100% - 4rem);
   overflow-y: auto;
+}
+
+.location-map-panel-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px solid rgba(28, 123, 209, 0.2);
+  border-radius: 24px;
+  z-index: -1;
+  pointer-events: none;
 }
 
 .location-modal-details-frame {
