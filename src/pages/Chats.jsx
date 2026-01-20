@@ -13,6 +13,7 @@ import {
   ensureChat,
   uploadAttachments,
 } from "../Services/chatService";
+import { resolveAvatarUrl, DEFAULT_AVATAR } from "../utils/avatarUtils";
 
 function formatTime(iso) {
   if (!iso) return "";
@@ -1007,7 +1008,15 @@ export default function ChatPage() {
       return {
         id: c.id,
         name:c.other_participant?.username ||c.other_username ||c.last_message?.sender_name ||"Unknown",
-        avatar: c.other_participant?.avatar || c.avatar || "https://i.pravatar.cc/80?img=12",
+        avatar: resolveAvatarUrl(
+          c.other_participant?.avatar ||
+            c.other_participant?.profile_image ||
+            c.other_participant?.profile_picture ||
+            c.other_participant?.photo ||
+            c.avatar ||
+            c.avatar_url ||
+            null
+        ) || DEFAULT_AVATAR,
         time: c.last_message?.timestamp ? formatTime(c.last_message.timestamp) : "",
         unreadCount: isMineLast ? 0 : c.unread_count || 0,
         hint,

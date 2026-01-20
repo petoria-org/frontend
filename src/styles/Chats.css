@@ -193,6 +193,8 @@
   margin-left: 20px;
   border: 2px solid rgba(255, 255, 255, 0.8);
   box-shadow: 0 4px 8px rgba(77, 171, 247, 0.2);
+  object-fit: cover;
+  display: inline-block;
 }
 
 .name_hint_container{
@@ -1789,6 +1791,8 @@
     width: 46px;
     height: 46px;
     margin-left: 12px;
+    object-fit: cover;
+    display: inline-block;
   }
 
   .convItem__name {
