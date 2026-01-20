@@ -124,7 +124,7 @@
 
 .notification-options-content-wrapper {
   scrollbar-width: inherit;
-  scrollbar-color: #c1c1c1 #f1f1f1;
+  scrollbar-color: #a4c8ea rgba(28, 123, 209, 0.08);
   margin-right: -24px;
   padding: 0 20px;
 }

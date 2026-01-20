@@ -3,6 +3,7 @@ import {
   PawPrint, 
   Heart,
 } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
 
 import "../../styles/Footer.css"
 const getQuickLinks = () => {
@@ -62,11 +63,24 @@ const getContactInfo = () => {
   };
 };
 
-const handleFooterNavigation = (setCurrentPage, page) => {
-  if (setCurrentPage && typeof setCurrentPage === 'function') {
+const PAGE_ROUTE_MAP = {
+  home: "/",
+  ads: "/posts",
+  "new-post": "/create-ad",
+  "happy-tales": "/success-stories",
+  chats: "/chats",
+  profile: "/user-profile",
+  login: "/login",
+  signup: "/signup",
+};
+
+const handleFooterNavigation = (navigate, setCurrentPage, page) => {
+  const target = PAGE_ROUTE_MAP[page] || "/";
+  if (setCurrentPage && typeof setCurrentPage === "function") {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+  navigate(target);
+  window.scrollTo({ top: 0, behavior: "smooth" });
 };
 
 const getStats = () => {
@@ -109,6 +123,7 @@ const Icon = ({ src, alt, className = "", fallback = null }) => {
 };
 
 export const Footer = ({ setCurrentPage }) => {
+  const navigate = useNavigate();
   React.useEffect(() => {
     initializePawAnimations();
   }, []);
@@ -169,7 +184,7 @@ export const Footer = ({ setCurrentPage }) => {
             </div>
 
             <button
-              onClick={() => handleFooterNavigation(setCurrentPage, "new-post")}
+              onClick={() => handleFooterNavigation(navigate, setCurrentPage, "new-post")}
               className="cta-button"
             >
               <div className="cta-glow"></div>
@@ -187,7 +202,7 @@ export const Footer = ({ setCurrentPage }) => {
                 {quickLinks.map((item) => (
                   <li key={item.page}>
                     <button
-                      onClick={() => handleFooterNavigation(setCurrentPage, item.page)}
+                      onClick={() => handleFooterNavigation(navigate, setCurrentPage, item.page)}
                       className="link-btn"
                     >
                       <span className="link-btn-content">
@@ -211,7 +226,7 @@ export const Footer = ({ setCurrentPage }) => {
                 {accountLinks.map((item) => (
                   <li key={item.page}>
                     <button
-                      onClick={() => handleFooterNavigation(setCurrentPage, item.page)}
+                      onClick={() => handleFooterNavigation(navigate, setCurrentPage, item.page)}
                       className="link-btn"
                     >
                       <span className="link-btn-content">
