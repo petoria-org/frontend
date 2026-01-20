@@ -22,6 +22,8 @@ import { getChatWithUser , getUserById} from "../../Services/chatService";
 
 const API_BASE_URL = config.API_BASE_URL;
 const BACKEND_URL = config.BACKEND_URL;
+const LOCATION_MODAL_TITLE_ID = "location-modal-title";
+const LOCATION_MODAL_SUBTITLE_ID = "location-modal-subtitle";
 
 const getPetAgeText = (petAge) => {
   if (!petAge) return "";
@@ -38,6 +40,7 @@ const formatPetAge = (petAge) => {
 };
 
 const HealthToggle = ({ checked, disabled = false, label }) => {
+
   return (
     <button
       type="button"
@@ -509,12 +512,25 @@ function LocationMapModal({
     : "نمایش موقعیت من";
 
   return (
-    <div className="location-modal-backdrop" onClick={onClose}>
-      <div className="location-modal" onClick={(event) => event.stopPropagation()}>
+    <div
+      className="location-map-panel-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={LOCATION_MODAL_TITLE_ID}
+      aria-describedby={LOCATION_MODAL_SUBTITLE_ID}
+      onClick={() => onClose?.()}
+    >
+      <div
+        className="location-map-panel-card"
+        role="document"
+        onClick={(event) => event.stopPropagation()}
+      >
         <header className="location-modal-header">
           <div>
-            <h3 className="location-modal-title">{petLabel || "موقعیت حیوان"}</h3>
-            <p className="location-modal-subtitle">
+            <h3 id={LOCATION_MODAL_TITLE_ID} className="location-modal-title">
+              {petLabel || "موقعیت حیوان"}
+            </h3>
+            <p id={LOCATION_MODAL_SUBTITLE_ID} className="location-modal-subtitle">
               {locationReadable || "مختصات تقریبی حیوان نمایش داده می‌شود."}
             </p>
           </div>
@@ -523,8 +539,7 @@ function LocationMapModal({
           </button>
         </header>
 
-        <div className="location-modal-card">
-          <div className="location-map-wrapper">
+        <div className="location-map-wrapper">
             <MapContainer
               center={petCoords}
               zoom={15}
@@ -558,7 +573,9 @@ function LocationMapModal({
             </MapContainer>
           </div>
 
-          <div className="location-modal-actions">
+          <div className="location-modal-details-frame">
+            <div className="location-modal-details-card">
+              <div className="location-modal-actions">
             <div className="location-modal-action-row">
               <button
                 type="button"
@@ -590,9 +607,10 @@ function LocationMapModal({
               </div>
             )}
           </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
   );
 }
 
@@ -990,10 +1008,12 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
     }
   };
 
+  const showDetailsFrameClass = showLocationModal ? "show-details-frame show-details-frame--blur" : "show-details-frame";
+
   return (
     <div className="details-container">
       <div className="show-details-shell">
-        <div className="show-details-frame">
+        <div className={showDetailsFrameClass}>
           <div className="show-details-card">
             <div className="show-details-scroll">
               <div className="show-details-inner">
@@ -1266,35 +1286,38 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
                               </div>
                             )}
 
-                            {petImages.length > 1 && (
-                              <div className="other-images-container">
-                                <div className="other-images-title">
-                                  <span>سایر تصاویر</span>
-                                  <span className="images-count">{petImages.length - 1} تصویر</span>
-                                </div>
-                                <div className="other-images-grid">
-                                  {petImages.map((image, index) => (
-                                    index !== selectedImageIndex && (
-                                      <div 
-                                        key={image.id}
-                                        className="other-image-item"
-                                        onClick={() => handleImageClick(index)}
-                                      >
-                                        <img
-                                          src={image.src}
-                                          alt={image.alt}
-                                          className="other-image"
-                                          onError={handleImageError}
-                                        />
-                                        <div className="image-overlay">
-                                          <span className="view-text">مشاهده</span>
-                                        </div>
-                                      </div>
-                                    )
-                                  ))}
-                                </div>
+                  {petImages.length > 0 && (
+                    <div className="other-images-container">
+                      <div className="other-images-title">
+                        <span>سایر تصاویر</span>
+                        <span className="images-count">{petImages.length} تصویر</span>
+                      </div>
+                      <div className="other-images-grid">
+                        {petImages.map((image, index) => (
+                            <div 
+                              key={image.id}
+                              className={`other-image-item ${index === selectedImageIndex ? 'other-image-item--active' : ''}`}
+                              onClick={() => handleImageClick(index)}
+                              role="button"
+                              tabIndex={0}
+                              aria-label={`تصویر ${index + 1}`}
+                            >
+                              <img
+                                src={image.src}
+                                alt={image.alt}
+                                className="other-image"
+                                onError={handleImageError}
+                              />
+                              <div className="image-overlay">
+                                <span className="view-text">
+                                  {index === selectedImageIndex ? "در حال نمایش" : "مشاهده"}
+                                </span>
                               </div>
-                            )}
+                            </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                           </div>
                         </div>
                       </div>
@@ -1302,26 +1325,37 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
                   </div>
 
                   {isFullscreen && petImages.length > 0 && (
-                    <div className="fullscreen-modal" onClick={handleFullscreenToggle}>
-                      <div className="fullscreen-content" onClick={(e) => e.stopPropagation()}>
-                        <button className="close-fullscreen" onClick={handleFullscreenToggle}>
-                          ✕
+                    <div className="show-details-fullscreen-overlay" onClick={handleFullscreenToggle}>
+                      <div
+                        className="show-details-fullscreen-card show-details-card"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <button
+                          className="show-details-fullscreen-close"
+                          onClick={handleFullscreenToggle}
+                          aria-label="بستن تصویر بزرگ"
+                        >
+                          ×
                         </button>
                         <img
                           src={petImages[selectedImageIndex]?.src}
-                          alt="تصویر تمام صفحه"
-                          className="fullscreen-image"
+                          alt={petImages[selectedImageIndex]?.alt || "تصویر حیوان"}
+                          className="show-details-fullscreen-image"
                           onError={handleImageError}
                         />
-                        <div className="fullscreen-navigation">
-                          {petImages.map((_, index) => (
-                            <button
-                              key={index}
-                              className={`fullscreen-dot ${index === selectedImageIndex ? 'active' : ''}`}
-                              onClick={() => handleImageClick(index)}
-                            />
-                          ))}
-                        </div>
+                        {petImages.length > 1 && (
+                          <div className="show-details-fullscreen-nav">
+                            {petImages.map((_, index) => (
+                              <button
+                                key={index}
+                                type="button"
+                                className={`show-details-fullscreen-dot ${index === selectedImageIndex ? "active" : ""}`}
+                                onClick={() => handleImageClick(index)}
+                                aria-label={`نمایش تصویر ${index + 1}`}
+                              />
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
@@ -1329,17 +1363,16 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
               </div>
             </div>
           </div>
+          <LocationMapModal
+            isOpen={showLocationModal}
+            onClose={closeLocationModal}
+            petPoint={petLocation}
+            petLabel={petMapLabel}
+            locationReadable={locationText}
+            showNotification={showNotification}
+          />
         </div>
       </div>
-
-      <LocationMapModal
-        isOpen={showLocationModal}
-        onClose={closeLocationModal}
-        petPoint={petLocation}
-        petLabel={petMapLabel}
-        locationReadable={locationText}
-        showNotification={showNotification}
-      />
 
       {notification && (
         <NotificationToast

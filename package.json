@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@babel/parser": "^7.28.5",
     "@date-io/jalaali": "^3.2.0",
     "@hookform/resolvers": "^5.2.2",
     "@mui/icons-material": "^7.3.6",
