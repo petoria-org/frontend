@@ -59,20 +59,18 @@
   gap: 30px;
 }
 
-.ls-success-stories-icon-circle {
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, #1c7bd1 0%, #4a9fe3 100%);
-  border-radius: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 
-    0 15px 35px rgba(28, 123, 209, 0.3),
-    inset 0 4px 8px rgba(255, 255, 255, 0.4);
-  position: relative;
-  overflow: hidden;
-  border: 2px solid rgba(255, 255, 255, 0.8);
+.ls-success-stories-ad-text {
+  font-family: 'Inter', Helvetica;
+  font-size: 14px;
+  color: #4a9fe3;
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+.ls-success-stories-icon-img {
+  width: 24px;
+  height: 24px;
+  display: block;
 }
 
 .ls-success-stories-icon-circle::before {
@@ -108,6 +106,15 @@
   letter-spacing: -0.5px;
 }
 
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
 .ls-success-stories-subtitle {
   font-family: 'Inter', Helvetica;
   font-weight: 400;
@@ -133,9 +140,10 @@
 
 .ls-success-stories-grid-profile {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 40px;
-  margin-bottom: 50px;
+  margin: 0 auto 50px;
+  width: min(1400px, 100%);
 }
 
 .ls-success-story-card-profile {

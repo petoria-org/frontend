@@ -88,6 +88,12 @@ export const SuccessStoryDetail = ({ story, onClose }) => {
 
   const storyImages = galleryImages.length > 0 ? galleryImages : [{ id: "fallback", url: fallbackImage }];
 
+  const statusTagMap = {
+    lost: "بازگشت به خانه",
+    found: "به خانواده بازگشت",
+    surrender: "فرزندخوانده شد",
+  };
+
   const displayTitle = storyData.title || story?.title || "";
   const displayStatus = storyData.status || story?.status || "";
   const displayStatusColor = storyData.statusColor || story?.statusColor;
@@ -99,6 +105,10 @@ export const SuccessStoryDetail = ({ story, onClose }) => {
     day: "numeric",
   }).format(new Date(storyData.created_at)) : story?.date || "");
   const displayContent = storyData.story || storyData.content || story?.content || "";
+  const statusTagLabel =
+    statusTagMap[storyData.story_type || story?.story_type] ||
+    displayStatus ||
+    "";
 
   const BackIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -186,7 +196,7 @@ export const SuccessStoryDetail = ({ story, onClose }) => {
                       <div className="thumbnail">
                         <img
                           src={img.url}
-                          alt={`????? ${index + 1}`}
+                          alt={`تصویر ${index + 1}`}
                           className="thumbnail-image"
                           onError={(e) => {
                             e.target.onerror = null;
@@ -269,11 +279,13 @@ export const SuccessStoryDetail = ({ story, onClose }) => {
                     <span>برچسب‌ها</span>
                   </h4>
                 </div>
-                <div className="tags-list">
+                                <div className="tags-list">
                   <span className="story-tag">#داستان_موفقیت</span>
-                  <span className="story-tag">#پتوریا</span>
-                  <span className="story-tag">#بازگشت_به_خانواده</span>
-                  <span className="story-tag">#حیوانات</span>
+                  {statusTagLabel && (
+                    <span className="story-tag">#{statusTagLabel}</span>
+                  )}
+                  <span className="story-tag">#پیدا_شدن_پت</span>
+                  <span className="story-tag">#مهربانی</span>
                 </div>
               </div>
             </div>
@@ -294,3 +306,4 @@ export const SuccessStoryDetail = ({ story, onClose }) => {
     </div>
   );
 };
+

@@ -38,13 +38,6 @@ const SuccessStoriesAll = () => {
     return `${BACKEND_URL}${cleanPath}`;
   };
 
-  const truncateText = (text, maxLength = 110) => {
-    if (!text) return "";
-    return text.length > maxLength
-      ? text.slice(0, maxLength) + "..."
-      : text;
-  };
-
   useEffect(() => {
     const fetchStories = async () => {
       setLoading(true);
@@ -139,18 +132,24 @@ const SuccessStoriesAll = () => {
           <div className="card-border"></div>
 
           <div className="stories-content-all">
-            <header className="stories-header-all">
+                        <header className="stories-header-all">
+
               <div className="title-container-all">
-                <div className="icon-circle-all">
-                  <svg className="heart-icon-all" width="24" height="24" viewBox="0 0 24 24">
-                    <path
-                      d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
-                      fill="currentColor"
-                    />
+
+                <div className="title-icon-heart story-header-icon">
+
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+
                   </svg>
+
                 </div>
 
+
+
                 <div className="title-text-content-all">
+
                   <h1 className="stories-title-all">
                     <span className="title-gradient-all">داستان‌های موفق</span>
                   </h1>
@@ -163,17 +162,24 @@ const SuccessStoriesAll = () => {
                     </span>
                   </p>
                 </div>
+
               </div>
-              
-              <div className="header-decoration-all">
-                <div className="decoration-line-main-all"></div>
-                <div className="decoration-dots-container-all">
-                  {[...Array(6)].map((_, i) => (
-                    <div key={i} className="decoration-dot-simple-all" style={{ animationDelay: `${i * 0.1}s` }}></div>
-                  ))}
-                </div>
-              </div>
+
             </header>
+
+            <div className="header-decoration-all">
+              <div className="decoration-line-main-all"></div>
+              <div className="decoration-dots-container-all">
+                {[...Array(6)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="decoration-dot-simple-all"
+                    style={{ animationDelay: `${i * 0.1}s` }}
+                  ></div>
+                ))}
+              </div>
+            </div>
+
 
             <div className="stories-list-all">
               {!loading && stories.length === 0 ? (
@@ -240,7 +246,7 @@ const SuccessStoriesAll = () => {
 
                         <div className="story-content-box-all">
                           <p className="story-content">
-                            {truncateText(story.content)}
+                            {story.content}
                           </p>
                         </div>
 

@@ -674,12 +674,23 @@ return (
             <div className="header-title-section">
               <div className="title-icon-wrapper">
                 <div className="title-icon-heart">
-                  <HeartIcon />
+                  <img
+                    className="posts-header-icon-img"
+                    src="/src/assets/icons/Advertisements.svg"
+                    alt="آگهی‌ها"
+                    width="24"
+                    height="24"
+                  />
                 </div>
-                <h1 className="posts-title-all-posts">
-                  آگهی‌ها
-                  <span className="title-gradient-line"></span>
-                </h1>
+                <div>
+                  <h1 className="posts-title-all-posts">
+                    آگهی‌ها
+                    <span className="title-gradient-line"></span>
+                  </h1>
+                  <p className="posts-header-subtext">
+                    آگهی‌های گمشده، پیداشده و سرپرستی مسیر رسیدن حیوان‌ها به خانه یا خانواده جدید را می‌سازند؛ با هم به سرانجام این مسیرها کمک کنیم.
+                  </p>
+                </div>
               </div>
             </div>
           </div>

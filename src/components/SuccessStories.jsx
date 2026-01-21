@@ -72,13 +72,6 @@ const SuccessStoriesModern = () => {
     }
   };
 
-  const truncateText = (text, maxLength = 110) => {
-    if (!text) return "";
-    return text.length > maxLength
-      ? text.slice(0, maxLength) + "..."
-      : text;
-  };
-
   useEffect(() => {
     const fetchStories = async () => {
       setLoading(true);
@@ -228,8 +221,8 @@ const SuccessStoriesModern = () => {
         <div className="ls-success-stories-border"></div>
         <div className="ls-success-stories-content">
           <header className="ls-success-stories-header">
-            <div className="ls-success-stories-title-container">
-              <div className="ls-success-stories-title-text-content">
+              <div className="ls-success-stories-title-container">
+                <div className="ls-success-stories-title-text-content">
                 <h1 className="ls-success-stories-title-gradient">
                   داستان‌های موفقیت پتوریا
                 </h1>
@@ -285,7 +278,7 @@ const SuccessStoriesModern = () => {
                     </div>
                     <div className="ls-success-story-content-box">
                       <p className="ls-success-story-content-text">
-                        {truncateText(story.content)}
+                        {story.content}
                       </p>
                     </div>
                     <div className="ls-success-story-footer">

@@ -249,6 +249,12 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
+.posts-header-all-posts {
+  padding-bottom: 32px;
+  border-bottom: 1px solid rgba(28, 123, 209, 0.1);
+  margin-bottom: 32px;
+}
+
 .header-content-wrapper {
   display: flex;
   justify-content: space-between;
@@ -282,6 +288,16 @@
   animation: heartbeat 2s ease-in-out infinite;
 }
 
+.title-icon-heart img {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.posts-header-icon-img {
+  filter: brightness(0) invert(1);
+}
+
 @keyframes heartbeat {
   0%, 100% {
     transform: scale(1);
@@ -289,6 +305,21 @@
   50% {
     transform: scale(1.1);
   }
+}
+
+.posts-header-subtext {
+  color: #6b7280;
+    font-size: 18px;
+    font-family: 'Inter', Helvetica;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.6;
+    direction: rtl;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    position: relative;
 }
 
 .posts-title-all-posts {
