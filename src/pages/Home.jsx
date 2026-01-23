@@ -51,10 +51,7 @@ export default function Home() {
           <div className="section-divider">
             <div className="divider-line"></div>
             <div className="divider-icon">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                <path d="M12 2C6.477 2 2 6.477 2 12C2 17.523 6.477 22 12 22C17.523 22 22 17.523 22 12C22 6.477 17.523 2 12 2Z" stroke="currentColor" strokeWidth="1.5"/>
-              </svg>
+              <span className="divider-icon-image" aria-hidden="true" />
             </div>
             <div className="divider-line"></div>
           </div>
@@ -64,10 +61,7 @@ export default function Home() {
           <div className="section-divider">
             <div className="divider-line"></div>
             <div className="divider-icon">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                <path d="M12 2C6.477 2 2 6.477 2 12C2 17.523 6.477 22 12 22C17.523 22 22 17.523 22 12C22 6.477 17.523 2 12 2Z" stroke="currentColor" strokeWidth="1.5"/>
-              </svg>
+              <span className="divider-icon-image" aria-hidden="true" />
             </div>
             <div className="divider-line"></div>
           </div>
@@ -77,10 +71,7 @@ export default function Home() {
           <div className="section-divider">
             <div className="divider-line"></div>
             <div className="divider-icon">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                <path d="M12 2C6.477 2 2 6.477 2 12C2 17.523 6.477 22 12 22C17.523 22 22 17.523 22 12C22 6.477 17.523 2 12 2Z" stroke="currentColor" strokeWidth="1.5"/>
-              </svg>
+              <span className="divider-icon-image" aria-hidden="true" />
             </div>
             <div className="divider-line"></div>
           </div>

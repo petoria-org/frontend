@@ -2757,6 +2757,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
           onCropComplete={handleCropComplete}
           onClose={() => setCropModalOpen(false)}
           aspect={4/3} 
+          variant={isEdit ? "post-edit" : "default"}
         />
       )}
 

@@ -8,7 +8,6 @@
     radial-gradient(at 40% 20%, rgba(255, 255, 255, 0.1) 0px, transparent 50%),
     radial-gradient(at 80% 0%, rgba(255, 255, 255, 0.1) 0px, transparent 50%),
     radial-gradient(at 0% 50%, rgba(255, 255, 255, 0.1) 0px, transparent 50%);
-  padding: 20px;
 }
 
 .notification-options-section.edit-mode::before {
@@ -35,6 +34,7 @@
     rgba(248, 251, 255, 0.95) 100%);
   border-radius: 32px;
   padding: 40px;
+  padding-bottom: -100px;
   box-sizing: border-box;
   backdrop-filter: blur(20px);
   border: 2px solid rgba(255, 255, 255, 0.9);
@@ -147,6 +147,21 @@
 
 .notification-options-section.edit-mode .notification-options-content-wrapper::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #155fa0 0%, #1c7bd1 100%);
+}
+
+.notification-options-section.edit-mode {
+  min-height: auto;
+  background: transparent;
+  background-image: none;
+}
+
+.notification-options-section.edit-mode .notification-options-content {
+  padding: 28px 36px;
+}
+
+.notification-options-section.edit-mode .notification-options-content-wrapper {
+  max-height: calc(97vh - 120px);
+  padding-bottom: 12px;
 }
 
 .create-ad-page .notification-options-content {

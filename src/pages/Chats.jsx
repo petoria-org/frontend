@@ -1273,17 +1273,19 @@ export default function ChatPage() {
           position="top-right"
         />
       )}
-      <div className={chatMainClass}>
-        <Conversations
-          items={convItems}
-          selectedChatId={selectedChatId}
-          onSelectChat={handleSelectChat}
-        />
+      <div className="chat-main-card">
+        <div className="chat-main-card-border"></div>
+        <div className={chatMainClass}>
+          <Conversations
+            items={convItems}
+            selectedChatId={selectedChatId}
+            onSelectChat={handleSelectChat}
+          />
 
-        <OpenConv
-          chat={openChat}
-          messages={
-            loadingMessages
+          <OpenConv
+            chat={openChat}
+            messages={
+              loadingMessages
               ? [
                   {
                     id: "loading",
@@ -1296,16 +1298,17 @@ export default function ChatPage() {
                   },
                 ]
               : openMessages
-          }
-          inputValue={inputValue}
-          loadingOlderMessages={loadingOlderMessages}
-          onInputChange={setInputValue}
-          onSend={handleSend}
-          onAttach={handleSendAttachments}
-          onMountMessagesViewport={handleMountMessagesViewport}
-          onBack={handleBackToList}
-          showBackButton={isCompactLayout}
+            }
+            inputValue={inputValue}
+            loadingOlderMessages={loadingOlderMessages}
+            onInputChange={setInputValue}
+            onSend={handleSend}
+            onAttach={handleSendAttachments}
+            onMountMessagesViewport={handleMountMessagesViewport}
+            onBack={handleBackToList}
+            showBackButton={isCompactLayout}
         />
+        </div>
       </div>
     </div>
   );

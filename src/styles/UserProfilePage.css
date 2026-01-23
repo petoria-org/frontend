@@ -71,9 +71,9 @@
   background: white;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  width: 1000px;
+  width: 920px;
   max-width: 90vw;
-  max-height: 90vh;
+  max-height: 95vh;
   overflow: hidden;
   animation: modalAppear 0.3s ease-out;
   opacity: 1 !important;

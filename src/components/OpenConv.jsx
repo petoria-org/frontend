@@ -10,6 +10,15 @@ const makeAbsoluteUrl = (path) => {
   if (!path) return null;
   const pathStr = String(path).trim();
   if (!pathStr) return null;
+  if (pathStr.startsWith("data:") || pathStr.startsWith("blob:")) return pathStr;
+  if (
+    pathStr.startsWith("/assets/") ||
+    pathStr.startsWith("assets/") ||
+    pathStr.startsWith("/src/") ||
+    pathStr.startsWith("src/")
+  ) {
+    return pathStr;
+  }
   if (ABS_URL_RE.test(pathStr)) return pathStr;
   const base = (config?.BACKEND_URL || "").replace(/\/$/, "");
   const normalized = pathStr.startsWith("/") ? pathStr : `/${pathStr}`;

@@ -751,7 +751,7 @@
 .hero-container .vertical-strip {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 28px;
   padding: 12px;
   background: linear-gradient(
     135deg,
