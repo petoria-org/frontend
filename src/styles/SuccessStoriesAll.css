@@ -192,6 +192,12 @@
   z-index: 2;
 }
 
+.success-stories-pagination-wrapper {
+  margin-top: 32px;
+  display: flex;
+  justify-content: center;
+}
+
 .stories-header-all {
   margin-bottom: 40px;
   padding-bottom: 0;

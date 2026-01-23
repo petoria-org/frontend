@@ -264,18 +264,20 @@ const SuccessStoriesAll = () => {
                 ))
               )}
             </div>
+
+            {!loading && (
+              <div className="success-stories-pagination-wrapper">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                  onPrevious={handlePrev}
+                  onNext={handleNext}
+                />
+              </div>
+            )}
           </div>
         </div>
-      </div>
-
-      <div className="success-stories-pagination-wrapper">
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          onPrevious={handlePrev}
-          onNext={handleNext}
-        />
       </div>
 
       {selectedStory && (
