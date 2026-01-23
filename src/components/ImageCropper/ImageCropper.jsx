@@ -17,6 +17,7 @@ const ImageCropper = ({
   quality = 0.95,
   uploadImageFn = uploadPostImage,
   maskShape = "rectangle",
+  variant = "default",
 }) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [scale, setScale] = useState(1);
@@ -315,6 +316,7 @@ const ImageCropper = ({
   }, []);
 
   const isCircularMask = maskShape === "circle";
+  const isProfileCardVariant = variant === "post-edit";
 
   const cropAreaStyle = useMemo(() => ({
     width: `${calculatedCropSize.width}px`,
@@ -326,17 +328,30 @@ const ImageCropper = ({
   }), [calculatedCropSize, crop, isDragging, isCircularMask]);
 
   const modalHeight = useMemo(() => {
-    return window.innerHeight * 0.9;
+    return window.innerHeight * 0.93;
   }, []);
 
   return (
-    <div className="image-cropper-modal-wrapper"> 
-      <div className="image-cropper-modal-overlay">
+    <div
+      className={`image-cropper-modal-wrapper${
+        isProfileCardVariant ? " image-cropper-modal-wrapper--post-edit" : ""
+      }`}
+    >
+      <div
+        className={`image-cropper-modal-overlay${
+          isProfileCardVariant ? " image-cropper-modal-overlay--post-edit" : ""
+        }`}
+      >
         <div 
-          className="image-cropper-modal" 
+          className={`image-cropper-modal${
+            isProfileCardVariant ? " image-cropper-modal--post-edit" : ""
+          }`}
           onClick={(e) => e.stopPropagation()}
-          style={{ maxHeight: `${modalHeight}px` }}
         >
+          <div
+            className="image-cropper-scroll-wrapper"
+            style={{ maxHeight: `${modalHeight}px` }}
+          >
           <div className="cropper-modal-header">
             <div className="cropper-header-left">
               <h3 className="cropper-title">
@@ -642,6 +657,7 @@ const ImageCropper = ({
 
             <canvas ref={canvasRef} style={{ display: "none" }} />
           </div>
+          </div>
         </div>
       </div>
     </div> 
@@ -663,6 +679,7 @@ ImageCropper.propTypes = {
   quality: PropTypes.number,
   uploadImageFn: PropTypes.func,
   maskShape: PropTypes.oneOf(["rectangle", "circle"]),
+  variant: PropTypes.oneOf(["default", "post-edit"]),
 };
 
 ImageCropper.defaultProps = {
@@ -673,6 +690,7 @@ ImageCropper.defaultProps = {
   quality: 0.95,
   uploadImageFn: uploadPostImage,
   maskShape: "rectangle",
+  variant: "default",
 };
 
 export { ImageCropper };

@@ -4,7 +4,9 @@ import api from "../Services/api";
 
 export default function Stats() {
   const [activeAdsCount, setActiveAdsCount] = useState(null);
+  const [successStoriesCount, setSuccessStoriesCount] = useState(null);
   const [error, setError] = useState("");
+  const [storiesError, setStoriesError] = useState("");
 
   useEffect(() => {
     const fetchActiveAdsCount = async () => {
@@ -30,7 +32,31 @@ export default function Stats() {
       }
     };
 
+    const fetchSuccessStoriesCount = async () => {
+      try {
+        setStoriesError("");
+
+        const res = await api.get("/SuccessStory/stories/");
+        const data = res.data;
+
+        let count = 0;
+        if (typeof data.count === "number") {
+          count = data.count;
+        } else if (Array.isArray(data)) {
+          count = data.length;
+        } else if (Array.isArray(data.results)) {
+          count = data.results.length;
+        }
+
+        setSuccessStoriesCount(count);
+      } catch (err) {
+        console.error("Success stories count error:", err);
+        setStoriesError("Error fetching success stories count.");
+      }
+    };
+
     fetchActiveAdsCount();
+    fetchSuccessStoriesCount();
   }, []);
 
   return (
@@ -39,8 +65,13 @@ export default function Stats() {
         
         <div className="compact-stats-box">
           <img className="compact-stats-img" src="/images/correct.png" alt="داستان‌های موفق" />
-          <div className="compact-stats-number">1,200</div>
+          <div className="compact-stats-number">
+            {successStoriesCount !== null
+              ? successStoriesCount.toLocaleString("en-US")
+              : "..."}
+          </div>
           <div className="compact-stats-label">داستان‌های موفق</div>
+          {storiesError && <div className="compact-stats-error">{storiesError}</div>}
         </div>
 
         <div className="compact-stats-box">
