@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/SuccessStoryEdit.css";
 import { config } from "../../config";
+import { getSuccessStoryDefaultImage } from "../../utils/postImages";
 import {
   updateSuccessStory,
   deleteSuccessStory,
@@ -16,18 +17,41 @@ export const SuccessStoryEdit = ({ story, onUpdate, onDelete, onCancel }) => {
 
   const buildImageUrl = (path) => {
     if (!path) return "";
-    if (path.startsWith("http")) return path;
-    const cleanPath = path.startsWith("/") ? path.slice(1) : path;
-    return `${BACKEND_URL}/${cleanPath}`;
+    if (typeof path === "object" && path !== null) {
+      const nested =
+        path.url ||
+        path.image ||
+        path.thumbnail ||
+        path.file ||
+        path.image_url;
+      return buildImageUrl(nested);
+    }
+
+    const rawPath = String(path).trim();
+    if (!rawPath || rawPath === "null" || rawPath === "undefined") return "";
+    if (rawPath.startsWith("http")) return rawPath;
+    if (rawPath.startsWith("data:") || rawPath.startsWith("blob:")) return rawPath;
+    if (
+      rawPath.startsWith("/src/") ||
+      rawPath.startsWith("src/") ||
+      rawPath.startsWith("/assets/") ||
+      rawPath.startsWith("assets/")
+    ) {
+      return rawPath;
+    }
+
+    const cleanPath = rawPath.startsWith("/") ? rawPath : `/${rawPath}`;
+    return `${BACKEND_URL}${cleanPath}`;
   };
 
   const normalizeStoryImages = (rawImages = [], fallbackImage = "") => {
-    const baseImages =
-      Array.isArray(rawImages) && rawImages.length > 0
-        ? rawImages
-        : fallbackImage
-        ? [fallbackImage]
-        : [];
+    const hasRawImages = Array.isArray(rawImages) && rawImages.length > 0;
+    const baseImages = hasRawImages
+      ? rawImages
+      : fallbackImage
+      ? [fallbackImage]
+      : [];
+    const normalizedFallback = buildImageUrl(fallbackImage);
 
     return baseImages
       .map((img, index) => {
@@ -40,23 +64,39 @@ export const SuccessStoryEdit = ({ story, onUpdate, onDelete, onCancel }) => {
           backendId: img?.id ?? img?.backendId ?? null,
           url,
           uploading: false,
+          isFallback: !hasRawImages && url === normalizedFallback,
         };
       })
       .filter(Boolean);
   };
 
-  const FALLBACK_IMAGE = "/src/assets/images/default-pet.png";
+  const DEFAULT_FALLBACK_IMAGE = "/src/assets/images/default-pet.png";
+  const storyFallbackImage =
+    story?.fallbackImage ||
+    getSuccessStoryDefaultImage(story) ||
+    DEFAULT_FALLBACK_IMAGE;
+  const isFallbackUrl = (url) =>
+    !url ||
+    url === storyFallbackImage ||
+    url === DEFAULT_FALLBACK_IMAGE;
+  const isFallbackImage = (image) =>
+    Boolean(image?.isFallback) || isFallbackUrl(image?.url);
 
   const initialImages = normalizeStoryImages(
     story.backendImages || story.images || [],
-    story.image || FALLBACK_IMAGE
+    story.image || storyFallbackImage
   );
 
+  const normalizeStoryContent = (value) => {
+    if (!value) return "";
+    return String(value).replace(/[\r\n]+$/g, "");
+  };
+
   const [selectedImage, setSelectedImage] = useState(
-    initialImages[0]?.url || story.image || FALLBACK_IMAGE
+    initialImages[0]?.url || story.image || storyFallbackImage
   );
   const [title, setTitle] = useState(story.title || "");
-  const [content, setContent] = useState(story.content || "");
+  const [content, setContent] = useState(normalizeStoryContent(story.content));
   const [images, setImages] = useState(initialImages);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -90,13 +130,13 @@ export const SuccessStoryEdit = ({ story, onUpdate, onDelete, onCancel }) => {
   useEffect(() => {
     if (story) {
       setTitle(story.title || "");
-      setContent(story.content || "");
+      setContent(normalizeStoryContent(story.content));
       const normalized = normalizeStoryImages(
         story.backendImages || story.images || [],
-        story.image || FALLBACK_IMAGE
+        story.image || storyFallbackImage
       );
       setImages(normalized);
-      setSelectedImage(normalized[0]?.url || story.image || FALLBACK_IMAGE);
+      setSelectedImage(normalized[0]?.url || story.image || storyFallbackImage);
     }
   }, [story]);
 
@@ -111,7 +151,7 @@ export const SuccessStoryEdit = ({ story, onUpdate, onDelete, onCancel }) => {
       ? images
       : selectedImage
       ? [{ id: "selected-preview", url: selectedImage }]
-      : [{ id: "fallback-preview", url: FALLBACK_IMAGE }];
+      : [{ id: "fallback-preview", url: storyFallbackImage }];
 
   const isUploadingImages =
     images.some((img) => img.uploading) || cropModalOpen || pendingFiles.length > 0;
@@ -132,6 +172,61 @@ export const SuccessStoryEdit = ({ story, onUpdate, onDelete, onCancel }) => {
     setImageToCrop(null);
   };
 
+  const handleTextareaKeyDown = (e) => {
+  // اگر دکمه Enter نیست، اجازه نده به خط جدید برود
+  if (e.key === 'Enter') {
+    // اگر Shift + Enter زده، بگذار به خط جدید برود
+    if (e.shiftKey) {
+      return;
+    }
+    // اگر فقط Enter زده، از رفتن به خط جدید جلوگیری کن
+    e.preventDefault();
+  }
+  
+  // برای سایر کلیدها، بررسی کن که آیا در حالت "ادامه دادن" هستیم
+  const textarea = e.target;
+  const cursorPosition = textarea.selectionStart;
+  
+  // اگر در وسط خط هستیم و داریم تایپ می‌کنیم، بگذار ادامه دهد
+  // این قسمت برای فارسی مهم است
+  if (cursorPosition > 0) {
+    const textBeforeCursor = textarea.value.substring(0, cursorPosition);
+    const lastNewLineIndex = textBeforeCursor.lastIndexOf('\n');
+    
+    // اگر بعد از آخرین Enter هستیم و هنوز به انتهای خط نرسیده‌ایم
+    const currentLineStart = lastNewLineIndex + 1;
+    const currentLineText = textBeforeCursor.substring(currentLineStart);
+    
+    // اندازه فونت برای محاسبه عرض
+    const fontSize = 16; // باید با فونت واقعی تطبیق دهید
+    const estimatedWidth = currentLineText.length * (fontSize * 0.6); // تقریب عرض
+    
+    // اگر خط خیلی طولانی شده، جلوگیری نکن (بگذار برود خط بعد)
+    // یا اگر می‌خواهید جلوگیری کنید:
+    // if (estimatedWidth > textarea.clientWidth - 30) { // 30 برای padding
+    //   e.preventDefault();
+    //   return;
+    // }
+  }
+};
+
+const handleTextareaChange = (e) => {
+  const value = e.target.value;
+  
+  // حذف خطوط جدید غیرضروری (فقط آنهایی که با Enter ایجاد نشده‌اند)
+  // این ممکن است مشکل شما را حل کند
+  const lines = value.split('\n');
+  const processedLines = lines.map(line => {
+    // اگر خط خالی نیست و طولانی است، آن را بشکن
+    if (line.trim() !== '' && line.length > 50) { // 50 کاراکتر آستانه
+      // می‌توانید خط را بشکنید یا کاری دیگر انجام دهید
+      return line;
+    }
+    return line;
+  });
+  
+  setContent(processedLines.join('\n'));
+};
   const handleCropComplete = (croppedResult) => {
     if (croppedResult) {
       const rawImage = croppedResult.image || "";
@@ -140,7 +235,7 @@ export const SuccessStoryEdit = ({ story, onUpdate, onDelete, onCancel }) => {
         ? rawImage.includes("?t=")
           ? rawImage
           : `${rawImage}${rawImage.includes("?") ? "&" : "?"}t=${Date.now()}`
-        : imageToCrop || FALLBACK_IMAGE;
+        : imageToCrop || storyFallbackImage;
 
       const newImage = {
         id: backendId || Date.now(),
@@ -150,12 +245,12 @@ export const SuccessStoryEdit = ({ story, onUpdate, onDelete, onCancel }) => {
       };
 
       setImages((prev) => {
-        const next = [...prev, newImage];
-        if (!selectedImage) {
-          setSelectedImage(finalUrl);
-        }
-        return next;
+        const next = prev.filter((img) => !isFallbackImage(img));
+        return [...next, newImage];
       });
+      setSelectedImage((prevSelected) =>
+        isFallbackUrl(prevSelected) ? finalUrl : prevSelected || finalUrl
+      );
     }
 
     finalizeCropStep();
@@ -169,7 +264,8 @@ export const SuccessStoryEdit = ({ story, onUpdate, onDelete, onCancel }) => {
     const files = Array.from(event.target.files || []).filter((file) =>
       file.type.startsWith("image/")
     );
-    const remainingSlots = 7 - (images.length + pendingFiles.length);
+    const effectiveImageCount = images.filter((img) => !isFallbackImage(img)).length;
+    const remainingSlots = 7 - (effectiveImageCount + pendingFiles.length);
     const filesToAdd = files.slice(0, Math.max(0, remainingSlots));
 
     if (filesToAdd.length === 0) {
@@ -193,7 +289,7 @@ export const SuccessStoryEdit = ({ story, onUpdate, onDelete, onCancel }) => {
 
       const nextImages = prev.filter((img) => img.id !== id);
       if (selectedImage && imageToDelete && selectedImage === imageToDelete.url) {
-        setSelectedImage(nextImages[0]?.url || FALLBACK_IMAGE);
+        setSelectedImage(nextImages[0]?.url || storyFallbackImage);
       }
 
       return nextImages;
@@ -245,7 +341,7 @@ export const SuccessStoryEdit = ({ story, onUpdate, onDelete, onCancel }) => {
       const updatedStory = await updateSuccessStory(story.id, storyData);
       const normalized = normalizeStoryImages(
         updatedStory.images || story.backendImages || [],
-        updatedStory.image || story.image || FALLBACK_IMAGE
+        updatedStory.image || story.image || storyFallbackImage
       );
 
       setImages(normalized);
@@ -258,7 +354,7 @@ export const SuccessStoryEdit = ({ story, onUpdate, onDelete, onCancel }) => {
         id: updatedStory.id,
         title: updatedStory.title,
         content: updatedStory.story,
-        image: normalized[0]?.url || story.image || FALLBACK_IMAGE,
+        image: normalized[0]?.url || story.image || storyFallbackImage,
         images: normalized.map((img) => img.url),
         backendImages: normalized,
         story_type: updatedStory.story_type,
@@ -404,37 +500,37 @@ export const SuccessStoryEdit = ({ story, onUpdate, onDelete, onCancel }) => {
                   <h1 className="edit-story-title">ویرایش داستان موفقیت</h1>
                   <p className="edit-story-subtitle">عکس‌ها و متن داستان را بروزرسانی کنید</p>
                 </div>
-                <button type="button" className="close-button" onClick={onCancel}>
+                <button type="button" className="close-button-success-story" onClick={onCancel}>
                   <CloseIcon />
                 </button>
               </div>
             </div>
 
             <div className="story-edit-content">
-              <div className="images-section">
-                <div className="image-upload-section">
-                  <div className="section-header">
-                    <h3 className="section-title">
+              <div className="images-section-edit">
+                <div className="image-upload-section-edit">
+                  <div className="section-header-edit">
+                    <h3 className="section-title-edit">
                       <ImageIcon />
                       <span>پیش‌نمایش عکس اصلی</span>
                     </h3>
                   </div>
-                  <div className="main-image-preview">
+                  <div className="main-image-preview-edit">
                     <img
-                      src={selectedImage || FALLBACK_IMAGE}
+                      src={selectedImage || storyFallbackImage}
                       alt={title}
                       className="main-preview-image"
                       onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = FALLBACK_IMAGE;
+                        e.target.src = storyFallbackImage;
                       }}
                     />
                   </div>
                 </div>
 
-                <div className="image-upload-section">
-                  <div className="section-header">
-                    <h3 className="section-title">
+                <div className="image-upload-section-edit">
+                  <div className="section-header-edit">
+                    <h3 className="section-title-edit">
                       <GalleryIcon />
                       <span>گالری عکس‌ها</span>
                     </h3>
@@ -458,7 +554,7 @@ export const SuccessStoryEdit = ({ story, onUpdate, onDelete, onCancel }) => {
                             className="thumbnail-image"
                             onError={(e) => {
                               e.target.onerror = null;
-                              e.target.src = FALLBACK_IMAGE;
+                              e.target.src = storyFallbackImage;
                             }}
                           />
                         </div>
@@ -496,10 +592,10 @@ export const SuccessStoryEdit = ({ story, onUpdate, onDelete, onCancel }) => {
                 </div>
               </div>
 
-              <div className="story-info-section">
-                <div className="story-text-section">
-                  <div className="section-header">
-                    <h3 className="section-title">
+              <div className="story-info-section-edit">
+                <div className="story-text-section-edit">
+                  <div className="section-header-edit">
+                    <h3 className="section-title-edit">
                       <InfoIcon />
                       <span>جزئیات داستان موفقیت</span>
                     </h3>

@@ -1821,7 +1821,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
                 {isEdit && (
                   <button
                     onClick={onClose}
-                    className="close-button"
+                    className="close-button-notif"
                     disabled={isLoading}
                   >
                     ×

@@ -34,7 +34,7 @@ const SUCCESS_STORY_DEFAULT_IMAGES = {
   cat: "/src/assets/images/success_story_cat.png",
   rabbit: "/src/assets/images/success_story_rabbit.png",
   hamster: "/src/assets/images/success_story_hamster.png",
-  bird: "/src/assets/images/success_story_birdpng",
+  bird: "/src/assets/images/success_story_bird.png",
   other: "/src/assets/images/success_story_other.png",
 };
 
@@ -234,8 +234,20 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
 
   const buildImageUrl = (path) => {
     if (!path) return "";
-    if (path.startsWith("http")) return path;
-    const cleanPath = path.startsWith("/") ? path.slice(1) : path;
+    if (typeof path === "object" && path !== null) {
+      const nested =
+        path.url ||
+        path.image ||
+        path.thumbnail ||
+        path.file ||
+        path.image_url;
+      return buildImageUrl(nested);
+    }
+
+    const rawPath = String(path).trim();
+    if (!rawPath || rawPath === "null" || rawPath === "undefined") return "";
+    if (rawPath.startsWith("http")) return rawPath;
+    const cleanPath = rawPath.startsWith("/") ? rawPath.slice(1) : rawPath;
     return `${BACKEND_URL}/${cleanPath}`;
   };
 
@@ -321,8 +333,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
             })
             .filter(Boolean);
           const imageUrls = formattedImages.map(img => img.url);
-          const primaryImage = imageUrls[0]
-            || (story.image ? buildImageUrl(story.image) : "");
+          const primaryImage = imageUrls[0] || buildImageUrl(story.image);
 
           return {
             id: story.id,
@@ -336,6 +347,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
             statusTextColor: "#0f7228",
             image: primaryImage || defaultStoryImage,
             images: imageUrls.length > 0 ? imageUrls : [primaryImage || defaultStoryImage],
+            fallbackImage: defaultStoryImage,
             backendImages: formattedImages,
             content: story.story,
           };
@@ -781,6 +793,9 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
             </div>
           </div>
         </div>
+        <div className="section-footer-card">
+          <div className="section-footer-border"></div>
+        </div>
       </section>
 
       {activeTab === 'ads' ? (
@@ -1064,7 +1079,11 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                 {userSuccessStories.length > 0 ? (
                   <>
                   <div className="user-stories-list">
-                    {currentStories.map((story, index) => (
+                    {currentStories.map((story, index) => {
+                      const fallbackImage =
+                        story.fallbackImage || getStoryDefaultImage(story);
+
+                      return (
                       <div
                         key={story.id}
                         className="user-story-card"
@@ -1083,8 +1102,12 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                               <div className="user-image-border">
                                 <img
                                   className="user-story-image"
-                                  src={story.image}
+                                  src={story.image || fallbackImage}
                                   alt={story.title}
+                                  onError={(e) => {
+                                    e.currentTarget.onerror = null;
+                                    e.currentTarget.src = fallbackImage;
+                                  }}
                                 />
                               </div>
                             </div>
@@ -1133,7 +1156,8 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                           </div>
                         </div>
                       </div>
-                    ))}
+                    );
+                    })}
                   </div>
                   {currentStories.length > 0 && (
                     <Pagination

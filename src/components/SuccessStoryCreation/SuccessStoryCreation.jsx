@@ -437,15 +437,15 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
               </p>
             </div>
           </div>
-          <button className="close-button" onClick={handleClose}>
+          <button className="close-button-story-creation" onClick={handleClose}>
             <CloseIcon />
           </button>
         </div>
 
         <div className="success-story-content">
-          <div className="image-upload-section">
-            <div className="section-header">
-              <div className="section-title">
+          <div className="image-upload-section-creation">
+            <div className="section-header-cration">
+              <div className="section-title-cration">
                 <CameraIcon />
                 <span>آپلود عکس‌ها</span>
               </div>
@@ -480,7 +480,7 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
                 <div className="image-preview-container">
                   <div className="preview-area">
                     {images[activeImageIndex] && (
-                      <div className="main-image-preview">
+                      <div className="main-image-preview-cration">
                         <img 
                           src={images[activeImageIndex].url} 
                           alt={`Preview ${activeImageIndex + 1}`}
@@ -585,9 +585,9 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
             </div>
           </div>
 
-          <div className="story-text-section">
-            <div className="section-header">
-              <div className="section-title">
+          <div className="story-text-section-creation">
+            <div className="section-header-cration">
+              <div className="section-title-cration">
                 <ImageIcon />
                 <span>داستان خود را بنویسید</span>
               </div>

@@ -140,17 +140,17 @@ export const SuccessStoryDetail = ({ story, onClose }) => {
               <h1 className="success-story-title">جزئیات داستان موفق</h1>
               <p className="success-story-subtitle">مشاهده کامل داستان موفقیت</p>
             </div>
-            <button className="close-button" onClick={onClose}>
+            <button className="close-button-story-detail" onClick={onClose}>
               <CloseIcon />
             </button>
           </div>
         </div>
 
         <div className="story-detail-content">
-          <div className="images-section">
+          <div className="images-section-datail">
             <div className="image-upload-section">
-              <div className="section-header">
-                <h3 className="section-title">
+              <div className="section-header-datail">
+                <h3 className="section-title-datail">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
                     <circle cx="8.5" cy="8.5" r="1.5"/>
@@ -174,8 +174,8 @@ export const SuccessStoryDetail = ({ story, onClose }) => {
 
             {storyImages.length > 1 && (
               <div className="image-upload-section">
-                <div className="section-header">
-                  <h3 className="section-title">
+                <div className="section-header-datail">
+                  <h3 className="section-title-datail">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
@@ -212,10 +212,10 @@ export const SuccessStoryDetail = ({ story, onClose }) => {
             )}
           </div>
 
-          <div className="story-info-section">
+          <div className="story-info-section-datail">
             <div className="story-text-section">
-              <div className="section-header">
-                <h3 className="section-title">
+              <div className="section-header-datail">
+                <h3 className="section-title-datail">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                   </svg>
@@ -251,9 +251,9 @@ export const SuccessStoryDetail = ({ story, onClose }) => {
                 </div>
               </div>
 
-              <div className="content-section">
-                <div className="section-header">
-                  <h4 className="section-title">
+              <div className="content-section-datail">
+                <div className="section-header-datail">
+                  <h4 className="section-title-datail">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                       <polyline points="14 2 14 8 20 8"/>
@@ -270,8 +270,8 @@ export const SuccessStoryDetail = ({ story, onClose }) => {
               </div>
 
               <div className="tags-section">
-                <div className="section-header">
-                  <h4 className="section-title">
+                <div className="section-header-datail">
+                  <h4 className="section-title-datail">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
                       <line x1="7" y1="7" x2="7.01" y2="7"/>

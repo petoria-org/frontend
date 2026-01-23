@@ -153,7 +153,7 @@
   font-weight: 400;
 }
 
-.close-button {
+.close-button-story-creation {
   width: 44px;
   height: 44px;
   border-radius: 12px;
@@ -168,13 +168,13 @@
   z-index: 1;
 }
 
-.close-button:hover {
+.close-button-story-creation:hover {
   background: rgba(255, 255, 255, 0.25);
   transform: rotate(90deg);
   border-color: rgba(255, 255, 255, 0.3);
 }
 
-.close-button svg {
+.close-button-story-creation svg {
   width: 20px;
   height: 20px;
   stroke: white;
@@ -191,8 +191,8 @@
   direction: ltr;
 }
 
-.image-upload-section,
-.story-text-section {
+.image-upload-section-creation,
+.story-text-section-creation {
   background: white;
   border-radius: 20px;
   padding: 24px;
@@ -201,13 +201,13 @@
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.image-upload-section:hover,
-.story-text-section:hover {
+.image-upload-section-creation:hover,
+.story-text-section-creation:hover {
   box-shadow: 0 8px 30px rgba(122, 179, 224, 0.12);
   border-color: rgba(122, 179, 224, 0.2);
 }
 
-.section-header {
+.section-header-cration {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -216,7 +216,7 @@
   border-bottom: 2px solid #f0f7ff;
 }
 
-.section-title {
+.section-title-cration {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -226,7 +226,7 @@
   font-size: 18px;
 }
 
-.section-title svg {
+.section-title-cration svg {
   width: 24px;
   height: 24px;
   stroke: #7ab3e0;
@@ -379,7 +379,7 @@
   gap: 20px;
 }
 
-.main-image-preview {
+.main-image-preview-cration {
   position: relative;
   width: 100%;
   height: 280px;
@@ -844,7 +844,7 @@
     gap: 24px;
   }
 
-  .main-image-preview {
+  .main-image-preview-cration {
     height: 200px;
   }
 
@@ -902,21 +902,21 @@
     padding: 20px;
   }
 
-  .image-upload-section,
-  .story-text-section {
+  .image-upload-section-creation,
+  .story-text-section-creation {
     padding: 20px;
   }
 
-  .section-title {
+  .section-title-cration {
     font-size: 16px;
   }
 
-  .section-title svg {
+  .section-title-cration svg {
     width: 20px;
     height: 20px;
   }
 
-  .main-image-preview {
+  .main-image-preview-cration {
     height: 180px;
     padding: 15px;
   }

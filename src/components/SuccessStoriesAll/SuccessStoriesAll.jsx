@@ -252,7 +252,7 @@ const SuccessStoriesAll = () => {
 
                         <div className="story-footer-all">
                           <button className="read-more-btn-all" onClick={() => setSelectedStory(story)}>
-                            <span>خواندن ادامه داستان</span>
+                            <span>مشاهده داستان </span>
                             <div className="btn-arrow-all">
                               →
                             </div>

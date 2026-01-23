@@ -476,10 +476,10 @@
 
 .image-decoration-all {
   display: flex;
-  justify-content: space-between;
-  gap: 6px;
-  margin: 24px auto 0;
-  width: 220px;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px auto 0;
+  width: auto;
 }
 
 

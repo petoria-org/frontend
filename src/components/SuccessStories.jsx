@@ -81,12 +81,8 @@ const SuccessStoriesModern = () => {
       
       try {
         const data = await getSuccessStories();
-        
-        const sortedStories = [...data].sort(
-          (a, b) => new Date(b.created_at) - new Date(a.created_at)
-        );
 
-        const mapped = sortedStories.slice(0, 4).map((story) => {
+        const mapped = data.slice(0, 4).map((story) => {
           const statusColors = getStatusColor(story.story_type);
           const galleryImages = story.images && story.images.length > 0
             ? story.images

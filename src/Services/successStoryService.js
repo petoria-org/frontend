@@ -1,7 +1,7 @@
 import api from "./api";
 
-export const getSuccessStories = async () => {
-  const res = await api.get("/SuccessStory/stories/");
+export const getSuccessStories = async (params = {}) => {
+  const res = await api.get("/SuccessStory/stories/", { params });
   return res.data.results;
 };
 
