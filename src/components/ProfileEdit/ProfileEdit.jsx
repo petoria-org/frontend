@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useOutletContext } from "react-router-dom";
 import "../../styles/ProfileEdit.css";
 import { NotificationToast } from '../NotificationToast/NotificationToast';
 import { ImageCropper } from "../ImageCropper";
@@ -26,6 +27,8 @@ const ProfileEditLockIcon = () => (
 );
 
 const ProfileEdit = ({ userData, onClose, onSave }) => {
+  const outletContext = useOutletContext();
+  const setHideNavbar = outletContext?.setHideNavbar;
   const [formData, setFormData] = useState({
     username: userData?.username || "",
     email: userData?.email || "",
@@ -50,6 +53,13 @@ const ProfileEdit = ({ userData, onClose, onSave }) => {
       document.body.style.overflow = "";
     };
   }, []);
+
+  useEffect(() => {
+    setHideNavbar?.(true);
+    return () => {
+      setHideNavbar?.(false);
+    };
+  }, [setHideNavbar]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

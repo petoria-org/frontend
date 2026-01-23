@@ -7,14 +7,11 @@
 
 .main-content {
   flex: 1;
-  padding-top: 88px;
-  padding-bottom: 48px;
 }
 
 .page-container {
   max-width: 1500px;
   margin: 0 auto;
-  padding: 24px;
 }
 
 @media (max-width: 768px) {

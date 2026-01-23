@@ -1,6 +1,13 @@
-.main-content-wrapper {
+.all-posts-container {
   position: relative;
   min-height: 800px;
+  width: 100%;
+  padding-top: 88px;
+  padding-bottom: 48px;
+}
+
+.main-content-wrapper {
+  position: relative;
   width: 100%;
 }
 
@@ -12,6 +19,7 @@
   bottom: 0;
   z-index: 100;
   animation: fadeIn 0.3s ease-out;
+
 }
 
 .posts-main-content-layer {
@@ -165,6 +173,7 @@
   animation: containerEntrance 0.6s ease-out;
   margin: 0 auto;
   box-sizing: border-box;
+  
 }
 
 @keyframes containerEntrance {
@@ -249,11 +258,6 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
-.posts-header-all-posts {
-  padding-bottom: 32px;
-  border-bottom: 1px solid rgba(28, 123, 209, 0.1);
-  margin-bottom: 32px;
-}
 
 .header-content-wrapper {
   display: flex;

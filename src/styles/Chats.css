@@ -27,6 +27,7 @@
   padding-bottom: 0;
   overflow: visible;
   backdrop-filter: var(--backdrop);
+  padding-bottom: 8px;
 }
 
 .chat-panels-wrapper {
@@ -1934,14 +1935,12 @@
     background: var(--bg-hover);
   }
 
-  /* اگر کلاسی برای انتخاب وجود داره، اینو اضافه کن */
   .modernSelectBtn {
     background: var(--primary) !important;
     color: white !important;
     border: none !important;
   }
 
-  /* اگر دکمه خاصی برای انتخاب دارید، این استایل رو داشته باشه */
   .btn-select,
   .select-btn,
   .attachment-select-btn {

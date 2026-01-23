@@ -6,6 +6,8 @@
     radial-gradient(at 40% 20%, rgba(255, 255, 255, 0.1) 0px, transparent 50%),
     radial-gradient(at 80% 0%, rgba(255, 255, 255, 0.1) 0px, transparent 50%),
     radial-gradient(at 0% 50%, rgba(255, 255, 255, 0.1) 0px, transparent 50%);
+  padding-top: 88px;
+  padding-bottom: 48px;
 }
 
 .user-profile-page main {

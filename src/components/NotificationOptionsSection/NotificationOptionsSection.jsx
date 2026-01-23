@@ -155,6 +155,7 @@ PersianDatePickerInput.displayName = 'PersianDatePickerInput';
 
 export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) => {
   const isEdit = mode === "edit";
+  const isOverlayMode = mode === "edit" || mode === "create";
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -1039,7 +1040,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
 
   useEffect(() => {
     const shouldHide =
-      mode === "edit" || showMapPicker || cropModalOpen;
+      isOverlayMode || showMapPicker || cropModalOpen;
 
     if (shouldHide) {
       setHideNavbar(true);
@@ -1057,7 +1058,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
       document.body.style.overflow = "";
     };
   }, [
-    mode,
+    isOverlayMode,
     showMapPicker,
     cropModalOpen,
     setHideNavbar,
@@ -1576,6 +1577,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
 
     if (mode === "create") {
       resetForm();
+      onClose?.();
     }
   };
 
@@ -1810,7 +1812,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
     }
   
     return (
-      <div className={`notification-options-section${isEdit ? " edit-mode" : ""}`}>
+      <div className={`notification-options-section${isOverlayMode ? " edit-mode" : ""}`}>
         <div className="notification-options-container">
           <div className="notification-options-content">
             <div className="notification-options-content-wrapper">

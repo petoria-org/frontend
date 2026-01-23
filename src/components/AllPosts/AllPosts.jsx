@@ -648,8 +648,9 @@ export default function AllPosts() {
   };
 
 return (
-  <div className="new-post-container-all-posts">
-    <div className="main-content-wrapper">
+  <div className="all-posts-container">
+    <div className="new-post-container-all-posts">
+      <div className="main-content-wrapper">
       
       {loading && (
         <div className="loading-background-overlay">
@@ -901,6 +902,7 @@ return (
         
       </div>
       
+      </div>
     </div>
   </div>
 );

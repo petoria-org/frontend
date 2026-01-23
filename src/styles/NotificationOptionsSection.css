@@ -155,6 +155,41 @@
   background-image: none;
 }
 
+.create-ad-page {
+  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 8px 12px 16px;
+  overflow: hidden;
+  position: relative;
+}
+
+.create-ad-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(211, 222, 231, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 0;
+}
+
+.create-ad-page .notification-options-section.edit-mode {
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.create-ad-page .notification-options-section.edit-mode::before {
+  display: none;
+}
+
+.create-ad-page .notification-options-container {
+  max-width: 920px;
+}
+
 .notification-options-section.edit-mode .notification-options-content {
   padding: 28px 36px;
 }
@@ -164,12 +199,17 @@
   padding-bottom: 12px;
 }
 
-.create-ad-page .notification-options-content {
+.create-ad-page .notification-options-section:not(.edit-mode) .notification-options-content {
   overflow-y: visible !important;
   max-height: none !important;
-  max-width: 900px;
+  max-width: 920px;
   margin: 0 auto;
   padding: 32px;
+}
+
+.create-ad-page .notification-options-section.edit-mode .notification-options-content {
+  max-width: 920px;
+  margin: 0 auto;
 }
 
 .notification-options-inner {

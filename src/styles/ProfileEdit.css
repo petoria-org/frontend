@@ -26,7 +26,7 @@
   align-items: center;
   justify-content: center;
   z-index: 10000;
-  padding: 20px;
+  padding: 16px 20px;
   animation: profile-edit-overlay-fade-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -92,15 +92,17 @@
 
 .profile-edit-modal-section {
   background-color: transparent !important;
-  min-height: 100vh;
+  min-height: auto;
   width: 100%;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   background-image: 
     radial-gradient(at 40% 20%, rgba(255, 255, 255, 0.1) 0px, transparent 50%),
     radial-gradient(at 80% 0%, rgba(255, 255, 255, 0.1) 0px, transparent 50%),
     radial-gradient(at 0% 50%, rgba(255, 255, 255, 0.1) 0px, transparent 50%);
-  padding: 20px;
+  padding: 0;
 }
 
 .profile-edit-modal-section::before {
@@ -114,13 +116,14 @@
 }
 
 .profile-edit-modal-container {
-  width: 100%;
-  max-width: 900px;
+  width: 920px;
+  max-width: 90vw;
   margin: 0 auto;
 }
 
 .profile-edit-modal-content {
   width: 100%;
+  max-height: calc(100vh - 24px);
   height: auto;
   background: linear-gradient(135deg, 
     rgba(255, 255, 255, 0.97) 0%,
@@ -141,13 +144,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 100px;
+  margin-top: 0;
 }
 
 .profile-edit-content-scroll-wrapper {
   width: 100%;
-  max-height: calc(90vh - 60px); 
+  max-height: calc(100vh - 8px - 120px); 
   overflow-y: auto;
+  overscroll-behavior: contain;
   direction: ltr; 
   padding: 5px; 
   margin: 0; 
@@ -1016,4 +1020,3 @@
     padding-right: 32px;
   }
 }
-
