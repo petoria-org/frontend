@@ -736,7 +736,9 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
   return (
   <div className="user-profile-page">
     <main>
-      <section className="profile-section">
+      <div className="profile-panels-wrapper">
+        <div className="profile-panels-border"></div>
+        <section className="profile-section">
         <div className="profile-card">
           <div className="profile-card-header"></div>
           <div className="profile-card-content">
@@ -792,9 +794,6 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
               </button>
             </div>
           </div>
-        </div>
-        <div className="section-footer-card">
-          <div className="section-footer-border"></div>
         </div>
       </section>
 
@@ -1188,6 +1187,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
           </div>
         </section>
       )}
+      </div>
     </main>
 
     {showSuccessStoryModal && (
