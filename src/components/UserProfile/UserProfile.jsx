@@ -210,6 +210,10 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
   const [confirmToast, setConfirmToast] = useState(null);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [showSkeleton, setShowSkeleton] = useState(true);
+  const [skeletonFading, setSkeletonFading] = useState(false);
+  const TAB_SWITCH_SKELETON_MS = 500;
+  const SKELETON_FADE_MS = 350;
 
   useEffect(() => {
     const token = localStorage.getItem("access");
@@ -356,6 +360,22 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
 
     fetchData();
   }, [refreshKey]);
+
+  useEffect(() => {
+    if (loading) {
+      setShowSkeleton(true);
+      setSkeletonFading(false);
+      return;
+    }
+
+    setSkeletonFading(true);
+    const fadeTimer = setTimeout(() => {
+      setShowSkeleton(false);
+      setSkeletonFading(false);
+    }, SKELETON_FADE_MS);
+
+    return () => clearTimeout(fadeTimer);
+  }, [loading, SKELETON_FADE_MS]);
 
   const [activeTab, setActiveTab] = useState("ads");
   const [activeFilter, setActiveFilter] = useState("همه");
@@ -610,6 +630,41 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
   const storyEndIndex = storyStartIndex + itemsPerPage;
   const currentStories = userSuccessStories.slice(storyStartIndex, storyEndIndex);
 
+  const adsRemaining = filteredAds.length - (currentPage - 1) * itemsPerPage;
+  const skeletonAdsCount =
+    currentAds.length ||
+    Math.min(itemsPerPage, Math.max(0, adsRemaining)) ||
+    itemsPerPage;
+
+  const storiesRemaining = userSuccessStories.length - (currentStoryPage - 1) * itemsPerPage;
+  const skeletonStoriesCount =
+    currentStories.length ||
+    Math.min(itemsPerPage, Math.max(0, storiesRemaining)) ||
+    itemsPerPage;
+
+  useEffect(() => {
+    if (loading) return;
+
+    setShowSkeleton(true);
+    setSkeletonFading(false);
+
+    let fadeTimer;
+    const holdTimer = setTimeout(() => {
+      setSkeletonFading(true);
+      fadeTimer = setTimeout(() => {
+        setShowSkeleton(false);
+        setSkeletonFading(false);
+      }, SKELETON_FADE_MS);
+    }, TAB_SWITCH_SKELETON_MS);
+
+    return () => {
+      clearTimeout(holdTimer);
+      if (fadeTimer) {
+        clearTimeout(fadeTimer);
+      }
+    };
+  }, [activeTab, loading, TAB_SWITCH_SKELETON_MS, SKELETON_FADE_MS]);
+
   const handlePreviousPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
@@ -640,6 +695,13 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
 
   const handleStoryPageClick = (pageNumber) => {
     setCurrentStoryPage(pageNumber);
+  };
+
+  const handleTabSwitch = (tab) => {
+    if (tab === activeTab) return;
+    setShowSkeleton(true);
+    setSkeletonFading(false);
+    setActiveTab(tab);
   };
 
   const handleFilterChange = (filter) => {
@@ -909,7 +971,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                         
                         <button 
                           className={`switch-option ${activeTab === 'ads' ? 'active' : ''}`}
-                          onClick={() => setActiveTab('ads')}
+                          onClick={() => handleTabSwitch('ads')}
                           style={{ order: 2 }}
                         >
                           <div className="option-icon">
@@ -925,7 +987,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                         
                         <button 
                           className={`switch-option ${activeTab === 'stories' ? 'active' : ''}`}
-                          onClick={() => setActiveTab('stories')}
+                          onClick={() => handleTabSwitch('stories')}
                           style={{ order: 1 }}
                         >
                           <div className="option-icon">
@@ -965,8 +1027,52 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                     </div>
                   </div>
 
-                  <div className="pet-listings-grid">
-                    {currentAds.length > 0 ? (
+                  <div
+                    className={`pet-listings-grid ${showSkeleton ? "show-skeleton" : ""} ${
+                      skeletonFading ? "skeleton-fade-out" : ""
+                    }`}
+                  >
+                    {showSkeleton && (
+                      <>
+                        {Array.from({ length: skeletonAdsCount }).map((_, index) => (
+                          <div className="pet-listing-card pet-skeleton-card" key={`skeleton-${index}`}>
+                            <div className="pet-listing-image-container pet-skeleton-block pet-skeleton-image"></div>
+
+                            <div className="pet-listing-content">
+                              <div className="pet-listing-header">
+                                <div className="pet-listing-info">
+                                  <div className="pet-skeleton-block pet-skeleton-title"></div>
+                                  <div className="pet-skeleton-block pet-skeleton-subtitle"></div>
+                                </div>
+                                <div className="pet-skeleton-block pet-skeleton-pill"></div>
+                              </div>
+
+                              <div className="pet-skeleton-block pet-skeleton-desc"></div>
+                              <div className="pet-skeleton-block pet-skeleton-desc short"></div>
+
+                              <div className="pet-details-container">
+                                <div className="pet-listing-detail">
+                                  <div className="detail-icon pet-skeleton-block pet-skeleton-icon"></div>
+                                  <div className="pet-skeleton-block pet-skeleton-detail"></div>
+                                </div>
+
+                                <div className="pet-listing-detail">
+                                  <div className="detail-icon pet-skeleton-block pet-skeleton-icon"></div>
+                                  <div className="pet-skeleton-block pet-skeleton-detail"></div>
+                                </div>
+                              </div>
+
+                              <div className="pet-listing-time pet-skeleton-time-wrap">
+                                <div className="time-icon pet-skeleton-block pet-skeleton-time-icon"></div>
+                                <div className="pet-skeleton-block pet-skeleton-time-text"></div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    )}
+
+                    {!showSkeleton && currentAds.length > 0 ? (
                       currentAds.map((pet) => (
                         <div key={pet.globalId} className={`pet-listing-card ${pet.resolved ? 'resolved' : ''}`}>
                           <div className="pet-listing-image-container">
@@ -1044,7 +1150,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                           </div>
                         </div>
                       ))
-                    ) : (
+                    ) : !showSkeleton ? (
                       <div className="no-data-message">
                         <div className="no-data-icon">
                           <svg width="80" height="80" viewBox="0 0 24 24" fill="none">
@@ -1054,10 +1160,10 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                         <h3 className="no-data-title">آگهی‌ای یافت نشد</h3>
                         <p className="no-data-description">شما هنوز هیچ آگهی ثبت نکرده‌اید.</p>
                       </div>
-                    )}
+                    ) : null}
                   </div>
                   
-                  {currentAds.length > 0 && (
+                  {!showSkeleton && currentAds.length > 0 && (
                     <Pagination
                       currentPage={currentPage}
                       totalPages={totalPages}
@@ -1104,7 +1210,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                       <div className="oval-switch">
                         <button 
                           className={`switch-option ${activeTab === 'ads' ? 'active' : ''}`}
-                          onClick={() => setActiveTab('ads')}
+                          onClick={() => handleTabSwitch('ads')}
                         >
                           <div className="option-icon">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -1119,7 +1225,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                         
                         <button 
                           className={`switch-option ${activeTab === 'stories' ? 'active' : ''}`}
-                          onClick={() => setActiveTab('stories')}
+                          onClick={() => handleTabSwitch('stories')}
                         >
                           <div className="option-icon">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -1134,10 +1240,62 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                   </div>
                 </header>
 
-                {userSuccessStories.length > 0 ? (
+                {!showSkeleton && userSuccessStories.length === 0 ? (
+                  <div className="no-data-message">
+                    <div className="no-data-icon">
+                      <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke="#7ab3e0" strokeWidth="2"/>
+                      </svg>
+                    </div>
+                    <h3 className="no-data-title">داستان موفقی یافت نشد</h3>
+                    <p className="no-data-description">شما هنوز هیچ داستان موفقیت ثبت نکرده‌اید.</p>
+                    <button className="no-data-action-btn" onClick={() => handleTabSwitch('ads')}>
+                      مشاهده آگهی‌ها برای ثبت داستان موفقیت
+                    </button>
+                  </div>
+                ) : (
                   <>
-                  <div className="user-stories-list">
-                    {currentStories.map((story, index) => {
+                  <div
+                    className={`user-stories-list ${showSkeleton ? "show-skeleton" : ""} ${
+                      skeletonFading ? "skeleton-fade-out" : ""
+                    }`}
+                  >
+                    {showSkeleton && (
+                      <>
+                        {Array.from({ length: skeletonStoriesCount }).map((_, index) => (
+                          <div key={`skeleton-${index}`} className="user-story-card user-story-skeleton">
+                            <div className="user-card-border-inner"></div>
+                            <div className="user-story-number user-skeleton-block"></div>
+
+                            <div className="user-story-content-wrapper">
+                              <div className="user-story-image-section">
+                                <div className="user-image-frame user-skeleton-block"></div>
+                                <div className="user-image-decoration">
+                                  <div className="user-decoration-circle user-skeleton-block"></div>
+                                  <div className="user-decoration-circle user-skeleton-block"></div>
+                                  <div className="user-decoration-circle user-skeleton-block"></div>
+                                </div>
+                              </div>
+                              <div className="user-story-text-section">
+                                <div className="user-story-header">
+                                  <div className="user-story-meta">
+                                    <div className="user-skeleton-block user-skeleton-title"></div>
+                                    <div className="user-skeleton-block user-skeleton-subtitle"></div>
+                                  </div>
+                                  <div className="user-skeleton-block user-skeleton-badge"></div>
+                                </div>
+                                <div className="user-story-content-box user-skeleton-block"></div>
+                                <div className="user-story-footer">
+                                  <div className="user-skeleton-block user-skeleton-btn"></div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    )}
+
+                    {!showSkeleton && currentStories.map((story, index) => {
                       const fallbackImage =
                         story.fallbackImage || getStoryDefaultImage(story);
 
@@ -1216,7 +1374,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                     );
                     })}
                   </div>
-                  {currentStories.length > 0 && (
+                  {!showSkeleton && currentStories.length > 0 && (
                     <Pagination
                       currentPage={currentStoryPage}
                       totalPages={storyTotalPages}
@@ -1226,19 +1384,6 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                     />
                   )}
                 </>            
-                ) : (
-                  <div className="no-data-message">
-                    <div className="no-data-icon">
-                      <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke="#7ab3e0" strokeWidth="2"/>
-                      </svg>
-                    </div>
-                    <h3 className="no-data-title">داستان موفقی یافت نشد</h3>
-                    <p className="no-data-description">شما هنوز هیچ داستان موفقیت ثبت نکرده‌اید.</p>
-                    <button className="no-data-action-btn" onClick={() => setActiveTab('ads')}>
-                      مشاهده آگهی‌ها برای ثبت داستان موفقیت
-                    </button>
-                  </div>
                 )}
               </div>
             </div>

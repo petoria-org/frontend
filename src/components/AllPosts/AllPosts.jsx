@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import AdvancedFilters from "../AdvancedFilters";
 import SortFilters from "../SortFilters";
 import { Pagination } from "../Pagination/Pagination";
-import LoadingScreen from "../LoadingScreen/LoadingScreen"; 
 import "../../styles/AllPosts.css";
 import { config } from "../../config";
 import { getPostImage } from "../../utils/postImages";
@@ -29,6 +28,7 @@ const API_ENDPOINTS = {
 };
 
 const ITEMS_PER_PAGE = 6;
+const MIN_LOADING_DURATION_MS = 2500;
 
 const POST_TYPE_TO_BACKEND = {
   lost: "lost",
@@ -204,11 +204,13 @@ export default function AllPosts() {
   });
   
   const [search, setSearch] = useState("");
-  const [searchQuery, setSearchQuery] = useState(""); // مقدار جستجوی نهایی
+  const [searchQuery, setSearchQuery] = useState(""); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [showSkeleton, setShowSkeleton] = useState(true);
+  const [skeletonFading, setSkeletonFading] = useState(false);
   
   const [filterAnimal, setFilterAnimal] = useState("");
   const [filterSex, setFilterSex] = useState("");
@@ -249,7 +251,7 @@ export default function AllPosts() {
 
   const queryString = useMemo(() => {
     const params = new URLSearchParams();
-    const term = searchQuery.trim(); // استفاده از searchQuery نه search
+    const term = searchQuery.trim(); 
 
     if (term) {
       params.set("q", term);
@@ -315,7 +317,7 @@ export default function AllPosts() {
 
     return params.toString();
   }, [
-    searchQuery, // استفاده از searchQuery
+    searchQuery, 
     sortOrder,
     filterAnimal,
     filterSex,
@@ -384,6 +386,7 @@ export default function AllPosts() {
   }, [allPosts, normalizedAllPosts]);
 
   const fetchPosts = async (url, page = 1, query = "") => {
+    const startTime = Date.now();
     setLoading(true);
     setError("");
 
@@ -421,6 +424,11 @@ export default function AllPosts() {
       console.error("خطا در دریافت آگهی‌ها:", err);
       setError("بارگذاری آگهی‌ها موفقیت‌آمیز نبود.");
     } finally {
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, MIN_LOADING_DURATION_MS - elapsed);
+      if (remaining) {
+        await new Promise((resolve) => setTimeout(resolve, remaining));
+      }
       setLoading(false);
     }
   };
@@ -478,6 +486,22 @@ export default function AllPosts() {
     lastQueryRef.current = queryKey;
     fetchPosts(activeEndpoint, currentPage, queryString);
   }, [activeEndpoint, currentPage, queryString]);
+
+  useEffect(() => {
+    if (loading) {
+      setShowSkeleton(true);
+      setSkeletonFading(false);
+      return;
+    }
+
+    setSkeletonFading(true);
+    const timer = setTimeout(() => {
+      setShowSkeleton(false);
+      setSkeletonFading(false);
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   const normalizedPosts = useMemo(() => {
     return posts.map((p) => {
@@ -571,6 +595,16 @@ export default function AllPosts() {
   }, [posts, activeFilter]);
 
   const displayedAds = normalizedPosts;
+  const expectedPageCount = useMemo(() => {
+    const remaining = pagination.count - (currentPage - 1) * ITEMS_PER_PAGE;
+    if (!Number.isFinite(remaining) || remaining <= 0) return ITEMS_PER_PAGE;
+    return Math.min(ITEMS_PER_PAGE, remaining);
+  }, [pagination.count, currentPage]);
+
+  const skeletonCount = useMemo(() => {
+    if (displayedAds.length) return displayedAds.length;
+    return expectedPageCount || ITEMS_PER_PAGE;
+  }, [displayedAds.length, expectedPageCount]);
 
   const clearAllFilters = () => {
     setFilterAnimal("همه");
@@ -647,30 +681,12 @@ export default function AllPosts() {
     }
   };
 
-return (
-  <div className="all-posts-container">
-    <div className="new-post-container-all-posts">
-      <div className="main-content-wrapper">
-      
-      {loading && (
-        <div className="loading-background-overlay">
-          <div className="white-3d-back-layer">
-            <div className="Three-d-layer-border"></div>
-            <div className="Three-d-layer-content">
-              <div className="Three-d-layer-pattern"></div>
-              <div className="loading-center-container-posts">
-                <LoadingScreen
-                title="در حال بارگذاری آگهی‌ها" 
-                subtitle="آگهی‌های مرتبط در حال آماده‌سازی هستند..."
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      <div className={`posts-main-content-layer ${loading ? 'hidden' : 'visible'}`}>
-        <header className="posts-header-all-posts">
+  return (
+    <div className="all-posts-container">
+      <div className="new-post-container-all-posts">
+        <div className="main-content-wrapper">
+          <div className="posts-main-content-layer visible">
+          <header className="posts-header-all-posts">
           <div className="header-content-wrapper">
             <div className="header-title-section">
               <div className="title-icon-wrapper">
@@ -792,7 +808,11 @@ return (
 
         {error && <div className="error-message-all-posts">{error}</div>}
 
-        <div className="pet-listings-grid-all-posts">
+        <div
+          className={`pet-listings-grid-all-posts ${showSkeleton ? "show-skeleton" : ""} ${
+            skeletonFading ? "skeleton-fade-out" : ""
+          }`}
+        >
           {displayedAds.length === 0 && !loading && (
             <div className="no-results-container-all-posts">
               <div className="no-results-icon-all-posts">
@@ -812,7 +832,47 @@ return (
             </div>
           )}
 
-          {displayedAds.map((pet) => {
+          {showSkeleton && (
+            <>
+              {Array.from({ length: skeletonCount }).map((_, index) => (
+                <div className="pet-listing-card-all-posts skeleton-card-all-posts" key={`skeleton-${index}`}>
+                  <div className="pet-listing-image-container-all-posts skeleton-block-all-posts skeleton-image-all-posts"></div>
+
+                  <div className="pet-listing-content-all-posts">
+                    <div className="pet-listing-header-all-posts">
+                      <div className="pet-listing-info-all-posts">
+                        <div className="skeleton-block-all-posts skeleton-title-all-posts"></div>
+                        <div className="skeleton-block-all-posts skeleton-subtitle-all-posts"></div>
+                      </div>
+                      <div className="skeleton-block-all-posts skeleton-pill-all-posts"></div>
+                    </div>
+
+                    <div className="skeleton-block-all-posts skeleton-desc-all-posts"></div>
+                    <div className="skeleton-block-all-posts skeleton-desc-all-posts short"></div>
+
+                    <div className="pet-details-container-all-posts">
+                      <div className="pet-listing-detail-all-posts">
+                        <div className="detail-icon-all-posts skeleton-block-all-posts skeleton-icon-all-posts"></div>
+                        <div className="skeleton-block-all-posts skeleton-detail-all-posts"></div>
+                      </div>
+
+                      <div className="pet-listing-detail-all-posts">
+                        <div className="detail-icon-all-posts skeleton-block-all-posts skeleton-icon-all-posts"></div>
+                        <div className="skeleton-block-all-posts skeleton-detail-all-posts"></div>
+                      </div>
+                    </div>
+
+                    <div className="pet-listing-time-all-posts skeleton-time-wrap-all-posts">
+                      <div className="time-icon-all-posts skeleton-block-all-posts skeleton-time-icon-all-posts"></div>
+                      <div className="skeleton-block-all-posts skeleton-time-text-all-posts"></div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </>
+          )}
+
+          {!loading && displayedAds.map((pet) => {
             const getStatusClass = () => {
               if (pet.status === 'پیدا شده') return 'found-all-posts';
               if (pet.status === 'گم شده') return 'lost-all-posts';
@@ -900,10 +960,9 @@ return (
           />
         )}
         
-      </div>
-      
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
 }

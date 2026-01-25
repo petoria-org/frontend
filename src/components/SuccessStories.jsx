@@ -14,6 +14,8 @@ const SuccessStoriesModern = () => {
   const [error, setError] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
   const [hoveredCard, setHoveredCard] = useState(null);
+  const [showSkeleton, setShowSkeleton] = useState(true);
+  const [skeletonFading, setSkeletonFading] = useState(false);
 
   const BACKEND_URL = config.BACKEND_URL;
 
@@ -125,7 +127,7 @@ const SuccessStoriesModern = () => {
         setError("خطا در دریافت داستان‌های موفق");
       } finally {
         const elapsedTime = Date.now() - startTime;
-        const minLoadingTime = 1500;
+        const minLoadingTime = 1800;
         
         if (elapsedTime < minLoadingTime) {
           setTimeout(() => {
@@ -139,6 +141,22 @@ const SuccessStoriesModern = () => {
 
     fetchStories();
   }, []);
+
+  useEffect(() => {
+    if (loading) {
+      setShowSkeleton(true);
+      setSkeletonFading(false);
+      return;
+    }
+
+    setSkeletonFading(true);
+    const timer = setTimeout(() => {
+      setShowSkeleton(false);
+      setSkeletonFading(false);
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   const handleViewStory = (story) => {
     setSelectedStory(story);
@@ -182,19 +200,6 @@ const SuccessStoriesModern = () => {
     />
   );
 
-  if (loading) {
-    return (
-        <div className="ls-success-stories-profile-style">
-          <div className="ls-loading-overlay-profile">
-            <div className="ls-spinner-profile">
-              <div className="ls-spinner-circle-profile"></div>
-            </div>
-            <p>در حال بارگذاری داستان‌های موفق...</p>
-          </div>
-        </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="ls-success-stories-profile-style">
@@ -229,69 +234,108 @@ const SuccessStoriesModern = () => {
             </div>
           </header>
 
-          <div className="ls-success-stories-grid-profile">
-            {stories.map((story, index) => (
-              <div
-                key={story.id}
-                className="ls-success-story-card-profile"
-              >
-                <div className="ls-success-story-border-inner"></div>
-                <div className="ls-success-story-number">0{index + 1}</div>
-                
-                <div className="ls-success-story-content-wrapper">
-                  <div className="ls-success-story-image-section">
-                    <div className="ls-success-story-image-frame">
-                      <div className="ls-success-story-image-border">
-                        <img
-                          className="ls-success-story-image"
-                          src={story.image}
-                          alt={story.title}
-                        />
+          <div
+            className={`ls-success-stories-grid-profile ${showSkeleton ? "show-skeleton" : ""} ${
+              skeletonFading ? "skeleton-fade-out" : ""
+            }`}
+          >
+            {showSkeleton && (
+              <>
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <div
+                    key={`skeleton-${index}`}
+                    className="ls-success-story-card-profile ls-story-skeleton-profile"
+                  >
+                    <div className="ls-success-story-border-inner"></div>
+                    <div className="ls-success-story-number ls-skeleton-block-profile"></div>
+
+                    <div className="ls-success-story-content-wrapper">
+                      <div className="ls-success-story-image-section">
+                        <div className="ls-success-story-image-frame ls-skeleton-block-profile"></div>
+                        <div className="ls-success-story-image-decoration">
+                          <div className="ls-success-story-decoration-circle ls-skeleton-block-profile"></div>
+                          <div className="ls-success-story-decoration-circle ls-skeleton-block-profile"></div>
+                          <div className="ls-success-story-decoration-circle ls-skeleton-block-profile"></div>
+                        </div>
                       </div>
-                    </div>
-                    <div className="ls-success-story-image-decoration">
-                      <div className="ls-success-story-decoration-circle"></div>
-                      <div className="ls-success-story-decoration-circle"></div>
-                      <div className="ls-success-story-decoration-circle"></div>
+                      <div className="ls-success-story-text-section">
+                        <div className="ls-success-story-header">
+                          <div className="ls-success-story-meta">
+                            <div className="ls-skeleton-block-profile ls-skeleton-title-profile"></div>
+                            <div className="ls-skeleton-block-profile ls-skeleton-subtitle-profile"></div>
+                          </div>
+                        </div>
+                        <div className="ls-success-story-content-box ls-skeleton-block-profile"></div>
+                        <div className="ls-success-story-footer">
+                          <div className="ls-skeleton-block-profile ls-skeleton-btn-profile"></div>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div className="ls-success-story-text-section">
-                    <div className="ls-success-story-header">
-                      <div className="ls-success-story-meta">
-                        <div className="ls-success-story-title-wrapper">
-                          <h3 className="ls-success-story-title-text">{story.title}</h3>
-                          <div className="ls-success-story-title-line"></div>
-                        </div>
-                        <div className="ls-success-story-author-date">
-                          <span className="ls-success-story-author">{story.author}</span>
-                          <span className="ls-success-story-date-separator">•</span>
-                          <span className="ls-success-story-date">{story.date}</span>
+                ))}
+              </>
+            )}
+
+            {!loading &&
+              stories.map((story, index) => (
+                <div
+                  key={story.id}
+                  className="ls-success-story-card-profile"
+                >
+                  <div className="ls-success-story-border-inner"></div>
+                  <div className="ls-success-story-number">0{index + 1}</div>
+                  
+                  <div className="ls-success-story-content-wrapper">
+                    <div className="ls-success-story-image-section">
+                      <div className="ls-success-story-image-frame">
+                        <div className="ls-success-story-image-border">
+                          <img
+                            className="ls-success-story-image"
+                            src={story.image}
+                            alt={story.title}
+                          />
                         </div>
                       </div>
-                      
-                      
-            
+                      <div className="ls-success-story-image-decoration">
+                        <div className="ls-success-story-decoration-circle"></div>
+                        <div className="ls-success-story-decoration-circle"></div>
+                        <div className="ls-success-story-decoration-circle"></div>
+                      </div>
                     </div>
-                    <div className="ls-success-story-content-box">
-                      <p className="ls-success-story-content-text">
-                        {story.content}
-                      </p>
-                    </div>
-                    <div className="ls-success-story-footer">
-                      <button
-                        className="ls-success-story-read-more-btn"
-                        onClick={() => handleViewStory(story)}
-                      >
-                        <span>مشاهده داستان</span>
-                        <svg className="ls-success-story-btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                          <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </button>
+                    <div className="ls-success-story-text-section">
+                      <div className="ls-success-story-header">
+                        <div className="ls-success-story-meta">
+                          <div className="ls-success-story-title-wrapper">
+                            <h3 className="ls-success-story-title-text">{story.title}</h3>
+                            <div className="ls-success-story-title-line"></div>
+                          </div>
+                          <div className="ls-success-story-author-date">
+                            <span className="ls-success-story-author">{story.author}</span>
+                            <span className="ls-success-story-date-separator">•</span>
+                            <span className="ls-success-story-date">{story.date}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="ls-success-story-content-box">
+                        <p className="ls-success-story-content-text">
+                          {story.content}
+                        </p>
+                      </div>
+                      <div className="ls-success-story-footer">
+                        <button
+                          className="ls-success-story-read-more-btn"
+                          onClick={() => handleViewStory(story)}
+                        >
+                          <span>مشاهده داستان</span>
+                          <svg className="ls-success-story-btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
 
           <div className="ls-show-all-stories-container">

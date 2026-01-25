@@ -579,6 +579,12 @@
   margin-bottom: 40px;
 }
 
+.pet-listings-grid-all-posts.skeleton-fade-out .skeleton-card-all-posts {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
 .pet-listing-card-all-posts {
   width: 100%;
   min-height: 420px;
@@ -586,7 +592,7 @@
   overflow: hidden;
   border-radius: 20px;
   animation: cardAppear 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.35s ease, transform 0.35s ease, box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
   position: relative;
@@ -1343,6 +1349,115 @@
 
 .search-wrapper-post:focus-within::after {
   opacity: 1;
+}
+
+.skeleton-card-all-posts {
+  pointer-events: none;
+}
+
+.skeleton-block-all-posts {
+  position: relative;
+  background: rgba(205, 219, 234, 0.85);
+  border: 1px solid rgba(170, 190, 210, 0.55);
+  overflow: hidden;
+}
+
+.skeleton-block-all-posts::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.85),
+    rgba(255, 255, 255, 0)
+  );
+  animation: skeletonShimmer 1.4s ease-in-out infinite;
+}
+
+.skeleton-image-all-posts {
+  height: 250px;
+  background: rgba(198, 214, 231, 0.9);
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+}
+
+.skeleton-title-all-posts {
+  height: 20px;
+  width: 60%;
+  border-radius: 8px;
+}
+
+.skeleton-subtitle-all-posts {
+  height: 14px;
+  width: 45%;
+  border-radius: 6px;
+}
+
+.skeleton-pill-all-posts {
+  height: 30px;
+  width: 72px;
+  border-radius: 16px;
+  flex-shrink: 0;
+}
+
+.skeleton-desc-all-posts {
+  height: 12px;
+  border-radius: 6px;
+  margin-top: 10px;
+}
+
+.skeleton-desc-all-posts.short {
+  width: 80%;
+}
+
+.skeleton-detail-all-posts {
+  height: 12px;
+  width: 75%;
+  border-radius: 6px;
+}
+
+.skeleton-icon-all-posts {
+  border-radius: 8px;
+}
+
+.skeleton-time-wrap-all-posts {
+  background: rgba(216, 230, 244, 0.95);
+  border-color: rgba(170, 190, 210, 0.45);
+  box-shadow: 0 6px 14px rgba(122, 179, 224, 0.18);
+}
+
+.skeleton-time-icon-all-posts {
+  border-radius: 50%;
+}
+
+.skeleton-time-text-all-posts {
+  height: 12px;
+  width: 80px;
+  border-radius: 6px;
+}
+
+.skeleton-card-all-posts .pet-listing-detail-all-posts::before {
+  display: none;
+}
+
+.skeleton-card-all-posts:hover {
+  transform: none;
+  box-shadow: 
+    0 12px 30px rgba(0, 0, 0, 0.1),
+    0 5px 15px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  border-color: rgba(255, 255, 255, 0.9);
+}
+
+@keyframes skeletonShimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 @media (max-width: 1200px) {

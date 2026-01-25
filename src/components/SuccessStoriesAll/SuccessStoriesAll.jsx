@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { SuccessStoryDetail } from "../SuccessStoryDetail/SuccessStoryDetail";
-import LoadingScreen from "../LoadingScreen/LoadingScreen";
 import "../../styles/SuccessStoriesAll.css";
 import { getSuccessStories } from "../../Services/successStoryService";
 import { config } from "../../config";
@@ -28,6 +27,8 @@ const SuccessStoriesAll = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showSkeleton, setShowSkeleton] = useState(true);
+  const [skeletonFading, setSkeletonFading] = useState(false);
 
   const BACKEND_URL = config.BACKEND_URL;
 
@@ -81,7 +82,7 @@ const SuccessStoriesAll = () => {
         console.error("خطا در دریافت داستان‌های موفق:", e);
       } finally {
         const elapsedTime = Date.now() - startTime;
-        const minLoadingTime = 1500;
+        const minLoadingTime = 1800;
         
         if (elapsedTime < minLoadingTime) {
           setTimeout(() => {
@@ -96,6 +97,22 @@ const SuccessStoriesAll = () => {
     fetchStories();
   }, []);
 
+  useEffect(() => {
+    if (loading) {
+      setShowSkeleton(true);
+      setSkeletonFading(false);
+      return;
+    }
+
+    setSkeletonFading(true);
+    const timer = setTimeout(() => {
+      setShowSkeleton(false);
+      setSkeletonFading(false);
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [loading]);
+
   const itemsPerPage = 6;
   const totalPages = Math.max(1, Math.ceil(stories.length / itemsPerPage));
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -108,27 +125,10 @@ const SuccessStoriesAll = () => {
   return (
     <div className="success-stories-container-all">
   
-      {loading && (
-        <div className="loading-background-overlay">
-          <div className="white-3d-back-layer">
-            <div className="Three-d-layer-border"></div>
-            <div className="Three-d-layer-content">
-              <div className="Three-d-layer-pattern"></div>
-              <div className="loading-center-container-success-story">
-                <LoadingScreen 
-                  title="در حال بارگذاری داستان‌های موفق" 
-                  subtitle="داستان‌های زیبای بازگشت حیوانات خانگی در حال آماده‌سازی هستند..."
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      <div className={`success-stories-main-all ${loading ? 'hidden' : 'visible'}`}>
+      <div className="success-stories-main-all visible">
         <div className="blue-waves-all"></div>
         
-        <div className={`stories-card-all ${isVisible ? "visible" : ""}`}>
+        <div className={`stories-card-all ${isVisible || showSkeleton ? "visible" : ""}`}>
           <div className="card-border"></div>
 
           <div className="stories-content-all">
@@ -181,87 +181,133 @@ const SuccessStoriesAll = () => {
             </div>
 
 
-            <div className="stories-list-all">
+            <div
+              className={`stories-list-all ${showSkeleton ? "show-skeleton" : ""} ${
+                skeletonFading ? "skeleton-fade-out" : ""
+              }`}
+            >
               {!loading && stories.length === 0 ? (
                 <div className="no-stories-message">
                   <p>در حال حاضر داستان موفقیتی برای نمایش وجود ندارد.</p>
                 </div>
               ) : (
-                visibleStories.map((story, index) => (
-                  <div
-                    key={story.id}
-                    className={`story-card-all ${isVisible ? "slide-in" : ""}`}
-                    style={{ animationDelay: `${index * 0.15}s` }}
-                    onClick={() => setSelectedStory(story)}
-                  >
-                    <div className="card-border-inner"></div>
-                    <div className="story-number-all">0{startIndex + index + 1}</div>
+                <>
+                  {showSkeleton &&
+                    Array.from({ length: itemsPerPage }).map((_, index) => (
+                      <div
+                        key={`skeleton-${index}`}
+                        className="story-card-all story-skeleton-all"
+                      >
+                        <div className="card-border-inner"></div>
+                        <div className="story-number-all skeleton-block-ss-all"></div>
 
-                    <div className="story-content-wrapper-all">
-                      <div className="story-image-section-all">
-                        <div className="image-frame-all">
-                          <div className="image-border">
-                            <img
-                              className="story-image-all"
-                              src={story.image}
-                              alt={story.title}
-                            />
+                        <div className="story-content-wrapper-all">
+                          <div className="story-image-section-all">
+                            <div className="image-frame-all skeleton-block-ss-all"></div>
+                            <div className="image-decoration-all">
+                              <div className="decoration-circle-all skeleton-block-ss-all"></div>
+                              <div className="decoration-circle-all skeleton-block-ss-all"></div>
+                              <div className="decoration-circle-all skeleton-block-ss-all"></div>
+                            </div>
                           </div>
-                        </div>
 
-                        <div className="image-decoration-all">
-                          <div className="decoration-circle-all"></div>
-                          <div className="decoration-circle-all"></div>
-                          <div className="decoration-circle-all"></div>
+                          <div className="story-text-section-all">
+                            <div className="story-header-all">
+                              <div className="story-meta-all">
+                                <div className="skeleton-block-ss-all skeleton-title-ss-all"></div>
+                                <div className="skeleton-block-ss-all skeleton-subtitle-ss-all"></div>
+                              </div>
+
+                              <div className="skeleton-block-ss-all skeleton-badge-ss-all"></div>
+                            </div>
+
+                            <div className="story-content-box-all skeleton-block-ss-all"></div>
+
+                            <div className="story-footer-all">
+                              <div className="skeleton-block-ss-all skeleton-btn-ss-all"></div>
+                            </div>
+                          </div>
                         </div>
                       </div>
+                    ))}
 
-                      <div className="story-text-section-all">
-                        <div className="story-header-all">
-                          <div className="story-meta-all">
-                            <div className="title-wrapper-all">
-                              <h3 className="story-title-all">{story.title}</h3>
-                              <div className="title-line-all"></div>
+                  {!loading &&
+                    visibleStories.map((story, index) => (
+                      <div
+                        key={story.id}
+                        className={`story-card-all ${isVisible ? "slide-in" : ""}`}
+                        style={{ animationDelay: `${index * 0.15}s` }}
+                        onClick={() => setSelectedStory(story)}
+                      >
+                        <div className="card-border-inner"></div>
+                        <div className="story-number-all">0{startIndex + index + 1}</div>
+
+                        <div className="story-content-wrapper-all">
+                          <div className="story-image-section-all">
+                            <div className="image-frame-all">
+                              <div className="image-border">
+                                <img
+                                  className="story-image-all"
+                                  src={story.image}
+                                  alt={story.title}
+                                />
+                              </div>
                             </div>
 
-                            <div className="author-date-all">
-                              <span className="story-author-all">{story.author}</span>
-                              <span className="date-separator-all">•</span>
-                              <span className="story-date-all">{story.date}</span>
+                            <div className="image-decoration-all">
+                              <div className="decoration-circle-all"></div>
+                              <div className="decoration-circle-all"></div>
+                              <div className="decoration-circle-all"></div>
                             </div>
                           </div>
 
-                          <div className="status-section-all">
-                            <div
-                              className="status-badge-all"
-                              style={{
-                                backgroundColor: story.statusColor,
-                                color: story.statusTextColor,
-                              }}
-                            >
-                              <span className="status-text-all">{story.status}</span>
+                          <div className="story-text-section-all">
+                            <div className="story-header-all">
+                              <div className="story-meta-all">
+                                <div className="title-wrapper-all">
+                                  <h3 className="story-title-all">{story.title}</h3>
+                                  <div className="title-line-all"></div>
+                                </div>
+
+                                <div className="author-date-all">
+                                  <span className="story-author-all">{story.author}</span>
+                                  <span className="date-separator-all">•</span>
+                                  <span className="story-date-all">{story.date}</span>
+                                </div>
+                              </div>
+
+                              <div className="status-section-all">
+                                <div
+                                  className="status-badge-all"
+                                  style={{
+                                    backgroundColor: story.statusColor,
+                                    color: story.statusTextColor,
+                                  }}
+                                >
+                                  <span className="status-text-all">{story.status}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="story-content-box-all">
+                              <p className="story-content">
+                                {story.content}
+                              </p>
+                            </div>
+
+                            <div className="story-footer-all">
+                              <button className="read-more-btn-all" onClick={() => setSelectedStory(story)}>
+                                <span>مشاهده داستان </span>
+                                <div className="btn-arrow-all">
+                                  →
+                                </div>
+                              </button>
                             </div>
                           </div>
-                        </div>
-
-                        <div className="story-content-box-all">
-                          <p className="story-content">
-                            {story.content}
-                          </p>
-                        </div>
-
-                        <div className="story-footer-all">
-                          <button className="read-more-btn-all" onClick={() => setSelectedStory(story)}>
-                            <span>مشاهده داستان </span>
-                            <div className="btn-arrow-all">
-                              →
-                            </div>
-                          </button>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                ))
+                    ))}
+                </>
               )}
             </div>
 

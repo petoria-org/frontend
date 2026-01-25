@@ -146,6 +146,18 @@
   width: min(1400px, 100%);
 }
 
+.ls-success-stories-grid-profile.show-skeleton .ls-success-story-card-profile:not(.ls-story-skeleton-profile) {
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+}
+
+.ls-success-stories-grid-profile.skeleton-fade-out .ls-story-skeleton-profile {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
 .ls-success-story-card-profile {
   background: linear-gradient(135deg, 
     rgba(255, 255, 255, 0.95) 0%,
@@ -161,6 +173,81 @@
     0 4px 12px rgba(28, 123, 209, 0.04),
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
   animation: ls-storyCardAppear 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ls-story-skeleton-profile {
+  pointer-events: none;
+}
+
+.ls-skeleton-block-profile {
+  position: relative;
+  background: rgba(205, 219, 234, 0.85);
+  border: 1px solid rgba(170, 190, 210, 0.55);
+  overflow: hidden;
+}
+
+.ls-skeleton-block-profile::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.85),
+    rgba(255, 255, 255, 0)
+  );
+  animation: skeletonShimmerStoriesLanding 1.4s ease-in-out infinite;
+}
+
+.ls-skeleton-title-profile {
+  height: 22px;
+  width: 70%;
+  border-radius: 8px;
+}
+
+.ls-skeleton-subtitle-profile {
+  height: 14px;
+  width: 55%;
+  border-radius: 6px;
+  margin-top: 12px;
+}
+
+.ls-story-skeleton-profile .ls-success-story-image-frame {
+  background: rgba(198, 214, 231, 0.9);
+}
+
+.ls-story-skeleton-profile .ls-success-story-content-box {
+  background: rgba(216, 230, 244, 0.85);
+  border-color: rgba(170, 190, 210, 0.45);
+}
+
+.ls-skeleton-btn-profile {
+  height: 40px;
+  width: 160px;
+  border-radius: 12px;
+}
+
+.ls-story-skeleton-profile .ls-success-story-decoration-circle {
+  background: rgba(180, 198, 216, 0.8);
+}
+
+.ls-story-skeleton-profile:hover {
+  transform: none;
+  box-shadow: 
+    0 10px 30px rgba(28, 123, 209, 0.08),
+    0 4px 12px rgba(28, 123, 209, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  border-color: rgba(28, 123, 209, 0.15);
+}
+
+@keyframes skeletonShimmerStoriesLanding {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 @keyframes ls-storyCardAppear {

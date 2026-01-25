@@ -12,6 +12,9 @@ const API_ENDPOINTS = {
   adoption: "posts/surrender-posts/",
 };
 
+const ITEMS_PER_PAGE = 6;
+const MIN_LOADING_DURATION_MS = 2500;
+
 const POST_TYPE_TO_BACKEND = {
   lost: "lost",
   "گم شده": "lost",
@@ -139,11 +142,14 @@ export default function NewPosts() {
   const [activeFilter, setActiveFilter] = useState("همه");
   const [posts, setPosts] = useState([]);
   const [allPosts, setAllPosts] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [hoveredCard, setHoveredCard] = useState(null);
+  const [showSkeleton, setShowSkeleton] = useState(true);
+  const [skeletonFading, setSkeletonFading] = useState(false);
 
   const fetchPosts = async (url) => {
+    const startTime = Date.now();
     setLoading(true);
     setError("");
     try {
@@ -155,6 +161,11 @@ export default function NewPosts() {
       console.error("خطا در دریافت آگهی‌ها:", err);
       setError("بارگذاری آگهی‌ها موفقیت‌آمیز نبود.");
     } finally {
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, MIN_LOADING_DURATION_MS - elapsed);
+      if (remaining) {
+        await new Promise((resolve) => setTimeout(resolve, remaining));
+      }
       setLoading(false);
     }
   };
@@ -278,8 +289,29 @@ export default function NewPosts() {
   }, [posts, activeFilter]);
 
   const displayedAds = useMemo(() => {
-    return normalizedPosts.slice(0, 6);
+    return normalizedPosts.slice(0, ITEMS_PER_PAGE);
   }, [normalizedPosts]);
+
+  const skeletonCount = useMemo(() => {
+    if (displayedAds.length) return displayedAds.length;
+    return ITEMS_PER_PAGE;
+  }, [displayedAds.length]);
+
+  useEffect(() => {
+    if (loading) {
+      setShowSkeleton(true);
+      setSkeletonFading(false);
+      return;
+    }
+
+    setSkeletonFading(true);
+    const timer = setTimeout(() => {
+      setShowSkeleton(false);
+      setSkeletonFading(false);
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   const normalizedAllPosts = useMemo(() => {
     return allPosts.map((p) => {
@@ -342,19 +374,6 @@ export default function NewPosts() {
     ];
   }, [allPosts, normalizedAllPosts]);
 
-  if (loading) {
-    return (
-      <div className="new-posts-page-landing">
-        <div className="np-loading-overlay-landing">
-          <div className="np-spinner-landing">
-            <div className="np-spinner-circle-landing"></div>
-          </div>
-          <p>در حال بارگذاری آگهی‌ها...</p>
-        </div>
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="new-posts-page-landing">
@@ -395,7 +414,11 @@ export default function NewPosts() {
 
                 {error && <div className="error-message-landing">{error}</div>}
 
-                <div className="posts-grid-landing">
+                <div
+                  className={`posts-grid-landing ${showSkeleton ? "show-skeleton" : ""} ${
+                    skeletonFading ? "skeleton-fade-out" : ""
+                  }`}
+                >
                   {!loading && displayedAds.length === 0 && (
                     <div className="no-results-container-landing">
                       <div className="no-results-icon-landing">
@@ -408,7 +431,47 @@ export default function NewPosts() {
                     </div>
                   )}
 
-                  {displayedAds.map((ad) => {
+                  {showSkeleton && (
+                    <>
+                      {Array.from({ length: skeletonCount }).map((_, index) => (
+                        <div className="post-card-landing skeleton-card-landing" key={`skeleton-${index}`}>
+                          <div className="post-image-container-landing skeleton-block-landing skeleton-image-landing"></div>
+
+                          <div className="post-content-landing">
+                            <div className="post-header-landing">
+                              <div className="post-info-landing">
+                                <div className="skeleton-block-landing skeleton-title-landing"></div>
+                                <div className="skeleton-block-landing skeleton-subtitle-landing"></div>
+                              </div>
+                              <div className="skeleton-block-landing skeleton-pill-landing"></div>
+                            </div>
+
+                            <div className="skeleton-block-landing skeleton-desc-landing"></div>
+                            <div className="skeleton-block-landing skeleton-desc-landing short"></div>
+
+                            <div className="post-details-container-landing">
+                              <div className="post-detail-landing">
+                                <div className="detail-icon-landing skeleton-block-landing skeleton-icon-landing"></div>
+                                <div className="skeleton-block-landing skeleton-detail-landing"></div>
+                              </div>
+
+                              <div className="post-detail-landing">
+                                <div className="detail-icon-landing skeleton-block-landing skeleton-icon-landing"></div>
+                                <div className="skeleton-block-landing skeleton-detail-landing"></div>
+                              </div>
+
+                              <div className="pet-listing-time-landing skeleton-time-wrap-landing">
+                                <div className="time-icon-landing skeleton-block-landing skeleton-time-icon-landing"></div>
+                                <div className="skeleton-block-landing skeleton-time-text-landing"></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </>
+                  )}
+
+                  {!loading && displayedAds.map((ad) => {
                     const getStatusClass = () => {
                       if (ad.status === 'پیدا شده') return 'found-landing';
                       if (ad.status === 'گم شده') return 'lost-landing';

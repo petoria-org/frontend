@@ -26,6 +26,9 @@ const UserStoriesPage = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState(null);
+  const [showSkeleton, setShowSkeleton] = useState(true);
+  const [skeletonFading, setSkeletonFading] = useState(false);
+  const MIN_LOADING_DURATION_MS = 1800;
   const showNotification = (message, type = "error") => {
     setNotification({ message, type });
     setTimeout(() => {
@@ -60,6 +63,7 @@ const UserStoriesPage = () => {
   };
 
   const fetchStories = async () => {
+    const startTime = Date.now();
     try {
       setLoading(true);
       const data = await getUserSuccessStories();
@@ -90,6 +94,11 @@ const UserStoriesPage = () => {
     } catch (e) {
       console.error("SuccessStory error:", e);
     } finally {
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, MIN_LOADING_DURATION_MS - elapsed);
+      if (remaining) {
+        await new Promise((resolve) => setTimeout(resolve, remaining));
+      }
       setLoading(false);
     }
   };
@@ -98,6 +107,22 @@ const UserStoriesPage = () => {
     setIsVisible(true);
     fetchStories();
   }, []);
+
+  useEffect(() => {
+    if (loading) {
+      setShowSkeleton(true);
+      setSkeletonFading(false);
+      return;
+    }
+
+    setSkeletonFading(true);
+    const timer = setTimeout(() => {
+      setShowSkeleton(false);
+      setSkeletonFading(false);
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   const handleStoryClick = (story) => {
     setSelectedStory(story);
@@ -193,105 +218,150 @@ const UserStoriesPage = () => {
               </div>
             </header>
 
-            {loading ? (
-              <div className="user-loading-container">
-                <p>در حال بارگذاری داستان‌ها...</p>
-              </div>
-            ) : stories.length === 0 ? (
+            {!loading && stories.length === 0 ? (
               <div className="user-empty-stories">
                 <p>شما هنوز داستان موفقیتی ندارید.</p>
               </div>
             ) : (
-              <div className="user-stories-list-all">
-                {stories.map((story, index) => (
-                  <div
-                    key={story.id}
-                    className={`user-story-card-all ${isVisible ? "user-slide-in" : ""}`}
-                    style={{ animationDelay: `${index * 0.15}s` }}
-                    onClick={() => handleStoryClick(story)}
-                  >
-                    <div className="user-card-border-inner"></div>
-                    <div className="user-story-number-all">0{index + 1}</div>
+              <div
+                className={`user-stories-list-all ${showSkeleton ? "show-skeleton" : ""} ${
+                  skeletonFading ? "skeleton-fade-out" : ""
+                }`}
+              >
+                {showSkeleton && (
+                  <>
+                    {Array.from({ length: 3 }).map((_, index) => (
+                      <div
+                        key={`skeleton-${index}`}
+                        className="user-story-card-all user-story-skeleton-all"
+                      >
+                        <div className="user-card-border-inner"></div>
+                        <div className="user-story-number-all user-skeleton-block-all"></div>
 
-                    <div className="user-story-content-wrapper-all">
-                      <div className="user-story-image-section-all">
-                        <div className="user-image-frame-all">
-                          <div className="user-image-border">
-                            <img
-                              className="user-story-image-all"
-                              src={story.image}
-                              alt={story.title}
-                            />
+                        <div className="user-story-content-wrapper-all">
+                          <div className="user-story-image-section-all">
+                            <div className="user-image-frame-all user-skeleton-block-all"></div>
+
+                            <div className="user-image-decoration-all">
+                              <div className="user-decoration-circle-all user-skeleton-block-all"></div>
+                              <div className="user-decoration-circle-all user-skeleton-block-all"></div>
+                              <div className="user-decoration-circle-all user-skeleton-block-all"></div>
+                            </div>
                           </div>
-                        </div>
 
-                        <div className="user-image-decoration-all">
-                          <div className="user-decoration-circle-all"></div>
-                          <div className="user-decoration-circle-all"></div>
-                          <div className="user-decoration-circle-all"></div>
+                          <div className="user-story-text-section-all">
+                            <div className="user-story-header-all">
+                              <div className="user-story-meta-all">
+                                <div className="user-skeleton-block-all user-skeleton-title-all"></div>
+                                <div className="user-skeleton-block-all user-skeleton-subtitle-all"></div>
+                              </div>
+
+                              <div className="user-skeleton-block-all user-skeleton-badge-all"></div>
+                            </div>
+
+                            <div className="user-story-content-box-all user-skeleton-block-all"></div>
+
+                            <div className="user-story-footer-all">
+                              <div className="user-skeleton-block-all user-skeleton-btn-all"></div>
+                              <div className="user-skeleton-block-all user-skeleton-btn-all"></div>
+                            </div>
+                          </div>
                         </div>
                       </div>
+                    ))}
+                  </>
+                )}
 
-                      <div className="user-story-text-section-all">
-                        <div className="user-story-header-all">
-                          <div className="user-story-meta-all">
-                            <div className="user-title-wrapper-all">
-                              <h3 className="user-story-title-all">{story.title}</h3>
-                              <div className="user-title-line-all"></div>
-                            </div>
+                {!loading &&
+                  stories.map((story, index) => (
+                    <div
+                      key={story.id}
+                      className={`user-story-card-all ${isVisible ? "user-slide-in" : ""}`}
+                      style={{ animationDelay: `${index * 0.15}s` }}
+                      onClick={() => handleStoryClick(story)}
+                    >
+                      <div className="user-card-border-inner"></div>
+                      <div className="user-story-number-all">0{index + 1}</div>
 
-                            <div className="user-author-date-all">
-                              <span className="user-story-author-all">{story.author}</span>
-                              <span className="user-date-separator-all">•</span>
-                              <span className="user-story-date-all">{story.date}</span>
+                      <div className="user-story-content-wrapper-all">
+                        <div className="user-story-image-section-all">
+                          <div className="user-image-frame-all">
+                            <div className="user-image-border">
+                              <img
+                                className="user-story-image-all"
+                                src={story.image}
+                                alt={story.title}
+                              />
                             </div>
                           </div>
 
-                          <div className="user-status-section-all">
-                            <div
-                              className="user-status-badge-all"
-                              style={{
-                                backgroundColor: story.statusColor,
-                                color: story.statusTextColor,
+                          <div className="user-image-decoration-all">
+                            <div className="user-decoration-circle-all"></div>
+                            <div className="user-decoration-circle-all"></div>
+                            <div className="user-decoration-circle-all"></div>
+                          </div>
+                        </div>
+
+                        <div className="user-story-text-section-all">
+                          <div className="user-story-header-all">
+                            <div className="user-story-meta-all">
+                              <div className="user-title-wrapper-all">
+                                <h3 className="user-story-title-all">{story.title}</h3>
+                                <div className="user-title-line-all"></div>
+                              </div>
+
+                              <div className="user-author-date-all">
+                                <span className="user-story-author-all">{story.author}</span>
+                                <span className="user-date-separator-all">•</span>
+                                <span className="user-story-date-all">{story.date}</span>
+                              </div>
+                            </div>
+
+                            <div className="user-status-section-all">
+                              <div
+                                className="user-status-badge-all"
+                                style={{
+                                  backgroundColor: story.statusColor,
+                                  color: story.statusTextColor,
+                                }}
+                              >
+                                <span className="user-status-text-all">{story.status}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="user-story-content-box-all">
+                            <p className="user-story-content">
+                              {truncateText(story.content)}
+                            </p>
+                          </div>
+
+                          <div className="user-story-footer-all">
+                            <button 
+                              className="user-story-delete-btn-all"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                confirmDeleteStory(story);
                               }}
                             >
-                              <span className="user-status-text-all">{story.status}</span>
-                            </div>
+                              <DeleteIcon />
+                              <span>حذف</span>
+                            </button>
+                            <button 
+                              className="user-story-edit-btn-all"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditStory(story);
+                              }}
+                            >
+                              <EditIcon />
+                              <span>ویرایش</span>
+                            </button>
                           </div>
-                        </div>
-
-                        <div className="user-story-content-box-all">
-                          <p className="user-story-content">
-                            {truncateText(story.content)}
-                          </p>
-                        </div>
-
-                        <div className="user-story-footer-all">
-                          <button 
-                            className="user-story-delete-btn-all"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              confirmDeleteStory(story);
-                            }}
-                          >
-                            <DeleteIcon />
-                            <span>حذف</span>
-                          </button>
-                          <button 
-                            className="user-story-edit-btn-all"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleEditStory(story);
-                            }}
-                          >
-                            <EditIcon />
-                            <span>ویرایش</span>
-                          </button>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             )}
 
