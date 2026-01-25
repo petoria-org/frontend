@@ -1195,34 +1195,34 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
                               </h2>
                               <div className="toggles-container">
                                 <div className="toggle-item">
+                                  <span className="toggle-label">
+                                    دارای شناسنامه
+                                  </span>
                                   <HealthToggle
                                     checked={healthStatus.has_birth_certificate}
                                     disabled={false}
                                     label="دارای شناسنامه"
                                   />
-                                  <span className="toggle-label">
-                                    دارای شناسنامه
-                                  </span>
                                 </div>
                                 <div className="toggle-item">
+                                  <span className="toggle-label">
+                                    واکسینه شده
+                                  </span>
                                   <HealthToggle
                                     checked={healthStatus.vaccination}
                                     disabled={false}
                                     label="واکسینه شده"
                                   />
-                                  <span className="toggle-label">
-                                    واکسینه شده
-                                  </span>
                                 </div>
                                 <div className="toggle-item">
+                                  <span className="toggle-label">
+                                    عقیم شده
+                                  </span>
                                   <HealthToggle
                                     checked={healthStatus.steriliz}
                                     disabled={false}
                                     label="عقیم شده"
                                   />
-                                  <span className="toggle-label">
-                                    عقیم شده
-                                  </span>
                                 </div>
                               </div>
                             </section>
