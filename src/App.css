@@ -4,11 +4,15 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    direction: rtl;
     font-family: 'Inter', Helvetica, sans-serif;
 }
 
 #root {
     height: 100vh;
     overflow: auto;
+    direction: ltr;
+}
+
+#root > * {
+    direction: rtl;
 }
