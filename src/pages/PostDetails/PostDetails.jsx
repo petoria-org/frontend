@@ -3,7 +3,6 @@ import { useLocation } from "react-router-dom";
 import { ShowDetailsAdopt } from "../../components/ShowDetailsAdopt";
 import "../../styles/PostDetails.css";
 
-// کامپوننت ساده‌تر لودینگ - مستقیم در همین فایل
 const PostDetailsLoading = () => {
   return (
     <div className="post-details-loading-overlay">

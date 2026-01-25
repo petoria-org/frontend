@@ -18,6 +18,7 @@ import { config } from "../../config";
 import { SuccessStoryEdit } from "../SuccessStoryEdit/SuccessStoryEdit";
 import { NotificationToast } from "../NotificationToast/NotificationToast";
 import profileAvatar from "../../assets/images/profile_avatar.png";
+import { getSuccessStoryDefaultImage } from "../../utils/postImages";
 
 
 const PET_DEFAULT_IMAGES = {
@@ -29,36 +30,31 @@ const PET_DEFAULT_IMAGES = {
   other: "/src/assets/images/other.png",
 };
 
-const SUCCESS_STORY_DEFAULT_IMAGES = {
-  dog: "/src/assets/images/success_story_dog.png",
-  cat: "/src/assets/images/success_story_cat.png",
-  rabbit: "/src/assets/images/success_story_rabbit.png",
-  hamster: "/src/assets/images/success_story_hamster.png",
-  bird: "/src/assets/images/success_story_bird.png",
-  other: "/src/assets/images/success_story_other.png",
-};
-
 const getPostImage = (post, BACKEND_URL) => {
   if (post.thumbnail) {
     return `${BACKEND_URL}${post.thumbnail}`;
   }
 
-  const petType = (post.pet_type || "").toLowerCase();
+  const rawType =
+    post?.pet_type?.value ||
+    post?.pet_type ||
+    post?.pet?.pet_type ||
+    post?.pet?.type ||
+    post?.type ||
+    "";
+  const petType = String(rawType).toLowerCase();
   return PET_DEFAULT_IMAGES[petType] || PET_DEFAULT_IMAGES.other;
 };
 
-const getStoryDefaultImage = (story) => {
-  const rawType =
-    story?.pet_type?.value ||
-    story?.pet_type ||
-    story?.pet?.pet_type ||
-    story?.pet?.type ||
-    story?.type ||
-    story?.petType ||
-    "";
-  const key = String(rawType).toLowerCase().trim();
-  return SUCCESS_STORY_DEFAULT_IMAGES[key] || SUCCESS_STORY_DEFAULT_IMAGES.other;
-};
+const getRawPetType = (post) =>
+  post?.pet_type?.value ||
+  post?.pet_type ||
+  post?.pet?.pet_type ||
+  post?.pet?.type ||
+  post?.type ||
+  "";
+
+const getStoryDefaultImage = (story) => getSuccessStoryDefaultImage(story);
 
 const toJalaliDate = (dateString) => {
   if (!dateString) return "";
@@ -180,37 +176,29 @@ const StoryReadEditButton = ({ story, onEdit }) => {
   );
 };
 
-const GlassDeleteButton = ({ onDelete, petName }) => {
-  const handleDelete = () => {
-    if (window.confirm(`آیا از حذف آگهی "${petName}" مطمئن هستید؟`)) {
-      onDelete();
-    }
-  };
-  
-  return (
-    <div className="glass-delete-container">
-      <div className="glass-delete-wrapper">
-        <button
-          className="glass-delete-btn"
-          onClick={handleDelete}
-          title="حذف آگهی"
-        >
-          <div className="delete-btn-content">
-            <div className="delete-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" 
-                  stroke="currentColor" 
-                  strokeWidth="2" 
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
+const GlassDeleteButton = ({ onDelete }) => (
+  <div className="glass-delete-container">
+    <div className="glass-delete-wrapper">
+      <button
+        className="glass-delete-btn"
+        onClick={onDelete}
+        title="حذف آگهی"
+      >
+        <div className="delete-btn-content">
+          <div className="delete-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round"
+              />
+            </svg>
           </div>
-        </button>
-      </div>
+        </div>
+      </button>
     </div>
-  );
-};
+  </div>
+);
 
 export const UserProfile = ({ onEditClick, refreshKey }) => {
   const [allAds, setAllAds] = useState([]);
@@ -219,6 +207,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
   const [loading, setLoading] = useState(true);
   const { logout } = useAuth();
   const [notification, setNotification] = useState(null);
+  const [confirmToast, setConfirmToast] = useState(null);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
   const [userData, setUserData] = useState(null);
 
@@ -273,7 +262,8 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
             globalId: `lost-${p.id}`,
             name: p.title,
             breed: p.breed || "",
-            type: getPetType(p.pet_type),
+            pet_type: getRawPetType(p),
+            type: getPetType(getRawPetType(p)),
             status: "lost",
             statusLabel: "گم شده",
             image: getPostImage(p, BACKEND_URL),
@@ -289,7 +279,8 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
             globalId: `found-${p.id}`,
             name: p.title,
             breed: p.breed || "",
-            type: getPetType(p.pet_type),
+            pet_type: getRawPetType(p),
+            type: getPetType(getRawPetType(p)),
             status: "found",
             statusLabel: "پیدا شده",
             image: getPostImage(p, BACKEND_URL),
@@ -305,7 +296,8 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
             globalId: `adoption-${p.id}`,
             name: p.title,
             breed: p.breed || "",
-            type: getPetType(p.pet_type),
+            pet_type: getRawPetType(p),
+            type: getPetType(getRawPetType(p)),
             status: "adoption",
             statusLabel: "سرپرستی",
             image: getPostImage(p, BACKEND_URL),
@@ -371,8 +363,6 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
   const [currentStoryPage, setCurrentStoryPage] = useState(1);
   const [showSuccessStoryModal, setShowSuccessStoryModal] = useState(false);
   const [selectedPetForStory, setSelectedPetForStory] = useState(null);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [petToDelete, setPetToDelete] = useState(null);
   const [editingStory, setEditingStory] = useState(null);
   
   const itemsPerPage = 6;
@@ -384,11 +374,31 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
     }, 3000);
   };
 
+  const openConfirmToast = ({
+    message,
+    onConfirm,
+    onCancel,
+    confirmText = "تایید",
+    cancelText = "انصراف",
+    confirmVariant = "danger",
+    type = "warning"
+  }) => {
+    setConfirmToast({
+      message,
+      onConfirm,
+      onCancel,
+      confirmText,
+      cancelText,
+      confirmVariant,
+      type
+    });
+  };
+
   const handleResolvePost = (globalId) => {
     const pet = allAds.find(ad => ad.globalId === globalId);
     
     if (pet?.hasSuccessStory) {
-      alert("برای این آگهی قبلاً داستان موفق ثبت شده است.");
+      showNotification("برای این آگهی قبلاً داستان موفق ثبت شده است.", "warning");
       return;
     }
     
@@ -413,54 +423,51 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
     showNotification("داستان موفق با موفقیت ثبت شد", "success");
   };
 
-  const handleSuccessStoryCancel = async () => {
-  if (selectedPetForStory) {
-    if (window.confirm("آیا مطمئن هستید که می‌خواهید این آگهی را حذف کنید؟")) {
-      try {
-        
-        setCurrentPage(1);
-        showNotification("آگهی با موفقیت حذف شد", "success");
-        
-      } catch (err) {
-        console.error("Delete error details:", err);
-        showNotification("خطا در حذف آگهی. لطفاً دوباره تلاش کنید", "error");
-      }
+  const handleSuccessStorySkip = (petId) => {
+    if (petId) {
+      setAllAds(prevAds =>
+        prevAds.filter(ad =>
+          ad.globalId !== petId && String(ad.id) !== String(petId)
+        )
+      );
+    } else if (selectedPetForStory) {
+      setAllAds(prevAds =>
+        prevAds.filter(ad => ad.globalId !== selectedPetForStory.globalId)
+      );
     }
-  }
-  
-  setShowSuccessStoryModal(false);
-  setSelectedPetForStory(null);
-};
 
-  const handleDeleteClick = (ad) => {
-    setPetToDelete(ad);
-    setDeleteModalOpen(true);
+    setShowSuccessStoryModal(false);
+    setSelectedPetForStory(null);
+    setCurrentPage(1);
+    showNotification("آگهی با موفقیت حذف شد", "success");
+  };
+  const handleSuccessStoryCancel = () => {
+    setShowSuccessStoryModal(false);
+    setSelectedPetForStory(null);
   };
 
-  const handleDeleteConfirm = async () => {
-    if (!petToDelete) return;
+  const handleDeleteConfirm = async (ad) => {
+    if (!ad) return;
 
     try {
-      console.log(`Deleting ${petToDelete.status} post with ID:`, petToDelete.id);
+      console.log(`Deleting ${ad.status} post with ID:`, ad.id);
       
       let response;
-      if (petToDelete.status === "lost") {
-        response = await deleteLostPost(petToDelete.id);
-      } else if (petToDelete.status === "found") {
-        response = await deleteFoundPost(petToDelete.id);
-      } else if (petToDelete.status === "adoption") {
-        response = await deleteSurrenderPost(petToDelete.id);
+      if (ad.status === "lost") {
+        response = await deleteLostPost(ad.id);
+      } else if (ad.status === "found") {
+        response = await deleteFoundPost(ad.id);
+      } else if (ad.status === "adoption") {
+        response = await deleteSurrenderPost(ad.id);
       }
 
       console.log("Delete response:", response);
 
       setAllAds(prev =>
-        prev.filter(item => item.globalId !== petToDelete.globalId)
+        prev.filter(item => item.globalId !== ad.globalId)
       );
 
       setCurrentPage(1);
-      setDeleteModalOpen(false);
-      setPetToDelete(null);
  
       showNotification("آگهی با موفقیت حذف شد", "success");
       
@@ -470,19 +477,38 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
     }
   };
 
+  const handleDeleteClick = (ad) => {
+    if (!ad) return;
+    openConfirmToast({
+      message: `آیا از حذف آگهی "${ad.name}" مطمئن هستید؟`,
+      confirmText: "حذف",
+      cancelText: "انصراف",
+      confirmVariant: "danger",
+      onConfirm: () => handleDeleteConfirm(ad)
+    });
+  };
+
+  const handleRemoveSuccessStoryConfirm = (petId) => {
+    setAllAds(prevAds => prevAds.map(ad => 
+      ad.globalId === petId 
+        ? { 
+            ...ad, 
+            resolved: false,
+            successStory: "",
+            images: []
+          }
+        : ad
+    ));
+  };
+
   const handleRemoveSuccessStory = (petId) => {
-    if (window.confirm("آیا از حذف داستان موفقیت مطمئن هستید؟")) {
-      setAllAds(prevAds => prevAds.map(ad => 
-        ad.globalId === petId 
-          ? { 
-              ...ad, 
-              resolved: false,
-              successStory: "",
-              images: []
-            }
-          : ad
-      ));
-    }
+    openConfirmToast({
+      message: "آیا از حذف داستان موفقیت مطمئن هستید؟",
+      confirmText: "حذف",
+      cancelText: "انصراف",
+      confirmVariant: "danger",
+      onConfirm: () => handleRemoveSuccessStoryConfirm(petId)
+    });
   };
 
   const handleEditStory = (story) => {
@@ -497,6 +523,17 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
     );
     setEditingStory(null);
     showNotification("داستان با موفقیت ویرایش شد", "success");
+  };
+
+  const handleStoryDeleteRequest = (story) => {
+    if (!story) return;
+    openConfirmToast({
+      message: "آیا از حذف داستان موفقیت مطمئن هستید؟",
+      confirmText: "حذف",
+      cancelText: "انصراف",
+      confirmVariant: "danger",
+      onConfirm: () => handleStoryDelete(story.id)
+    });
   };
 
   const handleStoryDelete = async (storyId) => {
@@ -757,12 +794,34 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                 </div>
               </div>
 
+                  {confirmToast && (
+                    <NotificationToast
+                      message={confirmToast.message}
+                      type={confirmToast.type || "warning"}
+                      onClose={() => setConfirmToast(null)}
+                      position="top-right"
+                      duration={0}
+                      actions={[
+                        {
+                          label: confirmToast.cancelText || "انصراف",
+                          variant: "ghost",
+                          onClick: confirmToast.onCancel
+                        },
+                        {
+                          label: confirmToast.confirmText || "تایید",
+                          variant: confirmToast.confirmVariant || "danger",
+                          onClick: confirmToast.onConfirm
+                        }
+                      ]}
+                    />
+                  )}
+
                   {notification && (
                     <NotificationToast
                       message={notification.message}
                       type={notification.type}
                       onClose={() => setNotification(null)}
-                      position="top-center"
+                      position="top-right"
                     />
                   )}
 
@@ -1088,8 +1147,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                         className="user-story-card"
                       >
                         <GlassDeleteButton
-                          onDelete={() => handleStoryDelete(story.id)}
-                          petName={story.title}
+                          onDelete={() => handleStoryDeleteRequest(story)}
                         />
 
                         <div className="user-card-border-inner"></div>
@@ -1195,19 +1253,8 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
         pet={selectedPetForStory}
         onSave={handleSuccessStorySave}
         onCancel={handleSuccessStoryCancel}
-        onSkip={handleSuccessStoryCancel} 
-      />
+        onSkip={handleSuccessStorySkip}/>
     )}
-
-    <DeleteConfirmationModal
-      isOpen={deleteModalOpen}
-      onClose={() => {
-        setDeleteModalOpen(false);
-        setPetToDelete(null);
-      }}
-      onConfirm={handleDeleteConfirm}
-      petName={petToDelete?.name || ""}
-    />
 
     {editingStory && (
       <SuccessStoryEdit
@@ -1233,3 +1280,5 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
   </div>
 );
 };
+
+

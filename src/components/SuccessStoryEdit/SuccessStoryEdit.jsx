@@ -98,9 +98,11 @@ export const SuccessStoryEdit = ({ story, onUpdate, onDelete, onCancel }) => {
   const [title, setTitle] = useState(story.title || "");
   const [content, setContent] = useState(normalizeStoryContent(story.content));
   const [images, setImages] = useState(initialImages);
+  const [imageToDelete, setImageToDelete] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [notification, setNotification] = useState(null);
+  const [confirmToast, setConfirmToast] = useState(null);
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [imageToCrop, setImageToCrop] = useState(null);
   const [pendingFiles, setPendingFiles] = useState([]);
@@ -278,7 +280,7 @@ const handleTextareaChange = (e) => {
     event.target.value = "";
   };
 
-  const handleRemoveImage = (id) => {
+  const confirmRemoveImage = (id) => {
     setImages((prev) => {
       const imageToDelete = prev.find((img) => img.id === id);
       if (imageToDelete?.backendId) {
@@ -293,6 +295,25 @@ const handleTextareaChange = (e) => {
       }
 
       return nextImages;
+    });
+
+    setImageToDelete(null);
+    showNotification("\u062a\u0635\u0648\u06cc\u0631 \u0628\u0627 \u0645\u0648\u0641\u0642\u06cc\u062a \u062d\u0630\u0641 \u0634\u062f", "success");
+  };
+
+  const handleRemoveImage = (id) => {
+    const targetImage = images.find((img) => img.id === id);
+    if (!targetImage) return;
+
+    setImageToDelete(targetImage);
+    setConfirmToast({
+      message: "\u0622\u06cc\u0627 \u0627\u0632 \u062d\u0630\u0641 \u0627\u06cc\u0646 \u062a\u0635\u0648\u06cc\u0631 \u0645\u0637\u0645\u0626\u0646 \u0647\u0633\u062a\u06cc\u062f\u061f \u0627\u06cc\u0646 \u06a9\u0627\u0631 \u0642\u0627\u0628\u0644 \u0628\u0627\u0632\u06af\u0634\u062a \u0646\u06cc\u0633\u062a.",
+      confirmText: "\u062d\u0630\u0641 \u062a\u0635\u0648\u06cc\u0631",
+      cancelText: "\u0627\u0646\u0635\u0631\u0627\u0641",
+      confirmVariant: "danger",
+      type: "warning",
+      onConfirm: () => confirmRemoveImage(id),
+      onCancel: () => setImageToDelete(null)
     });
   };
 
@@ -373,13 +394,7 @@ const handleTextareaChange = (e) => {
     }
   };
 
-  const handleDelete = async () => {
-    if (
-      !window.confirm("آیا مطمئن هستید که می‌خواهید این داستان موفقیت را حذف کنید؟")
-    ) {
-      return;
-    }
-
+  const handleDeleteConfirm = async () => {
     setLoading(true);
     setError(null);
 
@@ -392,6 +407,16 @@ const handleTextareaChange = (e) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDelete = () => {
+    setConfirmToast({
+      message: "آیا مطمئن هستید که می‌خواهید این داستان موفقیت را حذف کنید؟",
+      confirmText: "حذف",
+      cancelText: "انصراف",
+      confirmVariant: "danger",
+      onConfirm: handleDeleteConfirm
+    });
   };
 
   const CloseIcon = () => (
@@ -701,6 +726,30 @@ const handleTextareaChange = (e) => {
           uploadImageFn={uploadSuccessStoryImage}
           format="jpeg"
           quality={0.92}
+        />
+      )}
+      {confirmToast && (
+        <NotificationToast
+          message={confirmToast.message}
+          type={confirmToast.type || "warning"}
+          onClose={() => {
+            setConfirmToast(null);
+            setImageToDelete(null);
+          }}
+          position="top-right"
+          duration={0}
+          actions={[
+            {
+              label: confirmToast.cancelText || "انصراف",
+              variant: "ghost",
+              onClick: confirmToast.onCancel
+            },
+            {
+              label: confirmToast.confirmText || "تایید",
+              variant: confirmToast.confirmVariant || "danger",
+              onClick: confirmToast.onConfirm
+            }
+          ]}
         />
       )}
       {notification && (

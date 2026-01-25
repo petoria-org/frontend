@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import "../../styles/NotificationToast.css";
 
 export const NotificationToast = ({ 
@@ -6,18 +7,23 @@ export const NotificationToast = ({
   type = "success", 
   duration = 3000,
   onClose,
-  position = "top-center"
+  position = "top-right",
+  actions = []
 }) => {
   const [isVisible, setIsVisible] = useState(true);
   const [isExiting, setIsExiting] = useState(false);
+  const hasActions = Array.isArray(actions) && actions.length > 0;
+  const shouldAutoClose = typeof duration === "number" && duration > 0;
 
   useEffect(() => {
+    if (!shouldAutoClose) return undefined;
+
     const timer = setTimeout(() => {
       handleClose();
     }, duration);
 
     return () => clearTimeout(timer);
-  }, [duration]);
+  }, [duration, shouldAutoClose]);
 
   const handleClose = () => {
     setIsExiting(true);
@@ -74,18 +80,9 @@ export const NotificationToast = ({
     }
   };
 
-  const getPositionClass = () => {
-    switch (position) {
-      case "top-left": return "top-left";
-      case "top-right": return "top-right";
-      case "bottom-left": return "bottom-left";
-      case "bottom-right": return "bottom-right";
-      case "top-center": 
-      default: return "top-center";
-    }
-  };
+  const getPositionClass = () => "top-right";
 
-  return (
+  const toast = (
     <div 
       className={`notification-toast-wrapper ${getPositionClass()} ${
         isExiting ? "exiting" : ""
@@ -127,16 +124,42 @@ export const NotificationToast = ({
           </button>
         </div>
         
-        <div className="toast-progress">
-          <div 
-            className="progress-bar" 
-            style={{ 
-              backgroundColor: getBgColor(),
-              animation: `progressShrink ${duration}ms linear forwards`
-            }}
-          />
-        </div>
+        {hasActions && (
+          <div className="toast-actions">
+            {actions.map((action, index) => (
+              <button
+                key={`${action.label}-${index}`}
+                type="button"
+                className={`toast-action${action.variant ? ` toast-action-${action.variant}` : ""}`}
+                onClick={() => {
+                  action.onClick?.();
+                  handleClose();
+                }}
+              >
+                {action.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {shouldAutoClose && (
+          <div className="toast-progress">
+            <div 
+              className="progress-bar" 
+              style={{ 
+                backgroundColor: getBgColor(),
+                animation: `progressShrink ${duration}ms linear forwards`
+              }}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
+
+  if (typeof document === "undefined") {
+    return toast;
+  }
+
+  return createPortal(toast, document.body);
 };

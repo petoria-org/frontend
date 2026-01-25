@@ -1443,10 +1443,6 @@
 .user-stories-card {
   background: white;
   border-radius: 32px;
-  box-shadow: 
-    0 25px 50px -12px rgba(28, 123, 209, 0.15),
-    0 8px 16px -4px rgba(28, 123, 209, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
   border: 2px solid rgba(255, 255, 255, 0.8);
   padding: 40px;
   position: relative;

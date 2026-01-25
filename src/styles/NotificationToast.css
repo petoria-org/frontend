@@ -1,6 +1,6 @@
 .notification-toast-wrapper {
   position: fixed;
-  z-index: 9999;
+  z-index: 20000;
   pointer-events: none;
   padding-top: 4.5em;
 }
@@ -154,6 +154,60 @@
   width: 100%;
   transform-origin: left;
   animation-timing-function: linear;
+}
+
+.toast-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 12px;
+  direction: rtl;
+  flex-wrap: wrap;
+}
+
+.toast-action {
+  border: none;
+  border-radius: 10px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-family: 'Inter', 'Vazirmatn', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  background: #e5e7eb;
+  color: #374151;
+  transition: all 0.2s ease;
+}
+
+.toast-action:hover {
+  background: #d1d5db;
+}
+
+.toast-action-primary {
+  background: #1c7bd1;
+  color: #ffffff;
+}
+
+.toast-action-primary:hover {
+  background: #1568b5;
+}
+
+.toast-action-danger {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.toast-action-danger:hover {
+  background: #dc2626;
+}
+
+.toast-action-ghost {
+  background: transparent;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+
+.toast-action-ghost:hover {
+  background: rgba(0, 0, 0, 0.04);
 }
 
 @keyframes progressShrink {

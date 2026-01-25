@@ -34,7 +34,6 @@ import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import { useOutletContext } from "react-router-dom";
 import "../../styles/DatePickerCustom.css";
-import DeleteConfirmationModal from '../DeleteConfirmationModal/DeleteConfirmationModal';
 
 const DatePicker = DatePickerModule.default || DatePickerModule;
 
@@ -153,7 +152,7 @@ const PersianDatePickerInput = React.forwardRef(({ value, onClick, placeholder, 
 
 PersianDatePickerInput.displayName = 'PersianDatePickerInput';
 
-export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) => {
+export const NotificationOptionsSection = ({ adData, onClose, onSave, mode, toastPosition = "top-right" }) => {
   const isEdit = mode === "edit";
   const isOverlayMode = mode === "edit" || mode === "create";
 
@@ -286,6 +285,7 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
 
   const [selectedAdType, setSelectedAdType] = useState("lost");
   const [notification, setNotification] = useState(null);
+  const [confirmToast, setConfirmToast] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showMapPicker, setShowMapPicker] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -293,14 +293,15 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
   const [imageToCrop, setImageToCrop] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(null);
 
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [imageToDelete, setImageToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [pendingDeleteImageIds, setPendingDeleteImageIds] = useState([]);
 
   const { setHideNavbar, setHideFooter } = useOutletContext();
   const lostDateRef = useRef(null);
   const foundDateRef = useRef(null);
   const surrenderDateRef = useRef(null);
+  const initialImagesRef = useRef([]);
 
   const [isTimePickerOpen, setIsTimePickerOpen] = useState(false);
   const [activeTimeField, setActiveTimeField] = useState(null);
@@ -1142,6 +1143,9 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
           };
         }) || [];
 
+        initialImagesRef.current = backendImages;
+        setPendingDeleteImageIds([]);
+
         setFormData({
           name: data.pet_name || "",
           type: data.title || "",
@@ -1440,57 +1444,61 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
   };
 
   const handleRemoveImage = async (imageId) => {
-      const imageToDelete = formData.images.find(img => img.id === imageId);
-      
-      if (!imageToDelete) return;
-      
-      if (imageToDelete.backendId) {
-        setImageToDelete({
-          id: imageId,
-          backendId: imageToDelete.backendId,
-          preview: imageToDelete.preview
-        });
-        setShowDeleteModal(true);
-      } 
-      
-      else {
-        setFormData(prev => ({
-          ...prev,
-          images: prev.images.filter(img => img.id !== imageId)
-        }));
-        
-        setNotification({
-          message: "عکس با موفقیت حذف شد",
-          type: "success"
-        });
-      }
-    }; 
+    const targetImage = formData.images.find(img => img.id === imageId);
 
-  const confirmDeleteImage = async () => {
-    if (!imageToDelete) return;
-    
+    if (!targetImage) return;
+
+    setImageToDelete({
+      id: targetImage.id,
+      backendId: targetImage.backendId,
+      preview: targetImage.preview
+    });
+    setConfirmToast({
+      message: "\u0622\u06cc\u0627 \u0627\u0632 \u062d\u0630\u0641 \u0627\u06cc\u0646 \u062a\u0635\u0648\u06cc\u0631 \u0645\u0637\u0645\u0626\u0646 \u0647\u0633\u062a\u06cc\u062f\u061f \u0627\u06cc\u0646 \u06a9\u0627\u0631 \u0642\u0627\u0628\u0644 \u0628\u0627\u0632\u06af\u0634\u062a \u0646\u06cc\u0633\u062a.",
+      confirmText: "\u062d\u0630\u0641 \u062a\u0635\u0648\u06cc\u0631",
+      cancelText: "\u0627\u0646\u0635\u0631\u0627\u0641",
+      confirmVariant: "danger",
+      type: "warning",
+      onConfirm: () => confirmDeleteImage(targetImage),
+      onCancel: cancelDeleteImage
+    });
+  };
+
+  const confirmDeleteImage = async (targetImage = imageToDelete) => {
+    if (!targetImage) return;
+
     try {
       setIsDeleting(true);
-      
-      await deletePostImage(imageToDelete.backendId);
-      
+
+      if (targetImage.backendId && !isEdit) {
+        await deletePostImage(targetImage.backendId);
+      }
+
+      if (targetImage.backendId && isEdit) {
+        setPendingDeleteImageIds(prev =>
+          prev.includes(targetImage.backendId)
+            ? prev
+            : [...prev, targetImage.backendId]
+        );
+      }
+
       setFormData(prev => ({
         ...prev,
-        images: prev.images.filter(img => img.id !== imageToDelete.id)
+        images: prev.images.filter(img => img.id !== targetImage.id)
       }));
-      
+
       setNotification({
-        message: "عکس با موفقیت از سرور حذف شد",
+        message: "\u062a\u0635\u0648\u06cc\u0631 \u0628\u0627 \u0645\u0648\u0641\u0642\u06cc\u062a \u062d\u0630\u0641 \u0634\u062f",
         type: "success"
       });
 
-      setShowDeleteModal(false);
+      setConfirmToast(null);
       setImageToDelete(null);
-      
+
     } catch (error) {
       console.error("Error deleting image from server:", error);
       setNotification({
-        message: "خطا در حذف عکس از سرور",
+        message: "\u062e\u0637\u0627 \u062f\u0631 \u062d\u0630\u0641 \u062a\u0635\u0648\u06cc\u0631. \u0644\u0637\u0641\u0627 \u062f\u0648\u0628\u0627\u0631\u0647 \u062a\u0644\u0627\u0634 \u06a9\u0646\u06cc\u062f",
         type: "error"
       });
     } finally {
@@ -1499,19 +1507,57 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
   };
 
   const cancelDeleteImage = () => {
-    setShowDeleteModal(false);
+    setConfirmToast(null);
     setImageToDelete(null);
     setIsDeleting(false);
   };
 
-  const handleRemoveAllImages = () => {
+  const confirmRemoveAllImages = (imagesSnapshot = formData.images) => {
+    if (!Array.isArray(imagesSnapshot) || imagesSnapshot.length === 0) {
+      setConfirmToast(null);
+      return;
+    }
+
+    if (isEdit) {
+      const backendIds = imagesSnapshot
+        .map(img => img.backendId)
+        .filter(Boolean);
+
+      if (backendIds.length > 0) {
+        setPendingDeleteImageIds(prev => {
+          const next = new Set(prev);
+          backendIds.forEach(id => next.add(id));
+          return Array.from(next);
+        });
+      }
+    }
+
     setFormData(prev => ({
       ...prev,
       images: []
     }));
+
     setNotification({
-      message: "تمام عکس‌ها با موفقیت حذف شدند",
+      message: "\u0647\u0645\u0647 \u062a\u0635\u0627\u0648\u06cc\u0631 \u062d\u0630\u0641 \u0634\u062f\u0646\u062f",
       type: "success"
+    });
+
+    setConfirmToast(null);
+    setImageToDelete(null);
+  };
+
+  const handleRemoveAllImages = () => {
+    const imagesSnapshot = [...formData.images];
+    if (imagesSnapshot.length === 0) return;
+
+    setConfirmToast({
+      message: "\u0622\u06cc\u0627 \u0645\u0637\u0645\u0626\u0646 \u0647\u0633\u062a\u06cc\u062f \u06a9\u0647 \u0645\u06cc\u200c\u062e\u0648\u0627\u0647\u06cc\u062f \u0647\u0645\u0647 \u062a\u0635\u0627\u0648\u06cc\u0631 \u062d\u0630\u0641 \u0634\u0648\u0646\u062f\u061f \u0627\u06cc\u0646 \u06a9\u0627\u0631 \u0642\u0627\u0628\u0644 \u0628\u0627\u0632\u06af\u0634\u062a \u0646\u06cc\u0633\u062a.",
+      confirmText: "\u062d\u0630\u0641 \u0647\u0645\u0647",
+      cancelText: "\u0627\u0646\u0635\u0631\u0627\u0641",
+      confirmVariant: "danger",
+      type: "warning",
+      onConfirm: () => confirmRemoveAllImages(imagesSnapshot),
+      onCancel: cancelDeleteImage
     });
   };
 
@@ -1559,7 +1605,6 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
     setCropModalOpen(false);
     setImageToCrop(null);
     setCurrentImageIndex(null);
-    setShowDeleteModal(false);
     setImageToDelete(null);
     setIsDeleting(false);
     setIsLoading(false);
@@ -1570,15 +1615,27 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
   const handleCancel = () => {
     setIsTimePickerOpen(false);
     setActiveTimeField(null);
-    
+
     if (mode === "edit") {
+      setConfirmToast(null);
+      setImageToDelete(null);
+      setIsDeleting(false);
+      setPendingDeleteImageIds([]);
+      setFormData(prev => ({
+        ...prev,
+        images: Array.isArray(initialImagesRef.current)
+          ? initialImagesRef.current
+          : prev.images
+      }));
       onClose?.();
+      return;
     }
 
     if (mode === "create") {
       resetForm();
       onClose?.();
     }
+
   };
 
   const validateForm = () => {
@@ -1675,6 +1732,20 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
         } 
         else if (selectedAdType === "adoption") {
           result = await updateSurrenderPost(adData.id, payload);
+        }
+
+        
+        if (pendingDeleteImageIds.length > 0) {
+          const deleteResults = await Promise.allSettled(
+            pendingDeleteImageIds.map((id) => deletePostImage(id))
+          );
+          const failedDeletes = deleteResults.filter(
+            (result) => result.status === "rejected"
+          );
+          setPendingDeleteImageIds([]);
+          if (failedDeletes.length > 0) {
+            console.error("Failed to delete some images:", failedDeletes);
+          }
         }
 
         showNotification("آگهی با موفقیت ویرایش شد", "success");
@@ -2762,24 +2833,39 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode }) =>
           variant={isEdit ? "post-edit" : "default"}
         />
       )}
+      {confirmToast && (
+        <NotificationToast
+          message={confirmToast.message}
+          type={confirmToast.type || "warning"}
+          onClose={() => {
+            setConfirmToast(null);
+            setImageToDelete(null);
+            setIsDeleting(false);
+          }}
+          position={toastPosition}
+          duration={0}
+          actions={[
+            {
+              label: confirmToast.cancelText || "\u0627\u0646\u0635\u0631\u0627\u0641",
+              variant: "ghost",
+              onClick: confirmToast.onCancel
+            },
+            {
+              label: confirmToast.confirmText || "\u062d\u0630\u0641",
+              variant: confirmToast.confirmVariant || "danger",
+              onClick: confirmToast.onConfirm
+            }
+          ]}
+        />
+      )}
 
-      <DeleteConfirmationModal
-        isOpen={showDeleteModal}
-        onClose={cancelDeleteImage}
-        onConfirm={confirmDeleteImage}
-        title="حذف عکس از سرور"
-        message="آیا از حذف این عکس اطمینان دارید؟"
-        confirmText="حذف عکس"
-        cancelText="لغو"
-        isLoading={isDeleting}
-        imageUrl={imageToDelete?.preview}
-      />
       
       {notification && (
         <NotificationToast
           message={notification.message}
           type={notification.type}
           onClose={() => setNotification(null)}
+          position={toastPosition}
         />
       )}
     </>

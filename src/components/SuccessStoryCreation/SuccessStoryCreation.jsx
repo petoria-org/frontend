@@ -3,8 +3,14 @@ import "../../styles/SuccessStoryCreation.css";
 import { useOutletContext } from "react-router-dom";
 import { createSuccessStory, uploadSuccessStoryImage, deleteSuccessStoryImage } from "../../Services/successStoryService";
 import { config } from "../../config";
+import {
+  cacheSuccessStoryDefaultImage,
+  cacheSuccessStoryPetType,
+  getSuccessStoryDefaultImage,
+} from "../../utils/postImages";
 import { deleteLostPost, deleteFoundPost, deleteSurrenderPost } from "../../Services/userService";
 import { ImageCropper } from "../ImageCropper";
+import { NotificationToast } from "../NotificationToast/NotificationToast";
 
 export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => { 
   const [images, setImages] = useState([]);
@@ -17,6 +23,7 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
   const dropZoneRef = useRef(null);
   const { setHideNavbar, setHideFooter } = useOutletContext();
   const [notification, setNotification] = useState(null);
+  const [confirmToast, setConfirmToast] = useState(null);
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [imageToCrop, setImageToCrop] = useState(null);
   const [pendingFiles, setPendingFiles] = useState([]);
@@ -145,7 +152,7 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
     const filesToAdd = allowedFiles.slice(0, Math.max(0, remainingSlots));
 
     if (filesToAdd.length === 0) {
-      alert("حداکثر می‌توانید 7 عکس آپلود کنید");
+      showNotification("حداکثر می‌توانید 7 عکس آپلود کنید", "warning");
       return;
     }
 
@@ -173,12 +180,12 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
 
   const handleSave = async () => {
     if (!storyText.trim()) {
-      alert("لطفاً متن داستان موفقیت را وارد کنید.");
+      showNotification("لطفاً متن داستان موفقیت را وارد کنید.", "warning");
       return;
     }
 
     if (pet?.hasSuccessStory && !pet.successStory) {
-      alert("برای این آگهی قبلاً داستان موفق ثبت شده است.");
+      showNotification("برای این آگهی قبلاً داستان موفق ثبت شده است.", "warning");
       return;
     }
 
@@ -203,7 +210,6 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
         images: imageIds,
       };
       
-      showNotification("داستان موفق با موفقیت ثبت شد و آگهی بسته شد", "success");
       const createdStory = await createSuccessStory(payload);
 
       if (pet) {
@@ -224,7 +230,17 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
 
       const { objects: savedImages, urls: savedImageUrls } = normalizeBackendImages(createdStory.images || []);
       const fallbackImage = createdStory.image ? buildImageUrl(createdStory.image) : "";
-      const heroImage = savedImageUrls[0] || fallbackImage || "/src/assets/images/default-pet.png";
+      const defaultStoryImage = getSuccessStoryDefaultImage(pet || createdStory || {});
+      const heroImage = savedImageUrls[0] || fallbackImage || defaultStoryImage;
+
+      const petTypeForCache =
+        pet?.pet_type ||
+        pet?.type ||
+        pet?.petType ||
+        createdStory?.pet_type ||
+        "";
+      cacheSuccessStoryPetType(createdStory?.id, petTypeForCache, pet?.id);
+      cacheSuccessStoryDefaultImage(createdStory?.id, defaultStoryImage, pet?.id);
 
       onSave?.({
         id: createdStory.id,
@@ -243,6 +259,12 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
             : "فرزندخوانده شد",
         statusColor: "rgba(122, 238, 151, 0.15)",
         statusTextColor: "#0f7228",
+        pet_type:
+          pet?.pet_type ||
+          pet?.type ||
+          pet?.petType ||
+          createdStory?.pet_type ||
+          "",
         image: heroImage,
         images: savedImageUrls.length > 0 ? savedImageUrls : (heroImage ? [heroImage] : []),
         backendImages: savedImages,
@@ -254,7 +276,7 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
       setImages([]);
       setActiveImageIndex(0);
 
-      alert("داستان موفق با موفقیت ثبت شد و آگهی بسته شد.");
+      showNotification("داستان موفق با موفقیت ثبت شد و آگهی بسته شد.", "success");
 
     } catch (err) {
       console.error(err);
@@ -270,35 +292,41 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
       setLoading(false);
     }
   };
-  const handleSkipAndDelete = async () => {
-    if (window.confirm("آیا مطمئن هستید که می‌خواهید این آگهی را حذف کنید؟")) {
-      setLoading(true);
-      
-      try {
-        if (pet) {
-          let deleteResponse;
-          if (pet.status === "lost") {
-            deleteResponse = await deleteLostPost(pet.id);
-          } else if (pet.status === "found") {
-            deleteResponse = await deleteFoundPost(pet.id);
-          } else if (pet.status === "adoption") {
-            deleteResponse = await deleteSurrenderPost(pet.id);
-          }
-          console.log("Post deleted without story:", deleteResponse);
+  const handleSkipAndDeleteConfirm = async () => {
+    setLoading(true);
+    
+    try {
+      if (pet) {
+        let deleteResponse;
+        if (pet.status === "lost") {
+          deleteResponse = await deleteLostPost(pet.id);
+        } else if (pet.status === "found") {
+          deleteResponse = await deleteFoundPost(pet.id);
+        } else if (pet.status === "adoption") {
+          deleteResponse = await deleteSurrenderPost(pet.id);
         }
-
-        if (onSkip) {
-          onSkip(pet?.globalId || pet?.id); 
-        }
-
-        showNotification("آگهی با موفقیت حذف شد", "success");
-        
-      } catch (error) {
-        showNotification('خطا در حذف آگهی. لطفاً دوباره تلاش کنید', "error");
-      } finally {
-        setLoading(false);
+        console.log("Post deleted without story:", deleteResponse);
       }
+
+      if (onSkip) {
+        onSkip(pet?.globalId || pet?.id); 
+      }
+
+    } catch (error) {
+      showNotification('خطا در حذف آگهی. لطفاً دوباره تلاش کنید', "error");
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleSkipAndDelete = () => {
+    setConfirmToast({
+      message: "آیا مطمئن هستید که می‌خواهید این آگهی را حذف کنید؟",
+      confirmText: "حذف",
+      cancelText: "انصراف",
+      confirmVariant: "danger",
+      onConfirm: handleSkipAndDeleteConfirm
+    });
   };
 
   const handleCancel = () => {
@@ -308,6 +336,8 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
     setPendingFiles([]);
     setCropModalOpen(false);
     setImageToCrop(null);
+    setConfirmToast(null);
+    setNotification(null);
 
     onCancel?.();
   };
@@ -696,10 +726,41 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
         onCropComplete={handleCropComplete}
         onClose={handleCropCancel}
         aspect={3 / 4}
-        cropSize={{ width: 360, height: 480 }}
+        cropSize={{ width: 360, height: 520 }}
         uploadImageFn={uploadSuccessStoryImage}
         format="jpeg"
         quality={0.92}
+      />
+    )}
+
+    {confirmToast && (
+      <NotificationToast
+        message={confirmToast.message}
+        type={confirmToast.type || "warning"}
+        onClose={() => setConfirmToast(null)}
+        position="top-right"
+        duration={0}
+        actions={[
+          {
+            label: confirmToast.cancelText || "انصراف",
+            variant: "ghost",
+            onClick: confirmToast.onCancel
+          },
+          {
+            label: confirmToast.confirmText || "تایید",
+            variant: confirmToast.confirmVariant || "danger",
+            onClick: confirmToast.onConfirm
+          }
+        ]}
+      />
+    )}
+
+    {notification && (
+      <NotificationToast
+        message={notification.message}
+        type={notification.type}
+        onClose={() => setNotification(null)}
+        position="top-right"
       />
     )}
     </>

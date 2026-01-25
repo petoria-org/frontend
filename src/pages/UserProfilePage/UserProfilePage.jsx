@@ -41,6 +41,7 @@ export const UserProfilePage = () => {
               onClose={handleCloseModal}
               onSave={handleSaveAd}
               mode="edit"
+              toastPosition="top-right"
             />
           </div>
         </div>

@@ -575,6 +575,7 @@ const ProfileEdit = ({ userData, onClose, onSave }) => {
           message={notification.message}
           type={notification.type}
           onClose={() => setNotification(null)}
+          position="top-right"
         />
       )}
     </div>

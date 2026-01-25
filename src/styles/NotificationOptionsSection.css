@@ -588,11 +588,11 @@
 }
 
 .upload-container-content {
-  padding: 32px;
+  padding: 24px;
   flex: 1;
   display: flex;
   flex-wrap: wrap;
-  gap: 24px;
+  gap: 16px;
   align-items: flex-start;
   justify-content: flex-start;
   min-height: 240px;
@@ -601,14 +601,14 @@
 .uploaded-images-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 20px;
+  gap: 12px;
   flex: 1;
 }
 
 .image-gallery-item {
   position: relative;
-  width: 160px;
-  height: 160px;
+  width: auto;
+  height: auto;
   border-radius: 20px;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);

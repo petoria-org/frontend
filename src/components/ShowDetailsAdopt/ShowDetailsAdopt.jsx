@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useOutletContext } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Circle, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -454,6 +454,15 @@ function LocationMapModal({
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isOpen]);
+
   if (!isOpen || !petPoint) return null;
 
   const handleLocateUser = () => {
@@ -645,8 +654,52 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
   
   const navigate = useNavigate();
   const location = useLocation();
+  const outletContext = useOutletContext();
+  const setHideNavbar = outletContext?.setHideNavbar;
+  const setHideFooter = outletContext?.setHideFooter;
 
   const [showLocationModal, setShowLocationModal] = useState(false);
+
+  useEffect(() => {
+    if (!setHideNavbar && !setHideFooter) return;
+
+    if (showLocationModal) {
+      setHideNavbar?.(true);
+      setHideFooter?.(true);
+      return () => {
+        setHideNavbar?.(false);
+        setHideFooter?.(false);
+      };
+    }
+
+    setHideNavbar?.(false);
+    setHideFooter?.(false);
+  }, [showLocationModal, setHideNavbar, setHideFooter]);
+
+  useEffect(() => {
+    if (!showLocationModal) return;
+
+    const { body, documentElement } = document;
+    const originalOverflow = body.style.overflow;
+    const originalPaddingRight = body.style.paddingRight;
+    const originalHtmlOverflow = documentElement.style.overflow;
+    const originalHtmlPaddingRight = documentElement.style.paddingRight;
+    const scrollBarWidth = window.innerWidth - documentElement.clientWidth;
+
+    documentElement.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    if (scrollBarWidth > 0) {
+      body.style.paddingRight = `${scrollBarWidth}px`;
+      documentElement.style.paddingRight = `${scrollBarWidth}px`;
+    }
+
+    return () => {
+      body.style.overflow = originalOverflow;
+      body.style.paddingRight = originalPaddingRight;
+      documentElement.style.overflow = originalHtmlOverflow;
+      documentElement.style.paddingRight = originalHtmlPaddingRight;
+    };
+  }, [showLocationModal]);
 
   const routeStatePostData = location.state?.postData;
   const activePostData = postData || propPostData || routeStatePostData || null;
@@ -1009,9 +1062,10 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
   };
 
   const showDetailsFrameClass = showLocationModal ? "show-details-frame show-details-frame--blur" : "show-details-frame";
+  const detailsContainerClass = showLocationModal ? "details-container details-container--modal-open" : "details-container";
 
   return (
-    <div className="details-container">
+    <div className={detailsContainerClass}>
       <div className="show-details-shell">
         <div className={showDetailsFrameClass}>
           <div className="show-details-card">
