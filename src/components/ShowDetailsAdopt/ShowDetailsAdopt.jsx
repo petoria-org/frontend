@@ -14,6 +14,8 @@ import AgeIcon from "../../assets/icons/clock.svg";
 import PetIcon from "../../assets/icons/pet.svg";
 import BackIcon from "../../assets/icons/arrow-left.svg";
 import ContactInfoIcon from "../../assets/icons/stickynote.svg";
+import SiteLogo from "../../assets/images/logo_p.png";
+import SiteLogo2 from "../../assets/images/logo_footer.jpg";
 import "../../styles/ShowDetailsAdopt.css";
 import { config } from "../../config";
 import { getFallbackPetImage } from "../../utils/postImages";
@@ -1061,7 +1063,13 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
     }
   };
 
-  const showDetailsFrameClass = showLocationModal ? "show-details-frame show-details-frame--blur" : "show-details-frame";
+  const showDetailsFrameClass = [
+    "show-details-frame",
+    showLocationModal ? "show-details-frame--blur" : "",
+    isFullscreen ? "show-details-frame--fullscreen" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
   const detailsContainerClass = showLocationModal ? "details-container details-container--modal-open" : "details-container";
 
   return (
@@ -1302,12 +1310,20 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
                             <div className="main-image-frame">
                               <div className={`main-image-wrapper ${isFullscreen ? 'fullscreen' : ''}`}>
                                 {petImages.length > 0 ? (
-                                  <img
-                                    src={petImages[selectedImageIndex]?.src}
-                                    alt={petImages[selectedImageIndex]?.alt || "تصویر اصلی حیوان"}
-                                    className="main-display-image"
-                                    onError={handleImageError}
-                                  />
+                                  <div className="show-details-fullscreen-media">
+                                    <img
+                                      src={petImages[selectedImageIndex]?.src}
+                                      alt={petImages[selectedImageIndex]?.alt || "تصویر حیوان"}
+                                      className="show-details-fullscreen-image"
+                                      onError={handleImageError}
+                                    />
+                                    <img
+                                      src={SiteLogo}
+                                      alt=""
+                                      aria-hidden="true"
+                                      className="show-details-fullscreen-watermark"
+                                    />
+                                  </div>
                                 ) : (
                                   <div className="image-placeholder-large">
                                     <div className="placeholder-icon-large">🐾</div>
@@ -1315,7 +1331,7 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
                                   </div>
                                 )}
                                 {petImages.length > 0 && (
-                                  <button 
+                                  <button
                                     className="fullscreen-toggle"
                                     onClick={handleFullscreenToggle}
                                     title="نمایش تمام صفحه"
@@ -1339,84 +1355,97 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
                                 </div>
                               </div>
                             )}
-
-                  {petImages.length > 0 && (
-                    <div className="other-images-container">
-                      <div className="other-images-title">
-                        <span>سایر تصاویر</span>
-                        <span className="images-count">{petImages.length} تصویر</span>
-                      </div>
-                      <div className="other-images-grid">
-                        {petImages.map((image, index) => (
-                            <div 
-                              key={image.id}
-                              className={`other-image-item ${index === selectedImageIndex ? 'other-image-item--active' : ''}`}
-                              onClick={() => handleImageClick(index)}
-                              role="button"
-                              tabIndex={0}
-                              aria-label={`تصویر ${index + 1}`}
-                            >
-                              <img
-                                src={image.src}
-                                alt={image.alt}
-                                className="other-image"
-                                onError={handleImageError}
-                              />
-                              <div className="image-overlay">
-                                <span className="view-text">
-                                  {index === selectedImageIndex ? "در حال نمایش" : "مشاهده"}
-                                </span>
+                            {petImages.length > 0 && (
+                              <div className="other-images-container">
+                                <div className="other-images-title">
+                                  <span>سایر تصاویر</span>
+                                  <span className="images-count">{petImages.length} تصویر</span>
+                                </div>
+                                <div className="other-images-grid">
+                                  {petImages.map((image, index) => (
+                                    <div
+                                      key={image.id}
+                                      className={`other-image-item ${index === selectedImageIndex ? 'other-image-item--active' : ''}`}
+                                      onClick={() => handleImageClick(index)}
+                                      role="button"
+                                      tabIndex={0}
+                                      aria-label={`تصویر ${index + 1}`}
+                                    >
+                                      <img
+                                        src={image.src}
+                                        alt={image.alt}
+                                        className="other-image"
+                                        onError={handleImageError}
+                                      />
+                                      <div className="image-overlay">
+                                        <span className="view-text">
+                                          {index === selectedImageIndex ? "در حال نمایش" : "مشاهده"}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
-                            </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                            )}
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-
-                  {isFullscreen && petImages.length > 0 && (
-                    <div className="show-details-fullscreen-overlay" onClick={handleFullscreenToggle}>
-                      <div
-                        className="show-details-fullscreen-card show-details-card"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <button
-                          className="show-details-fullscreen-close"
-                          onClick={handleFullscreenToggle}
-                          aria-label="بستن تصویر بزرگ"
-                        >
-                          ×
-                        </button>
-                        <img
-                          src={petImages[selectedImageIndex]?.src}
-                          alt={petImages[selectedImageIndex]?.alt || "تصویر حیوان"}
-                          className="show-details-fullscreen-image"
-                          onError={handleImageError}
-                        />
-                        {petImages.length > 1 && (
-                          <div className="show-details-fullscreen-nav">
-                            {petImages.map((_, index) => (
-                              <button
-                                key={index}
-                                type="button"
-                                className={`show-details-fullscreen-dot ${index === selectedImageIndex ? "active" : ""}`}
-                                onClick={() => handleImageClick(index)}
-                                aria-label={`نمایش تصویر ${index + 1}`}
-                              />
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
-          </div>
+          </div>          {isFullscreen && petImages.length > 0 && (
+            <div className="show-details-fullscreen-overlay" onClick={handleFullscreenToggle}>
+              <div
+                className="show-details-fullscreen-card show-details-card"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="show-details-fullscreen-brand">
+                  <img
+                    src={SiteLogo2}
+                    alt="Ù„ÙˆÚ¯ÙˆÛŒ Ø³Ø§ÛŒØª"
+                    className="show-details-fullscreen-logo"
+                  />
+                  <span className="show-details-fullscreen-brand-text">Petoria</span>
+                </div>
+                <div className="show-details-fullscreen-media">
+                  <button
+                    className="show-details-fullscreen-close"
+                    onClick={handleFullscreenToggle}
+                    aria-label="بستن تصویر بزرگ"
+                  >
+                    <span className="show-details-fullscreen-close-icon" aria-hidden="true" />
+                  </button>
+                  <img
+                    src={petImages[selectedImageIndex]?.src}
+                    alt={petImages[selectedImageIndex]?.alt || "ØªØµÙˆÛŒØ± Ø­ÛŒÙˆØ§Ù†"}
+                    className="show-details-fullscreen-image"
+                    onError={handleImageError}
+                  />
+                  <img
+                    src={SiteLogo}
+                    alt=""
+                    aria-hidden="true"
+                    className="show-details-fullscreen-watermark"
+                  />
+                </div>
+                {petImages.length > 1 && (
+                  <div className="show-details-fullscreen-nav">
+                    {petImages.map((_, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        className={`show-details-fullscreen-dot ${index === selectedImageIndex ? "active" : ""}`}
+                        onClick={() => handleImageClick(index)}
+                        aria-label={`Ù†Ù…Ø§ÛŒØ´ ØªØµÙˆÛŒØ± ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
           <LocationMapModal
             isOpen={showLocationModal}
             onClose={closeLocationModal}
@@ -1439,3 +1468,6 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
     </div>
   );
 };
+
+
+
