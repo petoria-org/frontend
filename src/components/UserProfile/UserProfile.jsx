@@ -212,6 +212,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
   const [userData, setUserData] = useState(null);
   const [showSkeleton, setShowSkeleton] = useState(true);
   const [skeletonFading, setSkeletonFading] = useState(false);
+  const MIN_LOADING_DURATION_MS = 2500;
   const TAB_SWITCH_SKELETON_MS = 500;
   const SKELETON_FADE_MS = 350;
 
@@ -248,6 +249,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
 
   useEffect(() => {
     const fetchData = async () => {
+      const startTime = Date.now();
       try {
         setLoading(true);
         const profile = await getUserProfile();
@@ -354,6 +356,11 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
       } catch (err) {
         console.error("Profile fetch error:", err);
       } finally {
+        const elapsed = Date.now() - startTime;
+        const remaining = Math.max(0, MIN_LOADING_DURATION_MS - elapsed);
+        if (remaining) {
+          await new Promise((resolve) => setTimeout(resolve, remaining));
+        }
         setLoading(false);
       }
     };
