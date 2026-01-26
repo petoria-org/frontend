@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../../styles/UserProfile.css";
 import { SuccessStoryCreation } from "../SuccessStoryCreation";
 import { Pagination } from './../Pagination/Pagination';
@@ -17,6 +17,7 @@ import { getUserSuccessStories, deleteSuccessStory  } from "../../Services/succe
 import { config } from "../../config";
 import { SuccessStoryEdit } from "../SuccessStoryEdit/SuccessStoryEdit";
 import { NotificationToast } from "../NotificationToast/NotificationToast";
+import LoadingScreen from "../LoadingScreen/LoadingScreen";
 import profileAvatar from "../../assets/images/profile_avatar.png";
 import { getSuccessStoryDefaultImage } from "../../utils/postImages";
 
@@ -210,11 +211,13 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
   const [confirmToast, setConfirmToast] = useState(null);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
   const [userData, setUserData] = useState(null);
-  const [showSkeleton, setShowSkeleton] = useState(true);
+  const [showSkeleton, setShowSkeleton] = useState(false);
   const [skeletonFading, setSkeletonFading] = useState(false);
   const MIN_LOADING_DURATION_MS = 2500;
+  const LOADING_SCREEN_DELAY_MS = 1200;
   const TAB_SWITCH_SKELETON_MS = 500;
   const SKELETON_FADE_MS = 350;
+  const [showLoadingScreen, setShowLoadingScreen] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("access");
@@ -369,22 +372,34 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
   }, [refreshKey]);
 
   useEffect(() => {
-    if (loading) {
-      setShowSkeleton(true);
-      setSkeletonFading(false);
-      return;
-    }
+    let introTimer;
+    let fadeTimer;
 
-    setSkeletonFading(true);
-    const fadeTimer = setTimeout(() => {
+    if (loading) {
+      setShowLoadingScreen(true);
       setShowSkeleton(false);
       setSkeletonFading(false);
-    }, SKELETON_FADE_MS);
+      introTimer = setTimeout(() => {
+        setShowLoadingScreen(false);
+        setShowSkeleton(true);
+      }, LOADING_SCREEN_DELAY_MS);
+    } else {
+      setShowLoadingScreen(false);
+      setSkeletonFading(true);
+      fadeTimer = setTimeout(() => {
+        setShowSkeleton(false);
+        setSkeletonFading(false);
+      }, SKELETON_FADE_MS);
+    }
 
-    return () => clearTimeout(fadeTimer);
-  }, [loading, SKELETON_FADE_MS]);
+    return () => {
+      if (introTimer) clearTimeout(introTimer);
+      if (fadeTimer) clearTimeout(fadeTimer);
+    };
+  }, [loading, LOADING_SCREEN_DELAY_MS, SKELETON_FADE_MS]);
 
   const [activeTab, setActiveTab] = useState("ads");
+  const prevTabRef = useRef("ads");
   const [activeFilter, setActiveFilter] = useState("همه");
   const [currentPage, setCurrentPage] = useState(1);
   const [currentStoryPage, setCurrentStoryPage] = useState(1);
@@ -651,26 +666,37 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
 
   useEffect(() => {
     if (loading) return;
+    if (prevTabRef.current === activeTab) return;
 
-    setShowSkeleton(true);
+    prevTabRef.current = activeTab;
+
+    let introTimer;
+    let holdTimer;
+    let fadeTimer;
+
+    setShowLoadingScreen(true);
+    setShowSkeleton(false);
     setSkeletonFading(false);
 
-    let fadeTimer;
-    const holdTimer = setTimeout(() => {
-      setSkeletonFading(true);
-      fadeTimer = setTimeout(() => {
-        setShowSkeleton(false);
-        setSkeletonFading(false);
-      }, SKELETON_FADE_MS);
-    }, TAB_SWITCH_SKELETON_MS);
+    introTimer = setTimeout(() => {
+      setShowLoadingScreen(false);
+      setShowSkeleton(true);
+
+      holdTimer = setTimeout(() => {
+        setSkeletonFading(true);
+        fadeTimer = setTimeout(() => {
+          setShowSkeleton(false);
+          setSkeletonFading(false);
+        }, SKELETON_FADE_MS);
+      }, TAB_SWITCH_SKELETON_MS);
+    }, LOADING_SCREEN_DELAY_MS);
 
     return () => {
-      clearTimeout(holdTimer);
-      if (fadeTimer) {
-        clearTimeout(fadeTimer);
-      }
+      if (introTimer) clearTimeout(introTimer);
+      if (holdTimer) clearTimeout(holdTimer);
+      if (fadeTimer) clearTimeout(fadeTimer);
     };
-  }, [activeTab, loading, TAB_SWITCH_SKELETON_MS, SKELETON_FADE_MS]);
+  }, [activeTab, loading, LOADING_SCREEN_DELAY_MS, TAB_SWITCH_SKELETON_MS, SKELETON_FADE_MS]);
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
@@ -706,8 +732,6 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
 
   const handleTabSwitch = (tab) => {
     if (tab === activeTab) return;
-    setShowSkeleton(true);
-    setSkeletonFading(false);
     setActiveTab(tab);
   };
 
@@ -1039,6 +1063,14 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                       skeletonFading ? "skeleton-fade-out" : ""
                     }`}
                   >
+                    {showLoadingScreen && (
+                      <div className="inline-loading-holder">
+                        <LoadingScreen
+                          title="در حال آماده‌سازی آگهی‌ها"
+                          subtitle="لطفاً چند لحظه صبر کنید..."
+                        />
+                      </div>
+                    )}
                     {showSkeleton && (
                       <>
                         {Array.from({ length: skeletonAdsCount }).map((_, index) => (
@@ -1079,7 +1111,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                       </>
                     )}
 
-                    {!showSkeleton && currentAds.length > 0 ? (
+                    {!showSkeleton && !showLoadingScreen && currentAds.length > 0 ? (
                       currentAds.map((pet) => (
                         <div key={pet.globalId} className={`pet-listing-card ${pet.resolved ? 'resolved' : ''}`}>
                           <div className="pet-listing-image-container">
@@ -1157,7 +1189,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                           </div>
                         </div>
                       ))
-                    ) : !showSkeleton ? (
+                    ) : !showSkeleton && !showLoadingScreen ? (
                       <div className="no-data-message">
                         <div className="no-data-icon">
                           <svg width="80" height="80" viewBox="0 0 24 24" fill="none">
@@ -1170,7 +1202,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                     ) : null}
                   </div>
                   
-                  {!showSkeleton && currentAds.length > 0 && (
+                  {!showSkeleton && !showLoadingScreen && currentAds.length > 0 && (
                     <Pagination
                       currentPage={currentPage}
                       totalPages={totalPages}
@@ -1247,7 +1279,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                   </div>
                 </header>
 
-                {!showSkeleton && userSuccessStories.length === 0 ? (
+                {!showSkeleton && !showLoadingScreen && userSuccessStories.length === 0 ? (
                   <div className="no-data-message">
                     <div className="no-data-icon">
                       <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
@@ -1267,6 +1299,14 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                       skeletonFading ? "skeleton-fade-out" : ""
                     }`}
                   >
+                    {showLoadingScreen && (
+                      <div className="inline-loading-holder">
+                        <LoadingScreen
+                          title="در حال آماده‌سازی داستان‌ها"
+                          subtitle="لطفاً چند لحظه صبر کنید..."
+                        />
+                      </div>
+                    )}
                     {showSkeleton && (
                       <>
                         {Array.from({ length: skeletonStoriesCount }).map((_, index) => (
@@ -1302,7 +1342,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                       </>
                     )}
 
-                    {!showSkeleton && currentStories.map((story, index) => {
+                    {!showSkeleton && !showLoadingScreen && currentStories.map((story, index) => {
                       const fallbackImage =
                         story.fallbackImage || getStoryDefaultImage(story);
 
@@ -1381,7 +1421,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                     );
                     })}
                   </div>
-                  {!showSkeleton && currentStories.length > 0 && (
+                  {!showSkeleton && !showLoadingScreen && currentStories.length > 0 && (
                     <Pagination
                       currentPage={currentStoryPage}
                       totalPages={storyTotalPages}
@@ -1432,5 +1472,6 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
   </div>
 );
 };
+
 
 

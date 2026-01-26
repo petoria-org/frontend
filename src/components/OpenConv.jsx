@@ -466,6 +466,7 @@ export default function OpenConv({
   messages = [],
   inputValue = "",
   loadingOlderMessages = false,
+  loadingMessages = false,
   onInputChange,
   onSend,
   onAttach,
@@ -499,6 +500,16 @@ export default function OpenConv({
   const [pendingAttachments, setPendingAttachments] = useState(null);
 
   const [pendingPreviewUrls, setPendingPreviewUrls] = useState([]);
+
+  const skeletonRows = [
+    { side: "in", width: 220 },
+    { side: "out", width: 180 },
+    { side: "in", width: 260 },
+    { side: "out", width: 200 },
+    { side: "in", width: 190 },
+    { side: "out", width: 240 },
+  ];
+
 
   const scrollToBottom = useCallback(
     (behavior = "smooth") => {
@@ -779,15 +790,34 @@ export default function OpenConv({
                 <span className="messagesLoader__text">Loading earlier messages...</span>
               </div>
             )}
-            {messages.map((m) => (
-              <MessageBubble
-                key={m.id ?? m.client_temp_id ?? `${m.time}_${m.side}`}
-                m={m}
-                onReply={handleReplyPick}
-                chatTitle={chat.title}
-                onJumpToMessage={jumpToMessage}
-              />
-            ))}
+            {loadingMessages ? (
+              <div className="open__skeleton" aria-hidden="true">
+                {skeletonRows.map((row, index) => (
+                  <div
+                    key={`msg-skeleton-${index}`}
+                    className={`msgRow ${row.side === "out" ? "msgRow--out" : "msgRow--in"}`}
+                  >
+                    <div className={`msg ${row.side === "out" ? "msg--out" : ""} msg--skeleton`}>
+                      <div className="chat-skeleton-block chat-skeleton-line" style={{ width: row.width }}></div>
+                      <div
+                        className="chat-skeleton-block chat-skeleton-meta"
+                        style={{ width: Math.max(60, Math.round(row.width * 0.35)) }}
+                      ></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              messages.map((m) => (
+                <MessageBubble
+                  key={m.id ?? m.client_temp_id ?? `${m.time}_${m.side}`}
+                  m={m}
+                  onReply={handleReplyPick}
+                  chatTitle={chat.title}
+                  onJumpToMessage={jumpToMessage}
+                />
+              ))
+            )}
           </div>
         </div>
 

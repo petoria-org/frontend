@@ -23,6 +23,26 @@ body {
   direction: rtl;
 }
 
+.inline-loading-holder {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  grid-column: 1 / -1;
+  padding: 16px 0 24px;
+}
+
+.inline-loading-holder .loading-overlay {
+  position: relative;
+  inset: auto;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+.inline-loading-holder .loading-container {
+  margin-bottom: 0;
+}
+
 *::-webkit-scrollbar {
   width: 16px;
   height: 16px;

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import AdvancedFilters from "../AdvancedFilters";
 import SortFilters from "../SortFilters";
 import { Pagination } from "../Pagination/Pagination";
+import LoadingScreen from "../LoadingScreen/LoadingScreen";
 import "../../styles/AllPosts.css";
 import { config } from "../../config";
 import { getPostImage } from "../../utils/postImages";
@@ -29,6 +30,7 @@ const API_ENDPOINTS = {
 
 const ITEMS_PER_PAGE = 6;
 const MIN_LOADING_DURATION_MS = 2500;
+const LOADING_SCREEN_DELAY_MS = 1200;
 
 const POST_TYPE_TO_BACKEND = {
   lost: "lost",
@@ -209,8 +211,9 @@ export default function AllPosts() {
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [showSkeleton, setShowSkeleton] = useState(true);
+  const [showSkeleton, setShowSkeleton] = useState(false);
   const [skeletonFading, setSkeletonFading] = useState(false);
+  const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   
   const [filterAnimal, setFilterAnimal] = useState("");
   const [filterSex, setFilterSex] = useState("");
@@ -488,19 +491,30 @@ export default function AllPosts() {
   }, [activeEndpoint, currentPage, queryString]);
 
   useEffect(() => {
-    if (loading) {
-      setShowSkeleton(true);
-      setSkeletonFading(false);
-      return;
-    }
+    let introTimer;
+    let fadeTimer;
 
-    setSkeletonFading(true);
-    const timer = setTimeout(() => {
+    if (loading) {
+      setShowLoadingScreen(true);
       setShowSkeleton(false);
       setSkeletonFading(false);
-    }, 350);
+      introTimer = setTimeout(() => {
+        setShowLoadingScreen(false);
+        setShowSkeleton(true);
+      }, LOADING_SCREEN_DELAY_MS);
+    } else {
+      setShowLoadingScreen(false);
+      setSkeletonFading(true);
+      fadeTimer = setTimeout(() => {
+        setShowSkeleton(false);
+        setSkeletonFading(false);
+      }, 350);
+    }
 
-    return () => clearTimeout(timer);
+    return () => {
+      if (introTimer) clearTimeout(introTimer);
+      if (fadeTimer) clearTimeout(fadeTimer);
+    };
   }, [loading]);
 
   const normalizedPosts = useMemo(() => {
@@ -813,6 +827,14 @@ export default function AllPosts() {
             skeletonFading ? "skeleton-fade-out" : ""
           }`}
         >
+          {showLoadingScreen && (
+            <div className="inline-loading-holder">
+              <LoadingScreen
+                title="در حال آماده‌سازی آگهی‌ها"
+                subtitle="لطفاً چند لحظه صبر کنید..."
+              />
+            </div>
+          )}
           {displayedAds.length === 0 && !loading && (
             <div className="no-results-container-all-posts">
               <div className="no-results-icon-all-posts">
@@ -966,3 +988,4 @@ export default function AllPosts() {
     </div>
   );
 }
+

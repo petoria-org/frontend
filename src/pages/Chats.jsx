@@ -15,6 +15,9 @@ import {
 } from "../Services/chatService";
 import { resolveAvatarUrl, DEFAULT_AVATAR } from "../utils/avatarUtils";
 
+const MIN_CHATS_LOADING_MS = 1200;
+const MIN_MESSAGES_LOADING_MS = 1200;
+
 function formatTime(iso) {
   if (!iso) return "";
   const d = new Date(iso);
@@ -171,6 +174,7 @@ export default function ChatPage() {
   }, []);
 
   const [chats, setChats] = useState([]);
+  const [loadingChats, setLoadingChats] = useState(true);
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [viewportWidth, setViewportWidth] = useState(
@@ -895,18 +899,35 @@ export default function ChatPage() {
   // Load chat list
   // =========================
   useEffect(() => {
+    let isActive = true;
+
     const loadChats = async () => {
+      const startTime = Date.now();
+      setLoadingChats(true);
       const res = await getChatList();
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, MIN_CHATS_LOADING_MS - elapsed);
+
+      if (remaining) {
+        await new Promise((resolve) => setTimeout(resolve, remaining));
+      }
+
+      if (!isActive) return;
+
       if (res.success) {
         setChats(Array.isArray(res.data) ? res.data : []);
       } else {
         setChats([]);
         showNotification(res.message || "خطا در دریافت لیست گفتگوها", "error");
       }
+
+      setLoadingChats(false);
     };
     loadChats();
+    return () => {
+      isActive = false;
+    };
   }, [showNotification]);
-
   // =========================
   // Load messages on select
   // =========================
@@ -917,6 +938,7 @@ export default function ChatPage() {
       loadingOlderMessagesRef.current = false;
       setMessagesPageInfo({ next: null, previous: null });
       setLoadingOlderMessages(false);
+      setLoadingMessages(false);
       return;
     }
 
@@ -927,10 +949,20 @@ export default function ChatPage() {
     setMessagesPageInfo({ next: null, previous: null });
     setLoadingOlderMessages(false);
 
+    let isActive = true;
+
     const loadMessages = async () => {
       setLoadingMessages(true);
+      const startTime = Date.now();
       const res = await getChatMessages(selectedChatId);
-      setLoadingMessages(false);
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, MIN_MESSAGES_LOADING_MS - elapsed);
+
+      if (remaining) {
+        await new Promise((resolve) => setTimeout(resolve, remaining));
+      }
+
+      if (!isActive) return;
 
       if (res.success) {
         const arr = Array.isArray(res.data) ? res.data : [];
@@ -952,11 +984,15 @@ export default function ChatPage() {
         setLoadingOlderMessages(false);
         showNotification(res.message || "خطا در دریافت پیام‌ها", "error");
       }
+
+      setLoadingMessages(false);
     };
 
     loadMessages();
+    return () => {
+      isActive = false;
+    };
   }, [selectedChatId , showNotification]);
-
   // =========================
   // Select chat
   // =========================
@@ -1280,27 +1316,15 @@ export default function ChatPage() {
             items={convItems}
             selectedChatId={selectedChatId}
             onSelectChat={handleSelectChat}
+            loading={loadingChats}
           />
 
           <OpenConv
             chat={openChat}
-            messages={
-              loadingMessages
-              ? [
-                  {
-                    id: "loading",
-                    side: "in",
-                    text: "Loading…",
-                    time: "",
-                    status: undefined,
-                    attachments: [],
-                    is_read: true,
-                  },
-                ]
-              : openMessages
-            }
+            messages={openMessages}
             inputValue={inputValue}
             loadingOlderMessages={loadingOlderMessages}
+            loadingMessages={loadingMessages}
             onInputChange={setInputValue}
             onSend={handleSend}
             onAttach={handleSendAttachments}
@@ -1313,3 +1337,9 @@ export default function ChatPage() {
     </div>
   );
 }
+
+
+
+
+
+

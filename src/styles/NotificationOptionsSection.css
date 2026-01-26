@@ -5857,3 +5857,129 @@
     justify-content: center;
   }
 }
+
+/* ===== Skeleton loading for edit post ===== */
+.notif-skeleton-block {
+  position: relative;
+  overflow: hidden;
+  background: rgba(122, 179, 224, 0.18);
+  border-radius: 12px;
+}
+
+.notif-skeleton-block::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+  transform: translateX(-100%);
+  animation: notifSkeletonShimmer 1.5s ease-in-out infinite;
+}
+
+.notif-skeleton-title {
+  height: 28px;
+  width: 220px;
+}
+
+.notif-skeleton-close {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+}
+
+.notif-skeleton-section-title {
+  height: 18px;
+  width: 160px;
+  margin-bottom: 12px;
+}
+
+.notif-skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.notif-skeleton-card {
+  height: 150px;
+  border-radius: 20px;
+  background: rgba(122, 179, 224, 0.16);
+}
+
+.notif-skeleton-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.notif-skeleton-input {
+  height: 54px;
+}
+
+.notif-skeleton-textarea {
+  height: 160px;
+}
+
+.notif-skeleton-image-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.notif-skeleton-image {
+  height: 240px;
+  border-radius: 18px;
+}
+
+.notif-skeleton-thumb-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.notif-skeleton-thumb {
+  height: 80px;
+  border-radius: 14px;
+}
+
+.notif-skeleton-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.notif-skeleton-button {
+  height: 52px;
+  width: 160px;
+  border-radius: 14px;
+}
+
+.notif-skeleton-button.primary {
+  width: 200px;
+}
+
+@keyframes notifSkeletonShimmer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+
+@media (max-width: 768px) {
+  .notif-skeleton-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .notif-skeleton-row {
+    grid-template-columns: 1fr;
+  }
+
+  .notif-skeleton-thumb-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .notif-skeleton-button {
+    width: 140px;
+  }
+
+  .notif-skeleton-button.primary {
+    width: 180px;
+  }
+}

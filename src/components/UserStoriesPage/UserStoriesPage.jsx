@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import { getUserSuccessStories, deleteSuccessStory, updateSuccessStory } from "../../Services/successStoryService";
 import "../../styles/UserProfile.css";
+import LoadingScreen from "../LoadingScreen/LoadingScreen";
 import { StoryDetailView } from "./StoryDetailView";
 import { EditStoryModal } from "./EditStoryModal";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
@@ -26,8 +27,10 @@ const UserStoriesPage = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState(null);
-  const [showSkeleton, setShowSkeleton] = useState(true);
+  const [showSkeleton, setShowSkeleton] = useState(false);
   const [skeletonFading, setSkeletonFading] = useState(false);
+  const [showLoadingScreen, setShowLoadingScreen] = useState(true);
+  const LOADING_SCREEN_DELAY_MS = 1200;
   const MIN_LOADING_DURATION_MS = 1800;
   const showNotification = (message, type = "error") => {
     setNotification({ message, type });
@@ -109,19 +112,30 @@ const UserStoriesPage = () => {
   }, []);
 
   useEffect(() => {
-    if (loading) {
-      setShowSkeleton(true);
-      setSkeletonFading(false);
-      return;
-    }
+    let introTimer;
+    let fadeTimer;
 
-    setSkeletonFading(true);
-    const timer = setTimeout(() => {
+    if (loading) {
+      setShowLoadingScreen(true);
       setShowSkeleton(false);
       setSkeletonFading(false);
-    }, 350);
+      introTimer = setTimeout(() => {
+        setShowLoadingScreen(false);
+        setShowSkeleton(true);
+      }, LOADING_SCREEN_DELAY_MS);
+    } else {
+      setShowLoadingScreen(false);
+      setSkeletonFading(true);
+      fadeTimer = setTimeout(() => {
+        setShowSkeleton(false);
+        setSkeletonFading(false);
+      }, 350);
+    }
 
-    return () => clearTimeout(timer);
+    return () => {
+      if (introTimer) clearTimeout(introTimer);
+      if (fadeTimer) clearTimeout(fadeTimer);
+    };
   }, [loading]);
 
   const handleStoryClick = (story) => {
@@ -228,6 +242,14 @@ const UserStoriesPage = () => {
                   skeletonFading ? "skeleton-fade-out" : ""
                 }`}
               >
+                {showLoadingScreen && (
+                  <div className="inline-loading-holder">
+                    <LoadingScreen
+                      title="در حال آماده‌سازی داستان‌ها"
+                      subtitle="لطفاً چند لحظه صبر کنید..."
+                    />
+                  </div>
+                )}
                 {showSkeleton && (
                   <>
                     {Array.from({ length: 3 }).map((_, index) => (
@@ -414,3 +436,4 @@ const UserStoriesPage = () => {
 };
 
 export default UserStoriesPage;
+

@@ -100,6 +100,8 @@ export const SuccessStoryEdit = ({ story, onUpdate, onDelete, onCancel }) => {
   const [images, setImages] = useState(initialImages);
   const [imageToDelete, setImageToDelete] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [skeletonLoading, setSkeletonLoading] = useState(true);
+  const MIN_EDIT_LOADING_MS = 2500;
   const [error, setError] = useState(null);
   const [notification, setNotification] = useState(null);
   const [confirmToast, setConfirmToast] = useState(null);
@@ -128,6 +130,14 @@ export const SuccessStoryEdit = ({ story, onUpdate, onDelete, onCancel }) => {
       document.body.style.overflow = originalOverflow;
     };
   }, [setHideNavbar, setHideFooter]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSkeletonLoading(false);
+    }, MIN_EDIT_LOADING_MS);
+
+    return () => clearTimeout(timer);
+  }, [MIN_EDIT_LOADING_MS]);
 
   useEffect(() => {
     if (story) {
@@ -510,6 +520,84 @@ const handleTextareaChange = (e) => {
       <polyline points="7 3 7 8 15 8" />
     </svg>
   );
+
+  if (skeletonLoading) {
+    return (
+      <div className="story-edit-overlay">
+        <div className="story-edit-modal">
+          <div className="story-edit-header">
+            <div className="header-content">
+              <div className="story-skeleton-block story-skeleton-icon"></div>
+              <div className="header-text">
+                <div className="story-skeleton-block story-skeleton-title"></div>
+                <div className="story-skeleton-block story-skeleton-subtitle"></div>
+              </div>
+              <div className="story-skeleton-block story-skeleton-close"></div>
+            </div>
+          </div>
+
+          <div className="story-edit-content">
+            <div className="images-section-edit">
+              <div className="image-upload-section-edit">
+                <div className="section-header-edit">
+                  <div className="story-skeleton-block story-skeleton-section-title"></div>
+                </div>
+                <div className="main-image-preview-edit">
+                  <div className="story-skeleton-block story-skeleton-main-image"></div>
+                </div>
+              </div>
+
+              <div className="image-upload-section-edit">
+                <div className="section-header-edit">
+                  <div className="story-skeleton-block story-skeleton-section-title"></div>
+                  <div className="story-skeleton-block story-skeleton-counter"></div>
+                </div>
+                <div className="thumbnail-container">
+                  {Array.from({ length: 6 }).map((_, index) => (
+                    <div
+                      key={`story-thumb-skel-${index}`}
+                      className="story-skeleton-block story-skeleton-thumb"
+                    ></div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="story-info-section-edit">
+              <div className="story-text-section-edit">
+                <div className="section-header-edit">
+                  <div className="story-skeleton-block story-skeleton-section-title"></div>
+                </div>
+
+                <div className="form-group">
+                  <div className="story-skeleton-block story-skeleton-label"></div>
+                  <div className="story-skeleton-block story-skeleton-input"></div>
+                </div>
+
+                <div className="form-group">
+                  <div className="story-skeleton-block story-skeleton-label"></div>
+                  <div className="story-skeleton-block story-skeleton-badge"></div>
+                </div>
+
+                <div className="form-group">
+                  <div className="story-skeleton-block story-skeleton-label"></div>
+                  <div className="story-skeleton-block story-skeleton-textarea"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="story-edit-footer">
+            <div className="footer-actions">
+              <div className="story-skeleton-block story-skeleton-btn"></div>
+              <div className="story-skeleton-block story-skeleton-btn"></div>
+              <div className="story-skeleton-block story-skeleton-btn primary"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

@@ -42,6 +42,8 @@ const ProfileEdit = ({ userData, onClose, onSave }) => {
   
   const [notification, setNotification] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [skeletonLoading, setSkeletonLoading] = useState(true);
+  const MIN_EDIT_LOADING_MS = 2500;
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [imageToCrop, setImageToCrop] = useState(null);
   const [showPasswordFields, setShowPasswordFields] = useState(false);
@@ -60,6 +62,14 @@ const ProfileEdit = ({ userData, onClose, onSave }) => {
       setHideNavbar?.(false);
     };
   }, [setHideNavbar]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSkeletonLoading(false);
+    }, MIN_EDIT_LOADING_MS);
+
+    return () => clearTimeout(timer);
+  }, [MIN_EDIT_LOADING_MS]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -243,6 +253,89 @@ const ProfileEdit = ({ userData, onClose, onSave }) => {
       }));
     }
   };
+
+  if (skeletonLoading) {
+    return (
+      <div className="profile-edit-overlay-container">
+        <div className="profile-edit-modal-section">
+          <div className="profile-edit-modal-container">
+            <div className="profile-edit-modal-content">
+              <div className="profile-edit-content-scroll-wrapper">
+                <div className="profile-edit-inner-content profile-edit-skeleton">
+                  <div className="profile-edit-header-section">
+                    <div className="profile-edit-skeleton-block profile-edit-skeleton-title"></div>
+                    <div className="profile-edit-skeleton-block profile-edit-skeleton-close"></div>
+                  </div>
+
+                  <div className="profile-edit-form-section">
+                    <div className="profile-edit-fields-vertical">
+                      <div className="profile-edit-field-group">
+                        <div className="profile-edit-skeleton-block profile-edit-skeleton-section-title"></div>
+
+                        <div className="profile-edit-image-upload-container">
+                          <div className="profile-edit-image-main-container">
+                            <div className="profile-edit-image-preview-area">
+                              <div className="profile-edit-skeleton-block profile-edit-skeleton-avatar"></div>
+                            </div>
+                            <div className="profile-edit-skeleton-actions">
+                              <div className="profile-edit-skeleton-block profile-edit-skeleton-action-btn"></div>
+                              <div className="profile-edit-skeleton-block profile-edit-skeleton-action-btn"></div>
+                            </div>
+                            <div className="profile-edit-skeleton-block profile-edit-skeleton-upload"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="profile-edit-form-section">
+                    <div className="profile-edit-fields-vertical">
+                      <div className="profile-edit-field-group">
+                        <div className="profile-edit-skeleton-block profile-edit-skeleton-section-title"></div>
+                        <div className="profile-edit-form-grid">
+                          {Array.from({ length: 4 }).map((_, index) => (
+                            <div className="profile-edit-field-group" key={`profile-skel-field-${index}`}>
+                              <div className="profile-edit-skeleton-block profile-edit-skeleton-label"></div>
+                              <div className="profile-edit-skeleton-block profile-edit-skeleton-input"></div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="profile-edit-form-section">
+                    <div className="profile-edit-fields-vertical">
+                      <div className="profile-edit-field-group">
+                        <div className="profile-edit-security-header">
+                          <div className="profile-edit-skeleton-block profile-edit-skeleton-icon"></div>
+                          <div className="profile-edit-skeleton-block profile-edit-skeleton-section-title"></div>
+                          <div className="profile-edit-skeleton-block profile-edit-skeleton-toggle"></div>
+                        </div>
+                        <div className="profile-edit-form-grid">
+                          {Array.from({ length: 3 }).map((_, index) => (
+                            <div className="profile-edit-field-group" key={`profile-skel-pass-${index}`}>
+                              <div className="profile-edit-skeleton-block profile-edit-skeleton-label"></div>
+                              <div className="profile-edit-skeleton-block profile-edit-skeleton-input"></div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="profile-edit-form-actions">
+                    <div className="profile-edit-skeleton-block profile-edit-skeleton-btn"></div>
+                    <div className="profile-edit-skeleton-block profile-edit-skeleton-btn primary"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="profile-edit-overlay-container">

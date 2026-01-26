@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import "../../styles/SuccessStoryDetail.css";
 import { useOutletContext } from "react-router-dom";
 import { getSuccessStoryDetail } from "../../Services/successStoryService";
@@ -8,6 +8,10 @@ import { getSuccessStoryDefaultImage } from "../../utils/postImages";
 export const SuccessStoryDetail = ({ story, onClose }) => {
   const [storyData, setStoryData] = useState(story || {});
   const [loadingDetail, setLoadingDetail] = useState(false);
+  const [skeletonLoading, setSkeletonLoading] = useState(true);
+  const MIN_DETAIL_LOADING_MS = 2500;
+  const skeletonTimerRef = useRef(null);
+  const loadingStartRef = useRef(0);
   const BACKEND_URL = config.BACKEND_URL;
 
   const buildImageUrl = (path) => {
@@ -19,18 +23,39 @@ export const SuccessStoryDetail = ({ story, onClose }) => {
 
   useEffect(() => {
     const fetchDetail = async () => {
-      if (!story?.id) return;
+      if (!story?.id) {
+        setLoadingDetail(false);
+        setSkeletonLoading(false);
+        return;
+      }
+
       try {
+        if (skeletonTimerRef.current) {
+          clearTimeout(skeletonTimerRef.current);
+        }
+        loadingStartRef.current = Date.now();
         setLoadingDetail(true);
+        setSkeletonLoading(true);
         const detail = await getSuccessStoryDetail(story.id);
         setStoryData(detail);
       } catch (error) {
         console.error("Failed to load success story detail:", error);
       } finally {
-        setLoadingDetail(false);
+        const elapsed = Date.now() - loadingStartRef.current;
+        const remaining = Math.max(MIN_DETAIL_LOADING_MS - elapsed, 0);
+        skeletonTimerRef.current = setTimeout(() => {
+          setLoadingDetail(false);
+          setSkeletonLoading(false);
+        }, remaining);
       }
     };
     fetchDetail();
+
+    return () => {
+      if (skeletonTimerRef.current) {
+        clearTimeout(skeletonTimerRef.current);
+      }
+    };
   }, [story]);
 
   const fallbackImage = useMemo(
@@ -109,6 +134,7 @@ export const SuccessStoryDetail = ({ story, onClose }) => {
     statusTagMap[storyData.story_type || story?.story_type] ||
     displayStatus ||
     "";
+  const isLoading = loadingDetail || skeletonLoading;
 
   const BackIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -127,6 +153,104 @@ export const SuccessStoryDetail = ({ story, onClose }) => {
       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
     </svg>
   );
+
+  if (isLoading) {
+    return (
+      <div className="story-detail-overlay" onClick={onClose}>
+        <div className="story-detail-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="story-detail-header">
+            <div className="header-content">
+              <div className="story-detail-skeleton-block story-detail-skeleton-icon"></div>
+              <div className="header-text">
+                <div className="story-detail-skeleton-block story-detail-skeleton-title"></div>
+                <div className="story-detail-skeleton-block story-detail-skeleton-subtitle"></div>
+              </div>
+              <div className="story-detail-skeleton-block story-detail-skeleton-close"></div>
+            </div>
+          </div>
+
+          <div className="story-detail-content">
+            <div className="images-section-datail">
+              <div className="image-upload-section">
+                <div className="section-header-datail">
+                  <div className="story-detail-skeleton-block story-detail-skeleton-section-title"></div>
+                </div>
+                <div className="main-image-preview">
+                  <div className="story-detail-skeleton-block story-detail-skeleton-main-image"></div>
+                </div>
+              </div>
+
+              <div className="image-upload-section">
+                <div className="section-header-datail">
+                  <div className="story-detail-skeleton-block story-detail-skeleton-section-title"></div>
+                  <div className="story-detail-skeleton-block story-detail-skeleton-counter"></div>
+                </div>
+                <div className="thumbnail-container">
+                  {Array.from({ length: 6 }).map((_, index) => (
+                    <div
+                      key={`detail-thumb-skel-${index}`}
+                      className="story-detail-skeleton-block story-detail-skeleton-thumb"
+                    ></div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="story-info-section-datail">
+              <div className="story-text-section">
+                <div className="section-header-datail">
+                  <div className="story-detail-skeleton-block story-detail-skeleton-section-title"></div>
+                </div>
+
+                <div className="story-header-details">
+                  <div className="story-title-wrapper">
+                    <div className="story-detail-skeleton-block story-detail-skeleton-story-title"></div>
+                    <div className="story-detail-skeleton-block story-detail-skeleton-badge"></div>
+                  </div>
+
+                  <div className="story-meta">
+                    <div className="story-detail-skeleton-block story-detail-skeleton-meta"></div>
+                    <div className="story-detail-skeleton-block story-detail-skeleton-meta"></div>
+                  </div>
+                </div>
+
+                <div className="content-section-datail">
+                  <div className="section-header-datail">
+                    <div className="story-detail-skeleton-block story-detail-skeleton-section-title"></div>
+                  </div>
+                  <div className="story-text-content">
+                    <div className="story-detail-skeleton-block story-detail-skeleton-line"></div>
+                    <div className="story-detail-skeleton-block story-detail-skeleton-line"></div>
+                    <div className="story-detail-skeleton-block story-detail-skeleton-line short"></div>
+                  </div>
+                </div>
+
+                <div className="tags-section">
+                  <div className="section-header-datail">
+                    <div className="story-detail-skeleton-block story-detail-skeleton-section-title"></div>
+                  </div>
+                  <div className="tags-list">
+                    {Array.from({ length: 3 }).map((_, index) => (
+                      <div
+                        key={`detail-tag-skel-${index}`}
+                        className="story-detail-skeleton-block story-detail-skeleton-tag"
+                      ></div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="story-detail-footer">
+            <div className="footer-actions">
+              <div className="story-detail-skeleton-block story-detail-skeleton-btn"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="story-detail-overlay" onClick={onClose}>

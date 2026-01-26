@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { SuccessStoryDetail } from "../SuccessStoryDetail/SuccessStoryDetail";
 import "../../styles/SuccessStoriesAll.css";
+import LoadingScreen from "../LoadingScreen/LoadingScreen";
 import { getSuccessStories } from "../../Services/successStoryService";
 import { config } from "../../config";
 import { getSuccessStoryDefaultImage } from "../../utils/postImages";
@@ -27,8 +28,11 @@ const SuccessStoriesAll = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [showSkeleton, setShowSkeleton] = useState(true);
+  const [showSkeleton, setShowSkeleton] = useState(false);
   const [skeletonFading, setSkeletonFading] = useState(false);
+  const [showLoadingScreen, setShowLoadingScreen] = useState(true);
+
+  const LOADING_SCREEN_DELAY_MS = 1200;
 
   const BACKEND_URL = config.BACKEND_URL;
 
@@ -98,19 +102,30 @@ const SuccessStoriesAll = () => {
   }, []);
 
   useEffect(() => {
-    if (loading) {
-      setShowSkeleton(true);
-      setSkeletonFading(false);
-      return;
-    }
+    let introTimer;
+    let fadeTimer;
 
-    setSkeletonFading(true);
-    const timer = setTimeout(() => {
+    if (loading) {
+      setShowLoadingScreen(true);
       setShowSkeleton(false);
       setSkeletonFading(false);
-    }, 350);
+      introTimer = setTimeout(() => {
+        setShowLoadingScreen(false);
+        setShowSkeleton(true);
+      }, LOADING_SCREEN_DELAY_MS);
+    } else {
+      setShowLoadingScreen(false);
+      setSkeletonFading(true);
+      fadeTimer = setTimeout(() => {
+        setShowSkeleton(false);
+        setSkeletonFading(false);
+      }, 350);
+    }
 
-    return () => clearTimeout(timer);
+    return () => {
+      if (introTimer) clearTimeout(introTimer);
+      if (fadeTimer) clearTimeout(fadeTimer);
+    };
   }, [loading]);
 
   const itemsPerPage = 6;
@@ -128,7 +143,7 @@ const SuccessStoriesAll = () => {
       <div className="success-stories-main-all visible">
         <div className="blue-waves-all"></div>
         
-        <div className={`stories-card-all ${isVisible || showSkeleton ? "visible" : ""}`}>
+        <div className={`stories-card-all ${isVisible || showSkeleton || showLoadingScreen ? "visible" : ""}`}>
           <div className="card-border"></div>
 
           <div className="stories-content-all">
@@ -186,6 +201,14 @@ const SuccessStoriesAll = () => {
                 skeletonFading ? "skeleton-fade-out" : ""
               }`}
             >
+              {showLoadingScreen && (
+                <div className="inline-loading-holder">
+                  <LoadingScreen
+                    title="در حال آماده‌سازی داستان‌ها"
+                    subtitle="داستان‌های موفق در حال آماده‌سازی هستند..."
+                  />
+                </div>
+              )}
               {!loading && stories.length === 0 ? (
                 <div className="no-stories-message">
                   <p>در حال حاضر داستان موفقیتی برای نمایش وجود ندارد.</p>
@@ -337,3 +360,4 @@ const SuccessStoriesAll = () => {
 };
 
 export default SuccessStoriesAll;
+

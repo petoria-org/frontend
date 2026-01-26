@@ -145,7 +145,7 @@ export default function NewPosts() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [hoveredCard, setHoveredCard] = useState(null);
-  const [showSkeleton, setShowSkeleton] = useState(true);
+  const [showSkeleton, setShowSkeleton] = useState(false);
   const [skeletonFading, setSkeletonFading] = useState(false);
 
   const fetchPosts = async (url) => {
@@ -298,19 +298,22 @@ export default function NewPosts() {
   }, [displayedAds.length]);
 
   useEffect(() => {
+    let fadeTimer;
+
     if (loading) {
       setShowSkeleton(true);
       setSkeletonFading(false);
-      return;
+    } else {
+      setSkeletonFading(true);
+      fadeTimer = setTimeout(() => {
+        setShowSkeleton(false);
+        setSkeletonFading(false);
+      }, 350);
     }
 
-    setSkeletonFading(true);
-    const timer = setTimeout(() => {
-      setShowSkeleton(false);
-      setSkeletonFading(false);
-    }, 350);
-
-    return () => clearTimeout(timer);
+    return () => {
+      if (fadeTimer) clearTimeout(fadeTimer);
+    };
   }, [loading]);
 
   const normalizedAllPosts = useMemo(() => {
@@ -573,3 +576,4 @@ export default function NewPosts() {
     </div>
   );
 }
+

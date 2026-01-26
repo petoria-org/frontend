@@ -14,7 +14,7 @@ const SuccessStoriesModern = () => {
   const [error, setError] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
   const [hoveredCard, setHoveredCard] = useState(null);
-  const [showSkeleton, setShowSkeleton] = useState(true);
+  const [showSkeleton, setShowSkeleton] = useState(false);
   const [skeletonFading, setSkeletonFading] = useState(false);
 
   const BACKEND_URL = config.BACKEND_URL;
@@ -143,19 +143,22 @@ const SuccessStoriesModern = () => {
   }, []);
 
   useEffect(() => {
+    let fadeTimer;
+
     if (loading) {
       setShowSkeleton(true);
       setSkeletonFading(false);
-      return;
+    } else {
+      setSkeletonFading(true);
+      fadeTimer = setTimeout(() => {
+        setShowSkeleton(false);
+        setSkeletonFading(false);
+      }, 350);
     }
 
-    setSkeletonFading(true);
-    const timer = setTimeout(() => {
-      setShowSkeleton(false);
-      setSkeletonFading(false);
-    }, 350);
-
-    return () => clearTimeout(timer);
+    return () => {
+      if (fadeTimer) clearTimeout(fadeTimer);
+    };
   }, [loading]);
 
   const handleViewStory = (story) => {
@@ -363,3 +366,4 @@ const SuccessStoriesModern = () => {
 };
 
 export default SuccessStoriesModern;
+

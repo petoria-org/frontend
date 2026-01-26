@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useNavigate, useLocation, useOutletContext } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Circle, useMap } from "react-leaflet";
 import L from "leaflet";
@@ -641,6 +641,9 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
   
   const [petDetails, setPetDetails] = useState([]);
   const [loading, setLoading] = useState(true);
+  const MIN_DETAILS_LOADING_MS = 2500;
+  const loadingStartRef = useRef(Date.now());
+  const loadingTimerRef = useRef(null);
   const [postData, setPostData] = useState(null);
   const [petImages, setPetImages] = useState([]);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -653,6 +656,24 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
       setNotification(null);
     }, 3000);
   };
+
+  const finishLoading = useCallback(() => {
+    const elapsed = Date.now() - loadingStartRef.current;
+    const remaining = Math.max(0, MIN_DETAILS_LOADING_MS - elapsed);
+
+    if (loadingTimerRef.current) {
+      clearTimeout(loadingTimerRef.current);
+      loadingTimerRef.current = null;
+    }
+
+    if (remaining) {
+      loadingTimerRef.current = setTimeout(() => {
+        setLoading(false);
+      }, remaining);
+    } else {
+      setLoading(false);
+    }
+  }, [MIN_DETAILS_LOADING_MS]);
   
   const navigate = useNavigate();
   const location = useLocation();
@@ -661,6 +682,20 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
   const setHideFooter = outletContext?.setHideFooter;
 
   const [showLocationModal, setShowLocationModal] = useState(false);
+
+  useEffect(() => {
+    if (loading) {
+      loadingStartRef.current = Date.now();
+    }
+  }, [loading]);
+
+  useEffect(() => {
+    return () => {
+      if (loadingTimerRef.current) {
+        clearTimeout(loadingTimerRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (!setHideNavbar && !setHideFooter) return;
@@ -753,8 +788,8 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
       return;
     }
 
-    setLoading(false);
-  }, [propPostData, propPostId, propPostType, location]);
+    finishLoading();
+  }, [propPostData, propPostId, propPostType, location, finishLoading]);
     
     useEffect(() => {
     const sourceData = getPostSourceData();
@@ -892,13 +927,13 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
 
     console.log("تصاویر استخراج شده:", images);
     setPetImages(images);
-    
-    setLoading(false);
+    finishLoading();
   };
 
   const fetchPostDetails = async (id, explicitPostType, showLoading = true) => {
     try {
       if (showLoading) {
+        loadingStartRef.current = Date.now();
         setLoading(true);
       }
       
@@ -944,7 +979,7 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
       initializeData(normalizedData);
     } catch (error) {
       console.error("خطا در دریافت جزئیات پست:", error);
-      setLoading(false);
+      finishLoading();
     }
   };
 
@@ -1038,9 +1073,111 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
   if (loading) {
     return (
       <div className="details-container">
-        <div className="show-details-container loading">
-          <div className="loading-spinner"></div>
-          <div className="loading-message">در حال بارگذاری جزئیات...</div>
+        <div className="show-details-shell">
+          <div className="show-details-frame">
+            <div className="show-details-card">
+              <div className="show-details-scroll">
+                <div className="show-details-inner">
+                  <div className="show-details-container">
+                    <div className="back-button-container">
+                      <div className="details-skeleton-block details-skeleton-back"></div>
+                    </div>
+
+                    <div className="main-card">
+                      <div className="card-content-wrapper">
+                        <div className="content-sections">
+                          <div className="details-section details-skeleton-section">
+                            <div className="details-header">
+                              <div className="details-skeleton-block details-skeleton-title"></div>
+                              <div className="details-skeleton-block details-skeleton-badge"></div>
+                            </div>
+
+                            <div className="details-grid">
+                              {Array.from({ length: 4 }).map((_, index) => (
+                                <div className="detail-item details-skeleton-item" key={`detail-item-${index}`}>
+                                  <div className="detail-icon details-skeleton-block details-skeleton-icon"></div>
+                                  <div className="detail-text">
+                                    <div className="details-skeleton-block details-skeleton-value"></div>
+                                    <div className="details-skeleton-block details-skeleton-label"></div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+
+                            <div className="section">
+                              <div className="section-title-show-details">
+                                <div className="details-skeleton-block details-skeleton-section-title"></div>
+                              </div>
+                              <div className="description-content">
+                                <div className="details-skeleton-block details-skeleton-paragraph long"></div>
+                                <div className="details-skeleton-block details-skeleton-paragraph medium"></div>
+                                <div className="details-skeleton-block details-skeleton-paragraph short"></div>
+                              </div>
+                            </div>
+
+                            <div className="section">
+                              <div className="section-title-show-details">
+                                <div className="details-skeleton-block details-skeleton-section-title"></div>
+                              </div>
+                              <div className="toggles-container">
+                                {Array.from({ length: 3 }).map((_, index) => (
+                                  <div className="toggle-item" key={`detail-toggle-${index}`}>
+                                    <div className="details-skeleton-block details-skeleton-toggle-label"></div>
+                                    <div className="details-skeleton-block details-skeleton-toggle"></div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            <div className="contact-section">
+                              <div className="contact-container">
+                                <div className="contact-header">
+                                  <div className="details-skeleton-block details-skeleton-contact-icon"></div>
+                                  <div className="details-skeleton-block details-skeleton-contact-title"></div>
+                                </div>
+                                <div className="contact-fields">
+                                  {Array.from({ length: 2 }).map((_, index) => (
+                                    <div className="contact-field" key={`detail-field-${index}`}>
+                                      <div className="details-skeleton-block details-skeleton-field-label"></div>
+                                      <div className="details-skeleton-block details-skeleton-field-input"></div>
+                                    </div>
+                                  ))}
+                                </div>
+                                <div className="details-skeleton-block details-skeleton-btn"></div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="gallery-section">
+                            <div className="gallery-container">
+                              <div className="main-image-frame">
+                                <div className="details-skeleton-block details-skeleton-image"></div>
+                              </div>
+                              <div className="image-dots-container">
+                                <div className="details-skeleton-block details-skeleton-dots"></div>
+                              </div>
+                              <div className="other-images-container">
+                                <div className="other-images-title">
+                                  <div className="details-skeleton-block details-skeleton-small-title"></div>
+                                </div>
+                                <div className="other-images-grid">
+                                  {Array.from({ length: 4 }).map((_, index) => (
+                                    <div className="other-image-item" key={`detail-thumb-grid-${index}`}>
+                                      <div className="details-skeleton-block details-skeleton-thumb"></div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -1468,6 +1605,13 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
     </div>
   );
 };
+
+
+
+
+
+
+
 
 
 

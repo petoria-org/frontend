@@ -860,6 +860,113 @@
   text-align: center;
 }
 
+/* Skeleton loading */
+.profile-edit-skeleton {
+  opacity: 1;
+  animation: none;
+}
+
+.profile-edit-skeleton-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-edit-skeleton-block {
+  position: relative;
+  overflow: hidden;
+  background: rgba(122, 179, 224, 0.18);
+  border-radius: 12px;
+}
+
+.profile-edit-skeleton-block::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+  transform: translateX(-100%);
+  animation: profile-edit-skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes profile-edit-skeleton-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.profile-edit-skeleton-title {
+  height: 26px;
+  width: 220px;
+  border-radius: 10px;
+}
+
+.profile-edit-skeleton-close {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.profile-edit-skeleton-section-title {
+  height: 18px;
+  width: 180px;
+  border-radius: 8px;
+}
+
+.profile-edit-skeleton-avatar {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+}
+
+.profile-edit-skeleton-action-btn {
+  width: 110px;
+  height: 40px;
+  border-radius: 12px;
+}
+
+.profile-edit-skeleton-upload {
+  width: 200px;
+  height: 46px;
+  border-radius: 12px;
+}
+
+.profile-edit-skeleton-label {
+  height: 12px;
+  width: 45%;
+  border-radius: 6px;
+}
+
+.profile-edit-skeleton-input {
+  height: 48px;
+  width: 100%;
+  border-radius: 10px;
+}
+
+.profile-edit-skeleton-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+}
+
+.profile-edit-skeleton-toggle {
+  width: 60px;
+  height: 30px;
+  border-radius: 20px;
+}
+
+.profile-edit-skeleton-btn {
+  width: 140px;
+  height: 48px;
+  border-radius: 12px;
+}
+
+.profile-edit-skeleton-btn.primary {
+  width: 180px;
+}
+
 @media (max-width: 1200px) {
   .profile-edit-modal-container {
     width: 95%;
@@ -1018,5 +1125,27 @@
 
   .profile-edit-submit-button.profile-edit-loading {
     padding-right: 32px;
+  }
+
+  .profile-edit-skeleton-title {
+    width: 180px;
+  }
+
+  .profile-edit-skeleton-avatar {
+    width: 120px;
+    height: 120px;
+  }
+
+  .profile-edit-skeleton-action-btn {
+    width: 100px;
+    height: 36px;
+  }
+
+  .profile-edit-skeleton-upload {
+    width: 100%;
+  }
+
+  .profile-edit-skeleton-btn {
+    width: 100%;
   }
 }

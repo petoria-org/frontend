@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { createPortal } from "react-dom";
 import "../../styles/NotificationOptionsSection.css";
 import searchIcon from '../../assets/icons/Search.svg';
@@ -287,6 +287,10 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode, toas
   const [notification, setNotification] = useState(null);
   const [confirmToast, setConfirmToast] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isEditLoading, setIsEditLoading] = useState(false);
+  const MIN_EDIT_LOADING_MS = 2500;
+  const editLoadingStartRef = useRef(0);
+  const editLoadingTimerRef = useRef(null);
   const [showMapPicker, setShowMapPicker] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [cropModalOpen, setCropModalOpen] = useState(false);
@@ -302,6 +306,32 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode, toas
   const foundDateRef = useRef(null);
   const surrenderDateRef = useRef(null);
   const initialImagesRef = useRef([]);
+
+  const finishEditLoading = useCallback(() => {
+    const elapsed = Date.now() - editLoadingStartRef.current;
+    const remaining = Math.max(0, MIN_EDIT_LOADING_MS - elapsed);
+
+    if (editLoadingTimerRef.current) {
+      clearTimeout(editLoadingTimerRef.current);
+      editLoadingTimerRef.current = null;
+    }
+
+    if (remaining) {
+      editLoadingTimerRef.current = setTimeout(() => {
+        setIsEditLoading(false);
+      }, remaining);
+    } else {
+      setIsEditLoading(false);
+    }
+  }, [MIN_EDIT_LOADING_MS]);
+
+  useEffect(() => {
+    return () => {
+      if (editLoadingTimerRef.current) {
+        clearTimeout(editLoadingTimerRef.current);
+      }
+    };
+  }, []);
 
   const [isTimePickerOpen, setIsTimePickerOpen] = useState(false);
   const [activeTimeField, setActiveTimeField] = useState(null);
@@ -1067,7 +1097,13 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode, toas
   ]);
     
   useEffect(() => {
-    if (!adData) return;
+    if (!adData || !isEdit) {
+      setIsEditLoading(false);
+      return;
+    }
+
+    editLoadingStartRef.current = Date.now();
+    setIsEditLoading(true);
 
     const fetchDetail = async () => {
       try {
@@ -1181,11 +1217,13 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode, toas
           message: "خطا در دریافت اطلاعات آگهی",
           type: "error"
         });
+      } finally {
+        finishEditLoading();
       }
     };
 
     fetchDetail();
-  }, [adData]);
+  }, [adData, isEdit, finishEditLoading]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -1878,6 +1916,69 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode, toas
             onClose={() => setShowMapPicker(false)}
             className="fullscreen-map"
           />
+        </div>
+      );
+    }
+
+    if (isEdit && isEditLoading) {
+      return (
+        <div className="notification-options-section edit-mode">
+          <div className="notification-options-container">
+            <div className="notification-options-content">
+              <div className="notification-options-content-wrapper">
+                <div className="notification-options-inner">
+                  <div className="form-section-header">
+                    <div className="notif-skeleton-block notif-skeleton-title"></div>
+                    <div className="notif-skeleton-block notif-skeleton-close"></div>
+                  </div>
+
+                  <div className="form-section">
+                    <div className="form-vertical-fields">
+                      <div className="form-field">
+                        <div className="notif-skeleton-block notif-skeleton-section-title"></div>
+                        <div className="ad-type-grid-pro notif-skeleton-grid">
+                          {Array.from({ length: 3 }).map((_, index) => (
+                            <div className="notif-skeleton-card" key={`notif-type-${index}`}></div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="form-field">
+                        <div className="notif-skeleton-block notif-skeleton-section-title"></div>
+                        <div className="notif-skeleton-row">
+                          {Array.from({ length: 2 }).map((_, index) => (
+                            <div className="notif-skeleton-block notif-skeleton-input" key={`notif-input-${index}`}></div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="form-field">
+                        <div className="notif-skeleton-block notif-skeleton-section-title"></div>
+                        <div className="notif-skeleton-block notif-skeleton-textarea"></div>
+                      </div>
+
+                      <div className="form-field">
+                        <div className="notif-skeleton-block notif-skeleton-section-title"></div>
+                        <div className="notif-skeleton-image-grid">
+                          <div className="notif-skeleton-block notif-skeleton-image"></div>
+                          <div className="notif-skeleton-thumb-row">
+                            {Array.from({ length: 4 }).map((_, index) => (
+                              <div className="notif-skeleton-block notif-skeleton-thumb" key={`notif-thumb-${index}`}></div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="form-actions notif-skeleton-actions">
+                        <div className="notif-skeleton-block notif-skeleton-button"></div>
+                        <div className="notif-skeleton-block notif-skeleton-button primary"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       );
     }
@@ -2871,3 +2972,4 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode, toas
     </>
   );
 }
+
