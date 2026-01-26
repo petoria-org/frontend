@@ -22,7 +22,7 @@ const Verify = () => {
   const purpose = location.state?.purpose;
 
   const [code, setCode] = useState(["", "", "", "", "", ""]);
-  const [timer, setTimer] = useState(15);
+  const [timer, setTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -58,7 +58,7 @@ const Verify = () => {
     if (!canResend) return;
 
     setCanResend(false);
-    setTimer(15);
+    setTimer(60);
 
     const result = await requestOtp(email);
 
@@ -148,7 +148,9 @@ const Verify = () => {
           {/* Timer */}
           <p className="verify-timer">
             زمان باقی‌مانده:{" "}
-            <span>00:{timer < 10 ? `0${timer}` : timer}</span>
+            <span>
+              {`${String(Math.floor(timer / 60)).padStart(2, "0")}:${String(timer % 60).padStart(2, "0")}`}
+            </span>
           </p>
 
           {/* Resend link */}
