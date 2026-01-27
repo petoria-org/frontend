@@ -6,6 +6,7 @@ import {
 import { useNavigate } from "react-router-dom";
 
 import "../../styles/Footer.css"
+
 const getQuickLinks = () => {
   return [
     { 
@@ -95,7 +96,7 @@ const getStats = () => {
 const initializePawAnimations = () => {
   const paws = document.querySelectorAll('.floating-paw');
   paws.forEach((paw, index) => {
-    paw.style.animationDelay = `${index * 0.5}s`;
+    paw.style.animationDelay = `${index * 0.8}s`;
   });
 };
 
@@ -124,8 +125,153 @@ const Icon = ({ src, alt, className = "", fallback = null }) => {
 
 export const Footer = ({ setCurrentPage }) => {
   const navigate = useNavigate();
+  const pawContainerRef = React.useRef(null);
+  const pawElementsRef = React.useRef([]);
+  const previousPositionsRef = React.useRef([]);
+  
   React.useEffect(() => {
     initializePawAnimations();
+
+    const initializeFloatingPaws = () => {
+      if (!pawContainerRef.current) return;
+  
+      pawElementsRef.current.forEach(paw => {
+        if (paw && paw.parentNode) {
+          paw.parentNode.removeChild(paw);
+        }
+      });
+      pawElementsRef.current = [];
+      previousPositionsRef.current = [];
+      const PAW_COUNT = 3;
+
+      const createPawElement = (index) => {
+        const paw = document.createElement('div');
+        paw.className = 'floating-paw-icon';
+        
+        const img = document.createElement('img');
+        img.src = '/src/assets/icons/pet.svg';
+        img.alt = '';
+        
+        paw.appendChild(img);
+        pawContainerRef.current.appendChild(paw);
+
+        const size = 20 + Math.random() * 40;
+        paw.style.width = `${size}px`;
+        paw.style.height = `${size}px`;
+
+        const hue = Math.floor(Math.random() * 60 - 30);
+        const brightness = 0.8 + Math.random() * 0.4;
+        paw.style.filter = `brightness(${brightness}) invert(1) drop-shadow(0 6px 15px rgba(0, 0, 0, 0.2)) hue-rotate(${hue}deg)`;
+
+        setPawPosition(paw, index);
+
+        const duration = 8 + Math.random() * 7;
+        const delay = index * 2 + Math.random() * 3;
+        paw.style.animation = `pawLifecycle ${duration}s ease-in-out ${delay}s infinite`;
+
+        pawElementsRef.current.push(paw);
+
+        const handleAnimationIteration = () => {
+          setPawPosition(paw, index);
+        };
+        
+        paw.addEventListener('animationiteration', handleAnimationIteration);
+
+        paw._animationHandler = handleAnimationIteration;
+        paw._pawIndex = index;
+      };
+      
+      for (let i = 0; i < PAW_COUNT; i++) {
+        createPawElement(i);
+      }
+    };
+    
+    const setPawPosition = (paw, pawIndex) => {
+      let top, left;
+      let attempts = 0;
+      const MAX_ATTEMPTS = 50;
+      
+      const zones = [
+        {
+          topMin: 15, topMax: 50,
+          leftMin: 3, leftMax: 15
+        },
+        {
+          topMin: 55, topMax: 85,
+          leftMin: 40, leftMax: 60
+        },
+        {
+          topMin: 20, topMax: 50,
+          leftMin: 80, leftMax: 120
+        }
+      ];
+      
+      if (pawIndex < zones.length) {
+        const zone = zones[pawIndex];
+        top = zone.topMin + Math.random() * (zone.topMax - zone.topMin);
+        left = zone.leftMin + Math.random() * (zone.leftMax - zone.leftMin);
+      } else {
+        top = 15 + Math.random() * 70;
+        left = 10 + Math.random() * 80;
+      }
+      
+      let tooClose = false;
+      do {
+        tooClose = false;
+        attempts++;
+        
+        for (const pos of previousPositionsRef.current) {
+          const distance = Math.sqrt(
+            Math.pow(top - pos.top, 2) + 
+            Math.pow(left - pos.left, 2)
+          );
+          
+          if (distance < 25) {
+            tooClose = true;
+            if (pawIndex < zones.length) {
+              const zone = zones[pawIndex];
+              top = zone.topMin + Math.random() * (zone.topMax - zone.topMin);
+              left = zone.leftMin + Math.random() * (zone.leftMax - zone.leftMin);
+            } else {
+              top = 15 + Math.random() * 70;
+              left = 10 + Math.random() * 80;
+            }
+            break;
+          }
+        }
+      } while (tooClose && attempts < MAX_ATTEMPTS);
+      
+      const newPosition = { top, left, index: pawIndex };
+      const existingIndex = previousPositionsRef.current.findIndex(p => p.index === pawIndex);
+      if (existingIndex >= 0) {
+        previousPositionsRef.current[existingIndex] = newPosition;
+      } else {
+        previousPositionsRef.current.push(newPosition);
+      }
+      
+      if (previousPositionsRef.current.length > 3) {
+        previousPositionsRef.current.shift();
+      }
+      
+      paw.style.top = `${top}%`;
+      paw.style.left = `${left}%`;
+      paw.style.opacity = '0';
+      
+      const rotation = Math.random() * 20 - 10;
+      paw.style.transform = `translateY(0) scale(1) rotate(${rotation}deg)`;
+      
+      paw.offsetHeight;
+    };
+    
+    initializeFloatingPaws();
+    
+    return () => {
+      pawElementsRef.current.forEach(paw => {
+        if (paw && paw._animationHandler) {
+          paw.removeEventListener('animationiteration', paw._animationHandler);
+        }
+      });
+    };
   }, []);
 
   const contactInfo = getContactInfo();
@@ -142,18 +288,32 @@ export const Footer = ({ setCurrentPage }) => {
           <div className="blob blob-3"></div>
         </div>
 
-        {[...Array(5)].map((_, i) => (
-          <div
-            key={i}
-            className="floating-paw"
-            style={{
-              left: `${20 + i * 20}%`,
-              top: `${30 + (i % 2) * 40}%`,
-            }}
-          >
-            <PawPrint className="paw-icon" />
-          </div>
-        ))}
+        {[...Array(5)].map((_, i) => {
+          const positions = [
+            { left: '10%', top: '25%' },
+            { left: '30%', top: '65%' },
+            { left: '50%', top: '35%' },
+            { left: '70%', top: '75%' },
+            { left: '90%', top: '45%' },
+          ];
+          
+          return (
+            <div
+              key={`static-paw-${i}`}
+              className="floating-paw"
+              style={{
+                left: positions[i]?.left || `${20 + i * 20}%`,
+                top: positions[i]?.top || `${30 + (i % 2) * 40}%`,
+                animationDelay: `${i * 0.8}s`,
+                opacity: 0.04 + (i * 0.01),
+              }}
+            >
+              <PawPrint className="paw-icon" />
+            </div>
+          );
+        })}
+        
+        <div className="paw-container" ref={pawContainerRef}></div>
 
         <div className="footer-content">
           <div className="footer-top">
@@ -262,20 +422,6 @@ export const Footer = ({ setCurrentPage }) => {
                   </a>
                 </li>
               </ul>
-            </div>
-
-            <div className="footer-column">
-              <div className="social-icons">
-              </div>
-
-              <div className="stats-grid">
-                {stats.slice(0, 2).map((stat, index) => (
-                  <div key={index} className="stat-card">
-                    <p className="stat-number">{stat.value}</p>
-                    <p className="stat-label">{stat.label}</p>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
 
