@@ -3781,9 +3781,8 @@
 
   .profile-card {
     width: 100%;
-    max-width: 768px;
-    height: 181px;
-    margin: 0 auto;
+    max-width: 480px;
+    height: auto;
   }
 
   .profile-card-header {
@@ -3793,27 +3792,33 @@
   }
 
   .profile-card-content {
-    padding: 30px;
-    height: calc(181px - 33px);
+    padding: 28px 16px 24px;
+    height: auto;
   }
 
   .profile-content-wrapper {
-    display: block;
+    display: grid;
+    grid-template-areas:
+      "avatar"
+      "info"
+      "logout";
+    grid-template-rows: auto auto auto;
+    justify-items: center;
+    align-items: center;
+    row-gap: 16px;
     position: relative;
   }
 
   .avatar-container {
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 80px;
-    width: 80px;
+    grid-area: avatar;
+    position: relative;
+    width: 108px;
+    height: 108px;
   }
 
   .avatar-image {
-    height: 80px;
-    width: 80px;
+    height: 108px;
+    width: 108px;
   }
 
   .avatar-border {
@@ -3824,11 +3829,9 @@
   }
 
   .edit-profile-button {
-    position: absolute;
-    bottom: 3px;
-    right: 70%;
-    transform: translateX(50%);
-    height: 24px;
+    bottom: 6px;
+    right: 72%;
+    transform: none;
     width: 24px;
   }
 
@@ -3838,35 +3841,38 @@
   }
 
   .profile-info {
-    position: absolute;
-    right: 120px;
-    top: 50%;
-    transform: translateY(-50%);
-    align-items: flex-start;
-    text-align: right;
+    grid-area: info;
+    position: relative;
+    right: unset;
+    top: unset;
+    transform: none;
+    align-items: center;
+    text-align: center;
     gap: 8px;
+    width: 100%;
+    max-width: 320px;
   }
 
   .profile-username {
     font-size: 20px;
-    text-align: right;
+    text-align: center;
   }
 
   .profile-username::after {
-    display: block;
+    display: none;
   }
 
    .profile-email-container {
-    width: 200px;
-    height: 30px;
-    justify-content: flex-end;
-    padding-right: 28px;
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+    padding-right: 32px;
   }
 
   .profile-email {
-    margin-right: 30px;
-    text-align: right;
     font-size: 14px;
+    margin-right: 0;
+    text-align: center;
   }
 
   .email-icon-wrapper {
@@ -3874,19 +3880,16 @@
   }
 
   .profile-pet-icon {
-    display: block;
-    width: 50px;
-    height: 50px;
-    top: 16px;
-    left: 32px;
+    display: none;
   }
 
   .logout-button {
-    position: absolute;
-    bottom: -15px;
-    left: 0;
-    margin-top: 0;
-    padding: 5px 10px;
+    grid-area: logout;
+    position: relative;
+    bottom: unset;
+    left: unset;
+    margin-top: 6px;
+    border-radius: 16px;
   }
 
   .pet-listings-container-enhanced {
@@ -4453,7 +4456,6 @@
     justify-content: center;
     align-items: center;
     width: 90%;
-    margin: 0 auto;
   }
   
   .story-read-edit-btn {
