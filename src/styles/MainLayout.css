@@ -16,8 +16,8 @@
 
 @media (max-width: 768px) {
   .main-content {
-    padding-top: 72px;
-    padding-bottom: 32px;
+    padding-top: 0;
+    padding-bottom: 0;
   }
 
   .page-container {

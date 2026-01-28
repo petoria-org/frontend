@@ -6,6 +6,20 @@
   padding-bottom: 48px;
 }
 
+@media (max-width: 768px) {
+  .all-posts-container {
+    padding-top: 68px;
+    padding-bottom: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .all-posts-container {
+    padding-top: 58px;
+    padding-bottom: 24px;
+  }
+}
+
 .main-content-wrapper {
   position: relative;
   width: 100%;

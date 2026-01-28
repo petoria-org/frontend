@@ -1929,8 +1929,7 @@
 
 @media (max-width: 768px) {
   .chatShell {
-    min-height: calc(100dvh - 4rem);
-    height: auto;
+    min-height: auto;
   }
 
   .chatMain {

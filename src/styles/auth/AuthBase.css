@@ -488,7 +488,6 @@
   .forgot-password-card,
   .reset-password-card,
   .verify-card {
-    padding-top: 0;
     padding-bottom: 0;
   }
 

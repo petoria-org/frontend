@@ -39,7 +39,7 @@
   .verify-main,
   .reset-password-main {
     height: auto;
-    min-height: 0;
+    min-height: 600px;
   }
 
   .auth-img,

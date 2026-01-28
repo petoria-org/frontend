@@ -33,7 +33,7 @@
   overflow: hidden;
   flex-wrap: nowrap;
   width: 100%;
-  font-size: 15.5px;
+  font-size: clamp(12.6px, 1.2vw + 0.35rem, 15.5px);
   touch-action: manipulation;
   border-bottom: 1px solid rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(22px) saturate(175%);
@@ -366,8 +366,12 @@
 }
 
 @media (max-width: 768px) {
+  .navbar .logo {
+    width: 7.5em;
+    height: 3em;
+  }
+
   .navbar {
-    font-size: 14px;
     padding: 0 0.85em;
     gap: 0.6em;
   }
@@ -394,7 +398,11 @@
   .navbar {
     padding: 0 0.6em;
     gap: 0.5em;
-    justify-content: space-around;
+    justify-content: flex-start;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
 
   .navbar .logo {
@@ -403,8 +411,9 @@
 
   .navbar .nav-item,
   .navbar .new-ad-button {
-    flex-shrink: 1;
-    min-width: auto;
+    flex-shrink: 0;
+    width: max-content;
+    min-width: max-content;
   }
 
   .navbar .nav-item {
@@ -427,17 +436,16 @@
 /* Mobile (standard) */
 @media (max-width: 480px) {
   .navbar {
-    font-size: 12.8px;
     padding: 0 0.35em;
     gap: 0.35em;
   }
 
   .navbar .nav-item {
-    flex-direction: column;
+    flex-direction: row;
     justify-content: center;
     gap: 0.28em;
-    padding: 0.22em 0.34em;
-    height: auto;
+    padding: 0.28em 0.42em;
+    height: 2.2em;
   }
 
   .navbar .new-ad-button {
@@ -456,13 +464,37 @@
 
   .navbar .nav-text,
   .navbar .new-ad-text {
-    font-size: 0.85em;
+    font-size: clamp(0.8em, 2.6vw, 0.92em);
     line-height: 1.1;
   }
 
   .navbar .new-ad-button:active,
   .navbar .nav-item:active {
     transform: scale(0.96);
+  }
+}
+
+@media (max-width: 500px) {
+  .navbar {
+    height: auto;
+    padding: 0.45em 0.5em;
+    row-gap: 0.4em;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .navbar .nav-item,
+  .navbar .new-ad-button {
+    flex-direction: column;
+    height: auto;
+    padding: 0.32em 0.5em;
+    min-width: 4.8em;
+  }
+
+  .navbar .nav-text,
+  .navbar .new-ad-text {
+    font-size: clamp(0.78em, 2.8vw, 0.88em);
+    line-height: 1.05;
   }
 }
 

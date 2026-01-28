@@ -5963,6 +5963,10 @@
 }
 
 @media (max-width: 768px) {
+  .notification-options-content::before  {
+    border-radius: 24px;
+  }
+  
   .notif-skeleton-grid {
     grid-template-columns: 1fr;
   }
