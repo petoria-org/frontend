@@ -119,7 +119,7 @@ const Navbar = () => {
       </NavLink>
 
       {/* Logo */}
-      <img className="logo" src="/src/assets/images/logo.jpg" alt="logo" />
+      <img className="logo" src="/src/assets/images/logo_p.png" alt="logo" />
     </div>
   );
 };
