@@ -10,7 +10,7 @@
     rgba(255, 255, 255, 0.85) 0%,
     rgba(248, 251, 255, 0.85) 100%
   );
-  font-family: "Inter", Helvetica, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
 }
 
 .image-cropper-modal-wrapper .image-cropper-modal-overlay {
@@ -167,7 +167,7 @@
 }
 
 .image-cropper-modal-wrapper .cropper-title {
-  font-family: "Inter", Helvetica, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 700;
   color: #1c7bd1;
   font-size: 22px;
@@ -202,7 +202,7 @@
 }
 
 .image-cropper-modal-wrapper .dimension-label {
-  font-family: "Inter", Helvetica, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 600;
   font-size: 13px;
   color: #1c7bd1;
@@ -254,7 +254,7 @@
   );
   border: 2px solid rgba(122, 179, 224, 0.4);
   border-radius: 10px;
-  font-family: "Inter", Helvetica, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 600;
   font-size: 14px;
   color: #4a5568;
@@ -450,7 +450,7 @@
   color: white;
   padding: 8px 16px;
   border-radius: 20px;
-  font-family: "Inter", Helvetica, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 12px;
   font-weight: 600;
   border: 2px solid rgba(255, 255, 255, 0.6);
@@ -485,7 +485,7 @@
 
 .image-cropper-modal-wrapper .handle-text {
   color: white;
-  font-family: "Inter", Helvetica, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
@@ -556,7 +556,7 @@
 }
 
 .image-cropper-modal-wrapper .control-label {
-  font-family: "Inter", Helvetica, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 600;
   color: var(--cropper-text);
   font-size: 14px;
@@ -582,7 +582,7 @@
 }
 
 .image-cropper-modal-wrapper .control-value {
-  font-family: "Inter", Helvetica, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 600;
   font-size: 14px;
   color: #1c7bd1;
@@ -684,7 +684,7 @@
   );
   border: 2px solid rgba(122, 179, 224, 0.4);
   border-radius: 12px;
-  font-family: "Inter", Helvetica, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 700;
   font-size: 13px;
   color: #1c7bd1;
@@ -720,7 +720,7 @@
 .image-cropper-modal-wrapper .cropper-confirm-btn {
   height: 48px;
   border-radius: 10px;
-  font-family: "Inter", Helvetica, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 700;
   font-size: 15px;
   min-width: 160px;
@@ -844,7 +844,7 @@
 }
 
 .image-cropper-modal-wrapper .info-title {
-  font-family: "Inter", Helvetica, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 700;
   color: #1c7bd1;
   font-size: 16px;
@@ -858,7 +858,7 @@
 }
 
 .image-cropper-modal-wrapper .info-tips li {
-  font-family: "Inter", Helvetica, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 400;
   color: var(--cropper-muted);
   font-size: 13px;
@@ -896,14 +896,14 @@
 }
 
 .image-cropper-modal-wrapper .spec-label {
-  font-family: "Inter", Helvetica, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 500;
   color: var(--cropper-muted);
   font-size: 13px;
 }
 
 .image-cropper-modal-wrapper .spec-value {
-  font-family: "Inter", Helvetica, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 600;
   color: #1c7bd1;
   font-size: 13px;

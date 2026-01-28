@@ -697,7 +697,7 @@
   transition: all 0.3s ease;
   box-sizing: border-box;
   border: none;
-  font-family: Vazirmatn, Tahoma, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   animation: advancedInputFocus 4s ease-in-out infinite;
 }
 
@@ -764,7 +764,7 @@
   margin: 2px;
   color: #4a6578;
   font-size: 13px;
-  font-family: Vazirmatn, Tahoma, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   position: relative;
   overflow: hidden;
   animation: advancedOptionSlide 0.3s ease-out both;
@@ -839,7 +839,7 @@
   color: #94c5e3;
   font-style: italic;
   font-size: 13px;
-  font-family: Vazirmatn, Tahoma, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   animation: advancedNoOptionPulse 2s ease-in-out infinite;
 }
 
@@ -962,7 +962,7 @@
   color: #2c3e50;
   font-weight: 600;
   font-size: 14px;
-  font-family: Vazirmatn, Tahoma, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   animation: advancedLabelPulse 2s ease-in-out infinite;
 }
 
@@ -989,7 +989,7 @@
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   border: none;
-  font-family: Vazirmatn, Tahoma, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   position: relative;
   z-index: 15 !important;
 }
@@ -1086,7 +1086,7 @@
   border: 1px solid #d8e6f3;
   background: #f0f7ff;
   color: #4a6578;
-  font-family: Vazirmatn, Tahoma, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   overflow: hidden;
@@ -1453,7 +1453,7 @@
   font-weight: 600;
   color: #5a7a94;
   z-index: 10;
-  font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   direction: rtl;
   display: flex;
   align-items: center;

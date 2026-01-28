@@ -112,7 +112,7 @@
   align-items: center;
   padding: 1rem; 
   direction: rtl;
-  font-family: 'Inter', Helvetica, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   background: transparent;
   min-height: calc(100vh - 2rem);
   box-sizing: border-box;
@@ -321,7 +321,7 @@
   border-radius: 20px;
   font-weight: 700;
   font-size: 14px;
-  font-family: 'Inter', Helvetica, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -957,7 +957,7 @@
   border-radius: 12px;
   color: white;
   font-size: 1.1rem;
-  font-family: 'Inter', Helvetica, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   border: none;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

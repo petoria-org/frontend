@@ -272,7 +272,7 @@
   font-size: 24px;
   font-weight: 700;
   margin: 0;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   animation: titleGlow 2s ease-in-out infinite;
 }
@@ -291,7 +291,7 @@
   color: rgba(255, 255, 255, 0.9);
   font-size: 14px;
   margin: 0;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 400;
 }
 
@@ -388,7 +388,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 600;
   color: #2c3e50;
   font-size: 18px;
@@ -414,7 +414,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
 }
 
 .current-count {
@@ -539,7 +539,7 @@
 
 .story-title-main {
   margin: 0;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 28px;
   font-weight: 700;
   color: #111827;
@@ -556,7 +556,7 @@
   gap: 8px;
   padding: 8px 16px;
   border-radius: 20px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
@@ -595,14 +595,14 @@
 }
 
 .meta-label {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 14px;
   color: #6b7280;
   font-weight: 600;
 }
 
 .meta-value {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 14px;
   font-weight: 500;
   color: #374151;
@@ -622,7 +622,7 @@
   border-radius: 12px;
   padding: 24px;
   border: 1px solid #e5e7eb;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 16px;
   line-height: 1.8;
   color: #374151;
@@ -656,7 +656,7 @@
   color: #0369a1;
   border: 1px solid #bae6fd;
   border-radius: 20px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -691,7 +691,7 @@
   border-radius: 12px;
   background: white;
   color: #475569;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 600;
   font-size: 16px;
   cursor: pointer;

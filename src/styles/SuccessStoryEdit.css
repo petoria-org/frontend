@@ -263,7 +263,7 @@
   font-size: 24px;
   font-weight: 700;
   margin: 0;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   animation: titleGlow 2s ease-in-out infinite;
 }
@@ -282,7 +282,7 @@
   color: rgba(255, 255, 255, 0.9);
   font-size: 14px;
   margin: 0;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 400;
 }
 
@@ -419,7 +419,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 600;
   color: #2c3e50;
   font-size: 18px;
@@ -436,7 +436,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
 }
 
 .current-count {
@@ -614,7 +614,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 600;
   color: #2c3e50;
   font-size: 16px;
@@ -634,7 +634,7 @@
   padding: 14px 16px;
   border: 2px solid #e1e8f0;
   border-radius: 12px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 16px;
   color: #2c3e50;
   background: white;
@@ -658,7 +658,7 @@
   padding: 14px 16px;
   border: 2px solid #e1e8f0;
   border-radius: 12px;
-  font-family: 'Inter', Helvetica, 'Tahoma', 'Arial', sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 16px;
   color: #2c3e50;
   background: white;
@@ -690,7 +690,7 @@
   gap: 8px;
   padding: 8px 16px;
   border-radius: 20px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
@@ -729,7 +729,7 @@
   border: 2px solid #fecaca;
   border-radius: 12px;
   color: #dc2626;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 14px;
   font-weight: 500;
   margin-top: 16px;
@@ -763,7 +763,7 @@
 .save-btn {
   padding: 14px 28px;
   border-radius: 12px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 600;
   font-size: 16px;
   cursor: pointer;

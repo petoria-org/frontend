@@ -60,7 +60,7 @@
 }
 
 .ls-success-stories-ad-text {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 14px;
   color: #4a9fe3;
   margin-top: 8px;
@@ -99,9 +99,9 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 800;
-  font-size: 32px;
+  font-size: 28px;
   margin: 0 0 15px 0;
   letter-spacing: -0.5px;
 }
@@ -116,7 +116,7 @@
 }
 
 .ls-success-stories-subtitle {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 400;
   font-size: 18px;
   line-height: 1.7;
@@ -282,7 +282,7 @@
   position: absolute;
   top: 20px;
   left: 20px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 900;
   font-size: 72px;
   color: rgba(28, 123, 209, 0.05);
@@ -369,7 +369,7 @@
 }
 
 .ls-success-story-title-text {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 700;
   font-size: 20px;
   color: #0a5ca6;
@@ -392,7 +392,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 14px;
 }
 
@@ -431,7 +431,7 @@
 }
 
 .ls-success-story-content-text {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 400;
   font-size: 16px;
   line-height: 1.8;
@@ -461,7 +461,7 @@
   align-items: center;
   gap: 10px;
   color: white;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 600;
   font-size: 14px;
   background: linear-gradient(135deg, #1c7bd1 0%, #4a9fe3 100%);
@@ -538,7 +538,7 @@
   padding: 16px 44px;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 16px;
   font-weight: 600;
   box-shadow: 

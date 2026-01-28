@@ -2,7 +2,7 @@
   position: relative;
   min-height: 800px;
   width: 100%;
-  padding-top: 88px;
+  padding-top: 96px;
   padding-bottom: 48px;
 }
 
@@ -226,10 +226,10 @@
 }
 
 .stories-title-all {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 800;
   color: #2c3e50;
-  font-size: 32px;
+  font-size: 28px;
   letter-spacing: -0.5px;
   line-height: 1.2;
   direction: rtl;
@@ -274,7 +274,7 @@
 .stories-subtitle-all {
   color: #6b7280;
   font-size: 18px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 400;
   letter-spacing: 0;
   line-height: 1.6;
@@ -528,7 +528,7 @@
   position: absolute;
   top: 20px;
   left: 20px;
-  font-family: 'Vazirmatn', 'Inter', sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 900;
   font-size: 72px;
   color: rgba(28, 123, 209, 0.05);
@@ -618,9 +618,9 @@
 }
 
 .story-title-all {
-  font-family: 'Vazirmatn', 'Inter', sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 700;
-  font-size: 24px;
+  font-size: 20px;
   color: #0a5ca6;
   margin: 0 0 8px 0;
   overflow: hidden;
@@ -646,7 +646,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  font-family: 'Vazirmatn', 'Inter', sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 14px;
 }
 
@@ -679,7 +679,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-family: 'Vazirmatn', 'Inter', sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 600;
   font-size: 14px;
   backdrop-filter: blur(10px);
@@ -721,7 +721,7 @@
 }
 
 .story-content {
-  font-family: 'Vazirmatn', 'Inter', sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 400;
   font-size: 16px;
   line-height: 1.8;
@@ -748,7 +748,7 @@
   align-items: center;
   gap: 12px;
   color: white;
-  font-family: 'Vazirmatn', 'Inter', sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 600;
   font-size: 15px;
   background: linear-gradient(135deg, #1c7bd1 0%, #4a9fe3 100%);
@@ -826,7 +826,7 @@
   }
   
   .stories-title-all {
-    font-size: 36px;
+    font-size: 28px;
   }
   
   .stories-subtitle-all {

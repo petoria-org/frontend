@@ -719,7 +719,12 @@ export default function AllPosts() {
                     <span className="title-gradient-line"></span>
                   </h1>
                   <p className="posts-header-subtext">
-                    آگهی‌های گمشده، پیداشده و سرپرستی مسیر رسیدن حیوان‌ها به خانه یا خانواده جدید را می‌سازند؛ با هم به سرانجام این مسیرها کمک کنیم.
+                    آگهی‌های گمشده، پیداشده و سرپرستی مسیر رسیدن حیوان‌ها به خانه یا خانواده جدید را می‌سازند؛ با هم به سرانجام این مسیرها کمک کنیم
+                    <span className="subtitle-dots_posts">
+                      <span className="dot_posts">.</span>
+                      <span className="dot_posts">.</span>
+                      <span className="dot_posts">.</span>
+                    </span>
                   </p>
                 </div>
               </div>

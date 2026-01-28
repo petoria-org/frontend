@@ -101,7 +101,7 @@
 }
 
 .toast-title {
-  font-family: 'Inter', 'Vazirmatn', sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 700;
   font-size: 16px;
   margin: 0 0 6px 0;
@@ -111,7 +111,7 @@
 .toast-text {
   color: #5a6c7d;
   font-size: 14px;
-  font-family: 'Inter', 'Vazirmatn', sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   line-height: 1.5;
   margin: 0;
   direction: rtl;
@@ -170,7 +170,7 @@
   border-radius: 10px;
   padding: 6px 12px;
   font-size: 13px;
-  font-family: 'Inter', 'Vazirmatn', sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 600;
   cursor: pointer;
   background: #e5e7eb;

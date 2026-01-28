@@ -147,7 +147,7 @@
 }
 
 .loading-title {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 700;
   color: #2c3e50;
   font-size: 24px;
@@ -171,7 +171,7 @@
 .loading-subtitle {
   color: #6b7280;
   font-size: 16px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 400;
   direction: rtl;
   margin-bottom: 24px;

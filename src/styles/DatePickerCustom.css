@@ -1,6 +1,6 @@
 .rmdp-container {
   width: 100% !important;
-  font-family: 'Inter', 'Vazir', sans-serif !important;
+  font-family: 'Vazirmatn', sans-serif;
   direction: rtl !important;
 }
 
@@ -12,7 +12,7 @@
     rgba(232, 244, 255, 0.95) 100%) !important;
   border-radius: 12px !important;
   border: 2px solid rgba(122, 179, 224, 0.5) !important;
-  font-family: 'Inter', 'Vazir', Helvetica !important;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 500 !important;
   color: #2c3e50 !important;
   font-size: 16px !important;
@@ -28,7 +28,7 @@
 
 .rmdp-input::placeholder {
   color: #7ab3e0 !important;
-  font-family: 'Inter', 'Vazir', Helvetica !important;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 14px !important;
   font-weight: 400 !important;
   opacity: 0.7 !important;
@@ -74,7 +74,7 @@
   box-shadow: 0 10px 40px rgba(122, 179, 224, 0.15) !important;
   border: 1px solid rgba(122, 179, 224, 0.3) !important;
   backdrop-filter: blur(10px) !important;
-  font-family: 'Inter', 'Vazir', sans-serif !important;
+  font-family: 'Vazirmatn', sans-serif;
   direction: rtl !important;
   overflow: hidden !important;
 }
@@ -91,14 +91,14 @@
   padding: 16px !important;
   margin: -16px -16px 16px -16px !important;
   border-radius: 16px 16px 0 0 !important;
-  font-family: 'Inter', 'Vazir', sans-serif !important;
+  font-family: 'Vazirmatn', sans-serif;
   backdrop-filter: blur(5px) !important;
   border-bottom: 1px solid rgba(122, 179, 224, 0.4) !important;
 }
 
 .rmdp-year-picker,
 .rmdp-month-picker {
-  font-family: 'Inter', 'Vazir', sans-serif !important;
+  font-family: 'Vazirmatn', sans-serif;
   background: rgba(255, 255, 255, 0.1) !important;
   backdrop-filter: blur(5px) !important;
 }
@@ -107,13 +107,13 @@
   color: #7ab3e0 !important;
   font-weight: 600 !important;
   font-size: 13px !important;
-  font-family: 'Inter', 'Vazir', sans-serif !important;
+  font-family: 'Vazirmatn', sans-serif;
   padding: 8px 0 !important;
   border-bottom: 1px solid rgba(122, 179, 224, 0.2) !important;
 }
 
 .rmdp-day {
-  font-family: 'Inter', 'Vazir', sans-serif !important;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 14px !important;
   border-radius: 10px !important;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -170,7 +170,7 @@
 
 .rmdp-month-picker,
 .rmdp-year-picker {
-  font-family: 'Inter', 'Vazir', sans-serif !important;
+  font-family: 'Vazirmatn', sans-serif;
   background: rgba(255, 255, 255, 0.95) !important;
   border-radius: 12px !important;
   border: 1px solid rgba(122, 179, 224, 0.3) !important;
@@ -179,7 +179,7 @@
 
 .rmdp-month-name,
 .rmdp-year-name {
-  font-family: 'Inter', 'Vazir', sans-serif !important;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 14px !important;
   border-radius: 8px !important;
   transition: all 0.2s ease !important;

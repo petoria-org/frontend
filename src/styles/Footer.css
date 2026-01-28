@@ -2,7 +2,7 @@
   position: relative;
   margin-top: auto;
   overflow: hidden;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   direction: rtl;
   width: 100%;
   z-index: 10;
@@ -311,7 +311,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  font-family: inherit;
+  font-family: 'Vazirmatn', sans-serif;
   margin-top: 0.5rem;
 }
 

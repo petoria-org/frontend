@@ -257,7 +257,7 @@
 }
 
 .profile-edit-title-text {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 700;
   color: #1c7bd1;
   font-size: 22px;
@@ -333,7 +333,7 @@
 }
 
 .profile-edit-section-title {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 700;
   color: #2c3e50;
   font-size: 18px;
@@ -377,7 +377,7 @@
 }
 
 .profile-edit-form-label {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 550;
   color: #2c3e50;
   font-size: 15px;
@@ -406,7 +406,7 @@
     rgba(248, 251, 255, 0.9) 100%);
   border-radius: 10px;
   border: 2px solid rgba(122, 179, 224, 0.3);
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 500;
   color: #2c3e50;
   font-size: 15px;
@@ -436,7 +436,7 @@
 
 .profile-edit-form-input::placeholder {
   color: #94a3b8;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 13px;
   font-weight: 400;
 }
@@ -587,7 +587,7 @@
     rgba(248, 251, 255, 0.95) 100%);
   border: 2px solid rgba(122, 179, 224, 0.4);
   border-radius: 14px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 15px;
   font-weight: 700;
   color: #1c7bd1;
@@ -625,7 +625,7 @@
 }
 
 .profile-edit-image-description {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 13px;
   color: #5a6c7d;
   line-height: 1.6;
@@ -752,7 +752,7 @@
   color: rgba(28, 123, 209, 0.7);
   font-size: 13px;
   margin: 6px 0 0 0;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   direction: rtl;
 }
 
@@ -767,7 +767,7 @@
 .profile-edit-button {
   height: 48px;
   border-radius: 10px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 700;
   font-size: 15px;
   direction: rtl;

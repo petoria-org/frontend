@@ -1,7 +1,7 @@
 .post-details-page {
   display: flex;
   flex-direction: column;
-  font-family: 'Inter', Helvetica, sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   padding-top: 96px;
   padding-bottom: 48px;
 }
@@ -133,7 +133,7 @@
 }
 
 .loading-text {
-  font-family: 'Vazirmatn', 'Inter', sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 600;
   font-size: 20px;
   color: #2c3e50;
@@ -141,7 +141,7 @@
 }
 
 .loading-subtext {
-  font-family: 'Vazirmatn', 'Inter', sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 400;
   font-size: 14px;
   color: #5a6c7d;
@@ -175,7 +175,7 @@
   border: none;
   padding: 12px 32px;
   border-radius: 12px;
-  font-family: 'Vazirmatn', 'Inter', sans-serif;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 600;
   font-size: 16px;
   cursor: pointer;

@@ -1,28 +1,41 @@
-@import url("https://fonts.googleapis.com/css?family=Inter:700,400");
-
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap');
+:root {
+  --app-font: 'Vazirmatn', sans-serif;
+}
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   scrollbar-width: auto;
   scrollbar-color: #90bde7 rgba(28, 123, 209, 0.08);
+  font-family: var(--app-font) !important;
 }
-
+*::before,
+*::after,
+input,
+button,
+textarea,
+select {
+  font-family: var(--app-font) !important;
+}
+html,
+body,
+#root,
+#app {
+  font-family: var(--app-font) !important;
+}
 body {
-  font-family: 'Inter', Helvetica, sans-serif;
   background-color: #ffffffe6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   direction: ltr;
   scrollbar-gutter: stable;
 }
-
 #app {
   width: 100%;
   min-height: 100vh;
   direction: rtl;
 }
-
 .inline-loading-holder {
   width: 100%;
   display: flex;
@@ -31,39 +44,32 @@ body {
   grid-column: 1 / -1;
   padding: 16px 0 24px;
 }
-
 .inline-loading-holder .loading-overlay {
   position: relative;
   inset: auto;
   background: transparent;
   backdrop-filter: none;
 }
-
 .inline-loading-holder .loading-container {
   margin-bottom: 0;
 }
-
 *::-webkit-scrollbar {
   width: 16px;
   height: 16px;
 }
-
 *::-webkit-scrollbar-track {
   background: rgba(28, 123, 209, 0.06);
   border-radius: 10px;
   border: 2px solid rgba(255, 255, 255, 0.7);
 }
-
 *::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, #1c7bd1 0%, #5a9bc9 100%);
   border-radius: 10px;
   border: 2px solid rgba(255, 255, 255, 0.85);
 }
-
 *::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #155fa0 0%, #1c7bd1 100%);
 }
-
 @keyframes fade-in {
   0% {
     opacity: 0;
@@ -74,7 +80,6 @@ body {
     transform: translateY(0);
   }
 }
-
 .animate-fade-in {
   animation: fade-in 1s ease forwards;
   opacity: 0;

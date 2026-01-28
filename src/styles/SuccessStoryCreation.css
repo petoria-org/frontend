@@ -130,7 +130,7 @@
   font-size: 24px;
   font-weight: 700;
   margin: 0;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   animation: titleGlow 2s ease-in-out infinite;
 }
@@ -149,7 +149,7 @@
   color: rgba(255, 255, 255, 0.9);
   font-size: 14px;
   margin: 0;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 400;
 }
 
@@ -221,7 +221,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 600;
   color: #2c3e50;
   font-size: 18px;
@@ -247,7 +247,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   direction: ltr;
 }
 
@@ -361,7 +361,7 @@
 }
 
 .upload-instruction {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 600;
   color: #2c3e50;
   font-size: 18px;
@@ -370,7 +370,7 @@
 }
 
 .upload-hint {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 400;
   color: #64748b;
   font-size: 14px;
@@ -598,7 +598,7 @@
 }
 
 .add-more-text {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 600;
   color: #7ab3e0;
   font-size: 12px;
@@ -613,7 +613,7 @@
   padding: 20px;
   border: 2px solid #e1e8f0;
   border-radius: 16px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 16px;
   line-height: 1.6;
   resize: vertical;
@@ -634,7 +634,7 @@
 
 .story-textarea::placeholder {
   color: #94a3b8;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 400;
 }
 
@@ -681,7 +681,7 @@
 }
 
 .tips-title {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 600;
   color: #1e40af;
   font-size: 16px;
@@ -719,7 +719,7 @@
 }
 
 .tips-list li {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 400;
   color: #475569;
   font-size: 14px;
@@ -754,7 +754,7 @@
   border-radius: 12px;
   background: white;
   color: #475569;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 600;
   font-size: 16px;
   cursor: pointer;
@@ -774,7 +774,7 @@
   border-radius: 12px;
   background: linear-gradient(135deg, #7ab3e0 0%, #94c5e3 100%);
   color: white;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 600;
   font-size: 16px;
   cursor: pointer;

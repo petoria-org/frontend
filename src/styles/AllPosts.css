@@ -2,7 +2,7 @@
   position: relative;
   min-height: 800px;
   width: 100%;
-  padding-top: 88px;
+  padding-top: 96px;
   padding-bottom: 48px;
 }
 
@@ -314,7 +314,7 @@
 .posts-header-subtext {
   color: #6b7280;
     font-size: 18px;
-    font-family: 'Inter', Helvetica;
+    font-family: 'Vazirmatn', sans-serif;
     font-weight: 400;
     letter-spacing: 0;
     line-height: 1.6;
@@ -327,10 +327,10 @@
 }
 
 .posts-title-all-posts {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 800;
   color: #2c3e50;
-  font-size: 32px;
+  font-size: 28px;
   letter-spacing: -0.5px;
   line-height: 1.2;
   direction: rtl;
@@ -364,7 +364,7 @@
 .posts-subtitle-all-posts {
   color: #6b7280;
   font-size: 18px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 400;
   letter-spacing: 0;
   line-height: 1.6;
@@ -375,21 +375,21 @@
   gap: 4px;
 }
 
-.subtitle-dots {
+.subtitle-dots_posts {
   display: inline-flex;
   gap: 2px;
 }
 
-.dot {
-  animation: dotBlink 1.4s infinite;
+.dot_posts {
+  animation: dotBlink_posts 1.4s infinite;
   color: #7ab3e0;
 }
 
-.dot:nth-child(1) { animation-delay: 0s; }
-.dot:nth-child(2) { animation-delay: 0.2s; }
-.dot:nth-child(3) { animation-delay: 0.4s; }
+.dot_posts:nth-child(1) { animation-delay: 0s; }
+.dot_posts:nth-child(2) { animation-delay: 0.2s; }
+.dot_posts:nth-child(3) { animation-delay: 0.4s; }
 
-@keyframes dotBlink {
+@keyframes dotBlink_posts {
   0%, 100% { opacity: 0.3; }
   50% { opacity: 1; }
 }
@@ -537,7 +537,7 @@
   font-weight: 500;
   color: #333;
   font-size: 14px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   letter-spacing: 0;
   line-height: normal;
 }
@@ -561,7 +561,7 @@
 }
 
 .posts-category-count-all-posts span {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 500;
   color: rgba(0, 0, 0, 0.7);
   font-size: 12px;
@@ -645,7 +645,7 @@
   border-radius: 20px;
   font-weight: 600;
   font-size: 12px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -734,7 +734,7 @@
   border: 2px solid rgba(122, 179, 224, 0.4);
   border-radius: 12px;
   padding: 14px 28px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
@@ -832,7 +832,7 @@
 }
 
 .pet-listing-name-all-posts {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 700;
   color: #2c3e50;
   font-size: 20px;
@@ -857,7 +857,7 @@
   font-weight: 500;
   color: #7f8c8d;
   font-size: 14px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   margin: 0;
 }
 
@@ -869,7 +869,7 @@
   padding: 0 16px;
   font-weight: 600;
   font-size: 13px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -887,7 +887,7 @@
 .pet-listing-description-all-posts {
   color: #5a6c7d;
   font-size: 14px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 400;
   line-height: 1.6;
   direction: rtl;
@@ -943,7 +943,7 @@
 .pet-listing-detail-text-all-posts {
   color: #4a5568;
   font-size: 14px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 500;
   line-height: 1.4;
   flex: 1;
@@ -996,7 +996,7 @@
 .pet-listing-time-text-all-posts {
   color: #2c3e50;
   font-size: 13px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 600;
   direction: rtl;
   flex: 1;
@@ -1058,7 +1058,7 @@
   margin: 0 auto 24px;
   line-height: 1.6;
   font-size: 15px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   direction: rtl;
 }
 
@@ -1075,7 +1075,7 @@
   border-radius: 18px;
   font-size: 15px;
   font-weight: 700;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border: 2px solid rgba(122, 179, 224, 0.4);
@@ -1093,7 +1093,7 @@
   padding: 20px;
   border-radius: 16px;
   margin: 20px 0;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 16px;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.8);
@@ -1186,7 +1186,7 @@
   color: #2c3e50;
   font-size: 16px;
   font-weight: 500;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   direction: rtl;
   padding: 0 46px 0 16px;
   outline: none;

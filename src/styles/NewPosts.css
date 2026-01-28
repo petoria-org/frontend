@@ -100,15 +100,15 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 800;
-  font-size: 32px;
+  font-size: 28px;
   margin: 0 0 15px 0;
   letter-spacing: -0.5px;
 }
 
 .new-posts-subtitle-landing {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 400;
   font-size: 18px;
   line-height: 1.7;
@@ -155,7 +155,7 @@
 }
 
 .posts-title-landing {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 700;
   color: #1c7bd1;
   font-size: 26px;
@@ -169,7 +169,7 @@
 .posts-subtitle-landing {
   color: rgba(0, 0, 0, 0.5);
   font-size: 18px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 400;
   letter-spacing: 0;
   line-height: normal;
@@ -265,7 +265,7 @@
   font-weight: 500;
   color: #333;
   font-size: 14px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   letter-spacing: 0;
   line-height: normal;
 }
@@ -289,7 +289,7 @@
 }
 
 .posts-category-count-landing span {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 500;
   color: rgba(0, 0, 0, 0.7);
   font-size: 12px;
@@ -436,7 +436,7 @@
   color: #2c3e50;
   font-size: 17px;
   font-weight: 500;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   direction: rtl;
   padding: 16px;
   outline: none;
@@ -831,7 +831,7 @@
   border-radius: 20px;
   font-weight: 600;
   font-size: 12px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -924,7 +924,7 @@
 }
 
 .post-name-landing {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 700;
   color: #2c3e50;
   font-size: 20px;
@@ -949,7 +949,7 @@
   font-weight: 500;
   color: #7f8c8d;
   font-size: 14px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   margin: 0;
 }
 
@@ -961,7 +961,7 @@
   padding: 0 16px;
   font-weight: 600;
   font-size: 13px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -979,7 +979,7 @@
 .post-description-landing {
   color: #5a6c7d;
   font-size: 14px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 400;
   line-height: 1.6;
   direction: rtl;
@@ -1041,7 +1041,7 @@
 .post-detail-text-landing {
   color: #4a5568;
   font-size: 14px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 500;
   line-height: 1.4;
   flex: 1;
@@ -1068,7 +1068,7 @@
   padding: 16px 44px;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 16px;
   font-weight: 600;
   box-shadow: 
@@ -1213,7 +1213,7 @@
   color: #2c3e50;
   margin-bottom: 12px;
   font-size: 22px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 700;
   direction: rtl;
 }
@@ -1224,7 +1224,7 @@
   margin: 0 auto 24px;
   line-height: 1.6;
   font-size: 15px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   direction: rtl;
 }
 
@@ -1241,7 +1241,7 @@
   border-radius: 18px;
   font-size: 15px;
   font-weight: 700;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border: 2px solid rgba(122, 179, 224, 0.4);
@@ -1299,7 +1299,7 @@
   padding: 20px;
   border-radius: 16px;
   margin: 20px 0;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 16px;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.8);
@@ -1327,7 +1327,7 @@
   border-radius: 20px;
   font-weight: 600;
   font-size: 12px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1548,7 +1548,7 @@
   border: 2px solid rgba(122, 179, 224, 0.4);
   border-radius: 12px;
   padding: 14px 28px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
@@ -1687,7 +1687,7 @@
 .pet-listing-time-text-landing {
   color: #2c3e50;
   font-size: 13px;
-  font-family: 'Inter', Helvetica;
+  font-family: 'Vazirmatn', sans-serif;
   font-weight: 600;
   direction: rtl;
   flex: 1;
