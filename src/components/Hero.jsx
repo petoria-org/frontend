@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import "../styles/Hero.css";
 import Stats from "./Stats";
-
 import dogImage from "../assets/images/bgc1.png";
 import catImage from "../assets/images/bgc2.png";
 import dog2Image from "../assets/images/bgc3.png";
@@ -9,7 +8,6 @@ import cat2Image from "../assets/images/bgc4.png";
 import dog3Image from "../assets/images/bgc5.png";
 import catDogImage from "../assets/images/bgc6.png";
 import dogCatImage from "../assets/images/bgc7.png";
-
 import pLetter from "../assets/images/p.png";
 import eLetter from "../assets/images/e.png";
 import tLetter from "../assets/images/t.png";
@@ -277,7 +275,7 @@ export default function Hero() {
               </div>
             )}
 
-            {currentPage === 0 && (
+            {currentPage === 0 && showPetoria && (
               <div className="welcome-dog">
                 <img 
                   src={dogImage} 
