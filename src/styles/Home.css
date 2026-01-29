@@ -462,6 +462,11 @@
 }
 
 @media (max-width: 480px) {
+  .landing-page {
+    padding-top: 90px;
+    padding-bottom: 8px;
+  }
+
   .landing-page .landing-content-wrapper {
     padding: 5px 5px 30px;
   }
@@ -507,4 +512,11 @@
   border-radius: 24px;
 }
 
-
+@media (max-width: 360px) {
+  .landing-page {
+    padding-top: 104px;
+    padding-bottom: 16px;
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+}
