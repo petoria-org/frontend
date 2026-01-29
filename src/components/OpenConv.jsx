@@ -773,7 +773,9 @@ export default function OpenConv({
           </div>
           {showBackButton && (
             <button type="button" className="open__backBtn" aria-label="back to conversations" onClick={() => onBack?.()}>
-              {"\u2190"}
+              <svg className="open__backIcon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M15 6l-6 6 6 6" />
+              </svg>
             </button>
           )}
         </div>

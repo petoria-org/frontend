@@ -435,9 +435,25 @@
   box-shadow: 0 4px 10px rgba(77, 171, 247, 0.15);
 }
 
+.open__backIcon{
+  width: 20px;
+  height: 20px;
+  stroke: #2c5282;
+  stroke-width: 2.6;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.2s ease, stroke 0.2s ease;
+}
+
 .open__backBtn:hover{
   background: rgba(77, 171, 247, 0.1);
   transform: translateX(-2px);
+}
+
+.open__backBtn:hover .open__backIcon{
+  transform: translateX(-2px);
+  stroke: #1b4f86;
 }
 
 .open__sub{
@@ -1918,7 +1934,8 @@
 
 @media (max-width: 1024px) {
   .chatMain {
-    min-height: calc(100dvh - 4rem);
+    min-height: 0;
+    height: 100%;
   }
 
   .conv,
