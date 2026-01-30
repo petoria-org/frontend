@@ -1249,34 +1249,12 @@
 @media (min-width: 90.0625rem) {
   .hero-container {
     --pages-card-gap: 0;
-    --cards-gap: 1.75rem;
-  }
-
-  .hero-container .hero-section {
-    margin-left: 0;
-  }
-
-  .hero-container .navigation-buttons-hero {
-    width: max-content;
-    max-width: none;
-  }
-
-  .hero-container .vertical-strip-container {
-    margin-right: 0;
-    margin-top: 0;
-    margin-bottom: 0;
-  }
-}
-
-@media (max-width: 90rem) and (min-width: 64rem) {
-  .hero-container {
-    --pages-card-gap: 1.5rem;
     --cards-gap: 1.5rem;
   }
 
   .hero-container .hero-wrapper {
     gap: var(--cards-gap);
-    padding: var(--pages-card-gap);
+    padding: 0;
   }
 
   .hero-container .navigation-buttons-hero {
@@ -1303,28 +1281,344 @@
   }
 
   .hero-container .petoria-letter-hero {
-    height: 11.25rem;
-    margin-left: -2.8125rem;
-    margin-top: -8.75rem;
+    height: 20rem;
+    margin-left: -5rem;
+    margin-top: -8rem;
+  }
+
+  .hero-container .welcome-message-container {
+    position: relative;
+    right: -26%;
+    top: 7rem;
+    width: 100%;
+    max-width: 35rem;
+    margin: 0 auto;
+    text-align: center;
   }
 
   .hero-container .welcome-subtitle-hero {
-    font-size: 1.5rem;
-    padding: 1.25rem 1.625rem;
+    font-size: 1.7rem;
+    padding: 1.25rem 1rem;
+    text-align: center;
+    border-radius: 64px;
   }
 
   .hero-container .welcome-dog-image {
-    width: 35rem;
+    width: 45rem;
   }
 
   .hero-container .content-wrapper-hero {
     padding: 2.25rem;
   }
 
+  .hero-container .content-screen-hero.page-1 .text-content-hero,
+  .hero-container .content-screen-hero.page-2 .text-content-hero,
+  .hero-container .content-screen-hero.page-3 .text-content-hero,
+  .hero-container .content-screen-hero.page-4 .text-content-hero,
+  .hero-container .content-screen-hero.page-5 .text-content-hero,
+  .hero-container .content-screen-hero.page-6 .text-content-hero {
+    position: absolute;
+    top: 3rem;
+    right: 8%;
+    left: auto;
+    transform: none;
+    width: clamp(40rem, 42vw, 46rem);
+    max-width: none;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .hero-container .text-page-1 .content-wrapper-hero,
+  .hero-container .text-page-2 .content-wrapper-hero,
+  .hero-container .text-page-3 .content-wrapper-hero,
+  .hero-container .text-page-4 .content-wrapper-hero,
+  .hero-container .text-page-5 .content-wrapper-hero,
+  .hero-container .text-page-6 .content-wrapper-hero {
+    max-width: none;
+    width: 100%;
+    padding-right: 2.5rem;
+  }
+
+  .hero-container .text-page-1 .page-title-hero,
+  .hero-container .text-page-2 .page-title-hero,
+  .hero-container .text-page-3 .page-title-hero,
+  .hero-container .text-page-4 .page-title-hero,
+  .hero-container .text-page-5 .page-title-hero,
+  .hero-container .text-page-6 .page-title-hero {
+    font-size: clamp(1.5rem, 1vw + 0.9rem, 2rem);
+  }
+
+  .hero-container .text-page-1 .page-description-hero,
+  .hero-container .text-page-2 .page-description-hero,
+  .hero-container .text-page-3 .page-description-hero,
+  .hero-container .text-page-4 .page-description-hero,
+  .hero-container .text-page-5 .page-description-hero,
+  .hero-container .text-page-6 .page-description-hero {
+    font-size: clamp(1.2rem, 0.7vw + 1.2rem, 1.3rem);
+    line-height: 1.6;
+  }
+
+  .hero-container .content-screen-hero .main-animal-image-hero,
+  .hero-container .content-screen-hero.page-1 .main-animal-image-hero,
+  .hero-container .content-screen-hero.page-3 .main-animal-image-hero,
+  .hero-container .content-screen-hero.page-4 .main-animal-image-hero,
+  .hero-container .content-screen-hero.page-5 .main-animal-image-hero {
+    width: 160% !important;
+    max-width: clamp(50rem, 40vw, 24rem) !important;
+    max-height: clamp(50rem, 38vw, 24rem) !important;
+    top: 0.9rem;
+    left: -6%;
+  }
+
+  .hero-container .content-screen-hero.page-2 .main-animal-image-hero{
+    width: 160% !important;
+    max-width: clamp(50rem, 40vw, 24rem) !important;
+    max-height: clamp(50rem, 38vw, 24rem) !important;
+    top: 4rem;
+    left: -8%;
+  }
+
+  .hero-container .content-screen-hero.page-6 .main-animal-image-hero{
+    width: 160% !important;
+    max-width: clamp(50rem, 40vw, 24rem) !important;
+    max-height: clamp(50rem, 38vw, 24rem) !important;
+    top: 0.9rem;
+    left: -6%;
+  }
+
+  .hero-container .compact-stats-wrapper {
+    max-width: 30rem !important;
+    margin: 0.5rem auto 0 !important;
+    position: relative;
+    top: -8rem;
+    right: -24%;
+  }
+
+  .hero-container .compact-stats-boxes {
+    padding: 0.85rem !important;
+    gap: 0.25rem !important;
+    padding-inline: 0.85rem !important;
+    column-gap: 0.85rem !important;
+    row-gap: 0.18rem !important;
+    justify-content: space-between !important;
+    justify-items: stretch !important;
+  }
+
+  .hero-container .compact-stats-img {
+    width: 3.5rem !important;
+    height: 3.5rem !important;
+  }
+
+  .hero-container .compact-stats-number {
+    font-size: 1.5rem !important;
+  }
+
+  .hero-container .compact-stats-label {
+    font-size: 1rem !important;
+    line-height: 1 !important;
+  }
+
   .hero-container .content-screen-hero .main-animal-image-hero {
-    width: 90% !important;
-    max-width: 42.5rem !important;
+    width: 100% !important;
+    max-width: 50rem !important;
     height: auto !important;
+  }
+}
+
+@media (max-width: 90rem) and (min-width: 80rem) {
+  .hero-container {
+    --pages-card-gap: 0;
+    --cards-gap: 1.5rem;
+  }
+
+  .hero-container .hero-wrapper {
+    gap: var(--cards-gap);
+    padding: 0;
+  }
+
+  .hero-container .navigation-buttons-hero {
+    width: max-content;
+    max-width: none;
+  }
+
+  .hero-container .hero-section {
+    height: 82vh;
+    min-height: 35rem;
+    max-height: 47.5rem;
+    margin-left: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .hero-container .vertical-strip-container {
+    height: 78vh;
+    min-height: 35rem;
+    max-height: 47.5rem;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .hero-container .petoria-letter-hero {
+    height: 18rem;
+    margin-left: -4rem;
+    margin-top: -12rem;
+  }
+
+  .hero-container .welcome-message-container {
+    position: relative;
+    right: -26%;
+    top: 9rem;
+    width: 100%;
+    max-width: 35rem;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .hero-container .welcome-subtitle-hero {
+    font-size: 1.5rem;
+    padding: 1.25rem 1rem;
+    text-align: center;
+    border-radius: 64px;
+  }
+
+  .hero-container .welcome-dog-image {
+    width: 40rem;
+  }
+
+  .hero-container .content-wrapper-hero {
+    padding: 2.25rem;
+  }
+
+  .hero-container .content-screen-hero.page-1 .text-content-hero,
+  .hero-container .content-screen-hero.page-2 .text-content-hero,
+  .hero-container .content-screen-hero.page-3 .text-content-hero,
+  .hero-container .content-screen-hero.page-4 .text-content-hero,
+  .hero-container .content-screen-hero.page-5 .text-content-hero,
+  .hero-container .content-screen-hero.page-6 .text-content-hero {
+    position: absolute;
+    top: 3rem;
+    right: 8%;
+    left: auto;
+    transform: none;
+    width: clamp(40rem, 42vw, 46rem);
+    max-width: none;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .hero-container .text-page-1 .content-wrapper-hero,
+  .hero-container .text-page-2 .content-wrapper-hero,
+  .hero-container .text-page-3 .content-wrapper-hero,
+  .hero-container .text-page-4 .content-wrapper-hero,
+  .hero-container .text-page-5 .content-wrapper-hero,
+  .hero-container .text-page-6 .content-wrapper-hero {
+    max-width: none;
+    width: 100%;
+    padding-right: 2.5rem;
+  }
+
+  .hero-container .text-page-1 .page-title-hero,
+  .hero-container .text-page-2 .page-title-hero,
+  .hero-container .text-page-3 .page-title-hero,
+  .hero-container .text-page-4 .page-title-hero,
+  .hero-container .text-page-5 .page-title-hero,
+  .hero-container .text-page-6 .page-title-hero {
+    font-size: clamp(1.5rem, 1vw + 0.9rem, 2rem);
+  }
+
+  .hero-container .text-page-1 .page-description-hero,
+  .hero-container .text-page-2 .page-description-hero,
+  .hero-container .text-page-3 .page-description-hero,
+  .hero-container .text-page-4 .page-description-hero,
+  .hero-container .text-page-5 .page-description-hero,
+  .hero-container .text-page-6 .page-description-hero {
+    font-size: clamp(1.2rem, 0.7vw + 1.2rem, 1.3rem);
+    line-height: 1.6;
+  }
+
+  .hero-container .content-screen-hero .main-animal-image-hero,
+  .hero-container .content-screen-hero.page-1 .main-animal-image-hero,
+  .hero-container .content-screen-hero.page-3 .main-animal-image-hero,
+  .hero-container .content-screen-hero.page-4 .main-animal-image-hero,
+  .hero-container .content-screen-hero.page-5 .main-animal-image-hero {
+    width: 160% !important;
+    max-width: clamp(50rem, 40vw, 24rem) !important;
+    max-height: clamp(50rem, 38vw, 24rem) !important;
+    top: 0.9rem;
+    left: -6%;
+  }
+
+  .hero-container .content-screen-hero.page-2 .main-animal-image-hero{
+    width: 160% !important;
+    max-width: clamp(50rem, 40vw, 24rem) !important;
+    max-height: clamp(50rem, 38vw, 24rem) !important;
+    top: 4rem;
+    left: -8%;
+  }
+
+  .hero-container .content-screen-hero.page-6 .main-animal-image-hero{
+    width: 160% !important;
+    max-width: clamp(50rem, 40vw, 24rem) !important;
+    max-height: clamp(50rem, 38vw, 24rem) !important;
+    top: 0.9rem;
+    left: -6%;
+  }
+
+  .hero-container .compact-stats-wrapper {
+    max-width: 30rem !important;
+    margin: 0.5rem auto 0 !important;
+    position: relative;
+    top: -8rem;
+    right: -24%;
+  }
+
+  .hero-container .compact-stats-boxes {
+    padding: 0.85rem !important;
+    gap: 0.25rem !important;
+    padding-inline: 0.85rem !important;
+    column-gap: 0.85rem !important;
+    row-gap: 0.18rem !important;
+    justify-content: space-between !important;
+    justify-items: stretch !important;
+  }
+
+  .hero-container .compact-stats-img {
+    width: 3.5rem !important;
+    height: 3.5rem !important;
+  }
+
+  .hero-container .compact-stats-number {
+    font-size: 1.5rem !important;
+  }
+
+  .hero-container .compact-stats-label {
+    font-size: 1rem !important;
+    line-height: 1 !important;
+  }
+
+  .hero-container .content-screen-hero .main-animal-image-hero {
+    width: 100% !important;
+    max-width: 50rem !important;
+    height: auto !important;
+  }
+}
+
+@media (max-width: 80rem) and (min-width: 64rem) {
+  .hero-container {
+    --pages-card-gap: 0;
+  }
+
+  .hero-container .hero-wrapper {
+    padding: 0;
+  }
+
+  .hero-container .hero-section,
+  .hero-container .vertical-strip-container,
+  .hero-container .navigation-buttons-hero {
+    width: 100%;
+    max-width: 100%;
+    margin-inline: 0;
   }
 }
 
@@ -1757,7 +2051,7 @@
   }
 }
 
-@media (max-width: 64rem) and (min-width: 56rem) {
+@media (max-width: 80rem) and (min-width: 64rem), (max-width: 64rem) and (min-width: 56rem) {
   .hero-container {
     --pages-card-gap: 1.125rem;
     --cards-gap: 0.625rem;
@@ -1848,7 +2142,7 @@
   .hero-container .content-screen-hero.page-6 .text-content-hero {
     position: absolute;
     top: 2.25rem;
-    right: 2.25rem;
+    right: 6%;
     left: auto;
     transform: none;
     width: clamp(30rem, 42vw, 46rem);
@@ -1864,7 +2158,7 @@
   .hero-container .text-page-5 .content-wrapper-hero,
   .hero-container .text-page-6 .content-wrapper-hero {
     max-width: none;
-    width: 100%;
+    width: 92%;
     padding-right: 2.5rem;
   }
 
@@ -1874,7 +2168,7 @@
   .hero-container .text-page-4 .page-title-hero,
   .hero-container .text-page-5 .page-title-hero,
   .hero-container .text-page-6 .page-title-hero {
-    font-size: clamp(1.25rem, 1vw + 0.85rem, 1.8rem);
+    font-size: clamp(1rem, 0.9vw + 0.85rem, 1.8rem);
   }
 
   .hero-container .text-page-1 .page-description-hero,
@@ -1883,7 +2177,7 @@
   .hero-container .text-page-4 .page-description-hero,
   .hero-container .text-page-5 .page-description-hero,
   .hero-container .text-page-6 .page-description-hero {
-    font-size: clamp(0.75rem, 0.45vw + 0.7rem, 0.95rem);
+    font-size: clamp(0.9rem, 0.6vw + 0.8rem, 1.1rem);
     line-height: 1.6;
   }
 
@@ -1893,26 +2187,26 @@
   .hero-container .content-screen-hero.page-4 .main-animal-image-hero,
   .hero-container .content-screen-hero.page-5 .main-animal-image-hero {
     width: 100% !important;
-    max-width: clamp(35rem, 38vw, 24rem) !important;
-    max-height: clamp(18rem, 38vw, 24rem) !important;
-    top: 3rem;
-    left: -2%;
+    max-width: clamp(37rem, 40vw, 24rem) !important;
+    max-height: clamp(40rem, 38vw, 24rem) !important;
+    top: 2rem;
+    left: 4%;
   }
 
   .hero-container .content-screen-hero.page-2 .main-animal-image-hero{
     width: 100% !important;
-    max-width: clamp(35rem, 38vw, 24rem) !important;
-    max-height: clamp(18rem, 38vw, 24rem) !important;
-    top: 6rem;
-    left: -6%;
+    max-width: clamp(37rem, 40vw, 24rem) !important;
+    max-height: clamp(40rem, 38vw, 24rem) !important;
+    top: 4rem;
+    left: 2%;
   }
 
   .hero-container .content-screen-hero.page-6 .main-animal-image-hero{
     width: 100% !important;
-    max-width: clamp(35rem, 38vw, 24rem) !important;
-    max-height: clamp(18rem, 38vw, 24rem) !important;
-    top: 1rem;
-    left: -2%;
+    max-width: clamp(37rem, 40vw, 24rem) !important;
+    max-height: clamp(40rem, 38vw, 24rem) !important;
+    top: -1rem;
+    left: 2%;
   }
 
   .hero-container .hero-content {
@@ -1929,8 +2223,8 @@
   }
 
   .hero-container .petoria-letter-hero {
-    height: 12rem;
-    margin-left: -2.3rem;
+    height: 14rem;
+    margin-left: -2.8rem;
     margin-top: -7.5rem;
   }
 
@@ -1944,15 +2238,16 @@
     right: -24%;
     top: 6rem;
     width: 100%;
-    max-width: 25rem;
+    max-width: 30rem;
     margin: 0 auto;
     text-align: center;
   }
 
   .hero-container .welcome-subtitle-hero {
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     padding: 1rem 1.375rem;
     text-align: center;
+    border-radius: 36px;
   }
 
   .hero-container .welcome-dog {
@@ -1964,8 +2259,8 @@
 
   .hero-container .welcome-dog-image {
     width: 34rem;
-    left: -36%;
-    top: -4rem;
+    left: -46%;
+    top: -5rem;
   }
 
   .hero-container .content-screen-hero {
@@ -2079,34 +2374,34 @@
   }
 
   .hero-container .compact-stats-wrapper {
-    max-width: 22rem !important;
+    max-width: 23rem !important;
     margin: 0.5rem auto 0 !important;
     position: relative;
-    top: 18rem;
-    left: 8.5rem;
+    top: 16rem;
+    right: -22%;
   }
 
   .hero-container .compact-stats-boxes {
-    padding: 0.35rem !important;
-    gap: 0.25rem !important;
-    padding-inline: 0.35rem !important;
-    column-gap: 0.28rem !important;
+    padding: 0.75rem !important;
+    gap: 0.75rem !important;
+    padding-inline: 0.75rem !important;
+    column-gap: 0.75rem !important;
     row-gap: 0.18rem !important;
     justify-content: space-between !important;
     justify-items: stretch !important;
   }
 
   .hero-container .compact-stats-img {
-    width: 3rem !important;
-    height: 3rem !important;
+    width: 2.7rem !important;
+    height: 2.7rem !important;
   }
 
   .hero-container .compact-stats-number {
-    font-size: 1.2rem !important;
+    font-size: 1rem !important;
   }
 
   .hero-container .compact-stats-label {
-    font-size: 0.85rem !important;
+    font-size: 0.75rem !important;
     line-height: 1 !important;
   }
 
@@ -3073,9 +3368,10 @@
   }
 
   .hero-container .welcome-dog-image {
-    width: 14.5rem !important;
+    width: 13.5rem !important;
     max-height: 16rem !important;
-    right: 2rem;
+    right: 16%;
+    top: -0.5rem;
   }
 
   .hero-container .welcome-subtitle-hero{
@@ -3083,7 +3379,7 @@
     padding: 0.4rem 0.625rem;
     top: 8rem;
     border: 0.2rem;
-    left: 8rem;
+    right: -80%;
     width: 10rem;
   }
 
@@ -3488,7 +3784,7 @@
   min-width: 0 !important;
 }
 
-@media (max-width: 64rem) and (min-width: 56rem) {
+@media (max-width: 80rem) and (min-width: 64rem), (max-width: 64rem) and (min-width: 56rem) {
   .hero-container .content-screen-hero {
     padding: 1rem 0.9rem !important;
     height: 100% !important;
@@ -3536,7 +3832,7 @@
   }
 }
 
-@media (max-width: 64rem) and (min-width: 56rem) {
+@media (max-width: 80rem) and (min-width: 64rem) {
   .hero-container .text-page-6 .page-title-hero {
     font-size: clamp(1.25rem, 1vw + 0.85rem, 1.8rem) !important;
   }

@@ -483,6 +483,8 @@
   .landing-page {
     padding-top: 90px;
     padding-bottom: 8px;
+    padding-left: 2px;
+    padding-right: 2px;
   }
 
   .landing-page .landing-content-wrapper {
