@@ -420,9 +420,27 @@
   }
 }
 
+@media (max-width: 1024px){
+.landing-page {
+    padding-top: 125px;
+    padding-bottom: 48px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+@media (max-width: 900px){
+.landing-page {
+    padding-top: 125px;
+    padding-bottom: 48px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
 @media (max-width: 768px) {
   .landing-page{
-    padding-top: 110px;
+    padding-top: 100px;
     padding-bottom: 32px;
   }
 
