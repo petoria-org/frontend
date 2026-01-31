@@ -931,7 +931,7 @@
   font-family: 'Vazirmatn', sans-serif;
   font-weight: 700;
   color: #2c3e50;
-  font-size: 20px;
+  font-size: 13px;
   line-height: 1.3;
   margin: 0;
   position: relative;
@@ -1068,7 +1068,7 @@
     #93c3e5 100%);
   color: white;
   border: none;
-  border-radius: 50px;
+  border-radius: 1.75rem;
   padding: 16px 44px;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1076,82 +1076,30 @@
   font-size: 16px;
   font-weight: 600;
   box-shadow: 
-    0 8px 32px rgba(28, 123, 209, 0.2),
-    0 3px 12px rgba(28, 123, 209, 0.15);
+    0 0.5rem 2rem rgba(28, 123, 209, 0.2),
+    0 0.1875rem 0.75rem rgba(28, 123, 209, 0.15);
   position: relative;
   overflow: hidden;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.0187rem;
   margin-top: 16px;
-}
-
-.show-more-btn-landing::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.2) 0%,
-    rgba(255, 255, 255, 0.05) 100%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.show-more-btn-landing::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50px;
-  padding: 2px;
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.6), 
-    rgba(255, 255, 255, 0.2));
-  -webkit-mask: 
-    linear-gradient(#fff 0 0) content-box, 
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 0.3s ease;
 }
 
 .show-more-btn-landing:hover {
   background: linear-gradient(135deg, 
     #6aa8d8 0%,
     #4a8bb9 100%);
-  transform: translateY(-4px) scale(1.02);
+  transform: translateY(-0.25rem) scale(1.02);
   box-shadow: 
-    0 16px 48px rgba(28, 123, 209, 0.3),
-    0 6px 20px rgba(28, 123, 209, 0.25),
-    0 0 0 3px rgba(255, 255, 255, 0.1);
-}
-
-.show-more-btn-landing:hover::before {
-  opacity: 1;
-}
-
-.show-more-btn-landing:hover::after {
-  opacity: 1;
+    0 1rem 3rem rgba(28, 123, 209, 0.3),
+    0 0.375rem 1.25rem rgba(28, 123, 209, 0.25),
+    0 0 0 0.1875rem rgba(255, 255, 255, 0.1);
 }
 
 .show-more-btn-landing:active {
-  transform: translateY(-2px) scale(1.01);
+  transform: translateY(-0.125rem) scale(1.01);
   box-shadow: 
-    0 12px 40px rgba(28, 123, 209, 0.25),
-    0 4px 16px rgba(28, 123, 255, 0.2);
-}
-
-.arrow-icon-landing {
-  width: 20px;
-  height: 20px;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  stroke: white;
-  stroke-width: 2.5px;
-}
-
-.show-more-btn-landing:hover .arrow-icon-landing {
-  transform: translateX(-8px) scale(1.1);
+    0 0.75rem 2.5rem rgba(28, 123, 209, 0.25),
+    0 0.25rem 1rem rgba(28, 123, 255, 0.2);
 }
 
 .arrow-icon-landing {
@@ -1162,8 +1110,7 @@
 }
 
 .show-more-btn-landing:hover .arrow-icon-landing {
-  transform: translateX(-6px);
-  stroke: #155fa0;
+  transform: translateX(-0.375rem);
 }
 
 .no-results-container-landing {
@@ -1540,8 +1487,176 @@
 
 @media (max-width: 30rem) {
   .new-posts-page-landing {
-    --np-title-size: 1.05rem;
-    --np-subtitle-size: 0.7rem;
+    --np-title-size: 1.1rem;
+    --np-subtitle-size: 0.75rem;
+  }
+
+  .new-posts-title-container-landing {
+    text-align: right;
+    align-items: flex-start;
+  }
+
+  .new-posts-title-text-content-landing {
+    text-align: right;
+    padding-right: 1rem;
+  }
+
+  .new-posts-subtitle-landing {
+    text-align: right;
+    padding-right: 0;
+  }
+
+  .post-card-landing {
+    min-height: 400px;
+    height: 400px;
+  }
+
+  .post-image-container-landing {
+    height: 160px;
+  }
+
+  .post-content-landing {
+    padding: 22px;
+    gap: 14px;
+  }
+
+  .post-header-landing {
+    padding-bottom: 10px;
+  }
+
+  .post-info-landing {
+    gap: 8px;
+  }
+
+  .post-name-landing {
+    font-size: 13px !important;
+  }
+
+  .post-card-landing .post-name-landing {
+    font-size: 13px !important;
+  }
+
+  .post-subtitle-landing,
+  .post-detail-text-landing,
+  .post-description-landing {
+    font-size: 11px;
+  }
+
+  .post-type-landing {
+    font-size: 10px;
+    padding: 0 8px;
+    height: 26px;
+  }
+
+  .post-description-landing {
+    margin-top: -4px;
+  }
+
+  .post-details-container-landing {
+    gap: 4px;
+    margin-top: -6px;
+    margin-bottom: 10px;
+  }
+
+  .post-detail-landing {
+    gap: 8px;
+    padding: 6px 0;
+  }
+
+  .detail-icon-landing {
+    width: 20px;
+    height: 20px;
+  }
+
+  .pet-listing-time-landing {
+    padding: 6px 12px !important;
+    border-radius: 20px !important;
+    gap: 7px !important;
+    bottom: 12px;
+    left: 12px;
+  }
+
+  .post-card-landing .pet-listing-time-landing {
+    padding: 6px 12px !important;
+    border-radius: 20px !important;
+    gap: 7px !important;
+  }
+
+  .post-card-landing .pet-listing-time-landing {
+    padding: 4px 8px !important;
+    border-radius: 16px !important;
+    gap: 5px !important;
+  }
+
+  .time-icon-landing {
+    width: 14px !important;
+    height: 14px !important;
+    padding: 2px !important;
+  }
+
+  .post-card-landing .time-icon-landing {
+    width: 16px !important;
+    height: 16px !important;
+    padding: 2px !important;
+  }
+
+  .pet-listing-time-text-landing {
+    font-size: 11px !important;
+  }
+
+  .post-card-landing .pet-listing-time-text-landing {
+    font-size: 11px !important;
+  }
+
+  .post-card-landing .pet-listing-time-text-landing {
+    font-size: 9px !important;
+  }
+
+  .show-more-container-landing {
+    margin-top: 1.25rem;
+  }
+
+  .show-more-btn-landing,
+  .clear-filters-btn-landing {
+    padding: 0.5rem 1rem;
+    font-size: 0.7rem;
+    border-radius: 1.35rem;
+    gap: 0.35rem;
+  }
+
+  .arrow-icon-landing {
+    width: 0.85rem;
+    height: 0.85rem;
+  }
+
+  .show-more-btn-landing {
+    background: linear-gradient(135deg, #80b6e6 0%, #93c3e5 100%);
+    box-shadow: 
+      0 0.5rem 2rem rgba(28, 123, 209, 0.2),
+      0 0.1875rem 0.75rem rgba(28, 123, 209, 0.15);
+    font-weight: 600;
+    letter-spacing: 0.0187rem;
+  }
+
+  .show-more-btn-landing:hover {
+    background: linear-gradient(135deg, #6aa8d8 0%, #4a8bb9 100%);
+    transform: translateY(-0.25rem) scale(1.02);
+    box-shadow: 
+      0 1rem 3rem rgba(28, 123, 209, 0.3),
+      0 0.375rem 1.25rem rgba(28, 123, 209, 0.25),
+      0 0 0 0.1875rem rgba(255, 255, 255, 0.1);
+  }
+
+  .image-glass-view-btn-landing {
+    padding: 8px 14px !important;
+    font-size: 10px !important;
+    min-width: 110px !important;
+    gap: 6px !important;
+  }
+
+  .image-glass-btn-icon-landing {
+    width: 12px !important;
+    height: 12px !important;
   }
 
   .posts-title-landing {
@@ -1657,38 +1772,55 @@
     height: 150px;
   }
 
+  .post-status-landing,
+  .pet-listing-status-landing {
+    height: 24px;
+    padding: 0 8px;
+    font-size: 9px;
+    gap: 5px;
+    top: 8px;
+    left: 8px;
+    border-radius: 14px;
+  }
+
+  .post-status-landing .status-pulse-landing,
+  .pet-listing-status-landing .status-pulse-landing {
+    width: 5px;
+    height: 5px;
+  }
+
   .post-name-landing {
-    font-size: 13px;
+    font-size: 11px;
   }
 
   .post-subtitle-landing,
   .post-detail-text-landing,
   .post-description-landing {
-    font-size: 11px;
+    font-size: 10px;
   }
 
   .post-type-landing {
-    font-size: 10px;
-    padding: 0 8px;
-    height: 24px;
+    font-size: 9px;
+    padding: 0 7px;
+    height: 22px;
   }
 
   .pet-listing-time-landing {
-    padding: 3px 7px !important;
-    border-radius: 14px !important;
-    gap: 5px !important;
+    padding: 2px 5px !important;
+    border-radius: 10px !important;
+    gap: 3px !important;
     bottom: 8px;
     left: 8px;
   }
 
   .time-icon-landing {
-    width: 14px !important;
-    height: 14px !important;
-    padding: 2px !important;
+    width: 9px !important;
+    height: 9px !important;
+    padding: 1px !important;
   }
 
   .pet-listing-time-text-landing {
-    font-size: 9px !important;
+    font-size: 6.5px !important;
   }
 
   .post-card-landing .pet-listing-time-landing {
@@ -1696,8 +1828,8 @@
   }
 
   .post-content-landing {
-    padding: 18px;
-    gap: 12px;
+    padding: 16px;
+    gap: 10px;
   }
 
   .post-header-landing {
@@ -1705,7 +1837,7 @@
   }
 
   .post-info-landing {
-    gap: 8px;
+    gap: 6px;
   }
 
   .post-description-landing {
@@ -1714,18 +1846,30 @@
 
   .post-details-container-landing {
     gap: 2px;
-    margin-top: -8px;
-    margin-bottom: 8px;
+    margin-top: -6px;
+    margin-bottom: 6px;
   }
 
   .post-detail-landing {
-    gap: 8px;
-    padding: 6px 0;
+    gap: 6px;
+    padding: 5px 0;
   }
 
   .detail-icon-landing {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
+  }
+
+  .image-glass-view-btn-landing {
+    padding: 7px 14px;
+    font-size: 10px;
+    min-width: 110px;
+    gap: 5px;
+  }
+
+  .image-glass-btn-icon-landing {
+    width: 12px;
+    height: 12px;
   }
 
   .show-more-container-landing {
@@ -1734,9 +1878,9 @@
 
   .show-more-btn-landing,
   .clear-filters-btn-landing {
-    padding: 10px 18px;
-    font-size: 11px;
-    border-radius: 12px;
+    padding: 8px 14px;
+    font-size: 10px;
+    border-radius: 11px;
   }
 
   .show-more-container-landing {
@@ -1963,4 +2107,147 @@
 .np-retry-btn-landing:hover {
   transform: translateY(-3px);
   box-shadow: 0 10px 20px rgba(28, 123, 209, 0.3);
+}
+
+.show-more-btn-landing {
+  background: linear-gradient(135deg, #80b6e6 0%, #93c3e5 100%) !important;
+  box-shadow: 
+    0 0.5rem 2rem rgba(28, 123, 209, 0.2),
+    0 0.1875rem 0.75rem rgba(28, 123, 209, 0.15) !important;
+  border-radius: 1.75rem !important;
+  padding: 0.6rem 1.4rem !important;
+  font-size: 0.85rem !important;
+  gap: 0.45rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.0187rem !important;
+}
+
+.show-more-btn-landing:hover {
+  background: linear-gradient(135deg, #6aa8d8 0%, #4a8bb9 100%) !important;
+  transform: translateY(-0.25rem) scale(1.02) !important;
+  box-shadow: 
+    0 1rem 3rem rgba(28, 123, 209, 0.3),
+    0 0.375rem 1.25rem rgba(28, 123, 209, 0.25),
+    0 0 0 0.1875rem rgba(255, 255, 255, 0.1) !important;
+}
+
+.show-more-btn-landing:active {
+  transform: translateY(-0.125rem) scale(1.01) !important;
+  box-shadow: 
+    0 0.75rem 2.5rem rgba(28, 123, 209, 0.25),
+    0 0.25rem 1rem rgba(28, 123, 255, 0.2) !important;
+}
+
+.show-more-btn-landing .arrow-icon-landing {
+  width: 0.9rem !important;
+  height: 0.9rem !important;
+}
+
+.show-more-btn-landing:hover .arrow-icon-landing {
+  transform: translateX(-0.375rem) !important;
+}
+
+@media (max-width: 64rem) {
+  .show-more-btn-landing {
+    padding: 0.8rem 1.6rem !important;
+    font-size: 0.9rem !important;
+    gap: 0.55rem !important;
+    border-radius: 1.75rem !important;
+  }
+
+  .show-more-btn-landing .arrow-icon-landing {
+    width: 1.1rem !important;
+    height: 1.1rem !important;
+  }
+}
+
+@media (max-width: 48rem) {
+  .show-more-btn-landing {
+    padding: 0.8rem 1.6rem !important;
+    font-size: 0.9rem !important;
+    gap: 0.55rem !important;
+  }
+
+  .show-more-btn-landing .arrow-icon-landing {
+    width: 1.1rem !important;
+    height: 1.1rem !important;
+  }
+}
+
+@media (max-width: 40rem) {
+  .show-more-btn-landing {
+    padding: 0.6rem 1.2rem !important;
+    font-size: 0.75rem !important;
+    gap: 0.4rem !important;
+    border-radius: 1.5rem !important;
+  }
+
+  .show-more-btn-landing .arrow-icon-landing {
+    width: 0.9rem !important;
+    height: 0.9rem !important;
+  }
+}
+
+@media (max-width: 30rem) {
+  .show-more-btn-landing {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.7rem !important;
+    gap: 0.35rem !important;
+    border-radius: 1.35rem !important;
+  }
+
+  .show-more-btn-landing .arrow-icon-landing {
+    width: 0.85rem !important;
+    height: 0.85rem !important;
+  }
+}
+
+@media (max-width: 22.5rem) {
+  .show-more-btn-landing {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.7rem !important;
+    gap: 0.35rem !important;
+    border-radius: 1.35rem !important;
+  }
+
+  .show-more-btn-landing .arrow-icon-landing {
+    width: 0.85rem !important;
+    height: 0.85rem !important;
+  }
+}
+
+@media (max-width: 30rem) {
+  .new-posts-page-landing .pet-listing-time-landing {
+    padding: 6px 12px !important;
+    border-radius: 20px !important;
+    gap: 7px !important;
+  }
+
+  .new-posts-page-landing .time-icon-landing {
+    width: 16px !important;
+    height: 16px !important;
+    padding: 2px !important;
+  }
+
+  .new-posts-page-landing .pet-listing-time-text-landing {
+    font-size: 11px !important;
+  }
+}
+
+@media (max-width: 22.5rem) {
+  .new-posts-page-landing .post-card-landing .pet-listing-time-landing {
+    padding: 5px 9px !important;
+    border-radius: 16px !important;
+    gap: 6px !important;
+  }
+
+  .new-posts-page-landing .post-card-landing .time-icon-landing {
+    width: 13px !important;
+    height: 13px !important;
+    padding: 1px !important;
+  }
+
+  .new-posts-page-landing .post-card-landing .pet-listing-time-text-landing {
+    font-size: 8.5px !important;
+  }
 }

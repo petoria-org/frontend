@@ -1409,8 +1409,16 @@
 
 @media (max-width: 30rem) {
   .ls-success-stories-profile-style {
-    --ls-title-size: 1.05rem;
-    --ls-subtitle-size: 0.7rem;
+    --ls-title-size: 1.1rem;
+    --ls-subtitle-size: 0.75rem;
+  }
+  
+  .ls-success-stories-title-gradient {
+    font-size: 1.1rem;
+  }
+
+  .ls-success-stories-subtitle {
+    font-size: 0.75rem;
   }
 
   .ls-show-all-stories-container {
