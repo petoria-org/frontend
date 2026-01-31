@@ -20,28 +20,40 @@
   --shadow-dark: rgba(44, 62, 80, 0.1);
   --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-bounce: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --card-radius: clamp(1.25rem, 3vw, 2rem);
+  --card-padding: clamp(1rem, 3.2vw, 3.125rem);
+  --title-size: clamp(1.375rem, 2.4vw, 2.25rem);
+  --subtitle-size: clamp(0.8125rem, 1.2vw, 1.125rem);
+  --icon-size: clamp(3.5rem, 8vw, 5rem);
+  --paw-size: clamp(1.375rem, 3.2vw, 2rem);
+  --circle-size: clamp(6.875rem, 18vw, 11.25rem);
+  --image-size: clamp(5.625rem, 14vw, 8.125rem);
+  --wave-gap: clamp(0.875rem, 2.2vw, 1.875rem);
+  --wave-min-height: clamp(12.5rem, 26vw, 17.5rem);
+  --wave-offset: 2.4rem;
+  --wave-row-gap: 1.8rem;
 }
 
 .animal-types-section .animal-types-section {
   width: 100%;
   display: flex;
   justify-content: center;
-  margin-bottom: 80px;
+  margin-bottom: 5rem;
   position: relative;
 }
 
 .animal-types-section .animal-types-card {
-  max-width: 1400px;
+  max-width: 87.5rem;
   width: 100%;
   margin: 0 auto;     
   background: white;
-  border-radius: 32px;
+  border-radius: var(--card-radius);
   box-shadow: 
-    0 25px 50px -12px rgba(28, 123, 209, 0.15),
-    0 8px 16px -4px rgba(28, 123, 209, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  border: 2px solid rgba(255, 255, 255, 0.8);
-  padding: 50px;
+    0 1.5625rem 3.125rem -0.75rem rgba(28, 123, 209, 0.15),
+    0 0.5rem 1rem -0.25rem rgba(28, 123, 209, 0.1),
+    inset 0 0.0625rem 0 rgba(255, 255, 255, 0.8);
+  border: 0.125rem solid rgba(255, 255, 255, 0.8);
+  padding: var(--card-padding);
   position: relative;
   overflow: hidden;
   animation: at-cardEntrance 0.8s cubic-bezier(0.4, 0, 0.2, 1);
@@ -50,7 +62,7 @@
 @keyframes at-cardEntrance {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(1.875rem);
   }
   to {
     opacity: 1;
@@ -61,8 +73,8 @@
 .animal-types-section .animal-types-border {
   position: absolute;
   inset: 0;
-  border: 2px solid rgba(28, 123, 209, 0.2);
-  border-radius: 32px;
+  border: 0.125rem solid rgba(28, 123, 209, 0.2);
+  border-radius: var(--card-radius);
   z-index: 1;
   pointer-events: none;
 }
@@ -73,52 +85,54 @@
 }
 
 .animal-types-section .animal-types-header-container {
-  margin-bottom: 60px;
-  padding-bottom: 30px;
-  border-bottom: 1px solid rgba(28, 123, 209, 0.1);
+  margin-bottom: clamp(1.5rem, 4vw, 3.75rem);
+  padding-bottom: clamp(1.125rem, 3vw, 1.875rem);
+  border-bottom: 0.0625rem solid rgba(28, 123, 209, 0.1);
 }
 
 .animal-types-section .animal-types-title-container {
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 1.875rem;
+  justify-content: flex-start;
 }
 
 .animal-types-section .animal-types-icon-circle {
-  width: 80px;
-  height: 80px;
+  width: var(--icon-size);
+  height: var(--icon-size);
   background: linear-gradient(135deg, #1c7bd1 0%, #4a9fe3 100%);
-  border-radius: 24px;
+  border-radius: clamp(1.125rem, 2vw, 1.5rem);
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 
-    0 15px 35px rgba(28, 123, 209, 0.3),
-    inset 0 4px 8px rgba(255, 255, 255, 0.4);
+    0 0.9375rem 2.1875rem rgba(28, 123, 209, 0.3),
+    inset 0 0.25rem 0.5rem rgba(255, 255, 255, 0.4);
   position: relative;
   overflow: hidden;
-  border: 2px solid rgba(255, 255, 255, 0.8);
+  border: 0.125rem solid rgba(255, 255, 255, 0.8);
 }
 
 .animal-types-section .animal-types-icon-circle::before {
   content: '';
   position: absolute;
-  inset: 1px;
+  inset: 0.0625rem;
   background: linear-gradient(135deg, #1c7bd1 0%, #4a9fe3 100%);
-  border-radius: 23px;
+  border-radius: calc(clamp(1.125rem, 2vw, 1.5rem) - 0.0625rem);
 }
 
 .animal-types-section .animal-types-paw-icon {
-  width: 32px;
-  height: 32px;
+  width: var(--paw-size);
+  height: var(--paw-size);
   color: white;
   position: relative;
   z-index: 1;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0 0.125rem 0.25rem rgba(0, 0, 0, 0.2));
 }
 
 .animal-types-section .animal-types-title-text-content {
   flex: 1;
+  text-align: right;
 }
 
 .animal-types-section .animal-types-title-gradient {
@@ -128,20 +142,20 @@
   background-clip: text;
   font-family: 'Vazirmatn', sans-serif;
   font-weight: 800;
-  font-size: 28px;
-  margin: 0 0 15px 0;
-  letter-spacing: -0.5px;
+  font-size: var(--title-size);
+  margin: 0 0 0.9375rem 0;
+  letter-spacing: -0.0312rem;
 }
 
 .animal-types-section .animal-types-subtitle {
   font-family: 'Vazirmatn', sans-serif;
   font-weight: 400;
-  font-size: 18px;
+  font-size: var(--subtitle-size);
   line-height: 1.7;
   color: #5a6c7d;
   margin: 0;
-  max-width: 700px;
-  padding-right: 20px;
+  max-width: min(43.75rem, 100%);
+  padding-right: 1.25rem;
   position: relative;
 }
 
@@ -149,9 +163,9 @@
   content: '';
   position: absolute;
   right: 0;
-  top: 10px;
-  width: 10px;
-  height: 10px;
+  top: 0.625rem;
+  width: 0.625rem;
+  height: 0.625rem;
   background: #4a9fe3;
   border-radius: 50%;
 }
@@ -161,23 +175,23 @@
 }
 
 .animal-types-section .animal-types-container {
-  max-width: 1600px;
+  max-width: 100rem;
   margin: 0 auto;
-  padding: 0 10px;
+  padding: 0 0.625rem;
   position: relative;
   z-index: 2;
 }
 
 .animal-types-section .animal-types-header {
   text-align: center;
-  margin-bottom: 60px;
+  margin-bottom: 3.75rem;
 }
 
 .animal-types-section .animal-types-title {
   font-size: 2rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 15px;
+  margin-bottom: 0.9375rem;
   font-family: 'Vazirmatn', sans-serif;
   line-height: 1.4;
   text-align: center;
@@ -195,19 +209,19 @@
 .animal-types-section .highlight::after {
   content: '';
   position: absolute;
-  bottom: -4px;
+  bottom: -0.25rem;
   right: 0;
   width: 100%;
-  height: 2px;
+  height: 0.125rem;
   background: linear-gradient(90deg, var(--warm-pink), var(--light-blue));
-  border-radius: 1px;
+  border-radius: 0.0625rem;
   opacity: 0.8;
 }
 
 .animal-types-section .animal-types-subtitle {
   font-size: 1.1rem;
   color: var(--text-light);
-  max-width: 600px;
+  max-width: 37.5rem;
   margin: 0 auto;
   line-height: 1.7;
   font-weight: 400;
@@ -218,7 +232,7 @@
 
 .animal-types-section .animal-types-wave-container {
   position: relative;
-  padding: 40px 0;
+  padding: clamp(1.25rem, 4vw, 2.5rem) 0;
 }
 
 .animal-types-section .wave-line {
@@ -226,20 +240,24 @@
   top: 50%;
   left: 0;
   right: 0;
-  height: 1px;
+  height: 0.0625rem;
   background: linear-gradient(90deg, transparent, rgba(135, 206, 235, 0.2), rgba(255, 182, 193, 0.2), transparent);
   z-index: 1;
   transform: translateY(-50%);
 }
 
 .animal-types-section .animal-types-wave-line {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  justify-items: center;
   align-items: center;
   position: relative;
   z-index: 2;
-  min-height: 280px;
-  gap: 10px;
+  min-height: var(--wave-min-height);
+  gap: var(--wave-gap);
+  width: 100%;
+  row-gap: var(--wave-row-gap);
+  padding-block: var(--wave-offset);
 }
 
 .animal-types-section .animal-type-item {
@@ -248,8 +266,9 @@
   flex-direction: column;
   align-items: center;
   position: relative;
+  min-width: 0;
   opacity: 0;
-  transform: translateY(30px);
+  transform: translateY(1.875rem);
   animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
@@ -273,49 +292,49 @@
 @keyframes floatUp {
   0% {
     opacity: 0;
-    transform: translateY(40px);
+    transform: translateY(calc(var(--wave-offset) * 1.3));
   }
   100% {
     opacity: 1;
-    transform: translateY(-30px);
+    transform: translateY(calc(var(--wave-offset) * -1));
   }
 }
 
 @keyframes floatDown {
   0% {
     opacity: 0;
-    transform: translateY(-40px);
+    transform: translateY(calc(var(--wave-offset) * -1.3));
   }
   100% {
     opacity: 1;
-    transform: translateY(30px);
+    transform: translateY(var(--wave-offset));
   }
 }
 
 .animal-types-section .animal-type-circle {
-  width: 180px;
-  height: 180px;
+  width: var(--circle-size);
+  height: var(--circle-size);
   position: relative;
-  margin-bottom: 15px;
+  margin-bottom: 0.25rem;
   cursor: pointer;
   overflow: visible;
 }
 
 .animal-types-section .animal-type-circle {
   position: relative;
-  width: 180px;
-  height: 180px;
-  margin-bottom: 15px;
+  width: var(--circle-size);
+  height: var(--circle-size);
+  margin-bottom: 0.25rem;
   cursor: pointer;
   overflow: visible;
 }
 
 .animal-types-section .animal-type-circle-border-layer {
   position: absolute;
-  top: -12px;
-  left: -12px;
-  right: -12px;
-  bottom: -12px;
+  top: -0.75rem;
+  left: -0.75rem;
+  right: -0.75rem;
+  bottom: -0.75rem;
   border-radius: 50%;
   background: linear-gradient(135deg, 
     rgba(28, 123, 209, 0.25) 0%, 
@@ -324,25 +343,25 @@
   z-index: 0;
   opacity: 0;
   transition: var(--transition-smooth);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 0.0625rem solid rgba(255, 255, 255, 0.6);
   box-shadow: 
-    0 10px 30px rgba(28, 123, 209, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    0 0.625rem 1.875rem rgba(28, 123, 209, 0.2),
+    inset 0 0.0625rem 0 rgba(255, 255, 255, 0.8);
 }
 
 .animal-types-section .animal-type-circle-border-white {
   position: absolute;
-  top: -8px;
-  left: -8px;
-  right: -8px;
-  bottom: -8px;
+  top: -0.5rem;
+  left: -0.5rem;
+  right: -0.5rem;
+  bottom: -0.5rem;
   border-radius: 50%;
-  border: 3px solid rgba(255, 255, 255, 0.95);
+  border: 0.1875rem solid rgba(255, 255, 255, 0.95);
   z-index: 0;
   opacity: 0;
   transition: var(--transition-smooth);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(0.5rem);
+  -webkit-backdrop-filter: blur(0.5rem);
 }
 
 .animal-types-section .animal-type-item:hover .animal-type-circle-border-layer {
@@ -357,10 +376,10 @@
 
 .animal-types-section .circle-outer-glow {
   position: absolute;
-  top: -15px;
-  left: -15px;
-  right: -15px;
-  bottom: -15px;
+  top: -0.9375rem;
+  left: -0.9375rem;
+  right: -0.9375rem;
+  bottom: -0.9375rem;
   border-radius: 50%;
   background: conic-gradient(from 0deg, transparent, var(--light-blue), var(--warm-pink), var(--light-blue), transparent);
   opacity: 0;
@@ -389,19 +408,19 @@
 
 .animal-types-section .animal-type-image-wrapper {
   position: absolute;
-  top: 8px;
-  left: 8px;
-  right: 8px;
-  bottom: 8px;
+  top: 0.5rem;
+  left: 0.5rem;
+  right: 0.5rem;
+  bottom: 0.5rem;
   border-radius: 50%;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.97) 0%, rgba(255, 253, 248, 0.92) 100%);
-  border: 4px solid rgba(255, 255, 255, 0.98);
+  border: 0.25rem solid rgba(255, 255, 255, 0.98);
   box-shadow: 
-    0 25px 60px rgba(135, 206, 235, 0.35),
-    0 15px 40px rgba(255, 182, 193, 0.3),
-    0 10px 30px rgba(255, 255, 255, 0.85) inset,
-    0 -10px 30px rgba(255, 255, 255, 0.7) inset,
-    0 0 60px rgba(135, 206, 235, 0.25);
+    0 1.5625rem 3.75rem rgba(135, 206, 235, 0.35),
+    0 0.9375rem 2.5rem rgba(255, 182, 193, 0.3),
+    0 0.625rem 1.875rem rgba(255, 255, 255, 0.85) inset,
+    0 -0.625rem 1.875rem rgba(255, 255, 255, 0.7) inset,
+    0 0 3.75rem rgba(135, 206, 235, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -411,11 +430,11 @@
 }
 
 .animal-types-section .animal-type-image {
-  width: 130px;
-  height: 130px;
+  width: var(--image-size);
+  height: var(--image-size);
   object-fit: contain;
   filter: 
-    drop-shadow(0 5px 10px rgba(0, 0, 0, 0.1))
+    drop-shadow(0 0.3125rem 0.625rem rgba(0, 0, 0, 0.1))
     brightness(1.05)
     contrast(1.02);
   transition: 
@@ -461,7 +480,7 @@
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  border: 3px solid transparent;
+  border: 0.1875rem solid transparent;
   opacity: 0;
   z-index: 6;
 }
@@ -469,7 +488,7 @@
 .animal-types-section .animal-type-name {
   position: relative;
   text-align: center;
-  margin-top: 5px;
+  margin-top: 1rem;
 }
 
 .animal-types-section .name-text {
@@ -478,7 +497,7 @@
   color: var(--text-secondary);
   font-family: 'Vazirmatn', sans-serif;
   letter-spacing: 0;
-  line-height: 1.4;
+  line-height: 1.2;
   transition: var(--transition-smooth);
   display: inline-block;
   position: relative;
@@ -486,35 +505,27 @@
 }
 
 .animal-types-section .name-underline {
-  position: absolute;
-  bottom: -4px;
-  right: 0;
-  width: 0;
-  height: 1.5px;
-  background: linear-gradient(90deg, var(--light-blue), var(--warm-pink));
-  border-radius: 1px;
-  transition: var(--transition-smooth);
-  opacity: 0;
+  display: none;
 }
 
 .animal-types-section .animal-type-item:hover .circle-outer-glow {
   opacity: 1;
-  filter: blur(12px);
+  filter: blur(0.75rem);
   transform: scale(1.05);
-  top: -18px;
-  left: -18px;
-  right: -18px;
-  bottom: -18px;
+  top: -1.125rem;
+  left: -1.125rem;
+  right: -1.125rem;
+  bottom: -1.125rem;
 }
 
 .animal-types-section .animal-type-item:hover .animal-type-image-wrapper {
   transform: scale(1.08);
   box-shadow: 
-    0 35px 80px rgba(135, 206, 235, 0.25),
-    0 25px 60px rgba(255, 182, 193, 0.2),
-    0 12px 40px rgba(255, 255, 255, 0.95) inset,
-    0 -12px 40px rgba(255, 255, 255, 0.8) inset,
-    0 0 90px rgba(135, 206, 235, 0.2);
+    0 2.1875rem 5rem rgba(135, 206, 235, 0.25),
+    0 1.5625rem 3.75rem rgba(255, 182, 193, 0.2),
+    0 0.75rem 2.5rem rgba(255, 255, 255, 0.95) inset,
+    0 -0.75rem 2.5rem rgba(255, 255, 255, 0.8) inset,
+    0 0 5.625rem rgba(135, 206, 235, 0.2);
   border-color: rgba(255, 255, 255, 1);
   z-index: 5;
 }
@@ -522,7 +533,7 @@
 .animal-types-section .animal-type-item:hover .animal-type-image {
   transform: scale(1.12) translateZ(0);
   filter: 
-    drop-shadow(0 8px 15px rgba(0, 0, 0, 0.15))
+    drop-shadow(0 0.5rem 0.9375rem rgba(0, 0, 0, 0.15))
     brightness(1.08)
     contrast(1.04)
     saturate(1.1);
@@ -552,7 +563,7 @@
 .animal-types-section .animal-type-item:hover .name-text {
   color: var(--warm-pink);
   font-weight: 700;
-  transform: translateY(-1px);
+  transform: translateY(-0.0625rem);
 }
 
 .animal-types-section .animal-type-item:hover .name-underline {
@@ -560,75 +571,77 @@
   opacity: 0.8;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 80rem) {
   .animal-types-section .animal-types-card {
     width: 95%;
-    padding: 40px;
+    padding: var(--card-padding);
   }
   
   .animal-types-section .animal-types-title-gradient {
-    font-size: 36px;
+    font-size: var(--title-size);
   }
 }
 
-@media (max-width: 992px) {
+@media (min-width: 90rem) {
   .animal-types-section .animal-types-card {
-    padding: 30px;
-    border-radius: 24px;
+    padding-top: calc(var(--card-padding) + 1.5rem);
+    padding-bottom: calc(var(--card-padding) + 2.5rem);
+  }
+}
+
+@media (max-width: 64rem) {
+  .animal-types-section .animal-types-card {
+    padding: var(--card-padding);
+    border-radius: var(--card-radius);
   }
   
   .animal-types-section .animal-types-title-container {
     flex-direction: column;
-    text-align: center;
-    gap: 25px;
+    text-align: right;
+    gap: 1.5625rem;
+    align-items: flex-start;
   }
   
   .animal-types-section .animal-types-title-gradient {
-    font-size: 32px;
+    font-size: var(--title-size);
   }
   
   .animal-types-section .animal-types-subtitle {
-    font-size: 16px;
+    font-size: var(--subtitle-size);
     padding-right: 0;
-    text-align: center;
+    text-align: right;
   }
   
   .animal-types-section .animal-types-subtitle::before {
     display: none;
   }
+
+  .animal-types-section {
+    --wave-offset: 0rem;
+    --wave-row-gap: 0.6rem;
+  }
   
   .animal-types-section .animal-types-wave-line {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 30px 15px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    justify-items: center;
+    gap: var(--wave-gap);
     min-height: auto;
   }
   
   .animal-types-section .animal-type-item {
-    flex: 0 0 calc(33.333% - 10px);
-    animation: fadeInUp 0.8s ease-out forwards !important;
-    transform: translateY(30px) !important;
+    width: 100%;
+    max-width: 13.75rem;
   }
-  
+
   .animal-types-section .animal-type-item.wave-up,
   .animal-types-section .animal-type-item.wave-down {
-    animation-name: fadeInUp !important;
-  }
-  
-  .animal-types-section .wave-line {
-    display: none;
-  }
-  
-  @keyframes fadeInUp {
-    to {
-      opacity: 1;
-      transform: translateY(0) !important;
-    }
+    align-self: center;
+    animation-name: fadeInUp;
   }
   
   .animal-types-section .animal-types-container {
-    max-width: 1000px;
-    padding: 0 10px;
+    max-width: 62.5rem;
+    padding: 0 0.625rem;
   }
   
   .animal-types-section .animal-types-title,
@@ -641,13 +654,14 @@
   }
   
   .animal-types-section .animal-type-circle {
-    width: 150px;
-    height: 150px;
+    width: var(--circle-size);
+    height: var(--circle-size);
+    margin-bottom: 0.4rem;
   }
   
   .animal-types-section .animal-type-image {
-    width: 115px;
-    height: 115px;
+    width: var(--image-size);
+    height: var(--image-size);
   }
   
   .animal-types-section .name-text {
@@ -655,83 +669,184 @@
   }
   
   .animal-types-section .name-underline {
-    height: 1px;
+    height: 0.0625rem;
   }
 }
 
-@media (max-width: 768px) {
+@media (min-width: 64rem) and (max-width: 77.5rem) {
+  .animal-types-section {
+    --circle-size: 9.5rem;
+    --image-size: 7.8rem;
+    --wave-gap: 1.6rem;
+    --wave-row-gap: 1.8rem;
+    --wave-offset: 2.4rem;
+  }
+
+  .animal-types-section .animal-types-wave-line {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    row-gap: var(--wave-row-gap);
+    column-gap: var(--wave-gap);
+  }
+
+  .animal-types-section .animal-type-item {
+    max-width: 11.5rem;
+  }
+
+  .animal-types-section .animal-type-image-wrapper {
+    top: 0.4rem;
+    left: 0.4rem;
+    right: 0.4rem;
+    bottom: 0.4rem;
+  }
+}
+
+@media (max-width: 56rem) {
+  .animal-types-section {
+    --wave-gap: clamp(0.75rem, 2vw, 1.5rem);
+    --wave-min-height: clamp(12.5rem, 24vw, 16rem);
+  }
+
+  .animal-types-section .animal-type-item {
+    max-width: 12.75rem;
+  }
+}
+
+@media (max-width: 48rem) {
+  .animal-types-section {
+    --title-size: 1.15rem;
+    --subtitle-size: 0.78rem;
+    --icon-size: 3rem;
+    --paw-size: 1.35rem;
+    --wave-gap: 0.7rem;
+    --wave-row-gap: 0.6rem;
+    --wave-offset: 0rem;
+    --wave-min-height: 8.5rem;
+    --circle-size: clamp(6.75rem, 18vw, 7.5rem);
+    --image-size: clamp(5rem, 14vw, 5.75rem);
+  }
+
   .animal-types-section .animal-types-card {
-    padding: 25px 20px;
+    padding: var(--card-padding);
+    padding-top: calc(var(--card-padding) + 0.4rem);
+    padding-left: calc(var(--card-padding) + 0.4rem);
+    padding-bottom: calc(var(--card-padding) + 1rem);
   }
   
   .animal-types-section .animal-types-title-gradient {
-    font-size: 28px;
+    font-size: var(--title-size);
   }
   
   .animal-types-section .animal-types-subtitle {
-    font-size: 15px;
+    font-size: var(--subtitle-size);
   }
   
   .animal-types-section .animal-types-icon-circle {
-    width: 70px;
-    height: 70px;
-    border-radius: 20px;
+    width: var(--icon-size);
+    height: var(--icon-size);
+    border-radius: clamp(1.125rem, 2vw, 1.25rem);
   }
   
   .animal-types-section .animal-types-paw-icon {
-    width: 28px;
-    height: 28px;
+    width: var(--paw-size);
+    height: var(--paw-size);
   }
   
   .animal-types-section .animal-type-item {
-    flex: 0 0 calc(50% - 8px);
+    max-width: 12.5rem;
   }
   
   .animal-types-section .animal-type-circle {
-    width: 140px;
-    height: 140px;
+    width: var(--circle-size);
+    height: var(--circle-size);
   }
   
   .animal-types-section .animal-type-image {
-    width: 110px;
-    height: 110px;
+    width: var(--image-size);
+    height: var(--image-size);
   }
   
   .animal-types-section .name-text {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
   }
 }
 
-@media (max-width: 576px) {
+@media (max-width: 40rem) {
+  .animal-types-section {
+    --title-size: 1.05rem;
+    --subtitle-size: 0.7rem;
+    --icon-size: 2.75rem;
+    --paw-size: 1.2rem;
+    --wave-gap: 0.6rem;
+    --wave-row-gap: 0.6rem;
+    --wave-offset: 0rem;
+    --wave-min-height: 7.5rem;
+    --circle-size: clamp(6rem, 18vw, 6.75rem);
+    --image-size: clamp(4.5rem, 14vw, 5rem);
+  }
+
   .animal-types-section .animal-types-card {
-    padding: 20px 16px;
+    padding: var(--card-padding);
+    padding-top: calc(var(--card-padding) + 0.35rem);
+    padding-left: calc(var(--card-padding) + 0.35rem);
+    padding-bottom: calc(var(--card-padding) + 0.9rem);
   }
   
   .animal-types-section .animal-types-title-gradient {
-    font-size: 24px;
+    font-size: var(--title-size);
   }
   
   .animal-types-section .animal-types-subtitle {
-    font-size: 14px;
+    font-size: var(--subtitle-size);
+  }
+
+  .animal-types-section .animal-types-header-container {
+    margin-bottom: 0.55rem;
+    padding-bottom: 0.4rem;
+  }
+
+  .animal-types-section .animal-types-wave-container {
+    padding-top: 0.35rem;
+    padding-bottom: 1rem;
+  }
+
+  .animal-types-section .animal-type-item.wave-up,
+  .animal-types-section .animal-type-item.wave-down {
+    animation-name: fadeInUp;
+  }
+
+  .animal-types-section .animal-types-header-container {
+    margin-bottom: 0.45rem;
+    padding-bottom: 0.35rem;
+  }
+
+  .animal-types-section .animal-types-wave-container {
+    padding-top: 0.3rem;
+    padding-bottom: 0.9rem;
+  }
+
+  .animal-types-section .animal-type-item.wave-up,
+  .animal-types-section .animal-type-item.wave-down {
+    animation-name: fadeInUp;
   }
   
   .animal-types-section .animal-types-wave-line {
-    gap: 25px 10px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--wave-gap);
   }
   
   .animal-types-section .animal-type-item {
-    flex: 0 0 calc(50% - 6px);
+    max-width: 11.75rem;
   }
   
   .animal-types-section .animal-type-circle {
-    width: 130px;
-    height: 130px;
-    margin-bottom: 12px;
+    width: var(--circle-size);
+    height: var(--circle-size);
+    margin-bottom: 0.35rem;
   }
   
   .animal-types-section .animal-type-image {
-    width: 105px;
-    height: 105px;
+    width: var(--image-size);
+    height: var(--image-size);
   }
   
   .animal-types-section .name-text {
@@ -739,47 +854,106 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 30rem) {
+  .animal-types-section {
+    --title-size: 0.95rem;
+    --subtitle-size: 0.62rem;
+    --icon-size: 2.25rem;
+    --paw-size: 1rem;
+    --wave-gap: 0.4rem;
+    --wave-row-gap: 0.6rem;
+    --wave-offset: 0rem;
+    --wave-min-height: 6rem;
+    --circle-size: clamp(4.75rem, 18vw, 5.5rem);
+    --image-size: clamp(3.5rem, 14vw, 4.25rem);
+  }
+
   .animal-types-section .animal-types-card {
-    padding: 18px 12px;
+    padding: var(--card-padding);
+    padding-top: calc(var(--card-padding) + 0.25rem);
+    padding-left: calc(var(--card-padding) + 0.25rem);
+    padding-bottom: calc(var(--card-padding) + 0.9rem);
+  }
+
+  .animal-types-section .animal-types-header-container {
+    margin-bottom: 0.3rem;
+    padding-bottom: 0.25rem;
+  }
+
+  .animal-types-section .animal-types-wave-container {
+    padding-top: 0.2rem;
+    padding-bottom: 0.9rem;
+  }
+
+  .animal-types-section .animal-type-item.wave-up,
+  .animal-types-section .animal-type-item.wave-down {
+    animation-name: fadeInUp;
   }
   
   .animal-types-section .animal-types-title-gradient {
-    font-size: 22px;
+    font-size: var(--title-size);
   }
   
   .animal-types-section .animal-types-subtitle {
-    font-size: 13px;
+    font-size: var(--subtitle-size);
   }
   
   .animal-types-section .animal-types-icon-circle {
-    width: 60px;
-    height: 60px;
-    border-radius: 18px;
+    width: var(--icon-size);
+    height: var(--icon-size);
+    border-radius: clamp(1.125rem, 2vw, 1.25rem);
   }
   
   .animal-types-section .animal-types-paw-icon {
-    width: 24px;
-    height: 24px;
+    width: var(--paw-size);
+    height: var(--paw-size);
   }
   
   .animal-types-section .animal-type-item {
-    flex: 0 0 100%;
-    max-width: 150px;
+    max-width: 10rem;
+  }
+
+  .animal-types-section .animal-type-item:hover .animal-type-circle-border-layer {
+    transform: scale(1.02);
+  }
+
+  .animal-types-section .animal-type-item:hover .animal-type-circle-border-white {
+    transform: scale(1.01);
+  }
+
+  .animal-types-section .animal-type-item:hover .circle-outer-glow {
+    opacity: 0.45;
+    filter: blur(0.4rem);
+    transform: scale(1.02);
+    top: -0.6rem;
+    left: -0.6rem;
+    right: -0.6rem;
+    bottom: -0.6rem;
+  }
+
+  .animal-types-section .animal-type-item:hover .animal-type-image-wrapper {
+    transform: scale(1.03);
+    box-shadow:
+      0 1.25rem 2.5rem rgba(135, 206, 235, 0.18),
+      0 0.75rem 1.75rem rgba(255, 182, 193, 0.16),
+      0 0.75rem 1.875rem rgba(255, 255, 255, 0.85) inset,
+      0 -0.75rem 1.875rem rgba(255, 255, 255, 0.7) inset,
+      0 0 3.5rem rgba(135, 206, 235, 0.12);
   }
   
   .animal-types-section .animal-types-wave-line {
-    gap: 20px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--wave-gap);
   }
   
   .animal-types-section .animal-type-circle {
-    width: 120px;
-    height: 120px;
+    width: var(--circle-size);
+    height: var(--circle-size);
   }
   
   .animal-types-section .animal-type-image {
-    width: 100px;
-    height: 100px;
+    width: var(--image-size);
+    height: var(--image-size);
   }
   
   .animal-types-section .name-text {
@@ -787,31 +961,111 @@
   }
 }
 
-@media (max-width: 360px) {
-  .animal-types-section .animal-types-card {
-    padding: 16px 10px;
+@media (max-width: 22.5rem) {
+  .animal-types-section {
+    --card-padding: 0.5rem;
+    --card-radius: 1rem;
+    --card-height: 42.5vh;
+    --card-min-height: 18.75rem;
+    --card-max-height: 25rem;
+    --title-size: 0.95rem;
+    --subtitle-size: 0.62rem;
+    --icon-size: 2.25rem;
+    --paw-size: 1rem;
+    --wave-gap: 0.4rem;
+    --wave-row-gap: 0.6rem;
+    --wave-offset: 0rem;
+    --wave-min-height: 6rem;
+    --circle-size: clamp(4.75rem, 18vw, 5.5rem);
+    --image-size: clamp(3.5rem, 14vw, 4.25rem);
   }
-  
+
+  .animal-types-section .animal-types-card {
+    padding: var(--card-padding);
+    padding-top: calc(var(--card-padding) + 0.25rem);
+    padding-left: calc(var(--card-padding) + 0.25rem);
+    padding-bottom: calc(var(--card-padding) + 0.9rem);
+    height: var(--card-height);
+    min-height: var(--card-min-height);
+    max-height: var(--card-max-height);
+  }
+
   .animal-types-section .animal-types-title-gradient {
-    font-size: 20px;
+    font-size: var(--title-size);
+    margin-bottom: 0.35rem;
   }
   
   .animal-types-section .animal-types-subtitle {
-    font-size: 12px;
+    font-size: var(--subtitle-size);
+    line-height: 1.4;
+  }
+
+  .animal-types-section .animal-types-content {
+    height: 100%;
+    overflow: visible;
+    padding-right: 0;
+  }
+
+  .animal-types-section .animal-types-header-container {
+    margin-bottom: 0.4rem;
+    padding-bottom: 0.3rem;
+  }
+
+  .animal-types-section .animal-types-wave-container {
+    padding: 0.25rem 0 0.9rem;
+  }
+
+  .animal-types-section .animal-type-item.wave-up,
+  .animal-types-section .animal-type-item.wave-down {
+    animation-name: fadeInUp;
   }
   
   .animal-types-section .animal-type-circle {
-    width: 110px;
-    height: 110px;
+    width: var(--circle-size);
+    height: var(--circle-size);
+    margin-bottom: 0.2rem;
   }
   
   .animal-types-section .animal-type-image {
-    width: 95px;
-    height: 95px;
+    width: var(--image-size);
+    height: var(--image-size);
   }
   
   .animal-types-section .name-text {
     font-size: 0.65rem;
+  }
+
+  .animal-types-section .animal-types-wave-line {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--wave-gap);
+  }
+
+  .animal-types-section .animal-type-item:hover .animal-type-circle-border-layer {
+    transform: scale(1.02);
+  }
+
+  .animal-types-section .animal-type-item:hover .animal-type-circle-border-white {
+    transform: scale(1.01);
+  }
+
+  .animal-types-section .animal-type-item:hover .circle-outer-glow {
+    opacity: 0.4;
+    filter: blur(0.35rem);
+    transform: scale(1.02);
+    top: -0.5rem;
+    left: -0.5rem;
+    right: -0.5rem;
+    bottom: -0.5rem;
+  }
+
+  .animal-types-section .animal-type-item:hover .animal-type-image-wrapper {
+    transform: scale(1.03);
+    box-shadow:
+      0 1.1rem 2.2rem rgba(135, 206, 235, 0.16),
+      0 0.65rem 1.5rem rgba(255, 182, 193, 0.14),
+      0 0.7rem 1.6rem rgba(255, 255, 255, 0.85) inset,
+      0 -0.7rem 1.6rem rgba(255, 255, 255, 0.7) inset,
+      0 0 3rem rgba(135, 206, 235, 0.1);
   }
 }
 
