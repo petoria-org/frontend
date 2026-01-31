@@ -1383,7 +1383,7 @@
     grid-template-columns: 1fr;
     gap: 25px;
   }
-  
+
   .new-posts-card-landing {
     padding: 25px 20px;
   }
@@ -1435,6 +1435,187 @@
     left: 20px;
     width: 18px;
     height: 18px;
+  }
+}
+
+@media (min-width: 40.0625rem) and (max-width: 48rem) {
+  .new-posts-page-landing {
+    --np-title-size: 0.95rem;
+    --np-subtitle-size: 0.62rem;
+    --np-card-radius: 18px;
+  }
+
+  .new-posts-card-landing {
+    padding: 18px 14px;
+  }
+
+  .new-posts-title-container-landing {
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .new-posts-title-gradient-landing {
+    font-size: var(--np-title-size);
+    margin-bottom: 10px;
+  }
+
+  .new-posts-subtitle-landing {
+    font-size: var(--np-subtitle-size);
+    padding-right: 0;
+    text-align: right;
+  }
+
+  .new-posts-subtitle-landing::before {
+    display: none;
+  }
+
+  .new-posts-icon-circle-landing {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+  }
+
+  .new-posts-pet-icon-landing {
+    width: 20px;
+    height: 20px;
+  }
+
+  .posts-grid-landing {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .posts-category-tab-landing {
+    height: 42px;
+  }
+
+  .post-card-landing {
+    min-height: 340px;
+    height: 340px;
+  }
+
+  .post-image-container-landing {
+    height: 150px;
+  }
+
+  .post-status-landing,
+  .pet-listing-status-landing {
+    height: 26px;
+    padding: 0 10px;
+    font-size: 9.5px;
+    gap: 5px;
+    top: 8px;
+    left: 8px;
+    border-radius: 15px;
+  }
+
+  .post-status-landing .status-pulse-landing,
+  .pet-listing-status-landing .status-pulse-landing {
+    width: 5px;
+    height: 5px;
+  }
+
+  .post-content-landing {
+    padding: 16px;
+    gap: 10px;
+  }
+
+  .post-header-landing {
+    padding-bottom: 10px;
+  }
+
+  .post-info-landing {
+    gap: 6px;
+  }
+
+  .post-name-landing {
+    font-size: 11px;
+  }
+
+  .post-subtitle-landing,
+  .post-detail-text-landing,
+  .post-description-landing {
+    font-size: 9px;
+  }
+
+  .post-detail-text-landing {
+    font-size: 10px !important;
+  }
+
+  .post-type-landing {
+    font-size: 9px;
+    padding: 0 10px;
+    height: 22px;
+  }
+
+  .post-description-landing {
+    margin-top: -6px;
+  }
+
+  .post-details-container-landing {
+    gap: 2px;
+    margin-top: -6px;
+    margin-bottom: 6px;
+  }
+
+  .post-detail-landing {
+    gap: 6px;
+    padding: 5px 0;
+  }
+
+  .detail-icon-landing {
+    width: 18px;
+    height: 18px;
+  }
+
+  .pet-listing-time-landing {
+    padding: 4px 9px !important;
+    border-radius: 14px !important;
+    gap: 5px !important;
+    bottom: 8px;
+    left: 8px;
+  }
+
+  .time-icon-landing {
+    width: 11px !important;
+    height: 11px !important;
+    padding: 1px !important;
+  }
+
+  .pet-listing-time-text-landing {
+    font-size: 8.5px !important;
+  }
+
+  .post-card-landing .pet-listing-time-landing {
+    border-width: 1px;
+  }
+
+  .image-glass-view-btn-landing {
+    padding: 6px 12px !important;
+    font-size: 9px !important;
+    min-width: 100px !important;
+    gap: 4px !important;
+  }
+
+  .image-glass-btn-icon-landing {
+    width: 11px !important;
+    height: 11px !important;
+  }
+
+  .post-card-landing .image-glass-view-btn-landing {
+    padding: 6px 12px !important;
+    font-size: 9px !important;
+    min-width: 100px !important;
+    gap: 4px !important;
+  }
+
+  .post-card-landing .image-glass-btn-icon-landing {
+    width: 11px !important;
+    height: 11px !important;
+  }
+
+  .show-more-container-landing {
+    margin-top: 10px;
   }
 }
 
