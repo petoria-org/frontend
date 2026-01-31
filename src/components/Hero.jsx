@@ -22,7 +22,7 @@ export default function Hero() {
   const [currentPage, setCurrentPage] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [showPetoria, setShowPetoria] = useState(true);
-  const autoSlideInterval = useRef(null);
+  const AUTO_SLIDE_MS = 6000;
 
   const stripRef = useRef(null);
   
@@ -110,8 +110,6 @@ export default function Hero() {
     },
   ];
 
-  const AUTO_SLIDE_INTERVAL = 5000;
-
   const handleNextPage = () => {
     if (isAnimating) return;
     
@@ -150,39 +148,19 @@ export default function Hero() {
     }, 600);
   };
 
-  const startAutoSlide = () => {
-    if (autoSlideInterval.current) {
-      clearInterval(autoSlideInterval.current);
-    }
-    
-    autoSlideInterval.current = setInterval(() => {
-      handleNextPage();
-    }, AUTO_SLIDE_INTERVAL);
-  };
-
-  const stopAutoSlide = () => {
-    if (autoSlideInterval.current) {
-      clearInterval(autoSlideInterval.current);
-      autoSlideInterval.current = null;
-    }
-  };
-
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'ArrowRight') {
-        handleNextPage();
-      } else if (e.key === 'ArrowLeft') {
         handlePrevPage();
+      } else if (e.key === 'ArrowLeft') {
+        handleNextPage();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     
-    startAutoSlide();
-    
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      stopAutoSlide();
     };
   }, [currentPage, isAnimating]);
 
@@ -192,23 +170,21 @@ export default function Hero() {
     }
   }, [currentPage]);
 
-  const handleMouseEnter = () => {
-    stopAutoSlide();
-  };
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (!isAnimating) {
+        handleNextPage();
+      }
+    }, AUTO_SLIDE_MS);
 
-  const handleMouseLeave = () => {
-    startAutoSlide();
-  };
+    return () => clearInterval(intervalId);
+  }, [currentPage, isAnimating]);
 
   const currentPageData = pages[currentPage];
 
   return (
     <div className="hero-container">
-      <div 
-        className="hero-wrapper"
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-      >
+      <div className="hero-wrapper">
         <section className="hero-section">
           <div 
             className="hero-background"
@@ -221,11 +197,7 @@ export default function Hero() {
           
           <button 
             className="side-nav-btn side-prev-btn"
-            onClick={() => {
-              handlePrevPage();
-              stopAutoSlide();
-              startAutoSlide();
-            }}
+            onClick={handleNextPage}
             disabled={isAnimating}
             aria-label="صفحه قبلی"
           >
@@ -236,11 +208,7 @@ export default function Hero() {
 
           <button 
             className="side-nav-btn side-next-btn"
-            onClick={() => {
-              handleNextPage();
-              stopAutoSlide();
-              startAutoSlide();
-            }}
+            onClick={handlePrevPage}
             disabled={isAnimating}
             aria-label="صفحه بعد"
           >
@@ -251,65 +219,67 @@ export default function Hero() {
 
           <div className="hero-content">
             {currentPage === 0 && showPetoria && (
-              <div className="petoria-screen">
-                <div className="letters-container-hero">
-                  {PETORIA_LETTERS.map((letter, index) => (
-                    <img
-                      key={letter.id}
-                      src={letter.src}
-                      alt={letter.alt}
-                      className="petoria-letter-hero"
-                      style={{
-                        animationDelay: `${letter.delay}s`,
-                        zIndex: PETORIA_LETTERS.length - index,
-                      }}
-                    />
-                  ))}
+              <div className="hero-page-group hero-page-group--welcome">
+                <div className="petoria-screen">
+                  <div className="letters-container-hero">
+                    {PETORIA_LETTERS.map((letter, index) => (
+                      <img
+                        key={letter.id}
+                        src={letter.src}
+                        alt={letter.alt}
+                        className="petoria-letter-hero"
+                        style={{
+                          animationDelay: `${letter.delay}s`,
+                          zIndex: PETORIA_LETTERS.length - index,
+                        }}
+                      />
+                    ))}
+                  </div>
+
+                  <div className="welcome-message-container">
+                    <p className="welcome-subtitle-hero">
+                      {pages[0].description}
+                    </p>
+                  </div>
                 </div>
 
-                <div className="welcome-message-container">
-                  <p className="welcome-subtitle-hero">
-                    {pages[0].description}
-                  </p>
+                <div className="welcome-dog">
+                  <img 
+                    src={dogImage} 
+                    alt="Ø³Ú¯ Ø®ÙˆØ´ Ø¢Ù…Ø¯Ú¯ÙˆÛŒÛŒ"
+                    className="welcome-dog-image"
+                  />
                 </div>
-              </div>
-            )}
-
-            {currentPage === 0 && showPetoria && (
-              <div className="welcome-dog">
-                <img 
-                  src={dogImage} 
-                  alt="سگ خوش آمدگویی"
-                  className="welcome-dog-image"
-                />
               </div>
             )}
 
             {currentPage > 0 && currentPage < 6 && (
-              <div className={`content-screen-hero ${currentPageData.imageSide} page-${currentPageData.id}`}>
-                <div className="animal-image-container">
-                  <img 
-                    src={currentPageData.image} 
-                    alt={currentPageData.title}
-                    className={`main-animal-image-hero ${isAnimating ? 'slide-out' : 'slide-in'}`}
-                  />
-                  <div className="image-glow"></div>
-                </div>
+              <div className="hero-page-group hero-page-group--content">
+                <div className={`content-screen-hero ${currentPageData.imageSide} page-${currentPageData.id}`}>
+                  <div className="animal-image-container">
+                    <img 
+                      src={currentPageData.image} 
+                      alt={currentPageData.title}
+                      className={`main-animal-image-hero ${isAnimating ? 'slide-out' : 'slide-in'}`}
+                    />
+                    <div className="image-glow"></div>
+                  </div>
 
-                <div
-                  className={`text-content-hero ${currentPageData.contentPosition} text-page-${currentPageData.id}`}
-                >
-                  <div className="content-wrapper-hero">
-                    <h2 className="page-title-hero">{currentPageData.title}</h2>
-                    <div className="accent-line-hero" style={{ backgroundColor: currentPageData.accentColor }}></div>
-                    <p className="page-description-hero">{currentPageData.description}</p>
+                  <div
+                    className={`text-content-hero ${currentPageData.contentPosition} text-page-${currentPageData.id}`}
+                  >
+                    <div className="content-wrapper-hero">
+                      <h2 className="page-title-hero">{currentPageData.title}</h2>
+                      <div className="accent-line-hero" style={{ backgroundColor: currentPageData.accentColor }}></div>
+                      <p className="page-description-hero">{currentPageData.description}</p>
+                    </div>
                   </div>
                 </div>
               </div>
             )}
 
             {currentPage === 6 && (
-            <>
+              <div className="hero-page-group hero-page-group--stats">
               <div className={`content-screen-hero ${currentPageData.imageSide} page-${currentPageData.id} page-with-stats`}>
                 <div className="animal-image-container">
                   <img 
@@ -324,11 +294,9 @@ export default function Hero() {
                   className={`text-content-hero ${currentPageData.contentPosition} text-page-${currentPageData.id}`}
                 >
                   <div className="content-wrapper-hero"> 
-                    <h2 className="page-title-hero">جامعه پتوریا</h2> 
+                    <h2 className="page-title-hero">{currentPageData.title}</h2> 
                     <div className="accent-line-hero" style={{ backgroundColor: currentPageData.accentColor }}></div> 
-                    <p className="page-description-hero"> 
-                      با هم قدرتمندیم... سایت ما بیش از یک پلتفرم است؛ جامعه‌ای است از افرادی که برای رفاه حیوانات ارزش قائلند. چه با گزارش حیوان گم‌شده، چه با پذیرش سرپرستی، چه با اشتراک داستان موفقیت—همه ما بخشی از این حرکت مهربانی هستیم.
-                    </p>
+                    <p className="page-description-hero">{currentPageData.description}</p>
                   </div>
                 </div>
               </div>
@@ -336,8 +304,9 @@ export default function Hero() {
               <div className="compact-stats-container">
                 <Stats />
               </div>
-            </>
-          )}
+              </div>
+            )}
+
           </div>
         </section>
 
@@ -362,8 +331,6 @@ export default function Hero() {
                     setIsAnimating(false);
                   }, 600);
                 }}
-                onMouseEnter={stopAutoSlide}
-                onMouseLeave={startAutoSlide}
               >
                 <div className="vertical-thumb-icon">
                   <img 
