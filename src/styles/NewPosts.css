@@ -4,12 +4,15 @@
   justify-content: center;
   margin-bottom: 80px;
   position: relative;
+  --np-title-size: clamp(1.5rem, 2.6vw, 2.4rem);
+  --np-subtitle-size: clamp(0.9rem, 1.4vw, 1.2rem);
+  --np-card-radius: 32px;
 }
 
 .new-posts-card-landing {
   width: 1400px;
   background: white;
-  border-radius: 32px;
+  border-radius: var(--np-card-radius);
   box-shadow: 
     0 25px 50px -12px rgba(28, 123, 209, 0.15),
     0 8px 16px -4px rgba(28, 123, 209, 0.1),
@@ -36,7 +39,8 @@
   position: absolute;
   inset: 0;
   border: 2px solid rgba(28, 123, 209, 0.2);
-  border-radius: 32px;
+  border-radius: var(--np-card-radius);
+  box-sizing: border-box;
   z-index: 1;
   pointer-events: none;
 }
@@ -102,7 +106,7 @@
   background-clip: text;
   font-family: 'Vazirmatn', sans-serif;
   font-weight: 800;
-  font-size: 28px;
+  font-size: var(--np-title-size);
   margin: 0 0 15px 0;
   letter-spacing: -0.5px;
 }
@@ -110,7 +114,7 @@
 .new-posts-subtitle-landing {
   font-family: 'Vazirmatn', sans-serif;
   font-weight: 400;
-  font-size: 18px;
+  font-size: var(--np-subtitle-size);
   line-height: 1.7;
   color: #5a6c7d;
   margin: 0;
@@ -1375,7 +1379,7 @@
     0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 80rem) {
   .new-posts-card-landing {
     width: 95%;
     padding: 40px;
@@ -1386,14 +1390,19 @@
   }
   
   .new-posts-title-gradient-landing {
-    font-size: 36px;
+    font-size: var(--np-title-size);
   }
 }
 
-@media (max-width: 992px) {
+@media (max-width: 64rem) {
+  .new-posts-page-landing {
+    --np-title-size: clamp(1.5rem, 2.6vw, 2.4rem);
+    --np-subtitle-size: clamp(0.9rem, 1.4vw, 1.2rem);
+    --np-card-radius: 24px;
+  }
+
   .new-posts-card-landing {
     padding: 30px;
-    border-radius: 24px;
   }
   
   .new-posts-title-container-landing {
@@ -1403,11 +1412,11 @@
   }
   
   .new-posts-title-gradient-landing {
-    font-size: 32px;
+    font-size: var(--np-title-size);
   }
   
   .new-posts-subtitle-landing {
-    font-size: 16px;
+    font-size: var(--np-subtitle-size);
     padding-right: 0;
     text-align: center;
   }
@@ -1417,7 +1426,12 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 48rem) {
+  .new-posts-page-landing {
+    --np-title-size: 1.25rem;
+    --np-subtitle-size: 0.85rem;
+  }
+
   .posts-grid-landing {
     grid-template-columns: 1fr;
     gap: 25px;
@@ -1428,11 +1442,11 @@
   }
   
   .new-posts-title-gradient-landing {
-    font-size: 28px;
+    font-size: var(--np-title-size);
   }
   
   .new-posts-subtitle-landing {
-    font-size: 15px;
+    font-size: var(--np-subtitle-size);
   }
   
   .new-posts-icon-circle-landing {
@@ -1477,7 +1491,59 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 40rem) {
+  .new-posts-page-landing {
+    --np-title-size: 1.1rem;
+    --np-subtitle-size: 0.75rem;
+    --np-card-radius: 20px;
+  }
+
+  .new-posts-card-landing {
+    padding: 22px 18px;
+  }
+  
+  .new-posts-title-gradient-landing {
+    font-size: var(--np-title-size);
+  }
+  
+  .new-posts-subtitle-landing {
+    font-size: var(--np-subtitle-size);
+  }
+
+  .new-posts-icon-circle-landing {
+    width: 60px;
+    height: 60px;
+    border-radius: 18px;
+  }
+
+  .new-posts-pet-icon-landing {
+    width: 24px;
+    height: 24px;
+  }
+
+  .posts-grid-landing {
+    gap: 22px;
+  }
+
+  .post-card-landing {
+    min-height: 420px;
+  }
+
+  .post-image-container-landing {
+    height: 190px;
+  }
+
+  .posts-category-tab-landing {
+    height: 46px;
+  }
+}
+
+@media (max-width: 30rem) {
+  .new-posts-page-landing {
+    --np-title-size: 1.05rem;
+    --np-subtitle-size: 0.7rem;
+  }
+
   .posts-title-landing {
     font-size: 22px;
   }
@@ -1533,6 +1599,148 @@
     padding: 14px 24px;
     font-size: 14px;
     border-radius: 16px;
+  }
+}
+
+@media (max-width: 22.5rem) {
+  .new-posts-page-landing {
+    --np-title-size: 0.95rem;
+    --np-subtitle-size: 0.62rem;
+    --np-card-radius: 18px;
+  }
+
+  .new-posts-card-landing {
+    padding: 18px 14px;
+  }
+
+  .new-posts-title-container-landing {
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .new-posts-title-gradient-landing {
+    font-size: var(--np-title-size);
+    margin-bottom: 10px;
+  }
+  
+  .new-posts-subtitle-landing {
+    font-size: var(--np-subtitle-size);
+    padding-right: 0;
+    text-align: right;
+  }
+
+  .new-posts-subtitle-landing::before {
+    display: none;
+  }
+
+  .new-posts-icon-circle-landing {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+  }
+
+  .new-posts-pet-icon-landing {
+    width: 20px;
+    height: 20px;
+  }
+
+  .posts-category-tab-landing {
+    height: 42px;
+  }
+
+  .post-card-landing {
+    min-height: 340px;
+    height: 340px;
+  }
+
+  .post-image-container-landing {
+    height: 150px;
+  }
+
+  .post-name-landing {
+    font-size: 13px;
+  }
+
+  .post-subtitle-landing,
+  .post-detail-text-landing,
+  .post-description-landing {
+    font-size: 11px;
+  }
+
+  .post-type-landing {
+    font-size: 10px;
+    padding: 0 8px;
+    height: 24px;
+  }
+
+  .pet-listing-time-landing {
+    padding: 3px 7px !important;
+    border-radius: 14px !important;
+    gap: 5px !important;
+    bottom: 8px;
+    left: 8px;
+  }
+
+  .time-icon-landing {
+    width: 14px !important;
+    height: 14px !important;
+    padding: 2px !important;
+  }
+
+  .pet-listing-time-text-landing {
+    font-size: 9px !important;
+  }
+
+  .post-card-landing .pet-listing-time-landing {
+    border-width: 1px;
+  }
+
+  .post-content-landing {
+    padding: 18px;
+    gap: 12px;
+  }
+
+  .post-header-landing {
+    padding-bottom: 10px;
+  }
+
+  .post-info-landing {
+    gap: 8px;
+  }
+
+  .post-description-landing {
+    margin-top: -6px;
+  }
+
+  .post-details-container-landing {
+    gap: 2px;
+    margin-top: -8px;
+    margin-bottom: 8px;
+  }
+
+  .post-detail-landing {
+    gap: 8px;
+    padding: 6px 0;
+  }
+
+  .detail-icon-landing {
+    width: 20px;
+    height: 20px;
+  }
+
+  .show-more-container-landing {
+    margin-top: 16px;
+  }
+
+  .show-more-btn-landing,
+  .clear-filters-btn-landing {
+    padding: 10px 18px;
+    font-size: 11px;
+    border-radius: 12px;
+  }
+
+  .show-more-container-landing {
+    margin-top: 10px;
   }
 }
 

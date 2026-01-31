@@ -773,8 +773,8 @@
 
 @media (max-width: 40rem) {
   .animal-types-section {
-    --title-size: 1.22rem;
-    --subtitle-size: 0.83rem;
+    --title-size: 1.1rem;
+    --subtitle-size: 0.75rem;
     --icon-size: 2.75rem;
     --paw-size: 1.2rem;
     --wave-gap: 0.6rem;
@@ -857,8 +857,8 @@
 
 @media (max-width: 30rem) {
   .animal-types-section {
-    --title-size: 1.23rem;
-    --subtitle-size: 0.82rem;
+    --title-size: 1.05rem;
+    --subtitle-size: 0.7rem;
     --icon-size: 2.25rem;
     --paw-size: 1rem;
     --wave-gap: 0.4rem;
