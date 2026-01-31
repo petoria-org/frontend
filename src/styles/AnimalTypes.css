@@ -22,8 +22,8 @@
   --transition-bounce: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   --card-radius: clamp(1.25rem, 3vw, 2rem);
   --card-padding: clamp(1rem, 3.2vw, 3.125rem);
-  --title-size: clamp(1.375rem, 2.4vw, 2.25rem);
-  --subtitle-size: clamp(0.8125rem, 1.2vw, 1.125rem);
+  --title-size: clamp(1.5rem, 2.6vw, 2.4rem);
+  --subtitle-size: clamp(0.9rem, 1.4vw, 1.2rem);
   --icon-size: clamp(3.5rem, 8vw, 5rem);
   --paw-size: clamp(1.375rem, 3.2vw, 2rem);
   --circle-size: clamp(6.875rem, 18vw, 11.25rem);
@@ -133,6 +133,7 @@
 .animal-types-section .animal-types-title-text-content {
   flex: 1;
   text-align: right;
+  padding-right: 1rem;
 }
 
 .animal-types-section .animal-types-title-gradient {
