@@ -793,11 +793,18 @@
   }
   
   .animal-types-section .animal-types-title-gradient {
-    font-size: var(--title-size);
+    font-size: 1.3rem !important;
   }
   
   .animal-types-section .animal-types-subtitle {
-    font-size: var(--subtitle-size);
+    font-size: 0.8rem !important;
+    text-align: right;
+    padding-right: 0;
+  }
+
+  .animal-types-section .animal-types-title-text-content {
+    text-align: right;
+    padding-right: 1rem;
   }
 
   .animal-types-section .animal-types-header-container {

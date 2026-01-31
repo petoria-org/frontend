@@ -1389,11 +1389,11 @@
   }
   
   .new-posts-title-gradient-landing {
-    font-size: var(--np-title-size);
+    font-size: 1.3rem !important;
   }
   
   .new-posts-subtitle-landing {
-    font-size: var(--np-subtitle-size);
+    font-size: 0.8rem !important;
   }
   
   .new-posts-icon-circle-landing {
@@ -1445,8 +1445,23 @@
     --np-card-radius: 20px;
   }
 
+  .new-posts-title-container-landing {
+    text-align: right;
+    align-items: flex-start;
+  }
+
+  .new-posts-title-text-content-landing {
+    text-align: right;
+    padding-right: 1rem;
+  }
+
+  .new-posts-subtitle-landing {
+    text-align: right;
+    padding-right: 0;
+  }
+
   .new-posts-card-landing {
-    padding: 22px 18px;
+    padding: 20px 18px;
   }
   
   .new-posts-title-gradient-landing {
@@ -1469,11 +1484,12 @@
   }
 
   .posts-grid-landing {
-    gap: 22px;
+    gap: 25px;
   }
 
   .post-card-landing {
-    min-height: 420px;
+    min-height: 450px;
+    height: 450px;
   }
 
   .post-image-container-landing {
@@ -1482,6 +1498,129 @@
 
   .posts-category-tab-landing {
     height: 46px;
+  }
+
+  .post-status-landing,
+  .pet-listing-status-landing {
+    height: 30px;
+    padding: 0 16px;
+    font-size: 11px;
+    gap: 7px;
+    border-radius: 18px;
+  }
+
+  .post-content-landing {
+    padding: 24px;
+    gap: 16px;
+  }
+
+  .post-header-landing {
+    padding-bottom: 10px;
+  }
+
+  .post-info-landing {
+    gap: 8px;
+  }
+
+  .post-name-landing {
+    font-size: 16px !important;
+  }
+
+  .post-subtitle-landing,
+  .post-detail-text-landing,
+  .post-description-landing {
+    font-size: 12px !important;
+  }
+
+  .post-type-landing {
+    font-size: 11px;
+    padding: 0 14px;
+    height: 30px;
+  }
+
+  .post-description-landing {
+    margin-top: -2px;
+  }
+
+  .post-details-container-landing {
+    gap: 5px;
+    margin-top: -4px;
+    margin-bottom: 12px;
+  }
+
+  .post-detail-landing {
+    gap: 8px;
+    padding: 6px 0;
+  }
+
+  .detail-icon-landing {
+    width: 22px;
+    height: 22px;
+  }
+
+  .post-detail-text-landing {
+    font-size: 13px !important;
+  }
+
+  .pet-listing-time-landing {
+    padding: 6px 12px !important;
+    border-radius: 20px !important;
+    gap: 7px !important;
+    bottom: 12px;
+    left: 12px;
+  }
+
+  .time-icon-landing {
+    width: 15px !important;
+    height: 15px !important;
+    padding: 2px;
+  }
+
+  .pet-listing-time-text-landing {
+    font-size: 11px !important;
+  }
+
+  .image-glass-view-btn-landing {
+    padding: 10px 18px !important;
+    font-size: 12px !important;
+    min-width: 120px !important;
+    gap: 6px !important;
+  }
+
+  .image-glass-btn-icon-landing {
+    width: 13px !important;
+    height: 13px !important;
+  }
+
+  .post-card-landing .image-glass-view-btn-landing {
+    padding: 10px 18px !important;
+    font-size: 12px !important;
+    min-width: 120px !important;
+    gap: 6px !important;
+  }
+
+  .post-card-landing .image-glass-btn-icon-landing {
+    width: 13px !important;
+    height: 13px !important;
+  }
+
+  .post-card-landing .pet-listing-time-landing {
+    padding: 6px 12px !important;
+    border-radius: 20px !important;
+    gap: 7px !important;
+  }
+
+  .post-card-landing .time-icon-landing {
+    width: 15px !important;
+    height: 15px !important;
+  }
+
+  .post-card-landing .pet-listing-time-text-landing {
+    font-size: 11px !important;
+  }
+
+  .show-more-container-landing {
+    margin-top: 18px;
   }
 }
 
@@ -1796,7 +1935,11 @@
   .post-subtitle-landing,
   .post-detail-text-landing,
   .post-description-landing {
-    font-size: 10px;
+    font-size: 9px;
+  }
+
+  .post-detail-text-landing {
+    font-size: 10px !important;
   }
 
   .post-type-landing {
@@ -1861,15 +2004,27 @@
   }
 
   .image-glass-view-btn-landing {
-    padding: 7px 14px;
-    font-size: 10px;
-    min-width: 110px;
-    gap: 5px;
+    padding: 6px 12px !important;
+    font-size: 9px !important;
+    min-width: 100px !important;
+    gap: 4px !important;
   }
 
   .image-glass-btn-icon-landing {
-    width: 12px;
-    height: 12px;
+    width: 11px !important;
+    height: 11px !important;
+  }
+
+  .post-card-landing .image-glass-view-btn-landing {
+    padding: 6px 12px !important;
+    font-size: 9px !important;
+    min-width: 100px !important;
+    gap: 4px !important;
+  }
+
+  .post-card-landing .image-glass-btn-icon-landing {
+    width: 11px !important;
+    height: 11px !important;
   }
 
   .show-more-container-landing {
