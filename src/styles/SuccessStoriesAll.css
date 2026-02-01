@@ -233,6 +233,25 @@
   margin-bottom: 24px;
 }
 
+.title-icon-heart {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #7ab3e0 0%, #5a9bc9 100%);
+  border-radius: 14px;
+  color: white;
+  box-shadow: 0 8px 20px rgba(122, 179, 224, 0.3);
+  animation: heartbeat 2s ease-in-out infinite;
+}
+
+.title-icon-heart svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
 @keyframes heartbeat {
   0%, 100% {
     transform: scale(1);
@@ -303,10 +322,9 @@
   line-height: 1.6;
   direction: rtl;
   margin-top: 12px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
+  display: block;
   position: relative;
+  unicode-bidi: plaintext;
 }
 
 .stories-subtitle-all::before {
@@ -314,9 +332,16 @@
 }
 
 .subtitle-dots {
-  display: inline-flex;
+  display: inline;
   gap: 2px;
-  margin-right: 4px;
+  margin-inline-start: 0;
+  white-space: nowrap;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.subtitle-dots::before {
+  content: '\00a0';
 }
 
 .dot {
@@ -1195,6 +1220,17 @@
     margin-left: 0;
   }
 
+  .title-icon-heart {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+  }
+
+  .title-icon-heart svg {
+    width: 20px;
+    height: 20px;
+  }
+
   .story-card-all {
     padding: 1.1rem;
     border-radius: 1.2rem;
@@ -1329,6 +1365,28 @@
     margin-right: 0;
     margin-left: 0;
     padding-right: 0;
+  }
+
+  .title-icon-heart {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+  }
+
+  .title-icon-heart svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .title-icon-heart {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+  }
+
+  .title-icon-heart svg {
+    width: 18px;
+    height: 18px;
   }
 
   .stories-card-all {
@@ -1592,6 +1650,17 @@
     margin-right: 0;
     margin-left: 0;
     padding-right: 0;
+  }
+
+  .title-icon-heart {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+  }
+
+  .title-icon-heart svg {
+    width: 14px;
+    height: 14px;
   }
 
   .title-text-content-all {

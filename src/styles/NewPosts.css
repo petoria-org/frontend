@@ -1500,6 +1500,10 @@
     font-size: 11px;
   }
 
+  .post-detail-text-landing {
+    font-size: 10px !important;
+  }
+
   .post-type-landing {
     font-size: 10px;
     padding: 0 8px;
@@ -1995,6 +1999,10 @@
   .post-detail-text-landing,
   .post-description-landing {
     font-size: 11px;
+  }
+
+  .post-detail-landing .post-detail-text-landing {
+    font-size: 11px !important;
   }
 
   .post-type-landing {

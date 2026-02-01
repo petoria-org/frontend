@@ -1533,6 +1533,13 @@
   }
 }
 
+@media (min-width: 769px) and (max-width: 1019px) {
+  .advanced-filters-container .advanced-main-filters-grid,
+  .advanced-filters-container .advanced-adoption-filters-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 480px) {
   .advanced-filters-container .advanced-toggle-content {
     padding: 16px 18px;
@@ -1601,5 +1608,341 @@
   .advanced-filters-container .advanced-dropdown-option {
     font-size: 11px;
     padding: 8px 10px;
+  }
+}
+
+@media (max-width: 64rem) {
+  .advanced-filters-container {
+    margin-bottom: 10px;
+  }
+
+  .advanced-filters-container .advanced-toggle-box {
+    border-radius: 12px;
+  }
+
+  .advanced-filters-container .advanced-toggle-content {
+    padding: 16px 16px;
+  }
+
+  .advanced-filters-container .advanced-toggle-title {
+    gap: 12px;
+  }
+
+  .advanced-filters-container .advanced-toggle-icon-wrapper {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+  }
+
+  .advanced-filters-container .advanced-toggle-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .advanced-filters-container .advanced-toggle-text {
+    font-size: 14px;
+  }
+
+  .advanced-filters-container .advanced-toggle-description {
+    font-size: 12px;
+  }
+
+  .advanced-filters-container .advanced-toggle-arrow {
+    width: 24px;
+    height: 24px;
+  }
+
+  .advanced-filters-container .advanced-toggle-arrow svg {
+    width: 11px;
+    height: 11px;
+  }
+
+  .advanced-filters-container .advanced-options-wrapper {
+    padding: 0 10px 10px !important;
+  }
+
+  .advanced-filters-container .advanced-main-filters-grid,
+  .advanced-filters-container .advanced-adoption-filters-grid {
+    gap: 8px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .advanced-filters-container .advanced-filter-select-wrapper {
+    padding-top: 10px !important;
+  }
+
+  .advanced-filters-container .advanced-custom-select {
+    height: 42px !important;
+    font-size: 11px !important;
+    padding: 7px 10px !important;
+    padding-left: 26px !important;
+    background-size: 10px !important;
+    background-position: left 10px center !important;
+    border-radius: 8px !important;
+  }
+
+  .advanced-filters-container .advanced-select-placeholder-text {
+    font-size: 11px !important;
+  }
+
+  .advanced-filters-container .advanced-dropdown-search-input {
+    font-size: 11px !important;
+    padding: 6px 30px 6px 8px !important;
+  }
+
+  .advanced-filters-container .advanced-dropdown-option {
+    font-size: 11px !important;
+    padding: 6px 9px !important;
+  }
+
+  .advanced-filters-container .advanced-filter-title {
+    font-size: 11px !important;
+    padding: 0 10px !important;
+    gap: 5px !important;
+    border-radius: 14px !important;
+  }
+
+  .advanced-filters-container .advanced-filter-title-icon {
+    width: 9px !important;
+    height: 9px !important;
+  }
+
+  .advanced-filters-container .advanced-active-filter-badge {
+    font-size: 10px !important;
+    padding: 3px 6px !important;
+  }
+
+  .advanced-filters-container .advanced-remove-filter-btn {
+    width: 12px !important;
+    height: 12px !important;
+  }
+
+  .advanced-filters-container .advanced-remove-filter-btn img {
+    width: 6px !important;
+    height: 6px !important;
+  }
+}
+
+@media (max-width: 30rem) {
+  .advanced-filters-container {
+    margin-bottom: 8px;
+  }
+
+  .advanced-filters-container .advanced-toggle-box {
+    border-radius: 10px;
+  }
+
+  .advanced-filters-container .advanced-toggle-content {
+    padding: 14px 14px;
+  }
+
+  .advanced-filters-container .advanced-toggle-title {
+    gap: 10px;
+  }
+
+  .advanced-filters-container .advanced-toggle-icon-wrapper {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+  }
+
+  .advanced-filters-container .advanced-toggle-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .advanced-filters-container .advanced-toggle-text {
+    font-size: 13px;
+  }
+
+  .advanced-filters-container .advanced-toggle-description {
+    font-size: 11px;
+  }
+
+  .advanced-filters-container .advanced-toggle-arrow {
+    width: 22px;
+    height: 22px;
+  }
+
+  .advanced-filters-container .advanced-toggle-arrow svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  .advanced-filters-container .advanced-options-wrapper {
+    padding: 0 8px 8px !important;
+  }
+
+  .advanced-filters-container .advanced-main-filters-grid,
+  .advanced-filters-container .advanced-adoption-filters-grid {
+    gap: 6px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .advanced-filters-container .advanced-filter-select-wrapper {
+    padding-top: 8px !important;
+  }
+
+  .advanced-filters-container .advanced-custom-select {
+    height: 38px !important;
+    font-size: 10px !important;
+    padding: 6px 8px !important;
+    padding-left: 22px !important;
+    background-size: 9px !important;
+    background-position: left 8px center !important;
+    border-radius: 7px !important;
+  }
+
+  .advanced-filters-container .advanced-select-placeholder-text {
+    font-size: 10px !important;
+  }
+
+  .advanced-filters-container .advanced-dropdown-search-input {
+    font-size: 10px !important;
+    padding: 5px 26px 5px 6px !important;
+  }
+
+  .advanced-filters-container .advanced-dropdown-option {
+    font-size: 10px !important;
+    padding: 5px 7px !important;
+  }
+
+  .advanced-filters-container .advanced-filter-title {
+    font-size: 10px !important;
+    padding: 0 8px !important;
+    gap: 4px !important;
+    border-radius: 12px !important;
+  }
+
+  .advanced-filters-container .advanced-filter-title-icon {
+    width: 8px !important;
+    height: 8px !important;
+  }
+
+  .advanced-filters-container .advanced-active-filter-badge {
+    font-size: 9px !important;
+    padding: 2px 5px !important;
+  }
+
+  .advanced-filters-container .advanced-remove-filter-btn {
+    width: 11px !important;
+    height: 11px !important;
+  }
+
+  .advanced-filters-container .advanced-remove-filter-btn img {
+    width: 5px !important;
+    height: 5px !important;
+  }
+}
+
+@media (max-width: 22.5rem) {
+  .advanced-filters-container {
+    margin-bottom: 8px;
+  }
+
+  .advanced-filters-container .advanced-toggle-box {
+    border-radius: 10px;
+  }
+
+  .advanced-filters-container .advanced-toggle-content {
+    padding: 14px 14px;
+  }
+
+  .advanced-filters-container .advanced-toggle-title {
+    gap: 10px;
+  }
+
+  .advanced-filters-container .advanced-toggle-icon-wrapper {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+  }
+
+  .advanced-filters-container .advanced-toggle-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .advanced-filters-container .advanced-toggle-text {
+    font-size: 13px;
+  }
+
+  .advanced-filters-container .advanced-toggle-description {
+    font-size: 11px;
+  }
+
+  .advanced-filters-container .advanced-toggle-arrow {
+    width: 22px;
+    height: 22px;
+  }
+
+  .advanced-filters-container .advanced-toggle-arrow svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  .advanced-filters-container .advanced-options-wrapper {
+    padding: 0 8px 8px !important;
+  }
+
+  .advanced-filters-container .advanced-main-filters-grid,
+  .advanced-filters-container .advanced-adoption-filters-grid {
+    gap: 6px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .advanced-filters-container .advanced-filter-select-wrapper {
+    padding-top: 8px !important;
+  }
+
+  .advanced-filters-container .advanced-custom-select {
+    height: 38px !important;
+    font-size: 10px !important;
+    padding: 6px 8px !important;
+    padding-left: 22px !important;
+    background-size: 9px !important;
+    background-position: left 8px center !important;
+    border-radius: 7px !important;
+  }
+
+  .advanced-filters-container .advanced-select-placeholder-text {
+    font-size: 10px !important;
+  }
+
+  .advanced-filters-container .advanced-dropdown-search-input {
+    font-size: 10px !important;
+    padding: 5px 26px 5px 6px !important;
+  }
+
+  .advanced-filters-container .advanced-dropdown-option {
+    font-size: 10px !important;
+    padding: 5px 7px !important;
+  }
+
+  .advanced-filters-container .advanced-filter-title {
+    font-size: 10px !important;
+    padding: 0 8px !important;
+    gap: 4px !important;
+    border-radius: 12px !important;
+  }
+
+  .advanced-filters-container .advanced-filter-title-icon {
+    width: 8px !important;
+    height: 8px !important;
+  }
+
+  .advanced-filters-container .advanced-active-filter-badge {
+    font-size: 9px !important;
+    padding: 2px 5px !important;
+  }
+
+  .advanced-filters-container .advanced-remove-filter-btn {
+    width: 11px !important;
+    height: 11px !important;
+  }
+
+  .advanced-filters-container .advanced-remove-filter-btn img {
+    width: 5px !important;
+    height: 5px !important;
   }
 }
