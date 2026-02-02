@@ -10,7 +10,7 @@ import {
 } from "../../utils/postImages";
 import { deleteLostPost, deleteFoundPost, deleteSurrenderPost } from "../../Services/userService";
 import { ImageCropper } from "../ImageCropper";
-import { NotificationToast } from "../NotificationToast/NotificationToast";
+import { NotificationToast } from "../NotificationToast";
 
 export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => { 
   const [images, setImages] = useState([]);
@@ -766,4 +766,5 @@ export const SuccessStoryCreation = ({ pet, onSave, onCancel, onSkip }) => {
     </>
   );
 };
+
 

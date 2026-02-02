@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import { getUserSuccessStories, deleteSuccessStory, updateSuccessStory } from "../../Services/successStoryService";
 import "../../styles/UserProfile.css";
-import LoadingScreen from "../LoadingScreen/LoadingScreen";
+import LoadingScreen from "../LoadingScreen";
 import { StoryDetailView } from "./StoryDetailView";
 import { EditStoryModal } from "./EditStoryModal";
-import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
-import { NotificationToast } from "../NotificationToast/NotificationToast";
+import DeleteConfirmationModal from "../DeleteConfirmationModal";
+import { NotificationToast } from "../NotificationToast";
 
 const toJalaliDate = (dateString) => {
   if (!dateString) return "";
@@ -436,4 +436,5 @@ const UserStoriesPage = () => {
 };
 
 export default UserStoriesPage;
+
 

@@ -1,5 +1,5 @@
-import SuccessStoriesAll from '../../components/SuccessStoriesAll';
-import '../../styles/SuccessStoriesAll.css';
+import SuccessStoriesAll from "../../components/SuccessStoriesAll";
+import "../../styles/SuccessStoriesAll.css";
 
 const SuccessStoriesAllPage = () => {
   return (

@@ -11,8 +11,8 @@ import contactIcon from '../../assets/icons/stickynote.svg';
 import closeIcon from '../../assets/icons/close.svg';
 import mapIcon from '../../assets/icons/map.svg';
 import lockIcon from "../../assets/icons/lock.svg";
-import { NotificationToast } from '../NotificationToast/NotificationToast';
-import MapPicker from '../MapPicker/MapPicker';
+import { NotificationToast } from '../NotificationToast';
+import MapPicker from '../MapPicker';
 import { ImageCropper } from "../ImageCropper";
 import { config } from "../../config";
 import {
@@ -2972,4 +2972,5 @@ export const NotificationOptionsSection = ({ adData, onClose, onSave, mode, toas
     </>
   );
 }
+
 

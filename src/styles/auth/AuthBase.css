@@ -143,15 +143,15 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding-top: clamp(1.5rem, 8vh, 7rem);
+  padding-top: clamp(2rem, 10vh, 8rem);
 }
 
 .verify-card {
-  padding-top: clamp(1.5rem, 8vh, 7rem);
+  padding-top: clamp(2rem, 10vh, 8rem);
 }
 
 .reset-password-card {
-  padding-top: clamp(1.5rem, 8vh, 7rem);
+  padding-top: clamp(2rem, 10vh, 8rem);
 }
 
 .forgot-password-card > * {
@@ -239,6 +239,10 @@
   pointer-events: none;
   z-index: 2;
   color: #006BCB;
+}
+
+.input-icon.input-icon-user {
+  opacity: 0.3;
 }
 
 .text-input {
@@ -500,13 +504,6 @@
     border-radius: 18px;
   }
 
-  .forgot-password-card,
-  .reset-password-card,
-  .verify-card {
-    padding-top: clamp(1.4rem, 6vh, 3rem);
-    padding-bottom: clamp(1.4rem, 6vh, 3rem);
-  }
-
 }
 
 @media (max-width: 480px) {
@@ -515,13 +512,6 @@
     height: min(620px, calc(100vh - (2 * var(--auth-page-pad))));
     min-height: min(480px, calc(100vh - (2 * var(--auth-page-pad))));
     max-height: calc(100vh - (2 * var(--auth-page-pad)));
-  }
-
-  .forgot-password-card,
-  .reset-password-card,
-  .verify-card {
-    padding-top: clamp(1.1rem, 5vh, 2.2rem);
-    padding-bottom: clamp(1.1rem, 5vh, 2.2rem);
   }
 
   .auth-card {
@@ -541,13 +531,6 @@
     height: min(560px, calc(100vh - (2 * var(--auth-page-pad))));
     min-height: min(440px, calc(100vh - (2 * var(--auth-page-pad))));
     max-height: calc(100vh - (2 * var(--auth-page-pad)));
-  }
-
-  .forgot-password-card,
-  .reset-password-card,
-  .verify-card {
-    padding-top: clamp(0.9rem, 4vh, 1.8rem);
-    padding-bottom: clamp(0.9rem, 4vh, 1.8rem);
   }
 
   .auth-card {
@@ -575,12 +558,6 @@
     scroll-padding-bottom: 1.8em;
     height: auto;
     overflow: visible;
-  }
-
-  .forgot-password-card,
-  .reset-password-card,
-  .verify-card {
-    padding-top: 1.2rem;
   }
 
   .login-card {

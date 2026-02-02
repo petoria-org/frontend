@@ -1,0 +1,151 @@
+import "../../styles/auth/AuthBase.css"
+import "../../styles/auth/AuthLayout.css";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { login as loginRequest } from "../../Services/authservice";
+import { useAuth } from "../../context/AuthContext";
+import { useState } from "react";
+import { NotificationToast } from "../../components/NotificationToast";
+
+const Login = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  const location = useLocation();
+  const from = location.state?.from || "/";
+  const [notification, setNotification] = useState(null);
+
+  const showNotification = (message, type = "error") => {
+    setNotification({ message, type });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
+  };
+
+  const schema = yup.object().shape({
+    identifier: yup.string().required("ایمیل یا نام کاربری الزامی است"),
+    password: yup.string().required("رمز عبور الزامی است"),
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const onSubmit = async (data) => {
+    const response = await loginRequest(data);
+
+    if (response.success) {
+      login({
+        access: response.data.access,
+        refresh: response.data.refresh,
+      });
+
+      navigate(from, { replace: true });
+    } else {
+      showNotification(response.message || "ورود ناموفق بود", "error");
+    }
+  };
+
+  return (
+    <div className="auth-page">
+      {notification && (
+        <NotificationToast
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+          position="top-right"
+        />
+      )}
+      <div className="auth-main login-main">
+        <div className="auth-card login-card">
+          <h2 className="auth-title">ورود به حساب کاربری</h2>
+          <p className="auth-subtitle">به Petoria خوش آمدید</p>
+
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <label className="field-label">ایمیل یا نام کاربری*</label>
+            <div className="input-wrapper">
+              <img
+                className="input-icon"
+                src="/src/assets/icons/profile-circle.svg"
+                alt="profile"
+              />
+              <input
+                type="text"
+                className="text-input"
+                placeholder="ایمیل یا نام کاربری خود را وارد کنید"
+                {...register("identifier")}
+              />
+            </div>
+            <p className="error">{errors.identifier?.message}</p>
+
+            <label className="field-label">رمز عبور*</label>
+            <div className="input-wrapper">
+              <img
+                className="input-icon"
+                src="/src/assets/icons/lock.svg"
+                alt="lock"
+              />
+              <input
+                type="password"
+                className="text-input"
+                placeholder="رمز عبور خود را وارد کنید"
+                {...register("password")}
+              />
+            </div>
+            <p className="error">{errors.password?.message}</p>
+
+            <Link className="forgot-pass" to="/forgot-password">
+              رمز عبور خود را فراموش کرده‌اید؟
+            </Link>
+
+            <button
+              className="form-btn"
+              type="submit"
+              disabled={isSubmitting}
+            >
+              <span>{isSubmitting ? "در حال ورود..." : "ورود"}</span>
+              {!isSubmitting && (
+                <img
+                  className="arrow"
+                  src="/src/assets/icons/arrow-right.svg"
+                  alt="arrow"
+                />
+              )}
+            </button>
+          </form>
+
+          <div className="divider">
+            <span className="divider-line" />
+            <span className="divider-text">یا</span>
+            <span className="divider-line" />
+          </div>
+
+          <button className="google-btn">
+            <span>ورود با حساب گوگل</span>
+            <img src="/src/assets/icons/chrome.svg" alt="chrome" />
+          </button>
+
+          <p className="auth-footer">
+            حساب کاربری ندارید؟{" "}
+            <Link className="interactive-link" to="/register">
+              ثبت نام کنید
+            </Link>
+          </p>
+        </div>
+
+        <div className="auth-img login-img">
+          <img src="/src/assets/images/dog.svg" alt="dog" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Login;
+
+

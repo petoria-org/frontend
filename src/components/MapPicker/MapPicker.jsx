@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, useMapEvents, useMap, Circle } from "r
 import "leaflet/dist/leaflet.css";
 import axios from "axios";
 import L from 'leaflet';
-import { NotificationToast } from "../NotificationToast/NotificationToast";
+import { NotificationToast } from "../NotificationToast";
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';

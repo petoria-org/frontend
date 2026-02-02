@@ -6,7 +6,7 @@ import "leaflet/dist/leaflet.css";
 import iconUrl from "leaflet/dist/images/marker-icon.png";
 import iconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
-import { NotificationToast } from "../NotificationToast/NotificationToast";
+import { NotificationToast } from "../NotificationToast";
 import HeartIcon from "../../assets/icons/heart.svg";
 import LocationIcon from "../../assets/icons/location.svg";
 import GenderIcon from "../../assets/icons/tick-circle.svg";
@@ -1002,6 +1002,31 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
     return recipientUser?.username || contactInfo?.name || "س";
   };
 
+  const resolveRecipientAvatar = () => {
+    return (
+      recipientUser?.avatar ||
+      recipientUser?.profile_image ||
+      recipientUser?.profile_picture ||
+      recipientUser?.photo ||
+      recipientUser?.image ||
+      recipientUser?.thumbnail ||
+      null
+    );
+  };
+
+  const extractAvatarFromUser = (user) => {
+    if (!user) return null;
+    return (
+      user.avatar ||
+      user.profile_image ||
+      user.profile_picture ||
+      user.photo ||
+      user.image ||
+      user.thumbnail ||
+      null
+    );
+  };
+
   const handleStartChat = async () => {
     if (chatChecking) return;
 
@@ -1015,6 +1040,26 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
 
     setChatChecking(true);
     try {
+      let resolvedUser = recipientUser;
+
+      if (!extractAvatarFromUser(resolvedUser)) {
+        try {
+          const userRes = await getUserById(recipientId);
+          const fetchedUser = userRes?.data ?? userRes;
+          if (fetchedUser?.username) {
+            resolvedUser = fetchedUser;
+            setRecipientUser(fetchedUser);
+            setContactInfo((prev) => ({
+              ...prev,
+              name: fetchedUser.username ?? prev.name,
+              email: fetchedUser.email ?? prev.email,
+            }));
+          }
+        } catch (e) {
+          console.warn("getUserById (chat avatar) failed:", e);
+        }
+      }
+
       const res = await getChatWithUser(recipientId);
       if (!res?.success) {
         let message = "خطا در بررسی گفتگوهای قبلی.";
@@ -1035,6 +1080,7 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
         fromShowDetails: true,
         recipientId,
         recipientName: resolveRecipientName(),
+        recipientAvatar: extractAvatarFromUser(resolvedUser) || resolveRecipientAvatar(),
       };
 
       if (chatId != null) {
@@ -1605,6 +1651,7 @@ export const ShowDetailsAdopt = ({ postId: propPostId, postType: propPostType, p
     </div>
   );
 };
+
 
 
 

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import "../../styles/ProfileEdit.css";
-import { NotificationToast } from '../NotificationToast/NotificationToast';
+import { NotificationToast } from '../NotificationToast';
 import { ImageCropper } from "../ImageCropper";
 
 const ProfileEditEditIcon = () => (
@@ -676,3 +676,4 @@ const ProfileEdit = ({ userData, onClose, onSave }) => {
 };
 
 export default ProfileEdit;
+

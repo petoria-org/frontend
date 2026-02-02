@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { SuccessStoryDetail } from "../SuccessStoryDetail/SuccessStoryDetail";
+import { SuccessStoryDetail } from "../SuccessStoryDetail";
 import "../../styles/SuccessStoriesAll.css";
-import LoadingScreen from "../LoadingScreen/LoadingScreen";
+import LoadingScreen from "../LoadingScreen";
 import { getSuccessStories } from "../../Services/successStoryService";
 import { config } from "../../config";
 import { getSuccessStoryDefaultImage } from "../../utils/postImages";
-import { Pagination } from "../Pagination/Pagination";
+import { Pagination } from "../Pagination";
 
 const toJalaliDate = (dateString) => {
   if (!dateString) return "";
@@ -360,4 +360,5 @@ const SuccessStoriesAll = () => {
 };
 
 export default SuccessStoriesAll;
+
 

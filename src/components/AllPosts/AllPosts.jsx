@@ -2,8 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdvancedFilters from "../AdvancedFilters";
 import SortFilters from "../SortFilters";
-import { Pagination } from "../Pagination/Pagination";
-import LoadingScreen from "../LoadingScreen/LoadingScreen";
+import { Pagination } from "../Pagination";
+import LoadingScreen from "../LoadingScreen";
 import "../../styles/AllPosts.css";
 import { config } from "../../config";
 import { getPostImage } from "../../utils/postImages";
@@ -993,5 +993,6 @@ export default function AllPosts() {
     </div>
   );
 }
+
 
 

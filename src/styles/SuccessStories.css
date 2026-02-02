@@ -530,6 +530,52 @@
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.ls-success-story-read-more-btn {
+  --ls-read-more-pad-y: 0.55rem;
+  --ls-read-more-pad-x: 1.55rem;
+  --ls-read-more-font: 0.78rem;
+  --ls-read-more-gap: 0.45rem;
+  --ls-read-more-radius: 0.75rem;
+  --ls-read-more-arrow: 0.8rem;
+}
+
+.ls-success-story-read-more-btn {
+  padding: var(--ls-read-more-pad-y) var(--ls-read-more-pad-x);
+  font-size: var(--ls-read-more-font);
+  gap: var(--ls-read-more-gap);
+  border-radius: var(--ls-read-more-radius);
+}
+
+.ls-success-story-btn-arrow {
+  width: var(--ls-read-more-arrow);
+  height: var(--ls-read-more-arrow);
+}
+
+@media (min-width: 90.0625rem) {
+  .ls-success-story-read-more-btn {
+    --ls-read-more-pad-y: 0.7rem;
+    --ls-read-more-pad-x: 1.45rem;
+    --ls-read-more-font: 0.88rem;
+    --ls-read-more-gap: 0.55rem;
+    --ls-read-more-radius: 0.75rem;
+    --ls-read-more-arrow: 1.05rem;
+  }
+}
+
+@media (min-width: 90.0625rem) {
+  .ls-success-stories-profile-style {
+    --ls-card-bottom-padding: 2rem;
+  }
+
+  .ls-success-story-card-profile {
+    padding-bottom: 1rem;
+  }
+
+  .ls-success-story-footer {
+    margin-top: 1rem;
+  }
+}
+
 .ls-success-story-read-more-btn:hover .ls-success-story-btn-arrow {
   transform: translateX(0.25rem);
 }
@@ -592,6 +638,38 @@
 
 .ls-show-all-stories-btn:hover .ls-show-all-arrow-icon {
   transform: translateX(-0.375rem);
+}
+
+.ls-show-all-stories-btn {
+  --ls-show-all-pad-y: 0.6rem;
+  --ls-show-all-pad-x: 1.4rem;
+  --ls-show-all-font: 0.85rem;
+  --ls-show-all-gap: 0.45rem;
+  --ls-show-all-radius: 1.75rem;
+  --ls-show-all-arrow: 0.9rem;
+}
+
+.ls-show-all-stories-btn {
+  padding: var(--ls-show-all-pad-y) var(--ls-show-all-pad-x);
+  font-size: var(--ls-show-all-font);
+  gap: var(--ls-show-all-gap);
+  border-radius: var(--ls-show-all-radius);
+}
+
+.ls-show-all-arrow-icon {
+  width: var(--ls-show-all-arrow);
+  height: var(--ls-show-all-arrow);
+}
+
+@media (min-width: 90.0625rem) {
+  .ls-show-all-stories-btn {
+    --ls-show-all-pad-y: 1rem;
+    --ls-show-all-pad-x: 2rem;
+    --ls-show-all-font: 1.05rem;
+    --ls-show-all-gap: 0.7rem;
+    --ls-show-all-radius: 1.9rem;
+    --ls-show-all-arrow: 1.3rem;
+  }
 }
 
 .ls-loading-overlay-profile {

@@ -60,6 +60,7 @@
 
 .verify-resend-link {
   display: inline-flex;
+  align-self: center;
   gap: 0.4em;
   color: #97c0e2;
   cursor: default;

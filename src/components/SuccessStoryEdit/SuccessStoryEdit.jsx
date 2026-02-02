@@ -10,7 +10,7 @@ import {
 } from "../../Services/successStoryService";
 import { useOutletContext } from "react-router-dom";
 import { ImageCropper } from "../ImageCropper";
-import { NotificationToast } from "../NotificationToast/NotificationToast";
+import { NotificationToast } from "../NotificationToast";
 
 export const SuccessStoryEdit = ({ story, onUpdate, onDelete, onCancel }) => {
   const BACKEND_URL = config.BACKEND_URL;
@@ -859,6 +859,7 @@ const handleTextareaChange = (e) => {
     </>
   );
 };
+
 
 
 
