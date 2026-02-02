@@ -115,7 +115,7 @@ const Register = () => {
                 نام*
             </label>
             <div className="input-wrapper">
-              <img className="input-icon" src="/src/icons/user.svg" alt="user" />
+              <img className="input-icon" src="/src/assets/icons/user.svg" alt="user" />
               <input
                 type="text"
                 className="text-input"
@@ -130,7 +130,7 @@ const Register = () => {
                 نام خانوادگی*
             </label>
             <div className="input-wrapper">
-              <img className="input-icon" src="/src/icons/user.svg" alt="user" />
+              <img className="input-icon" src="/src/assets/icons/user.svg" alt="user" />
               <input
                 type="text"
                 className="text-input"
@@ -145,7 +145,7 @@ const Register = () => {
                 نام کاربری*
             </label>
             <div className="input-wrapper">
-              <img className="input-icon" src="/src/icons/profile-circle.svg" alt="profile-circle" />
+              <img className="input-icon" src="/src/assets/icons/profile-circle.svg" alt="profile-circle" />
               <input
                 type="text"
                 className="text-input"
@@ -160,7 +160,7 @@ const Register = () => {
                 ایمیل*
             </label>
             <div className="input-wrapper">
-              <img className="input-icon" src="/src/icons/sms.svg" alt="sms" />
+              <img className="input-icon" src="/src/assets/icons/sms.svg" alt="sms" />
               <input
                 className="text-input"
                 placeholder="example@gmail.com"
@@ -174,7 +174,7 @@ const Register = () => {
                 رمز عبور*
             </label>
             <div className="input-wrapper">
-              <img className="input-icon" src="/src/icons/lock.svg" alt="lock" />
+              <img className="input-icon" src="/src/assets/icons/lock.svg" alt="lock" />
               <input
                 type="password"
                 className="text-input"
@@ -189,7 +189,7 @@ const Register = () => {
                 تأیید رمز عبور*
             </label>
             <div className="input-wrapper">
-              <img className="input-icon" src="/src/icons/lock.svg" alt="lock" />
+              <img className="input-icon" src="/src/assets/icons/lock.svg" alt="lock" />
               <input
                 type="password"
                 className="text-input"
@@ -202,7 +202,7 @@ const Register = () => {
             {/* Register button */}
             <button className="form-btn" disabled={loading}>
               <span>{loading ? "در حال ارسال..." : "ثبت نام"}</span>
-              <img className="arrow" src="/src/icons/arrow-right.svg" alt="arrow-right" />
+              <img className="arrow" src="/src/assets/icons/arrow-right.svg" alt="arrow-right" />
             </button>
           </form>
 
@@ -216,7 +216,7 @@ const Register = () => {
           {/* Google */}
           <button className="google-btn">
             <span>ثبت نام با حساب گوگل</span>
-            <img src="/src/icons/chrome.svg" alt="chrome-icon" />
+            <img src="/src/assets/icons/chrome.svg" alt="chrome-icon" />
           </button>
 
           {/* Already have account */}
@@ -226,7 +226,7 @@ const Register = () => {
           </p>
         </div>
         <div className="auth-img register-img">
-          <img src="/src/images/cat.svg" alt="cat" />
+          <img src="/src/assets/images/cat.svg" alt="cat" />
         </div>
       </div>
     </div>
@@ -234,3 +234,5 @@ const Register = () => {
 };
 
 export default Register;
+
+

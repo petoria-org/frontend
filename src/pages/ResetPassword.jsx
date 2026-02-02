@@ -81,7 +81,7 @@ const ResetPassword = () => {
                   رمز عبور جدید
               </label>
               <div className="input-wrapper">
-                <img className="input-icon" src="/src/icons/lock.svg" alt="lock" />
+                <img className="input-icon" src="/src/assets/icons/lock.svg" alt="lock" />
                 <input
                   type="password"
                   className="text-input"
@@ -96,7 +96,7 @@ const ResetPassword = () => {
                   تأیید رمز عبور
               </label>
               <div className="input-wrapper">
-                <img className="input-icon" src="/src/icons/lock.svg" alt="lock" />
+                <img className="input-icon" src="/src/assets/icons/lock.svg" alt="lock" />
                 <input
                   type="password"
                   className="text-input"
@@ -120,7 +120,7 @@ const ResetPassword = () => {
         </div>
 
         <div className="auth-img reset-password-img">
-          <img src="/src/images/catRP.svg" alt="cat" />
+          <img src="/src/assets/images/catRP.svg" alt="cat" />
         </div>
       </div>
     </div>
@@ -128,3 +128,5 @@ const ResetPassword = () => {
 };
 
 export default ResetPassword;
+
+

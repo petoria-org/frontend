@@ -175,7 +175,7 @@ const SuccessStoriesModern = () => {
 
   const LocationIcon = () => (
     <img 
-      src="/src/icons/location.svg" 
+      src="/src/assets/icons/location.svg" 
       alt="location"
       width="16" 
       height="16"
@@ -185,7 +185,7 @@ const SuccessStoriesModern = () => {
 
   const CalendarIcon = () => (
     <img 
-      src="/src/icons/calendar-2.svg" 
+      src="/src/assets/icons/calendar-2.svg" 
       alt="calendar"
       width="16" 
       height="16"
@@ -195,7 +195,7 @@ const SuccessStoriesModern = () => {
 
   const ClockIcon = () => (
     <img 
-      src="/src/icons/clock.svg" 
+      src="/src/assets/icons/clock.svg" 
       alt="time"
       width="12" 
       height="12"
@@ -366,4 +366,5 @@ const SuccessStoriesModern = () => {
 };
 
 export default SuccessStoriesModern;
+
 

@@ -120,7 +120,7 @@ const Verify = () => {
       <div className="auth-main verify-main auth-context-ltr">
         <div className="auth-card verify-card">
           <div className="verify-icon">
-            <img src="/src/icons/verify.svg" alt="verify" />
+            <img src="/src/assets/icons/verify.svg" alt="verify" />
           </div>
 
           <p className="auth-subtitle">کد تأیید ارسال شده را وارد کنید</p>
@@ -158,7 +158,7 @@ const Verify = () => {
             className={`verify-resend-link ${canResend ? "active" : ""}`}
             onClick={canResend ? handleResend : null}
           >
-            <img src="/src/icons/resend.svg" alt="resend" />
+            <img src="/src/assets/icons/resend.svg" alt="resend" />
             <span>ارسال مجدد کد</span>
           </div>
 
@@ -169,12 +169,12 @@ const Verify = () => {
             disabled={loading}
           >
             <span>{loading ? "در حال بررسی..." : "تأیید و ادامه"}</span>
-            <img className="arrow" src="/src/icons/arrow-right.svg" alt="arrow-right" />
+            <img className="arrow" src="/src/assets/icons/arrow-right.svg" alt="arrow-right" />
           </button>
         </div>
 
         <div className="auth-img verify-img">
-          <img src="/src/images/catV.svg" alt="cat" />
+          <img src="/src/assets/images/catV.svg" alt="cat" />
         </div>
       </div>
     </div>
@@ -182,3 +182,5 @@ const Verify = () => {
 };
 
 export default Verify;
+
+

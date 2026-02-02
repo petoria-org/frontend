@@ -27,7 +27,7 @@ const Navbar = () => {
           }
         >
           <div className="nav-text">ورود</div>
-          <img className="nav-icon" src="/src/icons/login.svg" alt="login" />
+          <img className="nav-icon" src="/src/assets/icons/login.svg" alt="login" />
         </NavLink>
       )}
 
@@ -125,3 +125,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

@@ -71,7 +71,7 @@ const Login = () => {
             <div className="input-wrapper">
               <img
                 className="input-icon"
-                src="/src/icons/profile-circle.svg"
+                src="/src/assets/icons/profile-circle.svg"
                 alt="profile"
               />
               <input
@@ -87,7 +87,7 @@ const Login = () => {
             <div className="input-wrapper">
               <img
                 className="input-icon"
-                src="/src/icons/lock.svg"
+                src="/src/assets/icons/lock.svg"
                 alt="lock"
               />
               <input
@@ -112,7 +112,7 @@ const Login = () => {
               {!isSubmitting && (
                 <img
                   className="arrow"
-                  src="/src/icons/arrow-right.svg"
+                  src="/src/assets/icons/arrow-right.svg"
                   alt="arrow"
                 />
               )}
@@ -127,7 +127,7 @@ const Login = () => {
 
           <button className="google-btn">
             <span>ورود با حساب گوگل</span>
-            <img src="/src/icons/chrome.svg" alt="chrome" />
+            <img src="/src/assets/icons/chrome.svg" alt="chrome" />
           </button>
 
           <p className="auth-footer">
@@ -139,7 +139,7 @@ const Login = () => {
         </div>
 
         <div className="auth-img login-img">
-          <img src="/src/images/dog.svg" alt="dog" />
+          <img src="/src/assets/images/dog.svg" alt="dog" />
         </div>
       </div>
     </div>
@@ -147,3 +147,5 @@ const Login = () => {
 };
 
 export default Login;
+
+

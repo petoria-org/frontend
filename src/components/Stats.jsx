@@ -64,7 +64,7 @@ export default function Stats() {
       <div className="compact-stats-boxes">
         
         <div className="compact-stats-box">
-          <img className="compact-stats-img" src="/images/correct.png" alt="داستان‌های موفق" />
+          <img className="compact-stats-img" src="/src/assets/images/correct.png" alt="داستان‌های موفق" />
           <div className="compact-stats-number">
             {successStoriesCount !== null
               ? successStoriesCount.toLocaleString("en-US")
@@ -75,13 +75,13 @@ export default function Stats() {
         </div>
 
         <div className="compact-stats-box">
-          <img className="compact-stats-img" src="/images/person.png" alt="کاربران فعال" />
+          <img className="compact-stats-img" src="/src/assets/images/person.png" alt="کاربران فعال" />
           <div className="compact-stats-number">12,548</div>
           <div className="compact-stats-label">کاربران فعال</div>
         </div>
 
         <div className="compact-stats-box">
-          <img className="compact-stats-img" src="/images/paw.png" alt="آگهی‌های فعال" />
+          <img className="compact-stats-img" src="/src/assets/images/paw.png" alt="آگهی‌های فعال" />
           <div className="compact-stats-number">
             {activeAdsCount !== null
               ? activeAdsCount.toLocaleString("en-US")
@@ -95,3 +95,4 @@ export default function Stats() {
     </div>
   );
 }
+
