@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../../styles/UserProfile.css";
 import { SuccessStoryCreation } from "../SuccessStoryCreation";
-import { Pagination } from './../Pagination/Pagination';
-import ProfileEdit from "../ProfileEdit/ProfileEdit";
+import { Pagination } from './../Pagination';
+import ProfileEdit from "../ProfileEdit";
 import { useAuth } from "../../context/AuthContext";
 import {
   getUserProfile,
@@ -15,9 +15,9 @@ import {
 } from "../../Services/userService";
 import { getUserSuccessStories, deleteSuccessStory  } from "../../Services/successStoryService";
 import { config } from "../../config";
-import { SuccessStoryEdit } from "../SuccessStoryEdit/SuccessStoryEdit";
-import { NotificationToast } from "../NotificationToast/NotificationToast";
-import LoadingScreen from "../LoadingScreen/LoadingScreen";
+import { SuccessStoryEdit } from "../SuccessStoryEdit";
+import { NotificationToast } from "../NotificationToast";
+import LoadingScreen from "../LoadingScreen";
 import profileAvatar from "../../assets/images/profile_avatar.png";
 import { getSuccessStoryDefaultImage } from "../../utils/postImages";
 
@@ -665,7 +665,10 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
     itemsPerPage;
 
   useEffect(() => {
-    if (loading) return;
+    if (loading) {
+      prevTabRef.current = activeTab;
+      return;
+    }
     if (prevTabRef.current === activeTab) return;
 
     prevTabRef.current = activeTab;
@@ -1080,30 +1083,30 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                             <div className="pet-listing-content">
                               <div className="pet-listing-header">
                                 <div className="pet-listing-info">
-                                  <div className="pet-skeleton-block pet-skeleton-title"></div>
-                                  <div className="pet-skeleton-block pet-skeleton-subtitle"></div>
+                                  <div className="pet-skeleton-block pet-skeleton-title pet-listing-name"></div>
+                                  <div className="pet-skeleton-block pet-skeleton-subtitle pet-listing-subtitle"></div>
                                 </div>
-                                <div className="pet-skeleton-block pet-skeleton-pill"></div>
+                                <div className="pet-skeleton-block pet-skeleton-pill pet-listing-type"></div>
                               </div>
 
-                              <div className="pet-skeleton-block pet-skeleton-desc"></div>
-                              <div className="pet-skeleton-block pet-skeleton-desc short"></div>
+                              <div className="pet-skeleton-block pet-skeleton-desc pet-listing-description"></div>
+                              <div className="pet-skeleton-block pet-skeleton-desc short pet-listing-description"></div>
 
                               <div className="pet-details-container">
                                 <div className="pet-listing-detail">
                                   <div className="detail-icon pet-skeleton-block pet-skeleton-icon"></div>
-                                  <div className="pet-skeleton-block pet-skeleton-detail"></div>
+                                  <div className="pet-skeleton-block pet-skeleton-detail pet-listing-detail-text"></div>
                                 </div>
 
                                 <div className="pet-listing-detail">
                                   <div className="detail-icon pet-skeleton-block pet-skeleton-icon"></div>
-                                  <div className="pet-skeleton-block pet-skeleton-detail"></div>
+                                  <div className="pet-skeleton-block pet-skeleton-detail pet-listing-detail-text"></div>
                                 </div>
                               </div>
 
                               <div className="pet-listing-time pet-skeleton-time-wrap">
                                 <div className="time-icon pet-skeleton-block pet-skeleton-time-icon"></div>
-                                <div className="pet-skeleton-block pet-skeleton-time-text"></div>
+                                <div className="pet-skeleton-block pet-skeleton-time-text pet-listing-time-text"></div>
                               </div>
                             </div>
                           </div>
@@ -1310,13 +1313,21 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                     {showSkeleton && (
                       <>
                         {Array.from({ length: skeletonStoriesCount }).map((_, index) => (
-                          <div key={`skeleton-${index}`} className="user-story-card user-story-skeleton">
+                          <div
+                            key={`skeleton-${index}`}
+                            className="user-story-card user-story-skeleton"
+                            aria-hidden="true"
+                          >
                             <div className="user-card-border-inner"></div>
                             <div className="user-story-number user-skeleton-block"></div>
 
                             <div className="user-story-content-wrapper">
                               <div className="user-story-image-section">
-                                <div className="user-image-frame user-skeleton-block"></div>
+                                <div className="user-image-frame">
+                                  <div className="user-image-border user-skeleton-block">
+                                    <div className="user-story-image user-skeleton-block"></div>
+                                  </div>
+                                </div>
                                 <div className="user-image-decoration">
                                   <div className="user-decoration-circle user-skeleton-block"></div>
                                   <div className="user-decoration-circle user-skeleton-block"></div>
@@ -1326,14 +1337,33 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
                               <div className="user-story-text-section">
                                 <div className="user-story-header">
                                   <div className="user-story-meta">
-                                    <div className="user-skeleton-block user-skeleton-title"></div>
-                                    <div className="user-skeleton-block user-skeleton-subtitle"></div>
+                                    <div className="user-title-wrapper">
+                                      <div className="user-skeleton-block user-skeleton-title user-story-title"></div>
+                                      <div className="user-title-line user-skeleton-line"></div>
+                                    </div>
+                                    <div className="user-author-date">
+                                      <div className="user-skeleton-block user-skeleton-subtitle"></div>
+                                    </div>
                                   </div>
-                                  <div className="user-skeleton-block user-skeleton-badge"></div>
+                                  <div className="user-status-section">
+                                    <div className="user-skeleton-block user-skeleton-badge user-status-badge"></div>
+                                  </div>
                                 </div>
                                 <div className="user-story-content-box user-skeleton-block"></div>
                                 <div className="user-story-footer">
-                                  <div className="user-skeleton-block user-skeleton-btn"></div>
+                                  <div className="story-action-wrapper">
+                                    <button
+                                      type="button"
+                                      className="story-read-edit-btn user-skeleton-block user-skeleton-btn"
+                                      tabIndex={-1}
+                                    >
+                                      <div className="btn-inner-content">
+                                        <div className="btn-icon user-skeleton-block" />
+                                        <span className="btn-text user-skeleton-block user-skeleton-btn-text" />
+                                        <div className="btn-arrow user-skeleton-block" />
+                                      </div>
+                                    </button>
+                                  </div>
                                 </div>
                               </div>
                             </div>
@@ -1472,6 +1502,7 @@ export const UserProfile = ({ onEditClick, refreshKey }) => {
   </div>
 );
 };
+
 
 
 
