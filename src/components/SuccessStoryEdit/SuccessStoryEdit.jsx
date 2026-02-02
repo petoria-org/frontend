@@ -589,8 +589,10 @@ const handleTextareaChange = (e) => {
 
           <div className="story-edit-footer">
             <div className="footer-actions">
-              <div className="story-skeleton-block story-skeleton-btn"></div>
-              <div className="story-skeleton-block story-skeleton-btn"></div>
+              <div className="footer-actions-right">
+                <div className="story-skeleton-block story-skeleton-btn"></div>
+                <div className="story-skeleton-block story-skeleton-btn"></div>
+              </div>
               <div className="story-skeleton-block story-skeleton-btn primary"></div>
             </div>
           </div>
@@ -601,7 +603,10 @@ const handleTextareaChange = (e) => {
 
   return (
     <>
-      <div className="story-edit-overlay" onClick={onCancel}>
+      <div
+        className={`story-edit-overlay${cropModalOpen ? " story-edit-overlay--cropper-open" : ""}`}
+        onClick={onCancel}
+      >
         <div className="story-edit-modal" onClick={(e) => e.stopPropagation()}>
           <form onSubmit={handleSubmit}>
             <div className="story-edit-header">
@@ -775,7 +780,8 @@ const handleTextareaChange = (e) => {
 
             <div className="story-edit-footer">
               <div className="footer-actions">
-                <button type="button" className="cancel-btn" onClick={onCancel} disabled={loading}>
+                <div className="footer-actions-right">
+                  <button type="button" className="cancel-btn" onClick={onCancel} disabled={loading}>
                   <BackIcon />
                   <span>بازگشت</span>
                 </button>
@@ -784,6 +790,7 @@ const handleTextareaChange = (e) => {
                   <DeleteIcon />
                   <span>حذف داستان</span>
                 </button>
+                </div>
 
                 <button type="submit" className="save-btn" disabled={loading || isUploadingImages}>
                   {loading ? (
@@ -814,6 +821,7 @@ const handleTextareaChange = (e) => {
           uploadImageFn={uploadSuccessStoryImage}
           format="jpeg"
           quality={0.92}
+          variant="post-edit"
         />
       )}
       {confirmToast && (
@@ -851,3 +859,6 @@ const handleTextareaChange = (e) => {
     </>
   );
 };
+
+
+

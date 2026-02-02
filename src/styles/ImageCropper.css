@@ -25,6 +25,13 @@
   direction: rtl;
 }
 
+.image-cropper-modal-wrapper .image-cropper-modal-overlay--post-edit {
+  background: rgba(211, 222, 231, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: cropper-overlay-fade-in-post-edit 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .image-cropper-modal-wrapper .image-cropper-modal-overlay::before {
   content: "";
   position: absolute;
@@ -32,6 +39,23 @@
   animation: cropper-background-shimmer 15s ease-in-out infinite alternate;
   pointer-events: none;
   opacity: 0.6;
+}
+
+.image-cropper-modal-wrapper .image-cropper-modal-overlay--post-edit::before {
+  background: none;
+  opacity: 0;
+  animation: none;
+}
+
+@keyframes cropper-overlay-fade-in-post-edit {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(6px);
+  }
 }
 
 @keyframes cropper-overlay-fade-in {
