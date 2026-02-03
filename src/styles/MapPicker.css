@@ -1071,11 +1071,11 @@
 
 .action-btn {
   flex: 1;
-  padding: 16px 24px;
+  padding: 16px 4px;
   border: none;
   border-radius: 12px;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 15px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
@@ -1672,4 +1672,27 @@
 .leaflet-div-icon.user-location-icon {
   background: transparent !important;
   border: none !important;
+}
+
+/* Keep "my location" card tidy when text is long or panel is narrow. */
+.user-location-card {
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.user-location-content {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.user-location-coords {
+  direction: ltr;
+  unicode-bidi: isolate;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.use-location-btn {
+  flex: 0 0 auto;
+  margin-inline-start: auto;
 }
